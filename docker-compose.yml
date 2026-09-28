@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: h24-apteka-postgres
+    environment:
+      POSTGRES_USER: h24_apteka
+      POSTGRES_PASSWORD: h24_apteka
+      POSTGRES_DB: h24_apteka_development
+    ports:
+      - "${APTEKA_POSTGRES_PORT}:5432"
+    volumes:
+      - h24_apteka_postgres_data:/var/lib/postgresql
+
+  redis:
+    image: redis:8-alpine
+    container_name: h24-apteka-redis
+    ports:
+      - "${APTEKA_REDIS_PORT}:6379"
+    volumes:
+      - h24_apteka_redis_data:/data
+
+volumes:
+  h24_apteka_postgres_data:
+  h24_apteka_redis_data:

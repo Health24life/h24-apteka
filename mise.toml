@@ -1,0 +1,20 @@
+[tools]
+ruby = "4.0.7"
+
+[env]
+_.file = ".env"
+PORT = "2500"
+APTEKA_POSTGRES_PORT = "2501"
+APTEKA_REDIS_PORT = "2502"
+
+[tasks.server]
+run = "bundle exec rails s"
+
+[tasks.test]
+run = "bundle exec rspec"
+
+[tasks.docker-up]
+run = "docker compose up -d"
+
+[tasks.docker-down]
+run = "docker compose down"
