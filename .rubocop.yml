@@ -8,3 +8,10 @@ AllCops:
     - 'db/**/*'
     - 'bin/**/*'
     - 'vendor/**/*'
+
+# ActiveAdmin's register DSL, RSpec example groups and Rails environment configs are long blocks by design.
+Metrics/BlockLength:
+  Exclude:
+    - 'config/environments/**/*'
+    - 'app/admin/**/*'
+    - 'spec/**/*'
