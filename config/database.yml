@@ -23,10 +23,36 @@ default: &default
   username: h24_apteka
   password: h24_apteka
 
+h24_core_default: &h24_core_default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("H24_CORE_DB_POOL", 20) %>
+  prepared_statements: false
+  advisory_locks: false
+  readonly: true
+  replica: true
+  database_tasks: false
+  migrations_paths: false
+
+h24_core_master: &h24_core_master
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("H24_CORE_DB_POOL", 20) %>
+  url: <%= ENV["H24_CORE_MASTER_DB_URL"] %>
+  prepared_statements: false
+  advisory_locks: false
+  database_tasks: false
+  migrations_paths: false
 
 development:
-  <<: *default
-  database: h24_apteka_development
+  primary:
+    <<: *default
+    database: h24_apteka_development
+  h24_core:
+    <<: *h24_core_default
+    url: <%= ENV["H24_CORE_REPLICA_DB_URL"] %>
+  h24_core_master:
+    <<: *h24_core_master
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
@@ -59,8 +85,15 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
-  database: h24_apteka_test
+  primary:
+    <<: *default
+    database: h24_apteka_test
+  h24_core:
+    <<: *h24_core_default
+    url: <%= ENV["H24_CORE_TEST_DB_URL"] %>
+    advisory_locks: true
+    readonly: false
+    replica: false
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -83,7 +116,14 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  <<: *default
-  database: h24_apteka_production
-  username: h24_apteka
-  password: <%= ENV["H24_APTEKA_DATABASE_PASSWORD"] %>
+  primary:
+    <<: *default
+    database: h24_apteka_production
+    username: h24_apteka
+    password: <%= ENV["H24_APTEKA_DATABASE_PASSWORD"] %>
+  h24_core:
+    <<: *h24_core_default
+    url: <%= ENV["H24_CORE_REPLICA_DB_URL"] %>
+    prepared_statements: <%= ENV.fetch("H24_CORE_REPLICA_DB_PREPARED_STATEMENTS", false) %>
+  h24_core_master:
+    <<: *h24_core_master

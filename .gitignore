@@ -41,3 +41,6 @@
 
 # внутрішні конвенції для агентів, не для репозиторію
 CLAUDE.md
+
+# Local mise overrides
+/mise.local.toml

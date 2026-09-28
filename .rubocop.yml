@@ -1,30 +1,10 @@
-plugins:
-  - rubocop-performance
-  - rubocop-rails
+# Health24 Ruby styling
+inherit_gem:
+  health24_rubocop_config: rubocop.yml
 
 AllCops:
   TargetRubyVersion: 4.0
-  NewCops: enable
   Exclude:
-    - "db/**/*"
-    - "bin/**/*"
-    - "vendor/**/*"
-
-Style/Documentation:
-  Enabled: false
-
-# Rails 8 generates double-quoted strings by default; matching that instead of
-# rewriting every generated file to single quotes.
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
-Style/FrozenStringLiteralComment:
-  Enabled: true
-  Exclude:
-    - "spec/**/*"
-
-Metrics/MethodLength:
-  Max: 30
-
-Layout/LineLength:
-  Max: 120
+    - 'db/**/*'
+    - 'bin/**/*'
+    - 'vendor/**/*'
