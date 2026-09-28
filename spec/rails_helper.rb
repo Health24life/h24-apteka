@@ -65,6 +65,16 @@ RSpec.configure do |config|
 
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
+
+  config.include FactoryBot::Syntax::Methods
+  config.include Devise::Test::IntegrationHelpers, type: :request
+
+  # Admin pages link the compiled Tailwind stylesheet; without the build Propshaft raises on render.
+  config.before(:suite) do
+    unless Rails.root.join('app/assets/builds/active_admin.css').exist?
+      system('bin/rails', 'active_admin:build', exception: true)
+    end
+  end
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 end

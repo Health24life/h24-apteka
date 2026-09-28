@@ -1,0 +1,12 @@
+<%# Overrides ActiveAdmin's default index row actions to style the View/Delete %>
+<%# links as action-item-buttons, so they match custom action buttons (e.g. Sync) %>
+<%# across every resource. The .data-table-resource-actions wrapper is a flex row %>
+<%# with a gap, so the buttons space themselves. %>
+<%# Edit is intentionally NOT shown in the index row — editing is reached from the %>
+<%# record's show page (the "Редагувати …" action-item there). %>
+<% if show_action_authorized?(resource) %>
+  <%= link_to view_label, resource_path(resource), class: "action-item-button" %>
+<% end %>
+<% if destroy_action_authorized?(resource) %>
+  <%= link_to delete_label, resource_path(resource), method: :delete, class: "action-item-button", data: { confirm: delete_confirmation_text } %>
+<% end %>

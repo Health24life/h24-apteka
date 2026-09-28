@@ -42,5 +42,10 @@
 # внутрішні конвенції для агентів, не для репозиторію
 CLAUDE.md
 
-# Local mise overrides
-/mise.local.toml
+# Local mise overrides (per-developer values)
+mise*.local.toml
+
+# Active Admin Tailwind build output and its generated, machine-specific config
+/app/assets/builds/*
+!/app/assets/builds/.keep
+/tailwind-active_admin.config.js

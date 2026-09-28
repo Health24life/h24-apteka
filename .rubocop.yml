@@ -8,3 +8,9 @@ AllCops:
     - 'db/**/*'
     - 'bin/**/*'
     - 'vendor/**/*'
+
+# ActiveAdmin's register DSL and RSpec example groups are long blocks by design.
+Metrics/BlockLength:
+  Exclude:
+    - 'app/admin/**/*'
+    - 'spec/**/*'

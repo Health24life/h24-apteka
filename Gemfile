@@ -21,6 +21,20 @@ gem 'turbo-rails'
 gem 'stimulus-rails'
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem 'jbuilder'
+
+# Admin framework — v4 beta required for Rails 8.1 + Propshaft [https://activeadmin.info]
+gem 'activeadmin', '4.0.0.beta23'
+# Searchable/AJAX select boxes for ActiveAdmin filters & forms, via Tom Select (vanilla JS, no jQuery —
+# the classic activeadmin-searchable_select is jQuery/Select2 and pinned to activeadmin < 4). [https://github.com/rs-pro/activeadmin-tom_select]
+gem 'activeadmin-tom_select'
+# Per-action authorization for the admin panel, via ActiveAdmin's built-in PunditAdapter. Policies live in app/policies.
+gem 'pundit'
+# Authentication backing ActiveAdmin's AdminUser model [https://github.com/heartcombo/devise]
+gem 'devise'
+# Standalone Tailwind CSS CLI binary (no Node) to build ActiveAdmin's stylesheet.
+# Using tailwindcss-ruby (binary only) rather than tailwindcss-rails so it does not
+# hook a whole-app `tailwindcss:build` into assets:precompile. [https://github.com/flavorjones/tailwindcss-ruby]
+gem 'tailwindcss-ruby'
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 

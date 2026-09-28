@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@config "../../../tailwind-active_admin.config.js";
+
+/* Tom Select widget styles (activeadmin-tom_select) for the `as: :tom_select` filters and inputs.
+   Vendored plain CSS — inlined into the built active_admin.css by the Tailwind CLI; the source
+   lives under app/assets/tailwind/ which is excluded from Propshaft, so it is never served raw. */
+@import "./tom-select.min.css";
+
+/* Dark-theme overrides for Tom Select. The vendored tom-select.min.css is the light theme (white
+   control + dropdown), which clashes with ActiveAdmin's dark mode. ActiveAdmin toggles dark mode via
+   `html.dark`, so everything here is scoped under `.dark` — light mode keeps the stock styling.
+   Colours mirror ActiveAdmin's own dark filter inputs: bg rgba(255,255,255,.05), text #fff, border
+   rgba(255,255,255,.1), 6px radius, 14px. The floating dropdown needs an opaque bg, so it uses solid
+   gray-800 (#1f2937) rather than the translucent control fill. */
+.dark .ts-wrapper.single .ts-control,
+.dark .ts-control {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  min-height: 38px;
+}
+.dark .ts-control input,
+.dark .ts-control .item {
+  color: #fff;
+}
+.dark .ts-control input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+/* Focus ring matching ActiveAdmin's blue accent. */
+.dark .ts-wrapper.focus .ts-control {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+.dark .ts-wrapper.disabled .ts-control {
+  opacity: 0.5;
+}
+/* Floating dropdown: opaque dark surface. */
+.dark .ts-dropdown {
+  background: #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+}
+.dark .ts-dropdown .option,
+.dark .ts-dropdown .no-results,
+.dark .ts-dropdown .optgroup-header,
+.dark .ts-dropdown .create {
+  color: #fff;
+}
+.dark .ts-dropdown .optgroup-header {
+  color: rgba(255, 255, 255, 0.6);
+  background: transparent;
+}
+/* Hover / keyboard-highlighted option, and the already-selected one. */
+.dark .ts-dropdown .option:hover,
+.dark .ts-dropdown .active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+.dark .ts-dropdown .option.selected {
+  background: rgba(255, 255, 255, 0.12);
+}
+.dark .ts-dropdown .active.create {
+  color: #fff;
+}
+/* clear_button plugin ("×") + the dropdown caret. */
+.dark .ts-wrapper .clear-button {
+  color: rgba(255, 255, 255, 0.6);
+}
+.dark .ts-wrapper .clear-button:hover {
+  color: #fff;
+}
+.dark .ts-control .item.active {
+  background: rgba(59, 130, 246, 0.4);
+  color: #fff;
+}
+
+/* Right-align the index row-action buttons (View / Sync / …) to the table's right edge.
+   The actions column is the last column of a full-width table, so justifying its flex
+   row to the end pins the buttons to the table's right edge — whether the column is snug
+   or the browser gave it slack (the latter was leaving the buttons left-aligned). No cell
+   width override, so data columns keep their natural widths. */
+.data-table-resource-actions {
+  justify-content: flex-end;
+}

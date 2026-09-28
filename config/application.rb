@@ -36,7 +36,9 @@ module H24Apteka
     # in config/environments, which are processed later.
     #
     config.time_zone = 'Europe/Kyiv'
+    config.i18n.available_locales = %i[uk en]
     config.i18n.default_locale = :uk
+    config.i18n.fallbacks = [ :en ]
 
     config.generators do |g|
       g.orm :active_record
