@@ -2,6 +2,7 @@
 
 require 'sidekiq/web'
 require 'sidekiq/cron/web'
+require 'sidekiq-status/web'
 
 Rails.application.routes.draw do
   devise_for :admin_users, ActiveAdmin::Devise.config

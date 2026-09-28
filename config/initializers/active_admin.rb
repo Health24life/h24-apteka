@@ -285,6 +285,8 @@ ActiveAdmin.setup do |config|
       menu.add label: 'Sidekiq', priority: 90 do |sidekiq|
         sidekiq.add label: 'Queues', priority: 1, url: '/admin/sidekiq', html_options: new_tab
         sidekiq.add label: 'Cron', priority: 2, url: '/admin/sidekiq/cron', html_options: new_tab
+        sidekiq.add label: 'Failures', priority: 3, url: '/admin/sidekiq/failures', html_options: new_tab
+        sidekiq.add label: 'Statuses', priority: 4, url: '/admin/sidekiq/statuses', html_options: new_tab
       end
     end
   end

@@ -16,6 +16,12 @@ gem 'sidekiq', '~> 8.1'
 # Cron-style recurring jobs, loaded from config/schedule.yml; managed from the Sidekiq Web "Cron" tab.
 # [https://github.com/sidekiq-cron/sidekiq-cron]
 gem 'sidekiq-cron', '~> 2.4'
+# Keeps failed jobs (after retries are exhausted) browsable in a Sidekiq Web "Failures" tab.
+# [https://github.com/mhfs/sidekiq-failures]
+gem 'sidekiq-failures', '~> 1.1'
+# Per-job status/progress tracking (Sidekiq::Status), with a Sidekiq Web "Statuses" tab.
+# [https://github.com/kenaniah/sidekiq-status]
+gem 'sidekiq-status', '~> 4.0'
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
