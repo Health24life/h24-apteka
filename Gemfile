@@ -11,6 +11,11 @@ gem 'propshaft'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.1'
 gem 'redis', '~> 5.0'
+# Background jobs behind Active Job; Redis endpoint from SIDEKIQ_REDIS_URL. [https://sidekiq.org]
+gem 'sidekiq', '~> 8.1'
+# Cron-style recurring jobs, loaded from config/schedule.yml; managed from the Sidekiq Web "Cron" tab.
+# [https://github.com/sidekiq-cron/sidekiq-cron]
+gem 'sidekiq-cron', '~> 2.4'
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]

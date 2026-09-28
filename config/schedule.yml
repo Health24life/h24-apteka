@@ -1,0 +1,8 @@
+# Recurring jobs for sidekiq-cron, loaded when the Sidekiq server starts. Keep the `{}` while the
+# schedule is empty: sidekiq-cron refuses a file that parses to nil. Entry format:
+#
+#   catalog_sync:
+#     cron: '0 3 * * *'
+#     class: 'CatalogSyncJob'
+#     queue: default
+{}

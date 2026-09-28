@@ -276,6 +276,18 @@ ActiveAdmin.setup do |config|
   # You can inherit it with own class and inject it for all resources
   #
   # config.order_clause = MyOrderClause
+
+  # Sidekiq::Web is a Rack app mounted in config/routes.rb, not an Active Admin page, so it is added to
+  # the menu as plain links opening in a new tab.
+  config.namespace :admin do |admin|
+    admin.build_menu :default do |menu|
+      new_tab = { target: '_blank', rel: 'noopener' }
+      menu.add label: 'Sidekiq', priority: 90 do |sidekiq|
+        sidekiq.add label: 'Queues', priority: 1, url: '/admin/sidekiq', html_options: new_tab
+        sidekiq.add label: 'Cron', priority: 2, url: '/admin/sidekiq/cron', html_options: new_tab
+      end
+    end
+  end
 end
 
 # ApplicationController enforces an H24Auth session JWT on every request; the admin panel (and its Devise

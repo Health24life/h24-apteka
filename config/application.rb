@@ -40,6 +40,8 @@ module H24Apteka
     config.i18n.default_locale = :uk
     config.i18n.fallbacks = [ :en ]
 
+    config.active_job.queue_adapter = :sidekiq
+
     config.generators do |g|
       g.orm :active_record
       g.test_framework :rspec

@@ -1,7 +1,16 @@
 # frozen_string_literal: true
 
+require 'sidekiq/web'
+require 'sidekiq/cron/web'
+
 Rails.application.routes.draw do
   devise_for :admin_users, ActiveAdmin::Devise.config
+
+  # Mounted before the Active Admin routes so /admin/sidekiq is served by Sidekiq::Web, not Active Admin.
+  authenticate :admin_user do
+    mount Sidekiq::Web => '/admin/sidekiq'
+  end
+
   ActiveAdmin.routes(self)
 
   if ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_SWAGGER', false))
