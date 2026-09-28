@@ -1,0 +1,23 @@
+---
+openapi: 3.0.1
+info:
+  title: Health24 Apteka API
+  version: v1
+paths: {}
+components:
+  parameters:
+    header_lang:
+      name: Accept-Language
+      in: header
+      schema:
+        type: string
+        enum:
+        - en
+    auth_token:
+      name: Authorization
+      in: header
+      required: true
+      schema:
+        type: string
+      description: Bearer token (required unless the '.AspNet.ApplicationCookie' cookie
+        is present)

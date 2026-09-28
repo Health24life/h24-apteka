@@ -6,6 +6,7 @@ _.file = ".env"
 PORT = "2500"
 APTEKA_POSTGRES_PORT = "2501"
 APTEKA_REDIS_PORT = "2502"
+ENABLE_SWAGGER = "true"
 SECRET_JWT_TOKEN = "local-jwt-secret-stub"
 H24_CORE_REPLICA_DB_URL = "postgresql://user:123456@localhost:2401/h24_development"
 H24_CORE_MASTER_DB_URL = "postgresql://user:123456@localhost:2400/h24_development"
@@ -13,6 +14,9 @@ H24_CORE_TEST_DB_URL = "postgresql://user:123456@localhost:2400/h24_test"
 
 [tasks.server]
 run = "bundle exec rails s"
+
+[tasks.rswag]
+run = "RAILS_ENV=test bundle exec rails rswag"
 
 [tasks.test]
 run = "bundle exec rspec"
