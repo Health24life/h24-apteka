@@ -6,6 +6,10 @@ _.file = ".env"
 PORT = "2500"
 APTEKA_POSTGRES_PORT = "2501"
 APTEKA_REDIS_PORT = "2502"
+SECRET_JWT_TOKEN = "local-jwt-secret-stub"
+H24_CORE_REPLICA_DB_URL = "postgres://postgres:postgres@localhost:5432/h24_core_development"
+H24_CORE_MASTER_DB_URL = "postgres://postgres:postgres@localhost:5432/h24_core_development"
+H24_CORE_TEST_DB_URL = "postgres://postgres:postgres@localhost:5432/h24_core_test"
 
 [tasks.server]
 run = "bundle exec rails s"
