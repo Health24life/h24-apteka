@@ -409,6 +409,10 @@ class ::Provider < ::ApplicationRecord
     alias id_value_for_database id_for_database
   end
   include ::Provider::GeneratedAliasAttributeMethods
+  def sync_runs: () -> ::SyncRun::ActiveRecord_Associations_CollectionProxy
+  def sync_runs=: (::SyncRun::ActiveRecord_Associations_CollectionProxy | ::Array[::SyncRun]) -> (::SyncRun::ActiveRecord_Associations_CollectionProxy | ::Array[::SyncRun])
+  def sync_run_ids: () -> ::Array[::Integer]
+  def sync_run_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
   module ::Provider::GeneratedAssociationMethods
   end
@@ -467,4 +471,8 @@ class ::Provider < ::ApplicationRecord
 end
 
 class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::SyncRun < ::ApplicationRecord
+end
+class ::SyncRun::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end

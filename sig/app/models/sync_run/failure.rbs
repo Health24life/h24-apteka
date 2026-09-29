@@ -1,0 +1,2 @@
+class SyncRun::Failure < ApplicationRecord
+end
