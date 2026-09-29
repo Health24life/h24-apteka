@@ -49,3 +49,6 @@ mise*.local.toml
 /app/assets/builds/*
 !/app/assets/builds/.keep
 /tailwind-active_admin.config.js
+
+# Gem signatures fetched by `rbs collection install` (pinned in rbs_collection.lock.yaml)
+/.gem_rbs_collection/

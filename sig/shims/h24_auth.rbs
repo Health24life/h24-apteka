@@ -1,0 +1,10 @@
+# h24_auth ships no signatures; declare only what the app touches.
+module H24Auth
+  module SessionContext
+    def current_session_error: () -> Symbol?
+
+    def current_user: () -> H24Auth::User?
+
+    def current_user_id: () -> untyped
+  end
+end

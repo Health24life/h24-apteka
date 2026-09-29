@@ -1,0 +1,13 @@
+module Mixins
+  interface _RansackAuthorizable
+    def authorizable_ransackable_attributes: () -> Array[String]
+
+    def authorizable_ransackable_associations: () -> Array[String]
+  end
+
+  module RansackableAttrs : _RansackAuthorizable
+    def ransackable_attributes: (?untyped auth_object) -> Array[String]
+
+    def ransackable_associations: (?untyped auth_object) -> Array[String]
+  end
+end
