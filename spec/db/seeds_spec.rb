@@ -23,10 +23,11 @@ RSpec.describe 'db/seeds.rb' do # rubocop:disable RSpec/DescribeClass
 
   it 'keeps a switch made in the admin panel' do
     run_seeds
-    Provider.find_by!(code: 'pharmapoint').update!(active: false)
+    Provider.find_by!(code: 'pharmapoint').update!(active: false, supports_e_recipe: false, name: 'Renamed in admin')
 
     run_seeds
 
-    expect(Provider.find_by!(code: 'pharmapoint')).not_to be_active
+    expect(Provider.find_by!(code: 'pharmapoint'))
+      .to have_attributes(active: false, supports_e_recipe: false, name: 'Renamed in admin')
   end
 end

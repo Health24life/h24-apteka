@@ -11,6 +11,14 @@ RSpec.describe H24Core::User do
     it 'hides the placeholder address given to phone-only sign-ups' do
       expect(build(:h24_core_user, email: 'change@me-380501234567.com').contact_email).to be_nil
     end
+
+    it 'returns nil when the e-mail is missing' do
+      expect(build(:h24_core_user, email: nil).contact_email).to be_nil
+    end
+
+    it 'returns nil when the e-mail is empty' do
+      expect(build(:h24_core_user, email: '').contact_email).to be_nil
+    end
   end
 
   describe '#phone_digits' do

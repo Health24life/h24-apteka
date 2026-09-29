@@ -3,7 +3,9 @@ module H24Auth
   module SessionContext
     def current_session_error: () -> Symbol?
 
-    def current_user: () -> H24Auth::User?
+    def current_user: () -> H24Core::User?
+
+    def current_phone: () -> String?
 
     def current_user_id: () -> untyped
   end

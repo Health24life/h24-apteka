@@ -7,7 +7,7 @@ class H24Core::User < H24Core::ApplicationRecord
   TEMP_EMAIL_PREFIX = 'change@me'
 
   def contact_email
-    email unless email.start_with?(TEMP_EMAIL_PREFIX)
+    email.presence unless email.to_s.start_with?(TEMP_EMAIL_PREFIX)
   end
 
   # The core keeps +380XXXXXXXXX, the pharmacy side keeps 380XXXXXXXXX.
