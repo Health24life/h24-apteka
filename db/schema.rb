@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_075759) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_29_080558) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -37,5 +37,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_075759) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
+  end
+
+  create_table "providers", force: :cascade do |t|
+    t.string "code", null: false
+    t.string "name", null: false
+    t.string "kind", null: false
+    t.boolean "active", default: true, null: false
+    t.boolean "supports_delivery", default: false, null: false
+    t.boolean "supports_e_recipe", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_providers_on_code", unique: true
+    t.check_constraint "kind::text = ANY (ARRAY['external'::character varying, 'own'::character varying]::text[])", name: "providers_kind_check"
   end
 end
