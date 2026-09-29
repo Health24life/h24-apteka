@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'domain configuration' do
+RSpec.describe H24Apteka::Application do
   it 'limits catalog translations to Ukrainian' do
     expect(Rails.configuration.x.catalog_locales).to eq(%i[uk])
   end
