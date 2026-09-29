@@ -40,6 +40,9 @@ module H24Apteka
     config.i18n.default_locale = :uk
     config.i18n.fallbacks = [ :en ]
 
+    # Locales the imported catalog and symptom names are stored in. Wider than I18n only when the business asks for it.
+    config.x.catalog_locales = %i[uk]
+
     config.active_job.queue_adapter = :sidekiq
 
     config.generators do |g|
