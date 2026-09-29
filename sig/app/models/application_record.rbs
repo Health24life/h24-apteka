@@ -1,0 +1,3 @@
+class ApplicationRecord < ActiveRecord::Base
+  extend Mixins::RansackableAttrs
+end

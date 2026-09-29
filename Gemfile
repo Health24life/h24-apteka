@@ -86,6 +86,12 @@ group :development do
   gem 'web-console'
 
   gem 'annotaterb'
+
+  # RBS type signatures in sig/: rbs itself, rbs_rails for models and path helpers,
+  # steep to type-check app/ against them. [https://github.com/ruby/rbs]
+  gem 'rbs', '~> 4.2', require: false
+  gem 'rbs_rails', '~> 0.13', require: false
+  gem 'steep', '~> 2.1', require: false
 end
 
 group :test do
