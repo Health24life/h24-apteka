@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_30_112256) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_30_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -46,6 +46,76 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_112256) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "catalog_goods_form_translations", force: :cascade do |t|
+    t.bigint "catalog_goods_form_id", null: false
+    t.string "locale", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catalog_goods_form_id", "locale"], name: "index_catalog_goods_form_translations_uniqueness", unique: true
+  end
+
+  create_table "catalog_goods_forms", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "catalog_goods_measure_translations", force: :cascade do |t|
+    t.bigint "catalog_goods_measure_id", null: false
+    t.string "locale", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catalog_goods_measure_id", "locale"], name: "index_catalog_goods_measure_translations_uniqueness", unique: true
+  end
+
+  create_table "catalog_goods_measures", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "catalog_goods_price_group_translations", force: :cascade do |t|
+    t.bigint "catalog_goods_price_group_id", null: false
+    t.string "locale", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catalog_goods_price_group_id", "locale"], name: "index_catalog_goods_price_group_translations_uniqueness", unique: true
+  end
+
+  create_table "catalog_goods_price_groups", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "catalog_goods_restriction_translations", force: :cascade do |t|
+    t.bigint "catalog_goods_restriction_id", null: false
+    t.string "locale", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catalog_goods_restriction_id", "locale"], name: "index_catalog_goods_restriction_translations_uniqueness", unique: true
+  end
+
+  create_table "catalog_goods_restrictions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "catalog_goods_temperature_mode_translations", force: :cascade do |t|
+    t.bigint "catalog_goods_temperature_mode_id", null: false
+    t.string "locale", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catalog_goods_temperature_mode_id", "locale"], name: "index_catalog_goods_temperature_mode_translations_uniqueness", unique: true
+  end
+
+  create_table "catalog_goods_temperature_modes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "provider_links", force: :cascade do |t|
     t.bigint "provider_id", null: false
     t.string "linkable_type", null: false
@@ -70,7 +140,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_112256) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_providers_on_code", unique: true
-    t.check_constraint "kind::text = ANY (ARRAY['external'::character varying, 'own'::character varying]::text[])", name: "providers_kind_check"
+    t.check_constraint "kind::text = ANY (ARRAY['external'::character varying::text, 'own'::character varying::text])", name: "providers_kind_check"
   end
 
   create_table "sync_run_failures", force: :cascade do |t|
@@ -98,9 +168,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_112256) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_id", "kind", "started_at"], name: "index_sync_runs_on_provider_id_and_kind_and_started_at"
-    t.check_constraint "status::text = ANY (ARRAY['running'::character varying, 'succeeded'::character varying, 'completed_with_failures'::character varying, 'failed'::character varying]::text[])", name: "sync_runs_status_check"
+    t.check_constraint "status::text = ANY (ARRAY['running'::character varying::text, 'succeeded'::character varying::text, 'completed_with_failures'::character varying::text, 'failed'::character varying::text])", name: "sync_runs_status_check"
   end
 
+  add_foreign_key "catalog_goods_form_translations", "catalog_goods_forms", on_delete: :cascade
+  add_foreign_key "catalog_goods_measure_translations", "catalog_goods_measures", on_delete: :cascade
+  add_foreign_key "catalog_goods_price_group_translations", "catalog_goods_price_groups", on_delete: :cascade
+  add_foreign_key "catalog_goods_restriction_translations", "catalog_goods_restrictions", on_delete: :cascade
+  add_foreign_key "catalog_goods_temperature_mode_translations", "catalog_goods_temperature_modes", on_delete: :cascade
   add_foreign_key "provider_links", "providers"
   add_foreign_key "sync_run_failures", "sync_runs", on_delete: :cascade
   add_foreign_key "sync_runs", "providers"

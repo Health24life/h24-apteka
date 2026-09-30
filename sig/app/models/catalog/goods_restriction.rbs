@@ -1,0 +1,6 @@
+class Catalog::GoodsRestriction < ApplicationRecord
+  include Catalog::Dictionary
+
+  def name_uk: () -> String?
+  def name_uk=: (String? value) -> String?
+end

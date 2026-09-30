@@ -1,0 +1,6 @@
+class Catalog::GoodsPriceGroup < ApplicationRecord
+  include Catalog::Dictionary
+
+  def name_uk: () -> String?
+  def name_uk=: (String? value) -> String?
+end

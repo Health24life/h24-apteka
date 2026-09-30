@@ -1,0 +1,7 @@
+module Translatable : ActiveRecord::Base
+  extend ActiveSupport::Concern
+
+  module ClassMethods : Module
+    def translatable: (*Symbol attributes, **untyped options) -> void
+  end
+end
