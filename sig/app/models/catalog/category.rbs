@@ -2,17 +2,14 @@ class Catalog::Category < ApplicationRecord
   include Catalog::ProviderLinked
   include Catalog::Tree
   include Translatable
+  include Catalog::Sluggable
   extend Translatable::ClassMethods
 
   def name_uk: () -> String?
   def name_uk=: (String? value) -> String?
 
-  def slug=: (String? value) -> String?
-
   private
 
-  def assign_slug: () -> void
-  def slug_is_unchanged: () -> void
   def derive_depth: () -> void
   def shift_children_depth: () -> void
 end

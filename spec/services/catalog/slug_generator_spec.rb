@@ -41,7 +41,7 @@ RSpec.describe Catalog::SlugGenerator do
 
   it 'always produces a slug matching the catalog format', :aggregate_failures do
     [ 'Вітамін_С', 'a_b__c', '--x--', 'Ліки (0_3)' ].each do |text|
-      expect(slug_for(text)).to match(Catalog::SLUG_FORMAT)
+      expect(slug_for(text)).to match(Catalog::Sluggable::FORMAT)
     end
   end
 
@@ -77,13 +77,13 @@ RSpec.describe Catalog::SlugGenerator do
   end
 
   it 'keeps a long slug within the maximum length' do
-    expect(slug_for('а' * 150)).to eq('a' * Catalog::SLUG_MAX_LENGTH)
+    expect(slug_for('а' * 150)).to eq('a' * Catalog::Sluggable::MAX_LENGTH)
   end
 
   it 'keeps the slug within the maximum length together with the suffix', :aggregate_failures do
-    slug = slug_for('а' * 150, 'a' * Catalog::SLUG_MAX_LENGTH)
+    slug = slug_for('а' * 150, 'a' * Catalog::Sluggable::MAX_LENGTH)
 
-    expect(slug.length).to eq(Catalog::SLUG_MAX_LENGTH)
+    expect(slug.length).to eq(Catalog::Sluggable::MAX_LENGTH)
     expect(slug).to end_with('-2')
   end
 
@@ -102,6 +102,6 @@ RSpec.describe Catalog::SlugGenerator do
   end
 
   it 'produces slugs that match the catalog format' do
-    expect(slug_for('Їжак у тумані')).to match(Catalog::SLUG_FORMAT)
+    expect(slug_for('Їжак у тумані')).to match(Catalog::Sluggable::FORMAT)
   end
 end

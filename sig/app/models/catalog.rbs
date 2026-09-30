@@ -1,6 +1,3 @@
 module Catalog
-  SLUG_FORMAT: Regexp
-  SLUG_MAX_LENGTH: Integer
-
   def self.table_name_prefix: () -> String
 end

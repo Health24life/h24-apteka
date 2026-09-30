@@ -1,0 +1,22 @@
+module Catalog
+  interface _SluggableRecord
+    def slug: () -> String?
+    def slug_changed?: () -> bool
+    def name_uk: () -> String?
+    def class: () -> Catalog::SlugGenerator::_SlugScope
+  end
+
+  module Sluggable : ActiveRecord::Base, _SluggableRecord
+    extend ActiveSupport::Concern
+
+    FORMAT: Regexp
+    MAX_LENGTH: Integer
+
+    def slug=: (String? value) -> String?
+
+    private
+
+    def assign_slug: () -> void
+    def slug_is_unchanged: () -> void
+  end
+end

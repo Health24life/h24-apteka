@@ -33,11 +33,11 @@ class Catalog::SlugGenerator
   def transliterate(text)
     kmu_text = text.to_s.tr(NON_KMU_LETTERS, KMU_LETTERS)
     slug = UkrainianLatin.new.encode(kmu_text, 'KMU_55').tr('_', '-').parameterize.squeeze('-')
-    slug.first(Catalog::SLUG_MAX_LENGTH).delete_suffix('-').presence || FALLBACK
+    slug.first(Catalog::Sluggable::MAX_LENGTH).delete_suffix('-').presence || FALLBACK
   end
 
   # Truncates the base so the whole slug, suffix included, still fits the limit.
   def with_suffix(base, suffix)
-    "#{base.first(Catalog::SLUG_MAX_LENGTH - suffix.length).delete_suffix('-')}#{suffix}"
+    "#{base.first(Catalog::Sluggable::MAX_LENGTH - suffix.length).delete_suffix('-')}#{suffix}"
   end
 end

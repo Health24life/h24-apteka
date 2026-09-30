@@ -4,75 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Catalog::Category do
   it_behaves_like 'a translatable catalog record', :catalog_category
+  it_behaves_like 'a sluggable catalog record', :catalog_category
 
   it 'is valid with a Ukrainian name' do
     expect(build(:catalog_category)).to be_valid
-  end
-
-  describe 'slug' do
-    it 'is generated from the Ukrainian name on creation' do
-      expect(create(:catalog_category, name_uk: 'Знеболювальні').slug).to eq('zneboliuvalni')
-    end
-
-    it 'gets a numeric suffix when the address is taken' do
-      create(:catalog_category, name_uk: 'Знеболювальні')
-
-      expect(create(:catalog_category, name_uk: 'Знеболювальні').slug).to eq('zneboliuvalni-2')
-    end
-
-    it 'does not change when the category is renamed' do
-      category = create(:catalog_category, name_uk: 'Знеболювальні')
-
-      category.update!(name_uk: 'Анальгетики')
-
-      expect(category.reload.slug).to eq('zneboliuvalni')
-    end
-
-    it 'refuses a manual change' do
-      category = create(:catalog_category)
-
-      expect { category.update(slug: 'other') }.to raise_error(ActiveRecord::ReadonlyAttributeError)
-    end
-
-    it 'refuses a slug changed by writing the attribute directly' do
-      category = create(:catalog_category)
-      category[:slug] = 'other'
-
-      expect(category).not_to be_valid
-    end
-
-    it 'falls back to a fixed word for a name without letters' do
-      expect(create(:catalog_category, name_uk: '!!!').slug).to eq('item')
-    end
-
-    it 'refuses a malformed slug in validation' do
-      expect(build(:catalog_category).tap { |c| c.slug = 'Bad Slug' }).not_to be_valid
-    end
-
-    it 'refuses a duplicate slug at the database level' do
-      category = create(:catalog_category)
-      other = create(:catalog_category)
-
-      expect { other.update_column(:slug, category.slug) }.to raise_error(ActiveRecord::RecordNotUnique) # rubocop:disable Rails/SkipsModelValidations
-    end
-
-    it 'refuses a malformed slug at the database level' do
-      category = create(:catalog_category)
-
-      expect { category.update_column(:slug, 'Bad_Slug') } # rubocop:disable Rails/SkipsModelValidations
-        .to raise_error(ActiveRecord::StatementInvalid, /catalog_categories_slug_check/)
-    end
-
-    it 'refuses a slug longer than the limit at the database level' do
-      category = create(:catalog_category)
-
-      expect { category.update_column(:slug, 'a' * 101) } # rubocop:disable Rails/SkipsModelValidations
-        .to raise_error(ActiveRecord::StatementInvalid, /catalog_categories_slug_check/)
-    end
-
-    it 'creates a category whose name contains an underscore' do
-      expect(create(:catalog_category, name_uk: 'Вітамін_С').slug).to eq('vitamin-s')
-    end
   end
 
   describe 'tree' do

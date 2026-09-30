@@ -4,6 +4,7 @@ class Catalog::Category < ApplicationRecord
   include Catalog::ProviderLinked
   include Catalog::Tree
   include Translatable
+  include Catalog::Sluggable
 
   translatable :name
 
@@ -12,33 +13,11 @@ class Catalog::Category < ApplicationRecord
   has_many :goods_groups, through: :goods_group_categories
 
   validates :name_uk, presence: true
-  validates :slug, presence: true, uniqueness: true, length: { maximum: Catalog::SLUG_MAX_LENGTH },
-                   format: { with: Catalog::SLUG_FORMAT }
-  validate :slug_is_unchanged, on: :update
 
-  before_validation :assign_slug, on: :create
   before_validation :derive_depth
   after_update :shift_children_depth, if: :saved_change_to_depth?
 
-  # The address is part of public URLs, so it is fixed once saved. attr_readonly is not used because its
-  # write_attribute override takes two arguments and breaks the three-argument call from globalize accessors.
-  def slug=(value)
-    raise ActiveRecord::ReadonlyAttributeError, :slug if persisted?
-
-    super
-  end
-
   private
-
-  def assign_slug
-    return if slug.present? || name_uk.blank?
-
-    self.slug = Catalog::SlugGenerator.call(name_uk, scope: self.class)
-  end
-
-  def slug_is_unchanged
-    errors.add(:slug, :invalid) if slug_changed?
-  end
 
   def derive_depth
     node = parent
