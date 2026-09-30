@@ -96,14 +96,12 @@ end
 #
 # Table name: catalog_categories
 #
-#  id                  :bigint           not null, primary key
-#  depth               :integer          default(0), not null
-#  name                :string
-#  slug                :string           not null
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  catalog_category_id :bigint           not null
-#  parent_id           :bigint
+#  id         :bigint           not null, primary key
+#  depth      :integer          default(0), not null
+#  slug       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  parent_id  :bigint
 #
 # Indexes
 #

@@ -47,13 +47,11 @@ end
 #
 # Table name: catalog_atc_classes
 #
-#  id                   :bigint           not null, primary key
-#  atc_code             :string           not null
-#  name                 :string
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  catalog_atc_class_id :bigint           not null
-#  parent_id            :bigint
+#  id         :bigint           not null, primary key
+#  atc_code   :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  parent_id  :bigint
 #
 # Indexes
 #
