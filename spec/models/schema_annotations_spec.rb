@@ -11,16 +11,19 @@ RSpec.describe 'schema annotations' do # rubocop:disable RSpec/DescribeClass
     end
   end
 
-  def translated_attributes(table)
+  def model_for(table)
     Rails.application.eager_load!
-    model = ApplicationRecord.descendants.find { it.table_name == table }
+    ActiveRecord::Base.descendants.find { !it.abstract_class? && it.table_name == table }
+  end
+
+  def translated_attributes(model)
     model.respond_to?(:translated_attribute_names) ? model.translated_attribute_names.map(&:to_s) : []
   end
 
   def stray_columns
     annotated_files.filter_map do |path, table, listed|
-      allowed = ActiveRecord::Base.connection.columns(table).map(&:name) + translated_attributes(table)
-      extra = listed - allowed
+      model = model_for(table)
+      extra = listed - (model.column_names + translated_attributes(model))
       "#{path.relative_path_from(Rails.root)}: #{extra.join(', ')}" if extra.any?
     end
   end
