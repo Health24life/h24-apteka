@@ -32,4 +32,17 @@ RSpec.shared_examples 'a translatable catalog record' do |factory|
 
     expect(count).to eq(1)
   end
+
+  it 'refuses a name written in a locale outside the catalog languages', :aggregate_failures do
+    record = create(factory, name_uk: 'Назва')
+
+    expect { I18n.with_locale(:en) { record.update!(name: 'Tablets') } }.to raise_error(ActiveRecord::RecordInvalid)
+    expect(record.class.translation_class.where(locale: 'en')).to be_empty
+  end
+
+  it 'keeps a Ukrainian rename valid' do
+    record = create(factory, name_uk: 'Назва')
+
+    expect { record.update!(name_uk: 'Нова назва') }.not_to raise_error
+  end
 end
