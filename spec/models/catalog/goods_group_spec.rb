@@ -64,6 +64,7 @@ end
 #  id                 :bigint           not null, primary key
 #  hidden             :boolean          default(FALSE), not null
 #  included_to_offers :boolean          default(FALSE), not null
+#  name               :string
 #  withdrawn          :boolean          default(FALSE), not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null

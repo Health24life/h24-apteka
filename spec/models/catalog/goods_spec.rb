@@ -128,6 +128,7 @@ end
 #  is_strict_recipe                      :boolean          default(FALSE), not null
 #  mnn                                   :string
 #  morion_code                           :string
+#  name                                  :string
 #  pack_quantity_in_pack                 :integer
 #  pack_quantity_in_unit                 :integer
 #  pack_quantity_unit_in_pack            :integer

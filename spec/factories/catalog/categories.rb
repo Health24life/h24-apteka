@@ -13,6 +13,7 @@ end
 #
 #  id         :bigint           not null, primary key
 #  depth      :integer          default(0), not null
+#  name       :string
 #  slug       :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null

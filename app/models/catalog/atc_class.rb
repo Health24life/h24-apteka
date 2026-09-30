@@ -32,6 +32,7 @@ end
 #
 #  id         :bigint           not null, primary key
 #  atc_code   :string           not null
+#  name       :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  parent_id  :bigint
