@@ -12,13 +12,13 @@ class Catalog::Category < ApplicationRecord
   has_many :children, class_name: 'Catalog::Category', foreign_key: :parent_id, inverse_of: :parent,
                       dependent: :restrict_with_exception
 
-  before_validation :assign_slug, on: :create
-
   validates :name_uk, presence: true
   validates :slug, presence: true, uniqueness: true, length: { maximum: Catalog::SLUG_MAX_LENGTH },
                    format: { with: Catalog::SLUG_FORMAT }
   validates :depth, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :parent_is_not_self
+
+  before_validation :assign_slug, on: :create
 
   scope :roots, -> { where(parent_id: nil) }
 
