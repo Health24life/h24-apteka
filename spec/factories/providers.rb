@@ -30,3 +30,7 @@ end
 #
 #  index_providers_on_code  (code) UNIQUE
 #
+# Check Constraints
+#
+#  providers_kind_check  (kind::text = ANY (ARRAY['external'::character varying, 'own'::character varying]::text[]))
+#

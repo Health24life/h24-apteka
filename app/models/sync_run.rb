@@ -58,3 +58,7 @@ end
 #
 #  fk_rails_...  (provider_id => providers.id)
 #
+# Check Constraints
+#
+#  sync_runs_status_check  (status::text = ANY (ARRAY['running'::character varying, 'succeeded'::character varying, 'completed_with_failures'::character varying, 'failed'::character varying]::text[]))
+#
