@@ -7,7 +7,7 @@ RSpec.describe 'schema annotations' do # rubocop:disable RSpec/DescribeClass
     Rails.root.glob('{app/models,spec/models,spec/factories}/**/*.rb').filter_map do |path|
       text = path.read
       table = text[/^# Table name: (\w+)/, 1]
-      [path, table, text.scan(/^#  (\w+)\s+:/).flatten] if table
+      [ path, table, text.scan(/^#  (\w+)\s+:/).flatten ] if table
     end
   end
 
