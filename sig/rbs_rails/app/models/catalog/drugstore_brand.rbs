@@ -258,6 +258,10 @@ module ::Catalog
     def providers=: (::Provider::ActiveRecord_Associations_CollectionProxy | ::Array[::Provider]) -> (::Provider::ActiveRecord_Associations_CollectionProxy | ::Array[::Provider])
     def provider_ids: () -> ::Array[::Integer]
     def provider_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def drugstores: () -> ::Catalog::Drugstore::ActiveRecord_Associations_CollectionProxy
+    def drugstores=: (::Catalog::Drugstore::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Drugstore]) -> (::Catalog::Drugstore::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Drugstore])
+    def drugstore_ids: () -> ::Array[::Integer]
+    def drugstore_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
     module ::Catalog::DrugstoreBrand::GeneratedAssociationMethods
     end
@@ -305,4 +309,8 @@ end
 class ::Provider < ::ApplicationRecord
 end
 class ::Provider::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Catalog::Drugstore < ::ApplicationRecord
+end
+class ::Catalog::Drugstore::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end

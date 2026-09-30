@@ -1,0 +1,5 @@
+class Catalog::Drugstore < ApplicationRecord
+  include Catalog::ProviderLinked
+
+  LEGAL_ENTITY_CODE_FORMAT: Regexp
+end

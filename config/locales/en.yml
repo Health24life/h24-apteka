@@ -29,6 +29,9 @@
 
 en:
   hello: "Hello world"
+  errors:
+    messages:
+      invalid_week_working_hours: must hold seven values, one per weekday, or be empty
   activerecord:
     errors:
       models:

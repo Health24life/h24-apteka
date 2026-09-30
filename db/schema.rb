@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_30_120005) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -78,11 +78,50 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120005) do
     t.index ["catalog_category_id", "locale"], name: "index_catalog_category_translations_uniqueness", unique: true
   end
 
+  create_table "catalog_drugstore_addresses", force: :cascade do |t|
+    t.bigint "drugstore_id", null: false
+    t.string "address", null: false
+    t.string "city"
+    t.string "state"
+    t.decimal "latitude", precision: 10, scale: 7, null: false
+    t.decimal "longitude", precision: 10, scale: 7, null: false
+    t.integer "core_region_id"
+    t.integer "core_settlement_id"
+    t.integer "core_city_district_id"
+    t.integer "core_metro_station_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["drugstore_id"], name: "index_catalog_drugstore_addresses_on_drugstore_id", unique: true
+    t.check_constraint "latitude >= '-90'::integer::numeric AND latitude <= 90::numeric", name: "catalog_drugstore_addresses_latitude_check"
+    t.check_constraint "longitude >= '-180'::integer::numeric AND longitude <= 180::numeric", name: "catalog_drugstore_addresses_longitude_check"
+  end
+
   create_table "catalog_drugstore_brands", force: :cascade do |t|
     t.string "name", null: false
     t.string "image_path"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "catalog_drugstores", force: :cascade do |t|
+    t.bigint "brand_id"
+    t.string "name"
+    t.string "drugstore_legal_entity_name", null: false
+    t.string "drugstore_legal_entity_code", null: false
+    t.string "phone"
+    t.string "mobile_phone"
+    t.string "email"
+    t.string "ext_drugstore_id"
+    t.jsonb "week_working_hours", default: [], null: false
+    t.boolean "work_with_reimbursement", default: false, null: false
+    t.boolean "withdrawn", default: false, null: false
+    t.boolean "hidden", default: false, null: false
+    t.boolean "incomplete", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["brand_id"], name: "index_catalog_drugstores_on_brand_id"
+    t.check_constraint "drugstore_legal_entity_code::text ~ '^[0-9]{8}([0-9]{2})?$'::text", name: "catalog_drugstores_legal_entity_code_check"
+    t.check_constraint "jsonb_array_length(week_working_hours) = ANY (ARRAY[0, 7])", name: "catalog_drugstores_week_hours_check"
   end
 
   create_table "catalog_goods", force: :cascade do |t|
@@ -310,6 +349,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120005) do
   add_foreign_key "catalog_atc_classes", "catalog_atc_classes", column: "parent_id"
   add_foreign_key "catalog_categories", "catalog_categories", column: "parent_id"
   add_foreign_key "catalog_category_translations", "catalog_categories", on_delete: :cascade
+  add_foreign_key "catalog_drugstore_addresses", "catalog_drugstores", column: "drugstore_id", on_delete: :cascade
+  add_foreign_key "catalog_drugstores", "catalog_drugstore_brands", column: "brand_id"
   add_foreign_key "catalog_goods", "catalog_goods_forms", column: "form_id"
   add_foreign_key "catalog_goods", "catalog_goods_groups", column: "goods_group_id"
   add_foreign_key "catalog_goods", "catalog_goods_measures", column: "measure_id"

@@ -1,0 +1,765 @@
+# resolve-type-names: false
+
+module ::Catalog
+  class ::Catalog::Drugstore < ::ApplicationRecord
+    extend ::ActiveRecord::Base::ClassMethods[::Catalog::Drugstore, ::Catalog::Drugstore::ActiveRecord_Relation, ::Integer]
+
+    module ::Catalog::Drugstore::GeneratedAttributeMethods
+      def id: () -> ::Integer
+
+      def id=: (::Integer) -> ::Integer
+
+      def id?: () -> bool
+
+      def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def id_change: () -> [ ::Integer?, ::Integer? ]
+
+      def id_will_change!: () -> void
+
+      def id_was: () -> ::Integer?
+
+      def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def id_previous_change: () -> ::Array[::Integer?]?
+
+      def id_previously_was: () -> ::Integer?
+
+      def id_before_last_save: () -> ::Integer?
+
+      def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def id_in_database: () -> ::Integer?
+
+      def saved_change_to_id: () -> ::Array[::Integer?]?
+
+      def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def restore_id!: () -> void
+
+      def clear_id_change: () -> void
+
+      def id_before_type_cast: () -> ::Integer
+
+      def id_for_database: () -> ::Integer
+
+      def brand_id: () -> ::Integer?
+
+      def brand_id=: (::Integer?) -> ::Integer?
+
+      def brand_id?: () -> bool
+
+      def brand_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def brand_id_change: () -> [ ::Integer?, ::Integer? ]
+
+      def brand_id_will_change!: () -> void
+
+      def brand_id_was: () -> ::Integer?
+
+      def brand_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def brand_id_previous_change: () -> ::Array[::Integer?]?
+
+      def brand_id_previously_was: () -> ::Integer?
+
+      def brand_id_before_last_save: () -> ::Integer?
+
+      def brand_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def brand_id_in_database: () -> ::Integer?
+
+      def saved_change_to_brand_id: () -> ::Array[::Integer?]?
+
+      def saved_change_to_brand_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def will_save_change_to_brand_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def restore_brand_id!: () -> void
+
+      def clear_brand_id_change: () -> void
+
+      def brand_id_before_type_cast: () -> ::Integer?
+
+      def brand_id_for_database: () -> ::Integer?
+
+      def name: () -> ::String?
+
+      def name=: (::String?) -> ::String?
+
+      def name?: () -> bool
+
+      def name_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def name_change: () -> [ ::String?, ::String? ]
+
+      def name_will_change!: () -> void
+
+      def name_was: () -> ::String?
+
+      def name_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def name_previous_change: () -> ::Array[::String?]?
+
+      def name_previously_was: () -> ::String?
+
+      def name_before_last_save: () -> ::String?
+
+      def name_change_to_be_saved: () -> ::Array[::String?]?
+
+      def name_in_database: () -> ::String?
+
+      def saved_change_to_name: () -> ::Array[::String?]?
+
+      def saved_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_name!: () -> void
+
+      def clear_name_change: () -> void
+
+      def name_before_type_cast: () -> ::String?
+
+      def name_for_database: () -> ::String?
+
+      def drugstore_legal_entity_name: () -> ::String
+
+      def drugstore_legal_entity_name=: (::String) -> ::String
+
+      def drugstore_legal_entity_name?: () -> bool
+
+      def drugstore_legal_entity_name_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def drugstore_legal_entity_name_change: () -> [ ::String?, ::String? ]
+
+      def drugstore_legal_entity_name_will_change!: () -> void
+
+      def drugstore_legal_entity_name_was: () -> ::String?
+
+      def drugstore_legal_entity_name_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def drugstore_legal_entity_name_previous_change: () -> ::Array[::String?]?
+
+      def drugstore_legal_entity_name_previously_was: () -> ::String?
+
+      def drugstore_legal_entity_name_before_last_save: () -> ::String?
+
+      def drugstore_legal_entity_name_change_to_be_saved: () -> ::Array[::String?]?
+
+      def drugstore_legal_entity_name_in_database: () -> ::String?
+
+      def saved_change_to_drugstore_legal_entity_name: () -> ::Array[::String?]?
+
+      def saved_change_to_drugstore_legal_entity_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_drugstore_legal_entity_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_drugstore_legal_entity_name!: () -> void
+
+      def clear_drugstore_legal_entity_name_change: () -> void
+
+      def drugstore_legal_entity_name_before_type_cast: () -> ::String
+
+      def drugstore_legal_entity_name_for_database: () -> ::String
+
+      def drugstore_legal_entity_code: () -> ::String
+
+      def drugstore_legal_entity_code=: (::String) -> ::String
+
+      def drugstore_legal_entity_code?: () -> bool
+
+      def drugstore_legal_entity_code_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def drugstore_legal_entity_code_change: () -> [ ::String?, ::String? ]
+
+      def drugstore_legal_entity_code_will_change!: () -> void
+
+      def drugstore_legal_entity_code_was: () -> ::String?
+
+      def drugstore_legal_entity_code_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def drugstore_legal_entity_code_previous_change: () -> ::Array[::String?]?
+
+      def drugstore_legal_entity_code_previously_was: () -> ::String?
+
+      def drugstore_legal_entity_code_before_last_save: () -> ::String?
+
+      def drugstore_legal_entity_code_change_to_be_saved: () -> ::Array[::String?]?
+
+      def drugstore_legal_entity_code_in_database: () -> ::String?
+
+      def saved_change_to_drugstore_legal_entity_code: () -> ::Array[::String?]?
+
+      def saved_change_to_drugstore_legal_entity_code?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_drugstore_legal_entity_code?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_drugstore_legal_entity_code!: () -> void
+
+      def clear_drugstore_legal_entity_code_change: () -> void
+
+      def drugstore_legal_entity_code_before_type_cast: () -> ::String
+
+      def drugstore_legal_entity_code_for_database: () -> ::String
+
+      def phone: () -> ::String?
+
+      def phone=: (::String?) -> ::String?
+
+      def phone?: () -> bool
+
+      def phone_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def phone_change: () -> [ ::String?, ::String? ]
+
+      def phone_will_change!: () -> void
+
+      def phone_was: () -> ::String?
+
+      def phone_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def phone_previous_change: () -> ::Array[::String?]?
+
+      def phone_previously_was: () -> ::String?
+
+      def phone_before_last_save: () -> ::String?
+
+      def phone_change_to_be_saved: () -> ::Array[::String?]?
+
+      def phone_in_database: () -> ::String?
+
+      def saved_change_to_phone: () -> ::Array[::String?]?
+
+      def saved_change_to_phone?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_phone?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_phone!: () -> void
+
+      def clear_phone_change: () -> void
+
+      def phone_before_type_cast: () -> ::String?
+
+      def phone_for_database: () -> ::String?
+
+      def mobile_phone: () -> ::String?
+
+      def mobile_phone=: (::String?) -> ::String?
+
+      def mobile_phone?: () -> bool
+
+      def mobile_phone_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def mobile_phone_change: () -> [ ::String?, ::String? ]
+
+      def mobile_phone_will_change!: () -> void
+
+      def mobile_phone_was: () -> ::String?
+
+      def mobile_phone_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def mobile_phone_previous_change: () -> ::Array[::String?]?
+
+      def mobile_phone_previously_was: () -> ::String?
+
+      def mobile_phone_before_last_save: () -> ::String?
+
+      def mobile_phone_change_to_be_saved: () -> ::Array[::String?]?
+
+      def mobile_phone_in_database: () -> ::String?
+
+      def saved_change_to_mobile_phone: () -> ::Array[::String?]?
+
+      def saved_change_to_mobile_phone?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_mobile_phone?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_mobile_phone!: () -> void
+
+      def clear_mobile_phone_change: () -> void
+
+      def mobile_phone_before_type_cast: () -> ::String?
+
+      def mobile_phone_for_database: () -> ::String?
+
+      def email: () -> ::String?
+
+      def email=: (::String?) -> ::String?
+
+      def email?: () -> bool
+
+      def email_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def email_change: () -> [ ::String?, ::String? ]
+
+      def email_will_change!: () -> void
+
+      def email_was: () -> ::String?
+
+      def email_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def email_previous_change: () -> ::Array[::String?]?
+
+      def email_previously_was: () -> ::String?
+
+      def email_before_last_save: () -> ::String?
+
+      def email_change_to_be_saved: () -> ::Array[::String?]?
+
+      def email_in_database: () -> ::String?
+
+      def saved_change_to_email: () -> ::Array[::String?]?
+
+      def saved_change_to_email?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_email?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_email!: () -> void
+
+      def clear_email_change: () -> void
+
+      def email_before_type_cast: () -> ::String?
+
+      def email_for_database: () -> ::String?
+
+      def ext_drugstore_id: () -> ::String?
+
+      def ext_drugstore_id=: (::String?) -> ::String?
+
+      def ext_drugstore_id?: () -> bool
+
+      def ext_drugstore_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def ext_drugstore_id_change: () -> [ ::String?, ::String? ]
+
+      def ext_drugstore_id_will_change!: () -> void
+
+      def ext_drugstore_id_was: () -> ::String?
+
+      def ext_drugstore_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def ext_drugstore_id_previous_change: () -> ::Array[::String?]?
+
+      def ext_drugstore_id_previously_was: () -> ::String?
+
+      def ext_drugstore_id_before_last_save: () -> ::String?
+
+      def ext_drugstore_id_change_to_be_saved: () -> ::Array[::String?]?
+
+      def ext_drugstore_id_in_database: () -> ::String?
+
+      def saved_change_to_ext_drugstore_id: () -> ::Array[::String?]?
+
+      def saved_change_to_ext_drugstore_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_ext_drugstore_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_ext_drugstore_id!: () -> void
+
+      def clear_ext_drugstore_id_change: () -> void
+
+      def ext_drugstore_id_before_type_cast: () -> ::String?
+
+      def ext_drugstore_id_for_database: () -> ::String?
+
+      def week_working_hours: () -> untyped
+
+      def week_working_hours=: (untyped) -> untyped
+
+      def week_working_hours?: () -> bool
+
+      def week_working_hours_changed?: (?from: untyped, ?to: untyped) -> bool
+
+      def week_working_hours_change: () -> [ untyped, untyped ]
+
+      def week_working_hours_will_change!: () -> void
+
+      def week_working_hours_was: () -> untyped
+
+      def week_working_hours_previously_changed?: (?from: untyped, ?to: untyped) -> bool
+
+      def week_working_hours_previous_change: () -> ::Array[untyped]?
+
+      def week_working_hours_previously_was: () -> untyped
+
+      def week_working_hours_before_last_save: () -> untyped
+
+      def week_working_hours_change_to_be_saved: () -> ::Array[untyped]?
+
+      def week_working_hours_in_database: () -> untyped
+
+      def saved_change_to_week_working_hours: () -> ::Array[untyped]?
+
+      def saved_change_to_week_working_hours?: (?from: untyped, ?to: untyped) -> bool
+
+      def will_save_change_to_week_working_hours?: (?from: untyped, ?to: untyped) -> bool
+
+      def restore_week_working_hours!: () -> void
+
+      def clear_week_working_hours_change: () -> void
+
+      def week_working_hours_before_type_cast: () -> untyped
+
+      def week_working_hours_for_database: () -> untyped
+
+      def work_with_reimbursement: () -> bool
+
+      def work_with_reimbursement=: (bool) -> bool
+
+      def work_with_reimbursement?: () -> bool
+
+      def work_with_reimbursement_changed?: (?from: bool?, ?to: bool?) -> bool
+
+      def work_with_reimbursement_change: () -> [ bool?, bool? ]
+
+      def work_with_reimbursement_will_change!: () -> void
+
+      def work_with_reimbursement_was: () -> bool?
+
+      def work_with_reimbursement_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+      def work_with_reimbursement_previous_change: () -> ::Array[bool?]?
+
+      def work_with_reimbursement_previously_was: () -> bool?
+
+      def work_with_reimbursement_before_last_save: () -> bool?
+
+      def work_with_reimbursement_change_to_be_saved: () -> ::Array[bool?]?
+
+      def work_with_reimbursement_in_database: () -> bool?
+
+      def saved_change_to_work_with_reimbursement: () -> ::Array[bool?]?
+
+      def saved_change_to_work_with_reimbursement?: (?from: bool?, ?to: bool?) -> bool
+
+      def will_save_change_to_work_with_reimbursement?: (?from: bool?, ?to: bool?) -> bool
+
+      def restore_work_with_reimbursement!: () -> void
+
+      def clear_work_with_reimbursement_change: () -> void
+
+      def work_with_reimbursement_before_type_cast: () -> bool
+
+      def work_with_reimbursement_for_database: () -> bool
+
+      def withdrawn: () -> bool
+
+      def withdrawn=: (bool) -> bool
+
+      def withdrawn?: () -> bool
+
+      def withdrawn_changed?: (?from: bool?, ?to: bool?) -> bool
+
+      def withdrawn_change: () -> [ bool?, bool? ]
+
+      def withdrawn_will_change!: () -> void
+
+      def withdrawn_was: () -> bool?
+
+      def withdrawn_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+      def withdrawn_previous_change: () -> ::Array[bool?]?
+
+      def withdrawn_previously_was: () -> bool?
+
+      def withdrawn_before_last_save: () -> bool?
+
+      def withdrawn_change_to_be_saved: () -> ::Array[bool?]?
+
+      def withdrawn_in_database: () -> bool?
+
+      def saved_change_to_withdrawn: () -> ::Array[bool?]?
+
+      def saved_change_to_withdrawn?: (?from: bool?, ?to: bool?) -> bool
+
+      def will_save_change_to_withdrawn?: (?from: bool?, ?to: bool?) -> bool
+
+      def restore_withdrawn!: () -> void
+
+      def clear_withdrawn_change: () -> void
+
+      def withdrawn_before_type_cast: () -> bool
+
+      def withdrawn_for_database: () -> bool
+
+      def hidden: () -> bool
+
+      def hidden=: (bool) -> bool
+
+      def hidden?: () -> bool
+
+      def hidden_changed?: (?from: bool?, ?to: bool?) -> bool
+
+      def hidden_change: () -> [ bool?, bool? ]
+
+      def hidden_will_change!: () -> void
+
+      def hidden_was: () -> bool?
+
+      def hidden_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+      def hidden_previous_change: () -> ::Array[bool?]?
+
+      def hidden_previously_was: () -> bool?
+
+      def hidden_before_last_save: () -> bool?
+
+      def hidden_change_to_be_saved: () -> ::Array[bool?]?
+
+      def hidden_in_database: () -> bool?
+
+      def saved_change_to_hidden: () -> ::Array[bool?]?
+
+      def saved_change_to_hidden?: (?from: bool?, ?to: bool?) -> bool
+
+      def will_save_change_to_hidden?: (?from: bool?, ?to: bool?) -> bool
+
+      def restore_hidden!: () -> void
+
+      def clear_hidden_change: () -> void
+
+      def hidden_before_type_cast: () -> bool
+
+      def hidden_for_database: () -> bool
+
+      def incomplete: () -> bool
+
+      def incomplete=: (bool) -> bool
+
+      def incomplete?: () -> bool
+
+      def incomplete_changed?: (?from: bool?, ?to: bool?) -> bool
+
+      def incomplete_change: () -> [ bool?, bool? ]
+
+      def incomplete_will_change!: () -> void
+
+      def incomplete_was: () -> bool?
+
+      def incomplete_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+      def incomplete_previous_change: () -> ::Array[bool?]?
+
+      def incomplete_previously_was: () -> bool?
+
+      def incomplete_before_last_save: () -> bool?
+
+      def incomplete_change_to_be_saved: () -> ::Array[bool?]?
+
+      def incomplete_in_database: () -> bool?
+
+      def saved_change_to_incomplete: () -> ::Array[bool?]?
+
+      def saved_change_to_incomplete?: (?from: bool?, ?to: bool?) -> bool
+
+      def will_save_change_to_incomplete?: (?from: bool?, ?to: bool?) -> bool
+
+      def restore_incomplete!: () -> void
+
+      def clear_incomplete_change: () -> void
+
+      def incomplete_before_type_cast: () -> bool
+
+      def incomplete_for_database: () -> bool
+
+      def created_at: () -> ::ActiveSupport::TimeWithZone
+
+      def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+      def created_at?: () -> bool
+
+      def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def created_at_will_change!: () -> void
+
+      def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def restore_created_at!: () -> void
+
+      def clear_created_at_change: () -> void
+
+      def created_at_before_type_cast: () -> ::Time
+
+      def created_at_for_database: () -> ::Time
+
+      def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+      def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+      def updated_at?: () -> bool
+
+      def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def updated_at_will_change!: () -> void
+
+      def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def restore_updated_at!: () -> void
+
+      def clear_updated_at_change: () -> void
+
+      def updated_at_before_type_cast: () -> ::Time
+
+      def updated_at_for_database: () -> ::Time
+    end
+    include ::Catalog::Drugstore::GeneratedAttributeMethods
+    module ::Catalog::Drugstore::GeneratedAliasAttributeMethods
+      include ::Catalog::Drugstore::GeneratedAttributeMethods
+
+      alias id_value id
+
+      alias id_value= id=
+
+      alias id_value? id?
+
+      alias id_value_changed? id_changed?
+
+      alias id_value_change id_change
+
+      alias id_value_will_change! id_will_change!
+
+      alias id_value_was id_was
+
+      alias id_value_previously_changed? id_previously_changed?
+
+      alias id_value_previous_change id_previous_change
+
+      alias id_value_previously_was id_previously_was
+
+      alias id_value_before_last_save id_before_last_save
+
+      alias id_value_change_to_be_saved id_change_to_be_saved
+
+      alias id_value_in_database id_in_database
+
+      alias saved_change_to_id_value saved_change_to_id
+
+      alias saved_change_to_id_value? saved_change_to_id?
+
+      alias will_save_change_to_id_value? will_save_change_to_id?
+
+      alias restore_id_value! restore_id!
+
+      alias clear_id_value_change clear_id_change
+
+      alias id_value_before_type_cast id_before_type_cast
+
+      alias id_value_for_database id_for_database
+    end
+    include ::Catalog::Drugstore::GeneratedAliasAttributeMethods
+    def provider_links: () -> ::ProviderLink::ActiveRecord_Associations_CollectionProxy
+    def provider_links=: (::ProviderLink::ActiveRecord_Associations_CollectionProxy | ::Array[::ProviderLink]) -> (::ProviderLink::ActiveRecord_Associations_CollectionProxy | ::Array[::ProviderLink])
+    def provider_link_ids: () -> ::Array[::Integer]
+    def provider_link_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def providers: () -> ::Provider::ActiveRecord_Associations_CollectionProxy
+    def providers=: (::Provider::ActiveRecord_Associations_CollectionProxy | ::Array[::Provider]) -> (::Provider::ActiveRecord_Associations_CollectionProxy | ::Array[::Provider])
+    def provider_ids: () -> ::Array[::Integer]
+    def provider_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
+    def address: () -> ::Catalog::DrugstoreAddress?
+    def address=: (::Catalog::DrugstoreAddress?) -> ::Catalog::DrugstoreAddress?
+    def build_address: (?untyped) -> ::Catalog::DrugstoreAddress
+    def create_address: (?untyped) -> ::Catalog::DrugstoreAddress
+    def create_address!: (?untyped) -> ::Catalog::DrugstoreAddress
+    def reload_address: () -> ::Catalog::DrugstoreAddress?
+    def brand: () -> ::Catalog::DrugstoreBrand?
+    def brand=: (::Catalog::DrugstoreBrand?) -> ::Catalog::DrugstoreBrand?
+    def reload_brand: () -> ::Catalog::DrugstoreBrand?
+    def build_brand: (?untyped) -> ::Catalog::DrugstoreBrand
+    def create_brand: (?untyped) -> ::Catalog::DrugstoreBrand
+    def create_brand!: (?untyped) -> ::Catalog::DrugstoreBrand
+
+    module ::Catalog::Drugstore::GeneratedAssociationMethods
+    end
+    include ::Catalog::Drugstore::GeneratedAssociationMethods
+
+    module ::Catalog::Drugstore::GeneratedRelationMethods
+    end
+
+    class ::Catalog::Drugstore::ActiveRecord_Relation < ::ActiveRecord::Relation
+      include ::Enumerable[::Catalog::Drugstore]
+      include ::Catalog::Drugstore::GeneratedRelationMethods
+      include ::ActiveRecord::Relation::Methods[::Catalog::Drugstore, ::Integer]
+    end
+
+    class ::Catalog::Drugstore::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+      include ::Enumerable[::Catalog::Drugstore]
+      include ::Catalog::Drugstore::GeneratedRelationMethods
+      include ::ActiveRecord::Relation::Methods[::Catalog::Drugstore, ::Integer]
+
+      def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::Drugstore
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::Drugstore]
+      def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::Drugstore
+                | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::Drugstore]
+      def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::Drugstore
+                 | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::Drugstore]
+      def reload: () -> ::Array[::Catalog::Drugstore]
+
+      def replace: (::Array[::Catalog::Drugstore]) -> void
+      def delete: (*::Catalog::Drugstore | ::Integer) -> ::Array[::Catalog::Drugstore]
+      def destroy: (*::Catalog::Drugstore | ::Integer) -> ::Array[::Catalog::Drugstore]
+      def <<: (*::Catalog::Drugstore | ::Array[::Catalog::Drugstore]) -> self
+      def prepend: (*::Catalog::Drugstore | ::Array[::Catalog::Drugstore]) -> self
+    end
+  end
+end
+
+module ::Catalog
+end
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::ProviderLink < ::ApplicationRecord
+end
+class ::ProviderLink::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Provider < ::ApplicationRecord
+end
+class ::Provider::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Catalog::DrugstoreAddress < ::ApplicationRecord
+end
+class ::Catalog::DrugstoreBrand < ::ApplicationRecord
+end

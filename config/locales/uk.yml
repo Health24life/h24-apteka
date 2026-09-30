@@ -1,4 +1,7 @@
 uk:
+  errors:
+    messages:
+      invalid_week_working_hours: має містити сім значень — по одному на кожен день тижня — або бути порожнім
   activerecord:
     errors:
       models:
