@@ -8,7 +8,12 @@ RSpec.describe Catalog::Producer do
   it 'accepts a two-letter upper-case country code or none', :aggregate_failures do
     expect(build(:catalog_producer, country_code: 'UA')).to be_valid
     expect(build(:catalog_producer, country_code: nil)).to be_valid
-    expect(build(:catalog_producer, country_code: '')).to be_valid
+  end
+
+  it 'stores a blank country code as nil' do
+    producer = create(:catalog_producer, country_code: '')
+
+    expect(producer.reload.country_code).to be_nil
   end
 
   it 'refuses other country code shapes', :aggregate_failures do

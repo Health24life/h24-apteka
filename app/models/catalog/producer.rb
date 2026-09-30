@@ -9,6 +9,8 @@ class Catalog::Producer < ApplicationRecord
   has_many :goods_groups, class_name: 'Catalog::GoodsGroup', inverse_of: :producer,
                           dependent: :restrict_with_exception
 
+  normalizes :country_code, with: -> { it.presence }
+
   validates :name, presence: true
   validates :country_code, format: { with: /\A[A-Z]{2}\z/ }, allow_blank: true
 end
