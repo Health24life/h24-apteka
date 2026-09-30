@@ -413,6 +413,10 @@ class ::Provider < ::ApplicationRecord
   def sync_runs=: (::SyncRun::ActiveRecord_Associations_CollectionProxy | ::Array[::SyncRun]) -> (::SyncRun::ActiveRecord_Associations_CollectionProxy | ::Array[::SyncRun])
   def sync_run_ids: () -> ::Array[::Integer]
   def sync_run_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def provider_links: () -> ::ProviderLink::ActiveRecord_Associations_CollectionProxy
+  def provider_links=: (::ProviderLink::ActiveRecord_Associations_CollectionProxy | ::Array[::ProviderLink]) -> (::ProviderLink::ActiveRecord_Associations_CollectionProxy | ::Array[::ProviderLink])
+  def provider_link_ids: () -> ::Array[::Integer]
+  def provider_link_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
   module ::Provider::GeneratedAssociationMethods
   end
@@ -475,4 +479,8 @@ end
 class ::SyncRun < ::ApplicationRecord
 end
 class ::SyncRun::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::ProviderLink < ::ApplicationRecord
+end
+class ::ProviderLink::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end

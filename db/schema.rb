@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_080829) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_30_112256) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -37,6 +37,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_080829) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
+  end
+
+  create_table "catalog_drugstore_brands", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "image_path"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "provider_links", force: :cascade do |t|
+    t.bigint "provider_id", null: false
+    t.string "linkable_type", null: false
+    t.bigint "linkable_id", null: false
+    t.string "external_id", null: false
+    t.jsonb "attrs", default: {}, null: false
+    t.datetime "synced_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["linkable_type", "linkable_id"], name: "index_provider_links_on_linkable"
+    t.index ["provider_id", "linkable_type", "external_id"], name: "index_provider_links_on_provider_external_id", unique: true
+    t.index ["provider_id", "linkable_type", "linkable_id"], name: "index_provider_links_on_provider_linkable", unique: true
   end
 
   create_table "providers", force: :cascade do |t|
@@ -80,6 +101,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_080829) do
     t.check_constraint "status::text = ANY (ARRAY['running'::character varying, 'succeeded'::character varying, 'completed_with_failures'::character varying, 'failed'::character varying]::text[])", name: "sync_runs_status_check"
   end
 
+  add_foreign_key "provider_links", "providers"
   add_foreign_key "sync_run_failures", "sync_runs", on_delete: :cascade
   add_foreign_key "sync_runs", "providers"
 end

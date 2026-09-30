@@ -1,0 +1,460 @@
+# resolve-type-names: false
+
+class ::ProviderLink < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::ProviderLink, ::ProviderLink::ActiveRecord_Relation, ::Integer]
+
+  module ::ProviderLink::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def provider_id: () -> ::Integer
+
+    def provider_id=: (::Integer) -> ::Integer
+
+    def provider_id?: () -> bool
+
+    def provider_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def provider_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def provider_id_will_change!: () -> void
+
+    def provider_id_was: () -> ::Integer?
+
+    def provider_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def provider_id_previous_change: () -> ::Array[::Integer?]?
+
+    def provider_id_previously_was: () -> ::Integer?
+
+    def provider_id_before_last_save: () -> ::Integer?
+
+    def provider_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def provider_id_in_database: () -> ::Integer?
+
+    def saved_change_to_provider_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_provider_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_provider_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_provider_id!: () -> void
+
+    def clear_provider_id_change: () -> void
+
+    def provider_id_before_type_cast: () -> ::Integer
+
+    def provider_id_for_database: () -> ::Integer
+
+    def linkable_type: () -> ::String
+
+    def linkable_type=: (::String) -> ::String
+
+    def linkable_type?: () -> bool
+
+    def linkable_type_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def linkable_type_change: () -> [ ::String?, ::String? ]
+
+    def linkable_type_will_change!: () -> void
+
+    def linkable_type_was: () -> ::String?
+
+    def linkable_type_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def linkable_type_previous_change: () -> ::Array[::String?]?
+
+    def linkable_type_previously_was: () -> ::String?
+
+    def linkable_type_before_last_save: () -> ::String?
+
+    def linkable_type_change_to_be_saved: () -> ::Array[::String?]?
+
+    def linkable_type_in_database: () -> ::String?
+
+    def saved_change_to_linkable_type: () -> ::Array[::String?]?
+
+    def saved_change_to_linkable_type?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_linkable_type?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_linkable_type!: () -> void
+
+    def clear_linkable_type_change: () -> void
+
+    def linkable_type_before_type_cast: () -> ::String
+
+    def linkable_type_for_database: () -> ::String
+
+    def linkable_id: () -> ::Integer
+
+    def linkable_id=: (::Integer) -> ::Integer
+
+    def linkable_id?: () -> bool
+
+    def linkable_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def linkable_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def linkable_id_will_change!: () -> void
+
+    def linkable_id_was: () -> ::Integer?
+
+    def linkable_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def linkable_id_previous_change: () -> ::Array[::Integer?]?
+
+    def linkable_id_previously_was: () -> ::Integer?
+
+    def linkable_id_before_last_save: () -> ::Integer?
+
+    def linkable_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def linkable_id_in_database: () -> ::Integer?
+
+    def saved_change_to_linkable_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_linkable_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_linkable_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_linkable_id!: () -> void
+
+    def clear_linkable_id_change: () -> void
+
+    def linkable_id_before_type_cast: () -> ::Integer
+
+    def linkable_id_for_database: () -> ::Integer
+
+    def external_id: () -> ::String
+
+    def external_id=: (::String) -> ::String
+
+    def external_id?: () -> bool
+
+    def external_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def external_id_change: () -> [ ::String?, ::String? ]
+
+    def external_id_will_change!: () -> void
+
+    def external_id_was: () -> ::String?
+
+    def external_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def external_id_previous_change: () -> ::Array[::String?]?
+
+    def external_id_previously_was: () -> ::String?
+
+    def external_id_before_last_save: () -> ::String?
+
+    def external_id_change_to_be_saved: () -> ::Array[::String?]?
+
+    def external_id_in_database: () -> ::String?
+
+    def saved_change_to_external_id: () -> ::Array[::String?]?
+
+    def saved_change_to_external_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_external_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_external_id!: () -> void
+
+    def clear_external_id_change: () -> void
+
+    def external_id_before_type_cast: () -> ::String
+
+    def external_id_for_database: () -> ::String
+
+    def attrs: () -> untyped
+
+    def attrs=: (untyped) -> untyped
+
+    def attrs?: () -> bool
+
+    def attrs_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def attrs_change: () -> [ untyped, untyped ]
+
+    def attrs_will_change!: () -> void
+
+    def attrs_was: () -> untyped
+
+    def attrs_previously_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def attrs_previous_change: () -> ::Array[untyped]?
+
+    def attrs_previously_was: () -> untyped
+
+    def attrs_before_last_save: () -> untyped
+
+    def attrs_change_to_be_saved: () -> ::Array[untyped]?
+
+    def attrs_in_database: () -> untyped
+
+    def saved_change_to_attrs: () -> ::Array[untyped]?
+
+    def saved_change_to_attrs?: (?from: untyped, ?to: untyped) -> bool
+
+    def will_save_change_to_attrs?: (?from: untyped, ?to: untyped) -> bool
+
+    def restore_attrs!: () -> void
+
+    def clear_attrs_change: () -> void
+
+    def attrs_before_type_cast: () -> untyped
+
+    def attrs_for_database: () -> untyped
+
+    def synced_at: () -> ::ActiveSupport::TimeWithZone
+
+    def synced_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def synced_at?: () -> bool
+
+    def synced_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def synced_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def synced_at_will_change!: () -> void
+
+    def synced_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def synced_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def synced_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def synced_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def synced_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def synced_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def synced_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_synced_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_synced_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_synced_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_synced_at!: () -> void
+
+    def clear_synced_at_change: () -> void
+
+    def synced_at_before_type_cast: () -> ::Time
+
+    def synced_at_for_database: () -> ::Time
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+  end
+  include ::ProviderLink::GeneratedAttributeMethods
+  module ::ProviderLink::GeneratedAliasAttributeMethods
+    include ::ProviderLink::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::ProviderLink::GeneratedAliasAttributeMethods
+
+  def provider: () -> ::Provider
+  def provider=: (::Provider?) -> ::Provider?
+  def reload_provider: () -> ::Provider?
+  def build_provider: (?untyped) -> ::Provider
+  def create_provider: (?untyped) -> ::Provider
+  def create_provider!: (?untyped) -> ::Provider
+  def linkable: () -> untyped
+  def linkable=: (untyped?) -> untyped?
+  def reload_linkable: () -> untyped?
+
+  module ::ProviderLink::GeneratedAssociationMethods
+  end
+  include ::ProviderLink::GeneratedAssociationMethods
+
+  module ::ProviderLink::GeneratedRelationMethods
+  end
+
+  class ::ProviderLink::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::ProviderLink]
+    include ::ProviderLink::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::ProviderLink, ::Integer]
+  end
+
+  class ::ProviderLink::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::ProviderLink]
+    include ::ProviderLink::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::ProviderLink, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::ProviderLink
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::ProviderLink]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::ProviderLink
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::ProviderLink]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::ProviderLink
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::ProviderLink]
+    def reload: () -> ::Array[::ProviderLink]
+
+    def replace: (::Array[::ProviderLink]) -> void
+    def delete: (*::ProviderLink | ::Integer) -> ::Array[::ProviderLink]
+    def destroy: (*::ProviderLink | ::Integer) -> ::Array[::ProviderLink]
+    def <<: (*::ProviderLink | ::Array[::ProviderLink]) -> self
+    def prepend: (*::ProviderLink | ::Array[::ProviderLink]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::Provider < ::ApplicationRecord
+end
