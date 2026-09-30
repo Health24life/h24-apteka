@@ -1,0 +1,18 @@
+class Catalog::SlugGenerator
+  interface _SlugScope
+    def exists?: (slug: String) -> bool
+  end
+
+  FALLBACK: String
+
+  def self.call: (String? text, scope: _SlugScope) -> String
+
+  def initialize: (_SlugScope scope) -> void
+  def call: (String? text) -> String
+
+  private
+
+  def transliterate: (String? text) -> String
+  def with_suffix: (String base, String suffix) -> String
+  def taken?: (String slug) -> bool
+end
