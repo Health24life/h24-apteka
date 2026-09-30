@@ -1,4 +1,3 @@
-# sig/app/models/catalog/atc_class.rbs
 class Catalog::AtcClass < ApplicationRecord
   include Catalog::ProviderLinked
   include Translatable

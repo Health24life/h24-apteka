@@ -1,4 +1,3 @@
-# spec/factories/catalog/atc_classes.rb
 # frozen_string_literal: true
 
 FactoryBot.define do

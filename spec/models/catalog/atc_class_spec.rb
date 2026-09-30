@@ -1,4 +1,3 @@
-# spec/models/catalog/atc_class_spec.rb
 # frozen_string_literal: true
 
 require 'rails_helper'

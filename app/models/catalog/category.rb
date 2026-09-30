@@ -1,4 +1,3 @@
-# app/models/catalog/category.rb
 # frozen_string_literal: true
 
 class Catalog::Category < ApplicationRecord

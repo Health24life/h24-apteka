@@ -1,4 +1,3 @@
-# spec/factories/catalog/categories.rb
 # frozen_string_literal: true
 
 FactoryBot.define do

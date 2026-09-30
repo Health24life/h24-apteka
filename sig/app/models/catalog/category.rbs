@@ -1,4 +1,3 @@
-# sig/app/models/catalog/category.rbs
 class Catalog::Category < ApplicationRecord
   include Catalog::ProviderLinked
   include Translatable

@@ -1,4 +1,3 @@
-# app/models/catalog/atc_class.rb
 # frozen_string_literal: true
 
 class Catalog::AtcClass < ApplicationRecord
