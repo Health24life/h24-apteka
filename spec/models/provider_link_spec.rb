@@ -14,6 +14,13 @@ RSpec.describe ProviderLink do
     expect(build(:provider_link, linkable_type: 'Provider')).not_to be_valid
   end
 
+  it 'lists as linkable exactly the models that can be linked to a provider' do
+    Rails.application.eager_load!
+    linked = ActiveRecord::Base.descendants.select { it.include?(Catalog::ProviderLinked) }.map(&:name)
+
+    expect(described_class::LINKABLE_TYPES).to match_array(linked)
+  end
+
   it 'refuses a repeated external id of one provider for the same kind of record' do
     first = create(:provider_link)
     other_brand = create(:catalog_drugstore_brand)
@@ -49,6 +56,19 @@ RSpec.describe ProviderLink do
       other = row.merge(linkable_id: first.linkable_id, external_id: 'another')
 
       expect { described_class.insert_all!([ other ]) }.to raise_error(ActiveRecord::RecordNotUnique) # rubocop:disable Rails/SkipsModelValidations
+    end
+
+    it 'refuses a type outside the linkable list' do
+      other = row.merge(linkable_type: 'Provider', linkable_id: first.provider_id, external_id: 'another')
+
+      expect { described_class.insert_all!([ other ]) } # rubocop:disable Rails/SkipsModelValidations
+        .to raise_error(ActiveRecord::StatementInvalid, /provider_links_linkable_type_check/)
+    end
+
+    it 'accepts every type of the linkable list' do
+      rows = described_class::LINKABLE_TYPES.map { row.merge(linkable_type: it, linkable_id: 1, external_id: it) }
+
+      expect { described_class.insert_all!(rows) }.not_to raise_error # rubocop:disable Rails/SkipsModelValidations
     end
   end
 
@@ -91,4 +111,8 @@ end
 # Foreign Keys
 #
 #  fk_rails_...  (provider_id => providers.id)
+#
+# Check Constraints
+#
+#  provider_links_linkable_type_check  (linkable_type::text = ANY (ARRAY['Catalog::DrugstoreBrand'::character varying, 'Catalog::GoodsForm'::character varying, 'Catalog::GoodsMeasure'::character varying, 'Catalog::GoodsPriceGroup'::character varying, 'Catalog::GoodsTemperatureMode'::character varying, 'Catalog::GoodsRestriction'::character varying, 'Catalog::Category'::character varying, 'Catalog::Producer'::character varying, 'Catalog::GoodsName'::character varying, 'Catalog::AtcClass'::character varying, 'Catalog::GoodsGroup'::character varying, 'Catalog::Goods'::character varying, 'Catalog::Drugstore'::character varying]::text[]))
 #

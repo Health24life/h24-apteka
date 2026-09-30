@@ -100,6 +100,13 @@ RSpec.describe Catalog::Goods do
     expect { form.destroy }.to raise_error(ActiveRecord::DeleteRestrictionError)
   end
 
+  it 'refuses to delete a restriction that a product uses' do
+    restriction = create(:catalog_goods_restriction)
+    create(:catalog_goods, driver_restriction: restriction)
+
+    expect { restriction.destroy }.to raise_error(ActiveRecord::DeleteRestrictionError)
+  end
+
   it 'refuses to delete a group that has products' do
     goods = create(:catalog_goods)
 
@@ -152,7 +159,6 @@ end
 # Indexes
 #
 #  index_catalog_goods_on_goods_group_id  (goods_group_id)
-#  index_catalog_goods_on_morion_code     (morion_code)
 #
 # Foreign Keys
 #

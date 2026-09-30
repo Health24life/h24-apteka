@@ -49,6 +49,15 @@ RSpec.describe Catalog::DrugstoreAddress do
     expect(linked).to have_attributes(core_region: region, core_settlement: settlement, core_city_district: district)
   end
 
+  it 'keeps core ids beyond the four-byte integer range' do
+    big = 2**31
+    address = create(:catalog_drugstore_address, core_region_id: big, core_settlement_id: big + 1,
+                                                 core_city_district_id: big + 2, core_metro_station_id: big + 3)
+
+    expect(address.reload).to have_attributes(core_region_id: big, core_settlement_id: big + 1,
+                                              core_city_district_id: big + 2, core_metro_station_id: big + 3)
+  end
+
   it 'leaves the core links optional' do
     expect(create(:catalog_drugstore_address).core_region).to be_nil
   end
@@ -73,10 +82,10 @@ end
 #  state                 :string
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
-#  core_city_district_id :integer
-#  core_metro_station_id :integer
-#  core_region_id        :integer
-#  core_settlement_id    :integer
+#  core_city_district_id :bigint
+#  core_metro_station_id :bigint
+#  core_region_id        :bigint
+#  core_settlement_id    :bigint
 #  drugstore_id          :bigint           not null
 #
 # Indexes

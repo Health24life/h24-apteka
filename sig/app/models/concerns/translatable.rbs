@@ -1,6 +1,8 @@
 module Translatable : ActiveRecord::Base
   extend ActiveSupport::Concern
 
+  def self.catalog_locale?: (Symbol | String | nil locale) -> bool
+
   module LocaleRestriction : ActiveRecord::Base
     extend ActiveSupport::Concern
 
@@ -12,4 +14,8 @@ module Translatable : ActiveRecord::Base
   module ClassMethods : Module
     def translatable: (*Symbol attributes, **untyped options) -> void
   end
+
+  private
+
+  def translations_are_in_catalog_locales: () -> void
 end

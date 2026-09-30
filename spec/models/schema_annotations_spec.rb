@@ -4,7 +4,8 @@ require 'rails_helper'
 
 RSpec.describe 'schema annotations' do # rubocop:disable RSpec/DescribeClass
   def annotated_files
-    Rails.root.glob('{app/models,spec/models,spec/factories}/**/*.rb').filter_map do |path|
+    dirs = %w[app/models app/models_readonly spec/models spec/models_readonly spec/factories]
+    Rails.root.glob("{#{dirs.join(',')}}/**/*.rb").filter_map do |path|
       text = path.read
       table = text[/^# Table name: (\w+)/, 1]
       [ path, table, text.scan(/^#  (\w+)\s+:/).flatten ] if table

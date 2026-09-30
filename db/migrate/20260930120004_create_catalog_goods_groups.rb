@@ -21,6 +21,8 @@ class CreateCatalogGoodsGroups < ActiveRecord::Migration[8.1]
 
     add_index :catalog_goods_group_translations, %i[catalog_goods_group_id locale], unique: true,
                                                                                     name: 'index_catalog_goods_group_translations_uniqueness'
+    add_check_constraint :catalog_goods_group_translations, "locale IN ('uk')",
+                         name: 'catalog_goods_group_translations_locale_check'
 
     create_table :catalog_goods_group_categories do |t|
       t.references :goods_group, null: false, foreign_key: { to_table: :catalog_goods_groups, on_delete: :cascade },

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -46,6 +46,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["catalog_atc_class_id", "locale"], name: "index_catalog_atc_class_translations_uniqueness", unique: true
+    t.check_constraint "locale::text = 'uk'::text", name: "catalog_atc_class_translations_locale_check"
   end
 
   create_table "catalog_atc_classes", force: :cascade do |t|
@@ -53,6 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.string "atc_code", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["atc_code"], name: "index_catalog_atc_classes_on_atc_code", unique: true
     t.index ["parent_id"], name: "index_catalog_atc_classes_on_parent_id"
     t.check_constraint "parent_id IS NULL OR parent_id <> id", name: "catalog_atc_classes_parent_check"
   end
@@ -77,6 +79,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["catalog_category_id", "locale"], name: "index_catalog_category_translations_uniqueness", unique: true
+    t.check_constraint "locale::text = 'uk'::text", name: "catalog_category_translations_locale_check"
   end
 
   create_table "catalog_drugstore_addresses", force: :cascade do |t|
@@ -86,10 +89,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.string "state"
     t.decimal "latitude", precision: 10, scale: 7, null: false
     t.decimal "longitude", precision: 10, scale: 7, null: false
-    t.integer "core_region_id"
-    t.integer "core_settlement_id"
-    t.integer "core_city_district_id"
-    t.integer "core_metro_station_id"
+    t.bigint "core_region_id"
+    t.bigint "core_settlement_id"
+    t.bigint "core_city_district_id"
+    t.bigint "core_metro_station_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["drugstore_id"], name: "index_catalog_drugstore_addresses_on_drugstore_id", unique: true
@@ -156,7 +159,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["goods_group_id"], name: "index_catalog_goods_on_goods_group_id"
-    t.index ["morion_code"], name: "index_catalog_goods_on_morion_code"
     t.check_constraint "jsonb_typeof(image_paths) = 'array'::text", name: "catalog_goods_image_paths_check"
     t.check_constraint "pack_quantity_in_pack IS NULL OR pack_quantity_in_pack >= 0", name: "catalog_goods_in_pack_check"
     t.check_constraint "pack_quantity_in_unit IS NULL OR pack_quantity_in_unit >= 0", name: "catalog_goods_in_unit_check"
@@ -170,6 +172,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["catalog_goods_form_id", "locale"], name: "index_catalog_goods_form_translations_uniqueness", unique: true
+    t.check_constraint "locale::text = 'uk'::text", name: "catalog_goods_form_translations_locale_check"
   end
 
   create_table "catalog_goods_forms", force: :cascade do |t|
@@ -195,6 +198,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["catalog_goods_group_id", "locale"], name: "index_catalog_goods_group_translations_uniqueness", unique: true
+    t.check_constraint "locale::text = 'uk'::text", name: "catalog_goods_group_translations_locale_check"
   end
 
   create_table "catalog_goods_groups", force: :cascade do |t|
@@ -218,6 +222,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["catalog_goods_measure_id", "locale"], name: "index_catalog_goods_measure_translations_uniqueness", unique: true
+    t.check_constraint "locale::text = 'uk'::text", name: "catalog_goods_measure_translations_locale_check"
   end
 
   create_table "catalog_goods_measures", force: :cascade do |t|
@@ -238,6 +243,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["catalog_goods_price_group_id", "locale"], name: "index_catalog_goods_price_group_translations_uniqueness", unique: true
+    t.check_constraint "locale::text = 'uk'::text", name: "catalog_goods_price_group_translations_locale_check"
   end
 
   create_table "catalog_goods_price_groups", force: :cascade do |t|
@@ -252,6 +258,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["catalog_goods_restriction_id", "locale"], name: "index_catalog_goods_restriction_translations_uniqueness", unique: true
+    t.check_constraint "locale::text = 'uk'::text", name: "catalog_goods_restriction_translations_locale_check"
   end
 
   create_table "catalog_goods_restrictions", force: :cascade do |t|
@@ -266,6 +273,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["catalog_goods_temperature_mode_id", "locale"], name: "index_catalog_goods_temperature_mode_translations_uniqueness", unique: true
+    t.check_constraint "locale::text = 'uk'::text", name: "catalog_goods_temperature_mode_translations_locale_check"
   end
 
   create_table "catalog_goods_temperature_modes", force: :cascade do |t|
@@ -280,6 +288,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["catalog_goods_id", "locale"], name: "index_catalog_goods_translations_uniqueness", unique: true
+    t.check_constraint "locale::text = 'uk'::text", name: "catalog_goods_translations_locale_check"
   end
 
   create_table "catalog_producers", force: :cascade do |t|
@@ -303,6 +312,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
     t.index ["linkable_type", "linkable_id"], name: "index_provider_links_on_linkable"
     t.index ["provider_id", "linkable_type", "external_id"], name: "index_provider_links_on_provider_external_id", unique: true
     t.index ["provider_id", "linkable_type", "linkable_id"], name: "index_provider_links_on_provider_linkable", unique: true
+    t.check_constraint "linkable_type::text = ANY (ARRAY['Catalog::DrugstoreBrand'::character varying, 'Catalog::GoodsForm'::character varying, 'Catalog::GoodsMeasure'::character varying, 'Catalog::GoodsPriceGroup'::character varying, 'Catalog::GoodsTemperatureMode'::character varying, 'Catalog::GoodsRestriction'::character varying, 'Catalog::Category'::character varying, 'Catalog::Producer'::character varying, 'Catalog::GoodsName'::character varying, 'Catalog::AtcClass'::character varying, 'Catalog::GoodsGroup'::character varying, 'Catalog::Goods'::character varying, 'Catalog::Drugstore'::character varying]::text[])", name: "provider_links_linkable_type_check"
   end
 
   create_table "providers", force: :cascade do |t|

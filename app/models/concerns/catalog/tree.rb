@@ -10,7 +10,7 @@ module Catalog::Tree
     has_many :children, class_name: name, foreign_key: :parent_id, inverse_of: :parent,
                         dependent: :restrict_with_exception
 
-    validate :parent_is_not_self
+    validate :parent_is_not_self_or_descendant, if: :will_save_change_to_parent_id?
 
     scope :roots, lambda {
       # @type self: ActiveRecord::Relation
@@ -20,7 +20,14 @@ module Catalog::Tree
 
   private
 
-  def parent_is_not_self
-    errors.add(:parent, :invalid) if parent_id.present? && parent_id == id
+  # The database refuses only a node that is its own parent; a longer cycle is caught here.
+  def parent_is_not_self_or_descendant
+    visited = Set[]
+    node = parent
+    while node && visited.add?(node)
+      return errors.add(:parent, :invalid) if node == self
+
+      node = node.parent
+    end
   end
 end

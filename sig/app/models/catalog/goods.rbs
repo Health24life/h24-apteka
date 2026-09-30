@@ -3,6 +3,8 @@ class Catalog::Goods < ApplicationRecord
   include Translatable
   extend Translatable::ClassMethods
 
+  RESTRICTIONS: Array[Symbol]
+
   def name_uk: () -> String?
   def name_uk=: (String? value) -> String?
 

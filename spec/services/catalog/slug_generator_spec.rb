@@ -5,9 +5,20 @@ require 'rails_helper'
 RSpec.describe Catalog::SlugGenerator do
   let(:taken_scope) do
     Class.new do
-      def initialize(*taken) = @taken = taken
+      attr_reader :lookups
 
-      def exists?(slug:) = @taken.include?(slug)
+      def initialize(*taken)
+        @taken = taken
+        @lookups = 0
+      end
+
+      def where(slug:)
+        @lookups += 1
+        @found = @taken & slug
+        self
+      end
+
+      def pluck(_column) = @found
     end
   end
 
@@ -37,6 +48,32 @@ RSpec.describe Catalog::SlugGenerator do
   it 'adds a numeric suffix to a taken slug', :aggregate_failures do
     expect(slug_for('Знеболювальні', 'zneboliuvalni')).to eq('zneboliuvalni-2')
     expect(slug_for('Знеболювальні', 'zneboliuvalni', 'zneboliuvalni-2')).to eq('zneboliuvalni-3')
+  end
+
+  it 'looks up a long run of taken suffixes in one query', :aggregate_failures do
+    scope = taken_scope.new('paratsetamol', *(2..30).map { "paratsetamol-#{it}" })
+
+    expect(described_class.call('Парацетамол', scope:)).to eq('paratsetamol-31')
+    expect(scope.lookups).to eq(1)
+  end
+
+  it 'keeps looking past a whole batch of taken suffixes' do
+    taken = [ 'item', *(2..120).map { "item-#{it}" } ]
+
+    expect(slug_for('!!!', *taken)).to eq('item-121')
+  end
+
+  it 'drops every form of the apostrophe, as the KMU table does', :aggregate_failures do
+    %w[М'ята М’ята Мʼята М‘ята М`ята М´ята].each do |name|
+      expect(slug_for(name)).to eq('miata')
+    end
+  end
+
+  it 'reads the Russian-only letters as their closest Ukrainian ones', :aggregate_failures do
+    expect(slug_for('Эналаприл')).to eq('enalapryl')
+    expect(slug_for('Ёлка')).to eq('elka')
+    expect(slug_for('Сыворотка')).to eq('syvorotka')
+    expect(slug_for('Подъём')).to eq('podem')
   end
 
   it 'keeps a long slug within the maximum length' do

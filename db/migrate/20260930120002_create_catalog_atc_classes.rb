@@ -7,6 +7,7 @@ class CreateCatalogAtcClasses < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
+    add_index :catalog_atc_classes, :atc_code, unique: true
     add_check_constraint :catalog_atc_classes, 'parent_id IS NULL OR parent_id <> id',
                          name: 'catalog_atc_classes_parent_check'
 
@@ -20,5 +21,7 @@ class CreateCatalogAtcClasses < ActiveRecord::Migration[8.1]
 
     add_index :catalog_atc_class_translations, %i[catalog_atc_class_id locale], unique: true,
                                                                                 name: 'index_catalog_atc_class_translations_uniqueness'
+    add_check_constraint :catalog_atc_class_translations, "locale IN ('uk')",
+                         name: 'catalog_atc_class_translations_locale_check'
   end
 end

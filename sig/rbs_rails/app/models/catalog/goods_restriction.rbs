@@ -182,6 +182,26 @@ module ::Catalog
     def translations=: (::Catalog::GoodsRestriction::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsRestriction::Translation]) -> (::Catalog::GoodsRestriction::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsRestriction::Translation])
     def translation_ids: () -> ::Array[::Integer]
     def translation_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def adult_restriction_goods: () -> ::Catalog::Goods::ActiveRecord_Associations_CollectionProxy
+    def adult_restriction_goods=: (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods]) -> (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods])
+    def adult_restriction_good_ids: () -> ::Array[::Integer]
+    def adult_restriction_good_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def child_restriction_goods: () -> ::Catalog::Goods::ActiveRecord_Associations_CollectionProxy
+    def child_restriction_goods=: (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods]) -> (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods])
+    def child_restriction_good_ids: () -> ::Array[::Integer]
+    def child_restriction_good_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def diabetic_restriction_goods: () -> ::Catalog::Goods::ActiveRecord_Associations_CollectionProxy
+    def diabetic_restriction_goods=: (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods]) -> (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods])
+    def diabetic_restriction_good_ids: () -> ::Array[::Integer]
+    def diabetic_restriction_good_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def driver_restriction_goods: () -> ::Catalog::Goods::ActiveRecord_Associations_CollectionProxy
+    def driver_restriction_goods=: (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods]) -> (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods])
+    def driver_restriction_good_ids: () -> ::Array[::Integer]
+    def driver_restriction_good_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def pregnant_and_lactating_restriction_goods: () -> ::Catalog::Goods::ActiveRecord_Associations_CollectionProxy
+    def pregnant_and_lactating_restriction_goods=: (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods]) -> (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods])
+    def pregnant_and_lactating_restriction_good_ids: () -> ::Array[::Integer]
+    def pregnant_and_lactating_restriction_good_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
     module ::Catalog::GoodsRestriction::GeneratedAssociationMethods
     end
@@ -233,6 +253,10 @@ end
 class ::Catalog::GoodsRestriction::Translation < ::Globalize::ActiveRecord::Translation
 end
 class ::Catalog::GoodsRestriction::Translation::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Catalog::Goods < ::ApplicationRecord
+end
+class ::Catalog::Goods::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end
 class ::Globalize::ActiveRecord::Translation < ::ActiveRecord::Base
 end

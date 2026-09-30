@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :catalog_atc_class, class: 'Catalog::AtcClass' do
-    sequence(:atc_code) { |n| "N#{format('%02d', n % 100)}" }
+    sequence(:atc_code) { |n| "Z#{format('%02d', n)}" }
   end
 end
 
@@ -19,6 +19,7 @@ end
 #
 # Indexes
 #
+#  index_catalog_atc_classes_on_atc_code   (atc_code) UNIQUE
 #  index_catalog_atc_classes_on_parent_id  (parent_id)
 #
 # Foreign Keys

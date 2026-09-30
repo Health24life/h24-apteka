@@ -27,10 +27,10 @@ end
 #  state                 :string
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
-#  core_city_district_id :integer
-#  core_metro_station_id :integer
-#  core_region_id        :integer
-#  core_settlement_id    :integer
+#  core_city_district_id :bigint
+#  core_metro_station_id :bigint
+#  core_region_id        :bigint
+#  core_settlement_id    :bigint
 #  drugstore_id          :bigint           not null
 #
 # Indexes

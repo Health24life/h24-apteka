@@ -5,6 +5,14 @@ require 'rails_helper'
 RSpec.describe Catalog::AtcClass do
   it { is_expected.to validate_presence_of(:atc_code) }
 
+  it 'refuses a repeated ATC code, in the model and in the database', :aggregate_failures do
+    existing = create(:catalog_atc_class, atc_code: 'N02')
+
+    expect(build(:catalog_atc_class, atc_code: 'N02')).not_to be_valid
+    expect { create(:catalog_atc_class).update_column(:atc_code, existing.atc_code) } # rubocop:disable Rails/SkipsModelValidations
+      .to raise_error(ActiveRecord::RecordNotUnique)
+  end
+
   it 'does not require a name', :aggregate_failures do
     atc = build(:catalog_atc_class)
 
@@ -34,6 +42,15 @@ RSpec.describe Catalog::AtcClass do
     expect { atc.update_column(:parent_id, atc.id) }.to raise_error(ActiveRecord::StatementInvalid) # rubocop:disable Rails/SkipsModelValidations
   end
 
+  it 'refuses a descendant as the parent, which would close a cycle' do
+    root = create(:catalog_atc_class)
+    child = create(:catalog_atc_class, parent: root)
+
+    root.parent = child
+
+    expect(root).not_to be_valid
+  end
+
   it 'refuses to delete a class that has children' do
     root = create(:catalog_atc_class)
     create(:catalog_atc_class, parent: root)
@@ -55,6 +72,7 @@ end
 #
 # Indexes
 #
+#  index_catalog_atc_classes_on_atc_code   (atc_code) UNIQUE
 #  index_catalog_atc_classes_on_parent_id  (parent_id)
 #
 # Foreign Keys

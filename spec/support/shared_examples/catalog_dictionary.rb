@@ -23,10 +23,7 @@ RSpec.shared_examples 'a catalog dictionary' do |factory|
 
   it 'refuses a translation row for the same locale twice, at the database level' do
     record = create(factory)
-    base = record.class.table_name.singularize
-    duplicate = "INSERT INTO #{base}_translations (#{base}_id, locale, name, created_at, updated_at) " \
-                "VALUES (#{record.id}, 'uk', 'Дубль', now(), now())"
 
-    expect { ActiveRecord::Base.connection.execute(duplicate) }.to raise_error(ActiveRecord::RecordNotUnique)
+    expect { insert_translation_row(record, locale: 'uk') }.to raise_error(ActiveRecord::RecordNotUnique)
   end
 end

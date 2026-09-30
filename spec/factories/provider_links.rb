@@ -33,3 +33,7 @@ end
 #
 #  fk_rails_...  (provider_id => providers.id)
 #
+# Check Constraints
+#
+#  provider_links_linkable_type_check  (linkable_type::text = ANY (ARRAY['Catalog::DrugstoreBrand'::character varying, 'Catalog::GoodsForm'::character varying, 'Catalog::GoodsMeasure'::character varying, 'Catalog::GoodsPriceGroup'::character varying, 'Catalog::GoodsTemperatureMode'::character varying, 'Catalog::GoodsRestriction'::character varying, 'Catalog::Category'::character varying, 'Catalog::Producer'::character varying, 'Catalog::GoodsName'::character varying, 'Catalog::AtcClass'::character varying, 'Catalog::GoodsGroup'::character varying, 'Catalog::Goods'::character varying, 'Catalog::Drugstore'::character varying]::text[]))
+#

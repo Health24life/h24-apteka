@@ -10,7 +10,7 @@ class Catalog::AtcClass < ApplicationRecord
   has_many :goods_groups, class_name: 'Catalog::GoodsGroup', inverse_of: :atc_class,
                           dependent: :restrict_with_exception
 
-  validates :atc_code, presence: true
+  validates :atc_code, presence: true, uniqueness: true
 end
 
 # == Schema Information
@@ -26,6 +26,7 @@ end
 #
 # Indexes
 #
+#  index_catalog_atc_classes_on_atc_code   (atc_code) UNIQUE
 #  index_catalog_atc_classes_on_parent_id  (parent_id)
 #
 # Foreign Keys

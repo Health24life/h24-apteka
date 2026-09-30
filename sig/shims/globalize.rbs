@@ -1,6 +1,13 @@
 # globalize and globalize-accessors ship no signatures; declare only what the app touches.
 module Globalize
   module ActiveRecord
+    class Attributes < Hash[Symbol, Hash[String, untyped]]
+    end
+
+    class Adapter
+      def stash: () -> Attributes
+    end
+
     module ActMacro
       def translates: (*Symbol attributes, **untyped options) -> void
     end
@@ -11,4 +18,6 @@ class ActiveRecord::Base
   extend Globalize::ActiveRecord::ActMacro
 
   def self.globalize_accessors: (?attributes: Array[Symbol], ?locales: Array[Symbol]) -> void
+
+  def globalize: () -> Globalize::ActiveRecord::Adapter
 end

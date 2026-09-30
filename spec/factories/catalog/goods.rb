@@ -46,7 +46,6 @@ end
 # Indexes
 #
 #  index_catalog_goods_on_goods_group_id  (goods_group_id)
-#  index_catalog_goods_on_morion_code     (morion_code)
 #
 # Foreign Keys
 #

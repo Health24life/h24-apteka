@@ -14,10 +14,11 @@ class Catalog::Category < ApplicationRecord
   validates :name_uk, presence: true
   validates :slug, presence: true, uniqueness: true, length: { maximum: Catalog::SLUG_MAX_LENGTH },
                    format: { with: Catalog::SLUG_FORMAT }
-  validates :depth, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :slug_is_unchanged, on: :update
 
   before_validation :assign_slug, on: :create
+  before_validation :derive_depth
+  after_update :shift_children_depth, if: :saved_change_to_depth?
 
   # The address is part of public URLs, so it is fixed once saved. attr_readonly is not used because its
   # write_attribute override takes two arguments and breaks the three-argument call from globalize accessors.
@@ -37,6 +38,15 @@ class Catalog::Category < ApplicationRecord
 
   def slug_is_unchanged
     errors.add(:slug, :invalid) if slug_changed?
+  end
+
+  def derive_depth
+    node = parent
+    self.depth = node ? node.depth + 1 : 0
+  end
+
+  def shift_children_depth
+    children.each(&:save!)
   end
 end
 

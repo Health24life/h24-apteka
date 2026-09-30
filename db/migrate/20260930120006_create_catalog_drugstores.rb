@@ -32,10 +32,10 @@ class CreateCatalogDrugstores < ActiveRecord::Migration[8.1]
       t.string :state
       t.decimal :latitude, precision: 10, scale: 7, null: false
       t.decimal :longitude, precision: 10, scale: 7, null: false
-      t.integer :core_region_id
-      t.integer :core_settlement_id
-      t.integer :core_city_district_id
-      t.integer :core_metro_station_id
+      t.bigint :core_region_id
+      t.bigint :core_settlement_id
+      t.bigint :core_city_district_id
+      t.bigint :core_metro_station_id
 
       t.timestamps
     end

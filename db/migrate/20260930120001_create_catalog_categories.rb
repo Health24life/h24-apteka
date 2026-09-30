@@ -12,6 +12,8 @@ class CreateCatalogCategories < ActiveRecord::Migration[8.1]
     add_check_constraint :catalog_categories, 'depth >= 0', name: 'catalog_categories_depth_check'
     add_check_constraint :catalog_categories, 'parent_id IS NULL OR parent_id <> id',
                          name: 'catalog_categories_parent_check'
+    add_check_constraint :catalog_categories, "slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$' AND length(slug) <= 100",
+                         name: 'catalog_categories_slug_check'
 
     create_table :catalog_category_translations do |t|
       t.references :catalog_category, null: false, foreign_key: { on_delete: :cascade }, index: false
@@ -23,5 +25,7 @@ class CreateCatalogCategories < ActiveRecord::Migration[8.1]
 
     add_index :catalog_category_translations, %i[catalog_category_id locale], unique: true,
                                                                               name: 'index_catalog_category_translations_uniqueness'
+    add_check_constraint :catalog_category_translations, "locale IN ('uk')",
+                         name: 'catalog_category_translations_locale_check'
   end
 end

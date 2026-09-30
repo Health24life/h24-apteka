@@ -4,6 +4,9 @@ class Catalog::Goods < ApplicationRecord
   include Catalog::ProviderLinked
   include Translatable
 
+  RESTRICTIONS = %i[adult_restriction child_restriction diabetic_restriction driver_restriction
+                    pregnant_and_lactating_restriction].freeze
+
   # Globalize singularizes the whole table name; the uncountable "goods" rule does not reach compound words.
   translatable :name, table_name: 'catalog_goods_translations', foreign_key: :catalog_goods_id
 
@@ -12,12 +15,9 @@ class Catalog::Goods < ApplicationRecord
   belongs_to :measure, class_name: 'Catalog::GoodsMeasure', optional: true, inverse_of: :goods
   belongs_to :price_group, class_name: 'Catalog::GoodsPriceGroup', optional: true, inverse_of: :goods
   belongs_to :temperature_mode, class_name: 'Catalog::GoodsTemperatureMode', optional: true, inverse_of: :goods
-  belongs_to :adult_restriction, class_name: 'Catalog::GoodsRestriction', optional: true, inverse_of: false
-  belongs_to :child_restriction, class_name: 'Catalog::GoodsRestriction', optional: true, inverse_of: false
-  belongs_to :diabetic_restriction, class_name: 'Catalog::GoodsRestriction', optional: true, inverse_of: false
-  belongs_to :driver_restriction, class_name: 'Catalog::GoodsRestriction', optional: true, inverse_of: false
-  belongs_to :pregnant_and_lactating_restriction, class_name: 'Catalog::GoodsRestriction', optional: true,
-                                                  inverse_of: false
+  RESTRICTIONS.each do |restriction|
+    belongs_to restriction, class_name: 'Catalog::GoodsRestriction', optional: true, inverse_of: :"#{restriction}_goods"
+  end
   # The core lives in another database, so there is no foreign key and the link is set by the import.
   belongs_to :core_inn, class_name: 'H24Core::Medication::Inn', optional: true, inverse_of: false
 
@@ -78,7 +78,6 @@ end
 # Indexes
 #
 #  index_catalog_goods_on_goods_group_id  (goods_group_id)
-#  index_catalog_goods_on_morion_code     (morion_code)
 #
 # Foreign Keys
 #

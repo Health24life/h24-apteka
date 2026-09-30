@@ -1,4 +1,10 @@
 class CreateProviderLinks < ActiveRecord::Migration[8.1]
+  LINKABLE_TYPES = %w[
+    Catalog::DrugstoreBrand Catalog::GoodsForm Catalog::GoodsMeasure Catalog::GoodsPriceGroup
+    Catalog::GoodsTemperatureMode Catalog::GoodsRestriction Catalog::Category Catalog::Producer
+    Catalog::GoodsName Catalog::AtcClass Catalog::GoodsGroup Catalog::Goods Catalog::Drugstore
+  ].freeze
+
   def change
     create_table :provider_links do |t|
       t.references :provider, null: false, foreign_key: true, index: false
@@ -16,5 +22,7 @@ class CreateProviderLinks < ActiveRecord::Migration[8.1]
     add_index :provider_links, %i[provider_id linkable_type linkable_id], unique: true,
                                                                           name: 'index_provider_links_on_provider_linkable'
     add_index :provider_links, %i[linkable_type linkable_id], name: 'index_provider_links_on_linkable'
+    add_check_constraint :provider_links, "linkable_type IN (#{LINKABLE_TYPES.map { "'#{it}'" }.join(', ')})",
+                         name: 'provider_links_linkable_type_check'
   end
 end

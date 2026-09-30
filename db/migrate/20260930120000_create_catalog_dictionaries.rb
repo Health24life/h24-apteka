@@ -29,6 +29,7 @@ class CreateCatalogDictionaries < ActiveRecord::Migration[8.1]
       end
 
       add_index translations, [:"#{reference}_id", :locale], unique: true, name: "index_#{translations}_uniqueness"
+      add_check_constraint translations, "locale IN ('uk')", name: "#{translations}_locale_check"
     end
   end
 end

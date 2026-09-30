@@ -33,7 +33,6 @@ class CreateCatalogGoods < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :catalog_goods, :morion_code
     %i[pack_quantity_in_pack pack_quantity_unit_in_pack pack_quantity_in_unit].each do |column|
       add_check_constraint :catalog_goods, "#{column} IS NULL OR #{column} >= 0", name: "catalog_goods_#{column.to_s.delete_prefix('pack_quantity_')}_check"
     end
@@ -50,5 +49,6 @@ class CreateCatalogGoods < ActiveRecord::Migration[8.1]
 
     add_index :catalog_goods_translations, %i[catalog_goods_id locale], unique: true,
                                                                         name: 'index_catalog_goods_translations_uniqueness'
+    add_check_constraint :catalog_goods_translations, "locale IN ('uk')", name: 'catalog_goods_translations_locale_check'
   end
 end

@@ -1,9 +1,16 @@
 class Catalog::SlugGenerator
   interface _SlugScope
-    def exists?: (*untyped) -> bool
+    def where: (*untyped) -> _SlugRelation
+  end
+
+  interface _SlugRelation
+    def pluck: (Symbol column) -> Array[untyped]
   end
 
   FALLBACK: String
+  BATCH: Integer
+  NON_KMU_LETTERS: String
+  KMU_LETTERS: String
 
   def self.call: (String? text, scope: _SlugScope) -> String
 
@@ -14,5 +21,4 @@ class Catalog::SlugGenerator
 
   def transliterate: (String? text) -> String
   def with_suffix: (String base, String suffix) -> String
-  def taken?: (String slug) -> bool
 end
