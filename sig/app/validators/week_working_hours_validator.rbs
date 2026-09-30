@@ -2,4 +2,9 @@ class WeekWorkingHoursValidator < ActiveModel::EachValidator
   DAYS: Integer
 
   def validate_each: (untyped record, Symbol attribute, untyped value) -> void
+
+  private
+
+  def empty_schedule?: (untyped value) -> bool
+  def seven_days?: (untyped value) -> bool
 end
