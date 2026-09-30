@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_30_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_30_120002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -37,6 +37,45 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
+  end
+
+  create_table "catalog_atc_class_translations", force: :cascade do |t|
+    t.bigint "catalog_atc_class_id", null: false
+    t.string "locale", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catalog_atc_class_id", "locale"], name: "index_catalog_atc_class_translations_uniqueness", unique: true
+  end
+
+  create_table "catalog_atc_classes", force: :cascade do |t|
+    t.bigint "parent_id"
+    t.string "atc_code", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parent_id"], name: "index_catalog_atc_classes_on_parent_id"
+    t.check_constraint "parent_id IS NULL OR parent_id <> id", name: "catalog_atc_classes_parent_check"
+  end
+
+  create_table "catalog_categories", force: :cascade do |t|
+    t.bigint "parent_id"
+    t.string "slug", null: false
+    t.integer "depth", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parent_id"], name: "index_catalog_categories_on_parent_id"
+    t.index ["slug"], name: "index_catalog_categories_on_slug", unique: true
+    t.check_constraint "depth >= 0", name: "catalog_categories_depth_check"
+    t.check_constraint "parent_id IS NULL OR parent_id <> id", name: "catalog_categories_parent_check"
+  end
+
+  create_table "catalog_category_translations", force: :cascade do |t|
+    t.bigint "catalog_category_id", null: false
+    t.string "locale", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catalog_category_id", "locale"], name: "index_catalog_category_translations_uniqueness", unique: true
   end
 
   create_table "catalog_drugstore_brands", force: :cascade do |t|
@@ -171,6 +210,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120000) do
     t.check_constraint "status::text = ANY (ARRAY['running'::character varying::text, 'succeeded'::character varying::text, 'completed_with_failures'::character varying::text, 'failed'::character varying::text])", name: "sync_runs_status_check"
   end
 
+  add_foreign_key "catalog_atc_class_translations", "catalog_atc_classes", on_delete: :cascade
+  add_foreign_key "catalog_atc_classes", "catalog_atc_classes", column: "parent_id"
+  add_foreign_key "catalog_categories", "catalog_categories", column: "parent_id"
+  add_foreign_key "catalog_category_translations", "catalog_categories", on_delete: :cascade
   add_foreign_key "catalog_goods_form_translations", "catalog_goods_forms", on_delete: :cascade
   add_foreign_key "catalog_goods_measure_translations", "catalog_goods_measures", on_delete: :cascade
   add_foreign_key "catalog_goods_price_group_translations", "catalog_goods_price_groups", on_delete: :cascade

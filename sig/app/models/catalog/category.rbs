@@ -1,0 +1,16 @@
+# sig/app/models/catalog/category.rbs
+class Catalog::Category < ApplicationRecord
+  include Catalog::ProviderLinked
+  include Translatable
+  extend Translatable::ClassMethods
+
+  def name_uk: () -> String?
+  def name_uk=: (String? value) -> String?
+
+  def slug=: (String? value) -> String?
+
+  private
+
+  def assign_slug: () -> void
+  def parent_is_not_self: () -> void
+end

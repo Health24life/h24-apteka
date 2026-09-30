@@ -1,6 +1,6 @@
 class Catalog::SlugGenerator
   interface _SlugScope
-    def exists?: (slug: String) -> bool
+    def exists?: (*untyped) -> bool
   end
 
   FALLBACK: String
