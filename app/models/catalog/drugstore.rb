@@ -12,7 +12,6 @@ class Catalog::Drugstore < ApplicationRecord
 
   validates :drugstore_legal_entity_name, presence: true
   validates :drugstore_legal_entity_code, presence: true, format: { with: LEGAL_ENTITY_CODE_FORMAT }
-  validates :work_with_reimbursement, :withdrawn, :hidden, :incomplete, inclusion: { in: [ true, false ] }
   validates :week_working_hours, week_working_hours: true
 end
 

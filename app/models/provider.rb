@@ -14,7 +14,6 @@ class Provider < ApplicationRecord
 
   validates :code, presence: true, uniqueness: true, format: { with: CODE_FORMAT }
   validates :name, presence: true
-  validates :active, :supports_delivery, :supports_e_recipe, inclusion: { in: [ true, false ] }
 
   scope :enabled, -> { where(active: true) }
 end

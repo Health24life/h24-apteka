@@ -20,7 +20,6 @@ class Catalog::GoodsGroup < ApplicationRecord
   has_one :primary_category, through: :primary_goods_group_category, source: :category
 
   validates :name_uk, presence: true
-  validates :included_to_offers, :withdrawn, :hidden, inclusion: { in: [ true, false ] }
 end
 
 # == Schema Information

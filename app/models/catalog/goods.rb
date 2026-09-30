@@ -26,8 +26,6 @@ class Catalog::Goods < ApplicationRecord
   has_one :atc_class, through: :goods_group
 
   validates :name_uk, presence: true
-  validates :is_recipe, :is_strict_recipe, :in_medication_program, :withdrawn, :hidden,
-            inclusion: { in: [ true, false ] }
   validates :pack_quantity_in_pack, :pack_quantity_unit_in_pack, :pack_quantity_in_unit,
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validate :image_paths_are_strings

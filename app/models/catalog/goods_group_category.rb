@@ -5,7 +5,6 @@ class Catalog::GoodsGroupCategory < ApplicationRecord
   belongs_to :category, class_name: 'Catalog::Category', inverse_of: :goods_group_categories
 
   validates :category_id, uniqueness: { scope: :goods_group_id }
-  validates :is_primary, inclusion: { in: [ true, false ] }
   validates :is_primary, uniqueness: { scope: :goods_group_id }, if: :is_primary?
 end
 
