@@ -1,0 +1,3 @@
+class ProviderLink < ApplicationRecord
+  LINKABLE_TYPES: Array[String]
+end

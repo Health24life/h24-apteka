@@ -1,0 +1,3 @@
+class Catalog::GoodsName < ApplicationRecord
+  include Catalog::ProviderLinked
+end

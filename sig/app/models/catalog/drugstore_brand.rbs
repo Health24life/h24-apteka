@@ -1,0 +1,3 @@
+class Catalog::DrugstoreBrand < ApplicationRecord
+  include Catalog::ProviderLinked
+end

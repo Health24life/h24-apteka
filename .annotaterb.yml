@@ -67,6 +67,7 @@
 :model_dir:
   - app/models
   - app/models_readonly
-:require: []
+:require:
+  - ./config/annotaterb/skip_translated_columns.rb
 :root_dir:
 - ''

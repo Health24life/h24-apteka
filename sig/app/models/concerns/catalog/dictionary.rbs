@@ -1,0 +1,5 @@
+module Catalog
+  module Dictionary : ActiveRecord::Base
+    extend ActiveSupport::Concern
+  end
+end

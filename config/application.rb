@@ -38,7 +38,7 @@ module H24Apteka
     config.time_zone = 'Europe/Kyiv'
     config.i18n.available_locales = %i[uk en]
     config.i18n.default_locale = :uk
-    config.i18n.fallbacks = [ :en ]
+    config.i18n.fallbacks = { uk: %i[en], en: %i[uk] }
 
     # Locales the imported catalog and symptom names are stored in. Wider than I18n only when the business asks for it.
     config.x.catalog_locales = %i[uk]

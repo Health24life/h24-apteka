@@ -1,0 +1,9 @@
+class Catalog::AtcClass < ApplicationRecord
+  include Catalog::ProviderLinked
+  include Catalog::Tree
+  include Translatable
+  extend Translatable::ClassMethods
+
+  def name_uk: () -> String?
+  def name_uk=: (String? value) -> String?
+end

@@ -1,0 +1,13 @@
+module Catalog
+  module ProviderLinked : ActiveRecord::Base
+    extend ActiveSupport::Concern
+
+    module ClassMethods : Module
+      def find_linked: (Provider provider, String | Integer external_id) -> ActiveRecord::Base?
+    end
+
+    def provider_links: () -> ActiveRecord::Associations::CollectionProxy
+
+    def provider_ref: (Provider provider) -> String?
+  end
+end

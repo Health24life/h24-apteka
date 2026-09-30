@@ -1,0 +1,24 @@
+class Catalog::SlugGenerator
+  interface _SlugScope
+    def where: (*untyped) -> _SlugRelation
+  end
+
+  interface _SlugRelation
+    def pluck: (Symbol column) -> Array[untyped]
+  end
+
+  FALLBACK: String
+  BATCH: Integer
+  NON_KMU_LETTERS: String
+  KMU_LETTERS: String
+
+  def self.call: (String? text, scope: _SlugScope) -> String
+
+  def initialize: (_SlugScope scope) -> void
+  def call: (String? text) -> String
+
+  private
+
+  def transliterate: (String? text) -> String
+  def with_suffix: (String base, String suffix) -> String
+end

@@ -1,0 +1,14 @@
+class Catalog::Goods < ApplicationRecord
+  include Catalog::ProviderLinked
+  include Translatable
+  extend Translatable::ClassMethods
+
+  RESTRICTIONS: Array[Symbol]
+
+  def name_uk: () -> String?
+  def name_uk=: (String? value) -> String?
+
+  private
+
+  def image_paths_are_strings: () -> void
+end

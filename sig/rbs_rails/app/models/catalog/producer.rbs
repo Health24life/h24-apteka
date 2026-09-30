@@ -1,0 +1,373 @@
+# resolve-type-names: false
+
+module ::Catalog
+  class ::Catalog::Producer < ::ApplicationRecord
+    extend ::ActiveRecord::Base::ClassMethods[::Catalog::Producer, ::Catalog::Producer::ActiveRecord_Relation, ::Integer]
+
+    module ::Catalog::Producer::GeneratedAttributeMethods
+      def id: () -> ::Integer
+
+      def id=: (::Integer) -> ::Integer
+
+      def id?: () -> bool
+
+      def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def id_change: () -> [ ::Integer?, ::Integer? ]
+
+      def id_will_change!: () -> void
+
+      def id_was: () -> ::Integer?
+
+      def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def id_previous_change: () -> ::Array[::Integer?]?
+
+      def id_previously_was: () -> ::Integer?
+
+      def id_before_last_save: () -> ::Integer?
+
+      def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+      def id_in_database: () -> ::Integer?
+
+      def saved_change_to_id: () -> ::Array[::Integer?]?
+
+      def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+      def restore_id!: () -> void
+
+      def clear_id_change: () -> void
+
+      def id_before_type_cast: () -> ::Integer
+
+      def id_for_database: () -> ::Integer
+
+      def name: () -> ::String
+
+      def name=: (::String) -> ::String
+
+      def name?: () -> bool
+
+      def name_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def name_change: () -> [ ::String?, ::String? ]
+
+      def name_will_change!: () -> void
+
+      def name_was: () -> ::String?
+
+      def name_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def name_previous_change: () -> ::Array[::String?]?
+
+      def name_previously_was: () -> ::String?
+
+      def name_before_last_save: () -> ::String?
+
+      def name_change_to_be_saved: () -> ::Array[::String?]?
+
+      def name_in_database: () -> ::String?
+
+      def saved_change_to_name: () -> ::Array[::String?]?
+
+      def saved_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_name!: () -> void
+
+      def clear_name_change: () -> void
+
+      def name_before_type_cast: () -> ::String
+
+      def name_for_database: () -> ::String
+
+      def country: () -> ::String?
+
+      def country=: (::String?) -> ::String?
+
+      def country?: () -> bool
+
+      def country_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def country_change: () -> [ ::String?, ::String? ]
+
+      def country_will_change!: () -> void
+
+      def country_was: () -> ::String?
+
+      def country_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def country_previous_change: () -> ::Array[::String?]?
+
+      def country_previously_was: () -> ::String?
+
+      def country_before_last_save: () -> ::String?
+
+      def country_change_to_be_saved: () -> ::Array[::String?]?
+
+      def country_in_database: () -> ::String?
+
+      def saved_change_to_country: () -> ::Array[::String?]?
+
+      def saved_change_to_country?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_country?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_country!: () -> void
+
+      def clear_country_change: () -> void
+
+      def country_before_type_cast: () -> ::String?
+
+      def country_for_database: () -> ::String?
+
+      def country_code: () -> ::String?
+
+      def country_code=: (::String?) -> ::String?
+
+      def country_code?: () -> bool
+
+      def country_code_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def country_code_change: () -> [ ::String?, ::String? ]
+
+      def country_code_will_change!: () -> void
+
+      def country_code_was: () -> ::String?
+
+      def country_code_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def country_code_previous_change: () -> ::Array[::String?]?
+
+      def country_code_previously_was: () -> ::String?
+
+      def country_code_before_last_save: () -> ::String?
+
+      def country_code_change_to_be_saved: () -> ::Array[::String?]?
+
+      def country_code_in_database: () -> ::String?
+
+      def saved_change_to_country_code: () -> ::Array[::String?]?
+
+      def saved_change_to_country_code?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_country_code?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_country_code!: () -> void
+
+      def clear_country_code_change: () -> void
+
+      def country_code_before_type_cast: () -> ::String?
+
+      def country_code_for_database: () -> ::String?
+
+      def created_at: () -> ::ActiveSupport::TimeWithZone
+
+      def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+      def created_at?: () -> bool
+
+      def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def created_at_will_change!: () -> void
+
+      def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def restore_created_at!: () -> void
+
+      def clear_created_at_change: () -> void
+
+      def created_at_before_type_cast: () -> ::Time
+
+      def created_at_for_database: () -> ::Time
+
+      def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+      def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+      def updated_at?: () -> bool
+
+      def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def updated_at_will_change!: () -> void
+
+      def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def restore_updated_at!: () -> void
+
+      def clear_updated_at_change: () -> void
+
+      def updated_at_before_type_cast: () -> ::Time
+
+      def updated_at_for_database: () -> ::Time
+    end
+    include ::Catalog::Producer::GeneratedAttributeMethods
+    module ::Catalog::Producer::GeneratedAliasAttributeMethods
+      include ::Catalog::Producer::GeneratedAttributeMethods
+
+      alias id_value id
+
+      alias id_value= id=
+
+      alias id_value? id?
+
+      alias id_value_changed? id_changed?
+
+      alias id_value_change id_change
+
+      alias id_value_will_change! id_will_change!
+
+      alias id_value_was id_was
+
+      alias id_value_previously_changed? id_previously_changed?
+
+      alias id_value_previous_change id_previous_change
+
+      alias id_value_previously_was id_previously_was
+
+      alias id_value_before_last_save id_before_last_save
+
+      alias id_value_change_to_be_saved id_change_to_be_saved
+
+      alias id_value_in_database id_in_database
+
+      alias saved_change_to_id_value saved_change_to_id
+
+      alias saved_change_to_id_value? saved_change_to_id?
+
+      alias will_save_change_to_id_value? will_save_change_to_id?
+
+      alias restore_id_value! restore_id!
+
+      alias clear_id_value_change clear_id_change
+
+      alias id_value_before_type_cast id_before_type_cast
+
+      alias id_value_for_database id_for_database
+    end
+    include ::Catalog::Producer::GeneratedAliasAttributeMethods
+    def provider_links: () -> ::ProviderLink::ActiveRecord_Associations_CollectionProxy
+    def provider_links=: (::ProviderLink::ActiveRecord_Associations_CollectionProxy | ::Array[::ProviderLink]) -> (::ProviderLink::ActiveRecord_Associations_CollectionProxy | ::Array[::ProviderLink])
+    def provider_link_ids: () -> ::Array[::Integer]
+    def provider_link_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def providers: () -> ::Provider::ActiveRecord_Associations_CollectionProxy
+    def providers=: (::Provider::ActiveRecord_Associations_CollectionProxy | ::Array[::Provider]) -> (::Provider::ActiveRecord_Associations_CollectionProxy | ::Array[::Provider])
+    def provider_ids: () -> ::Array[::Integer]
+    def provider_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def goods_groups: () -> ::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy
+    def goods_groups=: (::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroup]) -> (::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroup])
+    def goods_group_ids: () -> ::Array[::Integer]
+    def goods_group_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
+    def core_country: () -> ::H24Core::Classification::Address::Country?
+    def core_country=: (::H24Core::Classification::Address::Country?) -> ::H24Core::Classification::Address::Country?
+    def reload_core_country: () -> ::H24Core::Classification::Address::Country?
+    def build_core_country: (?untyped) -> ::H24Core::Classification::Address::Country
+    def create_core_country: (?untyped) -> ::H24Core::Classification::Address::Country
+    def create_core_country!: (?untyped) -> ::H24Core::Classification::Address::Country
+
+    module ::Catalog::Producer::GeneratedAssociationMethods
+    end
+    include ::Catalog::Producer::GeneratedAssociationMethods
+
+    module ::Catalog::Producer::GeneratedRelationMethods
+    end
+
+    class ::Catalog::Producer::ActiveRecord_Relation < ::ActiveRecord::Relation
+      include ::Enumerable[::Catalog::Producer]
+      include ::Catalog::Producer::GeneratedRelationMethods
+      include ::ActiveRecord::Relation::Methods[::Catalog::Producer, ::Integer]
+    end
+
+    class ::Catalog::Producer::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+      include ::Enumerable[::Catalog::Producer]
+      include ::Catalog::Producer::GeneratedRelationMethods
+      include ::ActiveRecord::Relation::Methods[::Catalog::Producer, ::Integer]
+
+      def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::Producer
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::Producer]
+      def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::Producer
+                | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::Producer]
+      def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::Producer
+                 | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::Producer]
+      def reload: () -> ::Array[::Catalog::Producer]
+
+      def replace: (::Array[::Catalog::Producer]) -> void
+      def delete: (*::Catalog::Producer | ::Integer) -> ::Array[::Catalog::Producer]
+      def destroy: (*::Catalog::Producer | ::Integer) -> ::Array[::Catalog::Producer]
+      def <<: (*::Catalog::Producer | ::Array[::Catalog::Producer]) -> self
+      def prepend: (*::Catalog::Producer | ::Array[::Catalog::Producer]) -> self
+    end
+  end
+end
+
+module ::Catalog
+end
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::ProviderLink < ::ApplicationRecord
+end
+class ::ProviderLink::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Provider < ::ApplicationRecord
+end
+class ::Provider::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Catalog::GoodsGroup < ::ApplicationRecord
+end
+class ::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::H24Core::Classification::Address::Country < ::H24Core::ApplicationRecord
+end
+class ::H24Core::ApplicationRecord < ::ActiveRecord::Base
+end
+module ::H24Core
+end
+module ::H24Core::Classification
+end
+module ::H24Core::Classification::Address
+end
