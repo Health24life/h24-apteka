@@ -21,6 +21,12 @@ RSpec.describe H24Apteka::Application do
     expect(I18n.fallbacks[:uk]).to include(:en)
   end
 
+  it 'lets the application-wide fallbacks rule every environment' do
+    Rails.root.glob('config/environments/*.rb').each do |file|
+      expect(File.read(file)).not_to include('i18n.fallbacks'), "#{File.basename(file)} overrides i18n fallbacks"
+    end
+  end
+
   it 'has pg_trgm enabled' do
     expect(ActiveRecord::Base.connection.extension_enabled?('pg_trgm')).to be(true)
   end

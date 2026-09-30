@@ -38,10 +38,11 @@ RSpec.describe Catalog::SlugGenerator do
     expect(slug).to end_with('-2')
   end
 
-  it 'never leaves a trailing hyphen after truncation' do
-    text = "#{'а' * 98} бв"
+  it 'never leaves a trailing hyphen after truncation', :aggregate_failures do
+    slug = slug_for("#{'а' * 99} бв")
 
-    expect(slug_for(text)).not_to end_with('-')
+    expect(slug).not_to end_with('-')
+    expect(slug.length).to be <= 100
   end
 
   it 'falls back to a fixed word when nothing transliterable is left', :aggregate_failures do
