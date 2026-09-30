@@ -2,27 +2,15 @@
 
 class Catalog::AtcClass < ApplicationRecord
   include Catalog::ProviderLinked
+  include Catalog::Tree
   include Translatable
 
   translatable :name
 
-  belongs_to :parent, class_name: 'Catalog::AtcClass', optional: true, inverse_of: :children
-
-  has_many :children, class_name: 'Catalog::AtcClass', foreign_key: :parent_id, inverse_of: :parent,
-                      dependent: :restrict_with_exception
   has_many :goods_groups, class_name: 'Catalog::GoodsGroup', inverse_of: :atc_class,
                           dependent: :restrict_with_exception
 
   validates :atc_code, presence: true
-  validate :parent_is_not_self
-
-  scope :roots, -> { where(parent_id: nil) }
-
-  private
-
-  def parent_is_not_self
-    errors.add(:parent, :invalid) if parent_id.present? && parent_id == id
-  end
 end
 
 # == Schema Information

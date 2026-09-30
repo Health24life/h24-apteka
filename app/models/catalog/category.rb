@@ -2,14 +2,11 @@
 
 class Catalog::Category < ApplicationRecord
   include Catalog::ProviderLinked
+  include Catalog::Tree
   include Translatable
 
   translatable :name
 
-  belongs_to :parent, class_name: 'Catalog::Category', optional: true, inverse_of: :children
-
-  has_many :children, class_name: 'Catalog::Category', foreign_key: :parent_id, inverse_of: :parent,
-                      dependent: :restrict_with_exception
   has_many :goods_group_categories, class_name: 'Catalog::GoodsGroupCategory', inverse_of: :category,
                                     dependent: :restrict_with_exception
   has_many :goods_groups, through: :goods_group_categories
@@ -18,12 +15,9 @@ class Catalog::Category < ApplicationRecord
   validates :slug, presence: true, uniqueness: true, length: { maximum: Catalog::SLUG_MAX_LENGTH },
                    format: { with: Catalog::SLUG_FORMAT }
   validates :depth, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
-  validate :parent_is_not_self
   validate :slug_is_unchanged, on: :update
 
   before_validation :assign_slug, on: :create
-
-  scope :roots, -> { where(parent_id: nil) }
 
   # The address is part of public URLs, so it is fixed once saved. attr_readonly is not used because its
   # write_attribute override takes two arguments and breaks the three-argument call from globalize accessors.
@@ -43,10 +37,6 @@ class Catalog::Category < ApplicationRecord
 
   def slug_is_unchanged
     errors.add(:slug, :invalid) if slug_changed?
-  end
-
-  def parent_is_not_self
-    errors.add(:parent, :invalid) if parent_id.present? && parent_id == id
   end
 end
 

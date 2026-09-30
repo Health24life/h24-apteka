@@ -1,0 +1,14 @@
+module Catalog
+  interface _TreeNode
+    def id: () -> Integer?
+    def parent_id: () -> Integer?
+  end
+
+  module Tree : ActiveRecord::Base, _TreeNode
+    extend ActiveSupport::Concern
+
+    private
+
+    def parent_is_not_self: () -> void
+  end
+end

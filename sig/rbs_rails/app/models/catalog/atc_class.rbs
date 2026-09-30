@@ -258,14 +258,14 @@ module ::Catalog
     def providers=: (::Provider::ActiveRecord_Associations_CollectionProxy | ::Array[::Provider]) -> (::Provider::ActiveRecord_Associations_CollectionProxy | ::Array[::Provider])
     def provider_ids: () -> ::Array[::Integer]
     def provider_ids=: (::Array[::Integer]) -> ::Array[::Integer]
-    def translations: () -> ::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy
-    def translations=: (::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::AtcClass::Translation]) -> (::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::AtcClass::Translation])
-    def translation_ids: () -> ::Array[::Integer]
-    def translation_ids=: (::Array[::Integer]) -> ::Array[::Integer]
     def children: () -> ::Catalog::AtcClass::ActiveRecord_Associations_CollectionProxy
     def children=: (::Catalog::AtcClass::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::AtcClass]) -> (::Catalog::AtcClass::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::AtcClass])
     def child_ids: () -> ::Array[::Integer]
     def child_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def translations: () -> ::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy
+    def translations=: (::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::AtcClass::Translation]) -> (::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::AtcClass::Translation])
+    def translation_ids: () -> ::Array[::Integer]
+    def translation_ids=: (::Array[::Integer]) -> ::Array[::Integer]
     def goods_groups: () -> ::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy
     def goods_groups=: (::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroup]) -> (::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroup])
     def goods_group_ids: () -> ::Array[::Integer]
@@ -282,10 +282,7 @@ module ::Catalog
     end
     include ::Catalog::AtcClass::GeneratedAssociationMethods
 
-    def self.roots: () -> ::Catalog::AtcClass::ActiveRecord_Relation
-
     module ::Catalog::AtcClass::GeneratedRelationMethods
-      def roots: () -> ::Catalog::AtcClass::ActiveRecord_Relation
     end
 
     class ::Catalog::AtcClass::ActiveRecord_Relation < ::ActiveRecord::Relation
@@ -328,13 +325,13 @@ class ::Provider < ::ApplicationRecord
 end
 class ::Provider::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end
-class ::Catalog::AtcClass::Translation < ::Globalize::ActiveRecord::Translation
-end
-class ::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
-end
 class ::Catalog::AtcClass < ::ApplicationRecord
 end
 class ::Catalog::AtcClass::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Catalog::AtcClass::Translation < ::Globalize::ActiveRecord::Translation
+end
+class ::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end
 class ::Catalog::GoodsGroup < ::ApplicationRecord
 end
