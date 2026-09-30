@@ -337,6 +337,10 @@ gems:
   version: '0'
   source:
     type: stdlib
+- name: optparse
+  version: '0'
+  source:
+    type: stdlib
 - name: pathname
   version: '0'
   source:
@@ -405,6 +409,10 @@ gems:
   version: '0'
   source:
     type: stdlib
+- name: rbs
+  version: 4.2.0
+  source:
+    type: rubygems
 - name: rdoc
   version: '0'
   source:

@@ -1,0 +1,9 @@
+module H24Core
+  module HstoreTranslated : ActiveRecord::Base
+    extend ActiveSupport::Concern
+
+    module ClassMethods : Module
+      def hstore_translated: (Symbol name, Symbol column) -> void
+    end
+  end
+end

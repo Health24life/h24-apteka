@@ -26,9 +26,9 @@
 :ignore_model_sub_dir: false
 :ignore_unknown_models: false
 :include_version: false
-:show_check_constraints: false
-:show_unique_constraints: false
-:show_exclusion_constraints: false
+:show_check_constraints: true
+:show_unique_constraints: true
+:show_exclusion_constraints: true
 :show_enums: false
 :show_complete_foreign_keys: false
 :show_foreign_keys: true
@@ -65,7 +65,8 @@
 :classes_default_to_s: []
 :additional_file_patterns: []
 :model_dir:
-- app/models
+  - app/models
+  - app/models_readonly
 :require: []
 :root_dir:
 - ''

@@ -29,3 +29,10 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+    errors:
+      models:
+        sync_run:
+          attributes:
+            finished_at:
+              before_start: cannot be earlier than the start

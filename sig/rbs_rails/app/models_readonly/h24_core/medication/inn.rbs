@@ -1,0 +1,379 @@
+# resolve-type-names: false
+
+module ::H24Core
+  module ::H24Core::Medication
+    class ::H24Core::Medication::Inn < ::H24Core::ApplicationRecord
+      extend ::ActiveRecord::Base::ClassMethods[::H24Core::Medication::Inn, ::H24Core::Medication::Inn::ActiveRecord_Relation, ::Integer]
+
+      module ::H24Core::Medication::Inn::GeneratedAttributeMethods
+        def id: () -> ::Integer
+
+        def id=: (::Integer) -> ::Integer
+
+        def id?: () -> bool
+
+        def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def id_change: () -> [ ::Integer?, ::Integer? ]
+
+        def id_will_change!: () -> void
+
+        def id_was: () -> ::Integer?
+
+        def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def id_previous_change: () -> ::Array[::Integer?]?
+
+        def id_previously_was: () -> ::Integer?
+
+        def id_before_last_save: () -> ::Integer?
+
+        def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+        def id_in_database: () -> ::Integer?
+
+        def saved_change_to_id: () -> ::Array[::Integer?]?
+
+        def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+        def restore_id!: () -> void
+
+        def clear_id_change: () -> void
+
+        def id_before_type_cast: () -> ::Integer
+
+        def id_for_database: () -> ::Integer
+
+        def created_at: () -> ::ActiveSupport::TimeWithZone
+
+        def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+        def created_at?: () -> bool
+
+        def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+        def created_at_will_change!: () -> void
+
+        def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+        def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def restore_created_at!: () -> void
+
+        def clear_created_at_change: () -> void
+
+        def created_at_before_type_cast: () -> ::Time
+
+        def created_at_for_database: () -> ::Time
+
+        def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+        def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+        def updated_at?: () -> bool
+
+        def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+        def updated_at_will_change!: () -> void
+
+        def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+        def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+        def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+        def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+        def restore_updated_at!: () -> void
+
+        def clear_updated_at_change: () -> void
+
+        def updated_at_before_type_cast: () -> ::Time
+
+        def updated_at_for_database: () -> ::Time
+
+        def title_translations: () -> untyped
+
+        def title_translations=: (untyped) -> untyped
+
+        def title_translations?: () -> bool
+
+        def title_translations_changed?: (?from: untyped, ?to: untyped) -> bool
+
+        def title_translations_change: () -> [ untyped, untyped ]
+
+        def title_translations_will_change!: () -> void
+
+        def title_translations_was: () -> untyped
+
+        def title_translations_previously_changed?: (?from: untyped, ?to: untyped) -> bool
+
+        def title_translations_previous_change: () -> ::Array[untyped]?
+
+        def title_translations_previously_was: () -> untyped
+
+        def title_translations_before_last_save: () -> untyped
+
+        def title_translations_change_to_be_saved: () -> ::Array[untyped]?
+
+        def title_translations_in_database: () -> untyped
+
+        def saved_change_to_title_translations: () -> ::Array[untyped]?
+
+        def saved_change_to_title_translations?: (?from: untyped, ?to: untyped) -> bool
+
+        def will_save_change_to_title_translations?: (?from: untyped, ?to: untyped) -> bool
+
+        def restore_title_translations!: () -> void
+
+        def clear_title_translations_change: () -> void
+
+        def title_translations_before_type_cast: () -> untyped?
+
+        def title_translations_for_database: () -> untyped?
+
+        def title_original: () -> ::String?
+
+        def title_original=: (::String?) -> ::String?
+
+        def title_original?: () -> bool
+
+        def title_original_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def title_original_change: () -> [ ::String?, ::String? ]
+
+        def title_original_will_change!: () -> void
+
+        def title_original_was: () -> ::String?
+
+        def title_original_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def title_original_previous_change: () -> ::Array[::String?]?
+
+        def title_original_previously_was: () -> ::String?
+
+        def title_original_before_last_save: () -> ::String?
+
+        def title_original_change_to_be_saved: () -> ::Array[::String?]?
+
+        def title_original_in_database: () -> ::String?
+
+        def saved_change_to_title_original: () -> ::Array[::String?]?
+
+        def saved_change_to_title_original?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def will_save_change_to_title_original?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def restore_title_original!: () -> void
+
+        def clear_title_original_change: () -> void
+
+        def title_original_before_type_cast: () -> ::String?
+
+        def title_original_for_database: () -> ::String?
+
+        def in_ehealth: () -> bool?
+
+        def in_ehealth=: (bool?) -> bool?
+
+        def in_ehealth?: () -> bool
+
+        def in_ehealth_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def in_ehealth_change: () -> [ bool?, bool? ]
+
+        def in_ehealth_will_change!: () -> void
+
+        def in_ehealth_was: () -> bool?
+
+        def in_ehealth_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+        def in_ehealth_previous_change: () -> ::Array[bool?]?
+
+        def in_ehealth_previously_was: () -> bool?
+
+        def in_ehealth_before_last_save: () -> bool?
+
+        def in_ehealth_change_to_be_saved: () -> ::Array[bool?]?
+
+        def in_ehealth_in_database: () -> bool?
+
+        def saved_change_to_in_ehealth: () -> ::Array[bool?]?
+
+        def saved_change_to_in_ehealth?: (?from: bool?, ?to: bool?) -> bool
+
+        def will_save_change_to_in_ehealth?: (?from: bool?, ?to: bool?) -> bool
+
+        def restore_in_ehealth!: () -> void
+
+        def clear_in_ehealth_change: () -> void
+
+        def in_ehealth_before_type_cast: () -> bool?
+
+        def in_ehealth_for_database: () -> bool?
+
+        def ehealth_api_id: () -> ::String?
+
+        def ehealth_api_id=: (::String?) -> ::String?
+
+        def ehealth_api_id?: () -> bool
+
+        def ehealth_api_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def ehealth_api_id_change: () -> [ ::String?, ::String? ]
+
+        def ehealth_api_id_will_change!: () -> void
+
+        def ehealth_api_id_was: () -> ::String?
+
+        def ehealth_api_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def ehealth_api_id_previous_change: () -> ::Array[::String?]?
+
+        def ehealth_api_id_previously_was: () -> ::String?
+
+        def ehealth_api_id_before_last_save: () -> ::String?
+
+        def ehealth_api_id_change_to_be_saved: () -> ::Array[::String?]?
+
+        def ehealth_api_id_in_database: () -> ::String?
+
+        def saved_change_to_ehealth_api_id: () -> ::Array[::String?]?
+
+        def saved_change_to_ehealth_api_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def will_save_change_to_ehealth_api_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+        def restore_ehealth_api_id!: () -> void
+
+        def clear_ehealth_api_id_change: () -> void
+
+        def ehealth_api_id_before_type_cast: () -> ::String?
+
+        def ehealth_api_id_for_database: () -> ::String?
+      end
+      include ::H24Core::Medication::Inn::GeneratedAttributeMethods
+      module ::H24Core::Medication::Inn::GeneratedAliasAttributeMethods
+        include ::H24Core::Medication::Inn::GeneratedAttributeMethods
+
+        alias id_value id
+
+        alias id_value= id=
+
+        alias id_value? id?
+
+        alias id_value_changed? id_changed?
+
+        alias id_value_change id_change
+
+        alias id_value_will_change! id_will_change!
+
+        alias id_value_was id_was
+
+        alias id_value_previously_changed? id_previously_changed?
+
+        alias id_value_previous_change id_previous_change
+
+        alias id_value_previously_was id_previously_was
+
+        alias id_value_before_last_save id_before_last_save
+
+        alias id_value_change_to_be_saved id_change_to_be_saved
+
+        alias id_value_in_database id_in_database
+
+        alias saved_change_to_id_value saved_change_to_id
+
+        alias saved_change_to_id_value? saved_change_to_id?
+
+        alias will_save_change_to_id_value? will_save_change_to_id?
+
+        alias restore_id_value! restore_id!
+
+        alias clear_id_value_change clear_id_change
+
+        alias id_value_before_type_cast id_before_type_cast
+
+        alias id_value_for_database id_for_database
+      end
+      include ::H24Core::Medication::Inn::GeneratedAliasAttributeMethods
+
+      module ::H24Core::Medication::Inn::GeneratedAssociationMethods
+      end
+      include ::H24Core::Medication::Inn::GeneratedAssociationMethods
+
+      def self.by_original: (untyped name) -> ::H24Core::Medication::Inn::ActiveRecord_Relation
+
+      module ::H24Core::Medication::Inn::GeneratedRelationMethods
+        def by_original: (untyped name) -> ::H24Core::Medication::Inn::ActiveRecord_Relation
+      end
+
+      class ::H24Core::Medication::Inn::ActiveRecord_Relation < ::ActiveRecord::Relation
+        include ::Enumerable[::H24Core::Medication::Inn]
+        include ::H24Core::Medication::Inn::GeneratedRelationMethods
+        include ::ActiveRecord::Relation::Methods[::H24Core::Medication::Inn, ::Integer]
+      end
+
+      class ::H24Core::Medication::Inn::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+        include ::Enumerable[::H24Core::Medication::Inn]
+        include ::H24Core::Medication::Inn::GeneratedRelationMethods
+        include ::ActiveRecord::Relation::Methods[::H24Core::Medication::Inn, ::Integer]
+
+        def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::H24Core::Medication::Inn
+                 | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::H24Core::Medication::Inn]
+        def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::H24Core::Medication::Inn
+                  | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::H24Core::Medication::Inn]
+        def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::H24Core::Medication::Inn
+                   | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::H24Core::Medication::Inn]
+        def reload: () -> ::Array[::H24Core::Medication::Inn]
+
+        def replace: (::Array[::H24Core::Medication::Inn]) -> void
+        def delete: (*::H24Core::Medication::Inn | ::Integer) -> ::Array[::H24Core::Medication::Inn]
+        def destroy: (*::H24Core::Medication::Inn | ::Integer) -> ::Array[::H24Core::Medication::Inn]
+        def <<: (*::H24Core::Medication::Inn | ::Array[::H24Core::Medication::Inn]) -> self
+        def prepend: (*::H24Core::Medication::Inn | ::Array[::H24Core::Medication::Inn]) -> self
+      end
+    end
+  end
+end
+
+module ::H24Core::Medication
+end
+class ::H24Core::ApplicationRecord < ::ActiveRecord::Base
+end
+module ::H24Core
+end
