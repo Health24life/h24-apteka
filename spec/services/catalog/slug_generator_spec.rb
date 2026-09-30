@@ -22,6 +22,18 @@ RSpec.describe Catalog::SlugGenerator do
     expect(slug_for('Ліки для дітей (0-3)')).to eq('liky-dlia-ditei-0-3')
   end
 
+  it 'turns underscores into hyphens and squeezes repeated hyphens', :aggregate_failures do
+    expect(slug_for('Вітамін_С')).to eq('vitamin-s')
+    expect(slug_for('А__Б -- В')).to eq('a-b-v')
+    expect(slug_for('_Вітамін_')).to eq('vitamin')
+  end
+
+  it 'always produces a slug matching the catalog format', :aggregate_failures do
+    [ 'Вітамін_С', 'a_b__c', '--x--', 'Ліки (0_3)' ].each do |text|
+      expect(slug_for(text)).to match(Catalog::SLUG_FORMAT)
+    end
+  end
+
   it 'adds a numeric suffix to a taken slug', :aggregate_failures do
     expect(slug_for('Знеболювальні', 'zneboliuvalni')).to eq('zneboliuvalni-2')
     expect(slug_for('Знеболювальні', 'zneboliuvalni', 'zneboliuvalni-2')).to eq('zneboliuvalni-3')

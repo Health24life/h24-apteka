@@ -39,12 +39,33 @@ RSpec.describe Catalog::Category do
       expect(create(:catalog_category, name_uk: '!!!').slug).to eq('item')
     end
 
-    it 'refuses a malformed slug and a duplicate at the database level', :aggregate_failures do
+    it 'refuses a malformed slug in validation' do
+      expect(build(:catalog_category).tap { |c| c.slug = 'Bad Slug' }).not_to be_valid
+    end
+
+    it 'refuses a duplicate slug at the database level' do
       category = create(:catalog_category)
       other = create(:catalog_category)
 
-      expect(build(:catalog_category).tap { |c| c.slug = 'Bad Slug' }).not_to be_valid
       expect { other.update_column(:slug, category.slug) }.to raise_error(ActiveRecord::RecordNotUnique) # rubocop:disable Rails/SkipsModelValidations
+    end
+
+    it 'refuses a malformed slug at the database level' do
+      category = create(:catalog_category)
+
+      expect { category.update_column(:slug, 'Bad_Slug') } # rubocop:disable Rails/SkipsModelValidations
+        .to raise_error(ActiveRecord::StatementInvalid, /catalog_categories_slug_check/)
+    end
+
+    it 'refuses a slug longer than the limit at the database level' do
+      category = create(:catalog_category)
+
+      expect { category.update_column(:slug, 'a' * 101) } # rubocop:disable Rails/SkipsModelValidations
+        .to raise_error(ActiveRecord::StatementInvalid, /catalog_categories_slug_check/)
+    end
+
+    it 'creates a category whose name contains an underscore' do
+      expect(create(:catalog_category, name_uk: 'Вітамін_С').slug).to eq('vitamin-s')
     end
   end
 
@@ -117,4 +138,5 @@ end
 #
 #  catalog_categories_depth_check   (depth >= 0)
 #  catalog_categories_parent_check  (parent_id IS NULL OR parent_id <> id)
+#  catalog_categories_slug_check    (slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100)
 #

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_30_120007) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -67,6 +67,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
     t.index ["slug"], name: "index_catalog_categories_on_slug", unique: true
     t.check_constraint "depth >= 0", name: "catalog_categories_depth_check"
     t.check_constraint "parent_id IS NULL OR parent_id <> id", name: "catalog_categories_parent_check"
+    t.check_constraint "slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100", name: "catalog_categories_slug_check"
   end
 
   create_table "catalog_category_translations", force: :cascade do |t|

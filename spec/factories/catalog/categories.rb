@@ -32,4 +32,5 @@ end
 #
 #  catalog_categories_depth_check   (depth >= 0)
 #  catalog_categories_parent_check  (parent_id IS NULL OR parent_id <> id)
+#  catalog_categories_slug_check    (slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100)
 #

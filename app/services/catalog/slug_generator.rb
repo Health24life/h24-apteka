@@ -26,7 +26,7 @@ class Catalog::SlugGenerator
   private
 
   def transliterate(text)
-    slug = UkrainianLatin.new.encode(text.to_s, 'KMU_55').parameterize
+    slug = UkrainianLatin.new.encode(text.to_s, 'KMU_55').tr('_', '-').parameterize.squeeze('-')
     slug.first(Catalog::SLUG_MAX_LENGTH).delete_suffix('-').presence || FALLBACK
   end
 
