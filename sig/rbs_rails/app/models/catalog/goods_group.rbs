@@ -422,6 +422,10 @@ module ::Catalog
     def translations=: (::Catalog::GoodsGroup::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroup::Translation]) -> (::Catalog::GoodsGroup::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroup::Translation])
     def translation_ids: () -> ::Array[::Integer]
     def translation_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def goods: () -> ::Catalog::Goods::ActiveRecord_Associations_CollectionProxy
+    def goods=: (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods]) -> (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods])
+    def goods_ids: () -> ::Array[::Integer]
+    def goods_ids=: (::Array[::Integer]) -> ::Array[::Integer]
     def goods_group_categories: () -> ::Catalog::GoodsGroupCategory::ActiveRecord_Associations_CollectionProxy
     def goods_group_categories=: (::Catalog::GoodsGroupCategory::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroupCategory]) -> (::Catalog::GoodsGroupCategory::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroupCategory])
     def goods_group_category_ids: () -> ::Array[::Integer]
@@ -512,6 +516,10 @@ end
 class ::Catalog::GoodsGroup::Translation < ::Globalize::ActiveRecord::Translation
 end
 class ::Catalog::GoodsGroup::Translation::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Catalog::Goods < ::ApplicationRecord
+end
+class ::Catalog::Goods::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end
 class ::Catalog::GoodsGroupCategory < ::ApplicationRecord
 end

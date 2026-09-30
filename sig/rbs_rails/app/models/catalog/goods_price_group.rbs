@@ -182,6 +182,10 @@ module ::Catalog
     def translations=: (::Catalog::GoodsPriceGroup::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsPriceGroup::Translation]) -> (::Catalog::GoodsPriceGroup::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsPriceGroup::Translation])
     def translation_ids: () -> ::Array[::Integer]
     def translation_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def goods: () -> ::Catalog::Goods::ActiveRecord_Associations_CollectionProxy
+    def goods=: (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods]) -> (::Catalog::Goods::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Goods])
+    def goods_ids: () -> ::Array[::Integer]
+    def goods_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
     module ::Catalog::GoodsPriceGroup::GeneratedAssociationMethods
     end
@@ -233,6 +237,10 @@ end
 class ::Catalog::GoodsPriceGroup::Translation < ::Globalize::ActiveRecord::Translation
 end
 class ::Catalog::GoodsPriceGroup::Translation::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Catalog::Goods < ::ApplicationRecord
+end
+class ::Catalog::Goods::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end
 class ::Globalize::ActiveRecord::Translation < ::ActiveRecord::Base
 end

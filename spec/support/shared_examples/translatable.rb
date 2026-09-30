@@ -27,7 +27,7 @@ RSpec.shared_examples 'a translatable catalog record' do |factory|
 
   it 'keeps the name in a translations row of its own table' do
     record = create(factory, name_uk: 'Назва')
-    table = "#{record.class.table_name.singularize}_translations"
+    table = record.class.translation_class.table_name
     count = ActiveRecord::Base.connection.select_value("SELECT count(*) FROM #{table} WHERE locale = 'uk'")
 
     expect(count).to eq(1)

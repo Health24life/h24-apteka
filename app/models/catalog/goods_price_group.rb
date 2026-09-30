@@ -2,6 +2,9 @@
 
 class Catalog::GoodsPriceGroup < ApplicationRecord
   include Catalog::Dictionary
+
+  has_many :goods, class_name: 'Catalog::Goods', foreign_key: :price_group_id, inverse_of: :price_group,
+                   dependent: :restrict_with_exception
 end
 
 # == Schema Information

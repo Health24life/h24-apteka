@@ -10,6 +10,7 @@ class Catalog::GoodsGroup < ApplicationRecord
   belongs_to :goods_name, class_name: 'Catalog::GoodsName', optional: true, inverse_of: :goods_groups
   belongs_to :atc_class, class_name: 'Catalog::AtcClass', optional: true, inverse_of: :goods_groups
 
+  has_many :goods, class_name: 'Catalog::Goods', inverse_of: :goods_group, dependent: :restrict_with_exception
   has_many :goods_group_categories, class_name: 'Catalog::GoodsGroupCategory', inverse_of: :goods_group,
                                     dependent: :delete_all
   has_many :categories, through: :goods_group_categories

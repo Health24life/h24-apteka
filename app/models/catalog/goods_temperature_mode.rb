@@ -2,6 +2,9 @@
 
 class Catalog::GoodsTemperatureMode < ApplicationRecord
   include Catalog::Dictionary
+
+  has_many :goods, class_name: 'Catalog::Goods', foreign_key: :temperature_mode_id, inverse_of: :temperature_mode,
+                   dependent: :restrict_with_exception
 end
 
 # == Schema Information

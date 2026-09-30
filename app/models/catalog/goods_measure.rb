@@ -2,6 +2,9 @@
 
 class Catalog::GoodsMeasure < ApplicationRecord
   include Catalog::Dictionary
+
+  has_many :goods, class_name: 'Catalog::Goods', foreign_key: :measure_id, inverse_of: :measure,
+                   dependent: :restrict_with_exception
 end
 
 # == Schema Information

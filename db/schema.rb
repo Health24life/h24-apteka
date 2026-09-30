@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_30_120004) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_30_120005) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -83,6 +83,44 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120004) do
     t.string "image_path"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "catalog_goods", force: :cascade do |t|
+    t.bigint "goods_group_id", null: false
+    t.bigint "form_id"
+    t.bigint "measure_id"
+    t.bigint "price_group_id"
+    t.bigint "temperature_mode_id"
+    t.bigint "adult_restriction_id"
+    t.bigint "child_restriction_id"
+    t.bigint "diabetic_restriction_id"
+    t.bigint "driver_restriction_id"
+    t.bigint "pregnant_and_lactating_restriction_id"
+    t.integer "core_inn_id"
+    t.string "dosage"
+    t.text "composition"
+    t.string "mnn"
+    t.string "release_form"
+    t.string "morion_code"
+    t.string "pack_unit_name"
+    t.integer "pack_quantity_in_pack"
+    t.integer "pack_quantity_unit_in_pack"
+    t.integer "pack_quantity_in_unit"
+    t.jsonb "image_paths", default: [], null: false
+    t.text "instruction_html"
+    t.boolean "is_recipe", default: false, null: false
+    t.boolean "is_strict_recipe", default: false, null: false
+    t.boolean "in_medication_program", default: false, null: false
+    t.boolean "withdrawn", default: false, null: false
+    t.boolean "hidden", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goods_group_id"], name: "index_catalog_goods_on_goods_group_id"
+    t.index ["morion_code"], name: "index_catalog_goods_on_morion_code"
+    t.check_constraint "jsonb_typeof(image_paths) = 'array'::text", name: "catalog_goods_image_paths_check"
+    t.check_constraint "pack_quantity_in_pack IS NULL OR pack_quantity_in_pack >= 0", name: "catalog_goods_in_pack_check"
+    t.check_constraint "pack_quantity_in_unit IS NULL OR pack_quantity_in_unit >= 0", name: "catalog_goods_in_unit_check"
+    t.check_constraint "pack_quantity_unit_in_pack IS NULL OR pack_quantity_unit_in_pack >= 0", name: "catalog_goods_unit_in_pack_check"
   end
 
   create_table "catalog_goods_form_translations", force: :cascade do |t|
@@ -195,6 +233,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120004) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "catalog_goods_translations", force: :cascade do |t|
+    t.bigint "catalog_goods_id", null: false
+    t.string "locale", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catalog_goods_id", "locale"], name: "index_catalog_goods_translations_uniqueness", unique: true
+  end
+
   create_table "catalog_producers", force: :cascade do |t|
     t.string "name", null: false
     t.string "country"
@@ -228,7 +275,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120004) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_providers_on_code", unique: true
-    t.check_constraint "kind::text = ANY (ARRAY['external'::character varying, 'own'::character varying]::text[])", name: "providers_kind_check"
+    t.check_constraint "kind::text = ANY (ARRAY['external'::character varying::text, 'own'::character varying::text])", name: "providers_kind_check"
   end
 
   create_table "sync_run_failures", force: :cascade do |t|
@@ -256,13 +303,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120004) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_id", "kind", "started_at"], name: "index_sync_runs_on_provider_id_and_kind_and_started_at"
-    t.check_constraint "status::text = ANY (ARRAY['running'::character varying, 'succeeded'::character varying, 'completed_with_failures'::character varying, 'failed'::character varying]::text[])", name: "sync_runs_status_check"
+    t.check_constraint "status::text = ANY (ARRAY['running'::character varying::text, 'succeeded'::character varying::text, 'completed_with_failures'::character varying::text, 'failed'::character varying::text])", name: "sync_runs_status_check"
   end
 
   add_foreign_key "catalog_atc_class_translations", "catalog_atc_classes", on_delete: :cascade
   add_foreign_key "catalog_atc_classes", "catalog_atc_classes", column: "parent_id"
   add_foreign_key "catalog_categories", "catalog_categories", column: "parent_id"
   add_foreign_key "catalog_category_translations", "catalog_categories", on_delete: :cascade
+  add_foreign_key "catalog_goods", "catalog_goods_forms", column: "form_id"
+  add_foreign_key "catalog_goods", "catalog_goods_groups", column: "goods_group_id"
+  add_foreign_key "catalog_goods", "catalog_goods_measures", column: "measure_id"
+  add_foreign_key "catalog_goods", "catalog_goods_price_groups", column: "price_group_id"
+  add_foreign_key "catalog_goods", "catalog_goods_restrictions", column: "adult_restriction_id"
+  add_foreign_key "catalog_goods", "catalog_goods_restrictions", column: "child_restriction_id"
+  add_foreign_key "catalog_goods", "catalog_goods_restrictions", column: "diabetic_restriction_id"
+  add_foreign_key "catalog_goods", "catalog_goods_restrictions", column: "driver_restriction_id"
+  add_foreign_key "catalog_goods", "catalog_goods_restrictions", column: "pregnant_and_lactating_restriction_id"
+  add_foreign_key "catalog_goods", "catalog_goods_temperature_modes", column: "temperature_mode_id"
   add_foreign_key "catalog_goods_form_translations", "catalog_goods_forms", on_delete: :cascade
   add_foreign_key "catalog_goods_group_categories", "catalog_categories", column: "category_id"
   add_foreign_key "catalog_goods_group_categories", "catalog_goods_groups", column: "goods_group_id", on_delete: :cascade
@@ -274,6 +331,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120004) do
   add_foreign_key "catalog_goods_price_group_translations", "catalog_goods_price_groups", on_delete: :cascade
   add_foreign_key "catalog_goods_restriction_translations", "catalog_goods_restrictions", on_delete: :cascade
   add_foreign_key "catalog_goods_temperature_mode_translations", "catalog_goods_temperature_modes", on_delete: :cascade
+  add_foreign_key "catalog_goods_translations", "catalog_goods", column: "catalog_goods_id", on_delete: :cascade
   add_foreign_key "provider_links", "providers"
   add_foreign_key "sync_run_failures", "sync_runs", on_delete: :cascade
   add_foreign_key "sync_runs", "providers"
