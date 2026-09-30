@@ -20,6 +20,7 @@ class Catalog::Category < ApplicationRecord
                    format: { with: Catalog::SLUG_FORMAT }
   validates :depth, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :parent_is_not_self
+  validate :slug_is_unchanged, on: :update
 
   before_validation :assign_slug, on: :create
 
@@ -39,6 +40,10 @@ class Catalog::Category < ApplicationRecord
     return if slug.present? || name_uk.blank?
 
     self.slug = Catalog::SlugGenerator.call(name_uk, scope: self.class)
+  end
+
+  def slug_is_unchanged
+    errors.add(:slug, :invalid) if slug_changed?
   end
 
   def parent_is_not_self

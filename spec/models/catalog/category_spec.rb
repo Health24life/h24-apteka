@@ -35,6 +35,13 @@ RSpec.describe Catalog::Category do
       expect { category.update(slug: 'other') }.to raise_error(ActiveRecord::ReadonlyAttributeError)
     end
 
+    it 'refuses a slug changed by writing the attribute directly' do
+      category = create(:catalog_category)
+      category[:slug] = 'other'
+
+      expect(category).not_to be_valid
+    end
+
     it 'falls back to a fixed word for a name without letters' do
       expect(create(:catalog_category, name_uk: '!!!').slug).to eq('item')
     end
