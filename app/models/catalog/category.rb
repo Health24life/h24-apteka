@@ -11,6 +11,9 @@ class Catalog::Category < ApplicationRecord
 
   has_many :children, class_name: 'Catalog::Category', foreign_key: :parent_id, inverse_of: :parent,
                       dependent: :restrict_with_exception
+  has_many :goods_group_categories, class_name: 'Catalog::GoodsGroupCategory', inverse_of: :category,
+                                    dependent: :restrict_with_exception
+  has_many :goods_groups, through: :goods_group_categories
 
   validates :name_uk, presence: true
   validates :slug, presence: true, uniqueness: true, length: { maximum: Catalog::SLUG_MAX_LENGTH },

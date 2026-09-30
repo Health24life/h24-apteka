@@ -306,6 +306,14 @@ module ::Catalog
     def children=: (::Catalog::Category::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Category]) -> (::Catalog::Category::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::Category])
     def child_ids: () -> ::Array[::Integer]
     def child_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def goods_group_categories: () -> ::Catalog::GoodsGroupCategory::ActiveRecord_Associations_CollectionProxy
+    def goods_group_categories=: (::Catalog::GoodsGroupCategory::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroupCategory]) -> (::Catalog::GoodsGroupCategory::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroupCategory])
+    def goods_group_category_ids: () -> ::Array[::Integer]
+    def goods_group_category_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+    def goods_groups: () -> ::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy
+    def goods_groups=: (::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroup]) -> (::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroup])
+    def goods_group_ids: () -> ::Array[::Integer]
+    def goods_group_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
     def parent: () -> ::Catalog::Category?
     def parent=: (::Catalog::Category?) -> ::Catalog::Category?
@@ -371,6 +379,14 @@ end
 class ::Catalog::Category < ::ApplicationRecord
 end
 class ::Catalog::Category::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Catalog::GoodsGroupCategory < ::ApplicationRecord
+end
+class ::Catalog::GoodsGroupCategory::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Catalog::GoodsGroup < ::ApplicationRecord
+end
+class ::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end
 class ::Globalize::ActiveRecord::Translation < ::ActiveRecord::Base
 end

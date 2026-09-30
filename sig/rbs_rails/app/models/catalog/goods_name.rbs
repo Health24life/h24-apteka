@@ -1,10 +1,10 @@
 # resolve-type-names: false
 
 module ::Catalog
-  class ::Catalog::AtcClass < ::ApplicationRecord
-    extend ::ActiveRecord::Base::ClassMethods[::Catalog::AtcClass, ::Catalog::AtcClass::ActiveRecord_Relation, ::Integer]
+  class ::Catalog::GoodsName < ::ApplicationRecord
+    extend ::ActiveRecord::Base::ClassMethods[::Catalog::GoodsName, ::Catalog::GoodsName::ActiveRecord_Relation, ::Integer]
 
-    module ::Catalog::AtcClass::GeneratedAttributeMethods
+    module ::Catalog::GoodsName::GeneratedAttributeMethods
       def id: () -> ::Integer
 
       def id=: (::Integer) -> ::Integer
@@ -45,85 +45,45 @@ module ::Catalog
 
       def id_for_database: () -> ::Integer
 
-      def parent_id: () -> ::Integer?
+      def name: () -> ::String
 
-      def parent_id=: (::Integer?) -> ::Integer?
+      def name=: (::String) -> ::String
 
-      def parent_id?: () -> bool
+      def name?: () -> bool
 
-      def parent_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+      def name_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
-      def parent_id_change: () -> [ ::Integer?, ::Integer? ]
+      def name_change: () -> [ ::String?, ::String? ]
 
-      def parent_id_will_change!: () -> void
+      def name_will_change!: () -> void
 
-      def parent_id_was: () -> ::Integer?
+      def name_was: () -> ::String?
 
-      def parent_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+      def name_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
 
-      def parent_id_previous_change: () -> ::Array[::Integer?]?
+      def name_previous_change: () -> ::Array[::String?]?
 
-      def parent_id_previously_was: () -> ::Integer?
+      def name_previously_was: () -> ::String?
 
-      def parent_id_before_last_save: () -> ::Integer?
+      def name_before_last_save: () -> ::String?
 
-      def parent_id_change_to_be_saved: () -> ::Array[::Integer?]?
+      def name_change_to_be_saved: () -> ::Array[::String?]?
 
-      def parent_id_in_database: () -> ::Integer?
+      def name_in_database: () -> ::String?
 
-      def saved_change_to_parent_id: () -> ::Array[::Integer?]?
+      def saved_change_to_name: () -> ::Array[::String?]?
 
-      def saved_change_to_parent_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+      def saved_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
 
-      def will_save_change_to_parent_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+      def will_save_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
 
-      def restore_parent_id!: () -> void
+      def restore_name!: () -> void
 
-      def clear_parent_id_change: () -> void
+      def clear_name_change: () -> void
 
-      def parent_id_before_type_cast: () -> ::Integer?
+      def name_before_type_cast: () -> ::String
 
-      def parent_id_for_database: () -> ::Integer?
-
-      def atc_code: () -> ::String
-
-      def atc_code=: (::String) -> ::String
-
-      def atc_code?: () -> bool
-
-      def atc_code_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-      def atc_code_change: () -> [ ::String?, ::String? ]
-
-      def atc_code_will_change!: () -> void
-
-      def atc_code_was: () -> ::String?
-
-      def atc_code_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
-
-      def atc_code_previous_change: () -> ::Array[::String?]?
-
-      def atc_code_previously_was: () -> ::String?
-
-      def atc_code_before_last_save: () -> ::String?
-
-      def atc_code_change_to_be_saved: () -> ::Array[::String?]?
-
-      def atc_code_in_database: () -> ::String?
-
-      def saved_change_to_atc_code: () -> ::Array[::String?]?
-
-      def saved_change_to_atc_code?: (?from: ::String?, ?to: ::String?) -> bool
-
-      def will_save_change_to_atc_code?: (?from: ::String?, ?to: ::String?) -> bool
-
-      def restore_atc_code!: () -> void
-
-      def clear_atc_code_change: () -> void
-
-      def atc_code_before_type_cast: () -> ::String
-
-      def atc_code_for_database: () -> ::String
+      def name_for_database: () -> ::String
 
       def created_at: () -> ::ActiveSupport::TimeWithZone
 
@@ -205,9 +165,9 @@ module ::Catalog
 
       def updated_at_for_database: () -> ::Time
     end
-    include ::Catalog::AtcClass::GeneratedAttributeMethods
-    module ::Catalog::AtcClass::GeneratedAliasAttributeMethods
-      include ::Catalog::AtcClass::GeneratedAttributeMethods
+    include ::Catalog::GoodsName::GeneratedAttributeMethods
+    module ::Catalog::GoodsName::GeneratedAliasAttributeMethods
+      include ::Catalog::GoodsName::GeneratedAttributeMethods
 
       alias id_value id
 
@@ -249,7 +209,7 @@ module ::Catalog
 
       alias id_value_for_database id_for_database
     end
-    include ::Catalog::AtcClass::GeneratedAliasAttributeMethods
+    include ::Catalog::GoodsName::GeneratedAliasAttributeMethods
     def provider_links: () -> ::ProviderLink::ActiveRecord_Associations_CollectionProxy
     def provider_links=: (::ProviderLink::ActiveRecord_Associations_CollectionProxy | ::Array[::ProviderLink]) -> (::ProviderLink::ActiveRecord_Associations_CollectionProxy | ::Array[::ProviderLink])
     def provider_link_ids: () -> ::Array[::Integer]
@@ -258,60 +218,42 @@ module ::Catalog
     def providers=: (::Provider::ActiveRecord_Associations_CollectionProxy | ::Array[::Provider]) -> (::Provider::ActiveRecord_Associations_CollectionProxy | ::Array[::Provider])
     def provider_ids: () -> ::Array[::Integer]
     def provider_ids=: (::Array[::Integer]) -> ::Array[::Integer]
-    def translations: () -> ::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy
-    def translations=: (::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::AtcClass::Translation]) -> (::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::AtcClass::Translation])
-    def translation_ids: () -> ::Array[::Integer]
-    def translation_ids=: (::Array[::Integer]) -> ::Array[::Integer]
-    def children: () -> ::Catalog::AtcClass::ActiveRecord_Associations_CollectionProxy
-    def children=: (::Catalog::AtcClass::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::AtcClass]) -> (::Catalog::AtcClass::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::AtcClass])
-    def child_ids: () -> ::Array[::Integer]
-    def child_ids=: (::Array[::Integer]) -> ::Array[::Integer]
     def goods_groups: () -> ::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy
     def goods_groups=: (::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroup]) -> (::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy | ::Array[::Catalog::GoodsGroup])
     def goods_group_ids: () -> ::Array[::Integer]
     def goods_group_ids=: (::Array[::Integer]) -> ::Array[::Integer]
 
-    def parent: () -> ::Catalog::AtcClass?
-    def parent=: (::Catalog::AtcClass?) -> ::Catalog::AtcClass?
-    def reload_parent: () -> ::Catalog::AtcClass?
-    def build_parent: (?untyped) -> ::Catalog::AtcClass
-    def create_parent: (?untyped) -> ::Catalog::AtcClass
-    def create_parent!: (?untyped) -> ::Catalog::AtcClass
-
-    module ::Catalog::AtcClass::GeneratedAssociationMethods
+    module ::Catalog::GoodsName::GeneratedAssociationMethods
     end
-    include ::Catalog::AtcClass::GeneratedAssociationMethods
+    include ::Catalog::GoodsName::GeneratedAssociationMethods
 
-    def self.roots: () -> ::Catalog::AtcClass::ActiveRecord_Relation
-
-    module ::Catalog::AtcClass::GeneratedRelationMethods
-      def roots: () -> ::Catalog::AtcClass::ActiveRecord_Relation
+    module ::Catalog::GoodsName::GeneratedRelationMethods
     end
 
-    class ::Catalog::AtcClass::ActiveRecord_Relation < ::ActiveRecord::Relation
-      include ::Enumerable[::Catalog::AtcClass]
-      include ::Catalog::AtcClass::GeneratedRelationMethods
-      include ::ActiveRecord::Relation::Methods[::Catalog::AtcClass, ::Integer]
+    class ::Catalog::GoodsName::ActiveRecord_Relation < ::ActiveRecord::Relation
+      include ::Enumerable[::Catalog::GoodsName]
+      include ::Catalog::GoodsName::GeneratedRelationMethods
+      include ::ActiveRecord::Relation::Methods[::Catalog::GoodsName, ::Integer]
     end
 
-    class ::Catalog::AtcClass::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
-      include ::Enumerable[::Catalog::AtcClass]
-      include ::Catalog::AtcClass::GeneratedRelationMethods
-      include ::ActiveRecord::Relation::Methods[::Catalog::AtcClass, ::Integer]
+    class ::Catalog::GoodsName::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+      include ::Enumerable[::Catalog::GoodsName]
+      include ::Catalog::GoodsName::GeneratedRelationMethods
+      include ::ActiveRecord::Relation::Methods[::Catalog::GoodsName, ::Integer]
 
-      def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::AtcClass
-               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::AtcClass]
-      def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::AtcClass
-                | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::AtcClass]
-      def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::AtcClass
-                 | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::AtcClass]
-      def reload: () -> ::Array[::Catalog::AtcClass]
+      def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::GoodsName
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::GoodsName]
+      def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::GoodsName
+                | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::GoodsName]
+      def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Catalog::GoodsName
+                 | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Catalog::GoodsName]
+      def reload: () -> ::Array[::Catalog::GoodsName]
 
-      def replace: (::Array[::Catalog::AtcClass]) -> void
-      def delete: (*::Catalog::AtcClass | ::Integer) -> ::Array[::Catalog::AtcClass]
-      def destroy: (*::Catalog::AtcClass | ::Integer) -> ::Array[::Catalog::AtcClass]
-      def <<: (*::Catalog::AtcClass | ::Array[::Catalog::AtcClass]) -> self
-      def prepend: (*::Catalog::AtcClass | ::Array[::Catalog::AtcClass]) -> self
+      def replace: (::Array[::Catalog::GoodsName]) -> void
+      def delete: (*::Catalog::GoodsName | ::Integer) -> ::Array[::Catalog::GoodsName]
+      def destroy: (*::Catalog::GoodsName | ::Integer) -> ::Array[::Catalog::GoodsName]
+      def <<: (*::Catalog::GoodsName | ::Array[::Catalog::GoodsName]) -> self
+      def prepend: (*::Catalog::GoodsName | ::Array[::Catalog::GoodsName]) -> self
     end
   end
 end
@@ -328,21 +270,7 @@ class ::Provider < ::ApplicationRecord
 end
 class ::Provider::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end
-class ::Catalog::AtcClass::Translation < ::Globalize::ActiveRecord::Translation
-end
-class ::Catalog::AtcClass::Translation::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
-end
-class ::Catalog::AtcClass < ::ApplicationRecord
-end
-class ::Catalog::AtcClass::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
-end
 class ::Catalog::GoodsGroup < ::ApplicationRecord
 end
 class ::Catalog::GoodsGroup::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
-end
-class ::Globalize::ActiveRecord::Translation < ::ActiveRecord::Base
-end
-module ::Globalize
-end
-module ::Globalize::ActiveRecord
 end

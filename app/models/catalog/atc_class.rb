@@ -11,6 +11,8 @@ class Catalog::AtcClass < ApplicationRecord
 
   has_many :children, class_name: 'Catalog::AtcClass', foreign_key: :parent_id, inverse_of: :parent,
                       dependent: :restrict_with_exception
+  has_many :goods_groups, class_name: 'Catalog::GoodsGroup', inverse_of: :atc_class,
+                          dependent: :restrict_with_exception
 
   validates :atc_code, presence: true
   validate :parent_is_not_self
