@@ -1,6 +1,0 @@
-class H24Core::User < H24Core::ApplicationRecord
-  TEMP_EMAIL_PREFIX: String
-
-  def contact_email: () -> String?
-  def phone_digits: () -> String?
-end

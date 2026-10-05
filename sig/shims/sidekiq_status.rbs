@@ -1,7 +1,0 @@
-# sidekiq-status ships no signatures; declare only what the app touches.
-module Sidekiq
-  module Status
-    module Worker
-    end
-  end
-end
