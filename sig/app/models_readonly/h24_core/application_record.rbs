@@ -1,2 +1,0 @@
-class H24Core::ApplicationRecord < ActiveRecord::Base
-end

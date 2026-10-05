@@ -1,6 +1,0 @@
-class H24Core::Medication::Inn < H24Core::ApplicationRecord
-  include H24Core::HstoreTranslated
-  extend H24Core::HstoreTranslated::ClassMethods
-
-  def title: (?Symbol locale) -> String?
-end

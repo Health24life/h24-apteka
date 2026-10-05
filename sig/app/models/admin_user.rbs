@@ -1,5 +1,0 @@
-class AdminUser < ApplicationRecord
-  def self.ransackable_attributes: (?untyped auth_object) -> Array[String]
-
-  def active_for_authentication?: () -> bool
-end

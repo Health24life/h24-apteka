@@ -36,4 +36,4 @@ run = "docker compose down"
 run = ["bundle exec rbs collection install", "bundle exec rails rbs_rails:all"]
 
 [tasks.typecheck]
-run = ["bundle exec rbs collection install --frozen", "bundle exec rbs -I sig validate", "bundle exec steep check"]
+run = ["bundle exec rbs collection install --frozen", "bundle exec rails rbs_rails:all", "bundle exec rbs -I sig -I .rbs_rails validate", "bundle exec steep check"]

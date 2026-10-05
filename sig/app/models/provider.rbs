@@ -1,4 +1,0 @@
-class Provider < ApplicationRecord
-  KINDS: Array[String]
-  CODE_FORMAT: Regexp
-end
