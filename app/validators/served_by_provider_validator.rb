@@ -5,7 +5,8 @@
 class ServedByProviderValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     provider = record.provider
-    return if value.nil? || provider.nil? || value.provider_links.exists?(provider:)
+    return unless value && provider
+    return if value.provider_links.exists?(provider:)
 
     record.errors.add(attribute, :not_served_by_provider)
   end

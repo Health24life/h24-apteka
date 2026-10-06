@@ -10,7 +10,8 @@ class NotHiddenValidator < ActiveModel::EachValidator
   private
 
   def hidden?(value)
-    value.hidden? || (via && value.public_send(via).hidden?)
+    parent = via
+    value.hidden? || (parent ? value.public_send(parent).hidden? : false)
   end
 
   def via

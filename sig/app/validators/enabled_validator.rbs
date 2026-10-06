@@ -1,3 +1,7 @@
 class EnabledValidator < ActiveModel::EachValidator
-  def validate_each: (untyped record, Symbol attribute, untyped value) -> void
+  interface _Toggleable
+    def active?: () -> bool
+  end
+
+  def validate_each: (ActiveModel::Validations record, Symbol attribute, _Toggleable? value) -> void
 end

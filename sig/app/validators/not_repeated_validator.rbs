@@ -1,8 +1,14 @@
 class NotRepeatedValidator < ActiveModel::EachValidator
-  def validate_each: (untyped record, Symbol attribute, untyped value) -> void
+  interface _Repeatable
+    def persisted?: () -> bool
+    def id: () -> untyped
+    def errors: () -> ActiveModel::Errors
+  end
+
+  def validate_each: (_Repeatable record, Symbol attribute, untyped value) -> void
 
   private
 
-  def others: (untyped record) -> Array[untyped]
-  def same?: (untyped other, untyped record) -> bool
+  def others: (_Repeatable record) -> Array[untyped]
+  def same?: (untyped other, _Repeatable record) -> bool
 end
