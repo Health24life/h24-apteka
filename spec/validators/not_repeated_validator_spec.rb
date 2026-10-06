@@ -11,7 +11,7 @@ RSpec.describe NotRepeatedValidator do
 
       attr_accessor :goods_id, :others
 
-      validates :goods_id, not_repeated: { among: :others }
+      validates :goods_id, not_repeated: { among: ->(line) { line.others } }
     end
   end
 

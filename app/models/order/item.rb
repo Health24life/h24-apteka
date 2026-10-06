@@ -15,13 +15,10 @@ class Order::Item < ApplicationRecord
   validates :quantity, numericality: { greater_than_or_equal_to: MIN_QUANTITY, less_than: MAX_QUANTITY }
   # Price and availability are always fetched live, so a cart never stores them.
   validates :price, :total, absence: true
-  validates :goods_id, not_repeated: { among: :siblings }
+  validates :goods_id, not_repeated: { among: ->(item) { item.order ? item.order.items.to_a : [] } }
   validates :goods, served_by_provider: true, not_hidden: { via: :goods_group }, on: :create
   # A disabled provider may come back, so items that already exist stay; no new ones are added meanwhile.
   validates :provider, enabled: true, on: :create
-
-  # The other items of the same cart, in memory, for the repeat check.
-  def siblings = order ? order.items.to_a : []
 end
 
 # == Schema Information
