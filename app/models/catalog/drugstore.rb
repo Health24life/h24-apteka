@@ -9,6 +9,7 @@ class Catalog::Drugstore < ApplicationRecord
   belongs_to :brand, class_name: 'Catalog::DrugstoreBrand', optional: true, inverse_of: :drugstores
 
   has_one :address, class_name: 'Catalog::DrugstoreAddress', inverse_of: :drugstore, dependent: :delete
+  has_many :orders, class_name: '::Order', inverse_of: :drugstore, dependent: :restrict_with_exception
 
   validates :drugstore_legal_entity_name, presence: true
   validates :drugstore_legal_entity_code, presence: true, format: { with: LEGAL_ENTITY_CODE_FORMAT }
