@@ -13,7 +13,7 @@ class CreateOrdersAndOrderItems < ActiveRecord::Migration[8.1]
 
     add_index :orders, :token, unique: true
     add_index :orders, :share_token, unique: true
-    add_check_constraint :orders, "state IN ('cart')", name: 'orders_state_check'
+    add_check_constraint :orders, "state IN ('cart', 'submitted', 'submission_failed')", name: 'orders_state_check'
 
     create_table :order_items do |t|
       t.references :order, null: false, foreign_key: { on_delete: :cascade }

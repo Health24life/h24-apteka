@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
-  STATES = %w[cart].freeze
+  STATES = %w[cart submitted submission_failed].freeze
 
   enum :state, STATES.index_with(&:itself), validate: true
 
@@ -56,5 +56,5 @@ end
 #
 # Check Constraints
 #
-#  orders_state_check  (state::text = 'cart'::text)
+#  orders_state_check  (state::text = ANY (ARRAY['cart'::character varying, 'submitted'::character varying, 'submission_failed'::character varying]::text[]))
 #

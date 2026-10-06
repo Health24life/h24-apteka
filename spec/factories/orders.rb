@@ -45,5 +45,5 @@ end
 #
 # Check Constraints
 #
-#  orders_state_check  (state::text = 'cart'::text)
+#  orders_state_check  (state::text = ANY (ARRAY['cart'::character varying, 'submitted'::character varying, 'submission_failed'::character varying]::text[]))
 #

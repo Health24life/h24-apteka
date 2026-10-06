@@ -286,7 +286,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_140100) do
     t.index ["share_token"], name: "index_orders_on_share_token", unique: true
     t.index ["token"], name: "index_orders_on_token", unique: true
     t.index ["user_id"], name: "index_orders_on_user_id_cart", unique: true, where: "(((state)::text = 'cart'::text) AND (user_id IS NOT NULL))"
-    t.check_constraint "state::text = 'cart'::text", name: "orders_state_check"
+    t.check_constraint "state::text = ANY (ARRAY['cart'::character varying, 'submitted'::character varying, 'submission_failed'::character varying]::text[])", name: "orders_state_check"
   end
 
   create_table "provider_links", force: :cascade do |t|

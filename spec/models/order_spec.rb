@@ -13,6 +13,10 @@ RSpec.describe Order do
     expect(cart).to be_cart
   end
 
+  it 'knows the states of a sent order as well', :aggregate_failures do
+    described_class::STATES.each { |state| expect(build(:order, state:)).to be_valid }
+  end
+
   it 'refuses a state outside the known list' do
     expect(build(:order, state: 'archived')).not_to be_valid
   end
@@ -121,6 +125,13 @@ RSpec.describe Order do
       end
     end
 
+    it 'is not removed when it is no longer a cart and its last item is removed' do
+      sent = create(:order)
+      sent.update_column(:state, 'submitted') # rubocop:disable Rails/SkipsModelValidations
+
+      expect { sent.items.first.destroy! }.not_to change { described_class.exists?(sent.id) }.from(true)
+    end
+
     it 'is destroyed together with its items without errors', :aggregate_failures do
       cart = create(:order, items_count: 2)
 
@@ -156,6 +167,21 @@ RSpec.describe Order do
 
     it 'allows any number of guest carts' do
       expect(create_list(:order, 2, user_id: nil)).to all(be_persisted)
+    end
+
+    it 'lets a user start a new cart after the previous one was sent' do
+      user = create(:h24_core_user)
+      create(:order, user_id: user.id).update_column(:state, 'submitted') # rubocop:disable Rails/SkipsModelValidations
+
+      expect(build(:order, user_id: user.id)).to be_valid
+    end
+
+    it 'allows a user any number of orders that are no longer carts' do
+      user = create(:h24_core_user)
+      orders = create_list(:order, 2)
+      orders.each { |order| order.update_columns(user_id: user.id, state: 'submitted') } # rubocop:disable Rails/SkipsModelValidations
+
+      expect(orders.map(&:reload)).to all(have_attributes(user_id: user.id, state: 'submitted'))
     end
   end
 
@@ -200,6 +226,14 @@ RSpec.describe Order do
 
     it 'refuses a state outside the known list' do
       expect { store_row(row.merge(state: 'archived')) }.to raise_error(ActiveRecord::StatementInvalid)
+    end
+
+    it 'accepts every known state' do
+      rows = described_class::STATES.map do |state|
+        row.merge(state:, token: SecureRandom.hex(12), share_token: SecureRandom.hex(12))
+      end
+
+      expect { rows.each { |attributes| store_row(attributes) } }.not_to raise_error
     end
 
     it 'refuses a second cart of one user' do
@@ -251,5 +285,5 @@ end
 #
 # Check Constraints
 #
-#  orders_state_check  (state::text = 'cart'::text)
+#  orders_state_check  (state::text = ANY (ARRAY['cart'::character varying, 'submitted'::character varying, 'submission_failed'::character varying]::text[]))
 #
