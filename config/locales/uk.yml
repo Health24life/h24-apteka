@@ -24,3 +24,18 @@ uk:
           attributes:
             finished_at:
               before_start: не може бути раніше за початок
+        order:
+          attributes:
+            drugstore:
+              not_served_by_provider: не обслуговується провайдером замовлення
+              hidden: прихована адміністратором
+            provider:
+              disabled: вимкнений
+        order/item:
+          attributes:
+            goods:
+              not_served_by_provider: відсутній у каталозі провайдера замовлення
+              hidden: прихований адміністратором
+              repeated: уже є в замовленні
+            order:
+              provider_disabled: належить вимкненому провайдеру

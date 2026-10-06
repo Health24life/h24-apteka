@@ -54,3 +54,18 @@ en:
           attributes:
             finished_at:
               before_start: cannot be earlier than the start
+        order:
+          attributes:
+            drugstore:
+              not_served_by_provider: is not served by the provider of the order
+              hidden: is hidden by an administrator
+            provider:
+              disabled: is disabled
+        order/item:
+          attributes:
+            goods:
+              not_served_by_provider: is not in the catalog of the provider of the order
+              hidden: is hidden by an administrator
+              repeated: is already in the order
+            order:
+              provider_disabled: belongs to a disabled provider

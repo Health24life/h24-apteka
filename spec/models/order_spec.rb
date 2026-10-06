@@ -25,6 +25,70 @@ RSpec.describe Order do
     expect(saved.items.first.goods.order_items).to contain_exactly(saved.items.first)
   end
 
+  describe 'binding to a pharmacy and a provider' do
+    let(:refused) do
+      [ build(:order, serve_drugstore: false),
+        build(:order, drugstore: create(:catalog_drugstore, hidden: true)),
+        build(:order, provider: create(:provider, active: false)) ]
+    end
+
+    it 'refuses a pharmacy the provider does not serve', :aggregate_failures do
+      unserved = build(:order, serve_drugstore: false)
+
+      expect(unserved).not_to be_valid
+      expect(unserved.errors).to be_added(:drugstore, :not_served_by_provider)
+    end
+
+    it 'refuses a pharmacy that only another provider serves' do
+      drugstore = create(:catalog_drugstore)
+      ProviderLinking.link(create(:provider), drugstore)
+
+      expect(build(:order, drugstore:, serve_drugstore: false)).not_to be_valid
+    end
+
+    it 'refuses a pharmacy the administrator hid', :aggregate_failures do
+      hidden = build(:order, drugstore: create(:catalog_drugstore, hidden: true))
+
+      expect(hidden).not_to be_valid
+      expect(hidden.errors).to be_added(:drugstore, :hidden)
+    end
+
+    it 'accepts a pharmacy with incomplete data and a pharmacy withdrawn by the sync', :aggregate_failures do
+      expect(build(:order, drugstore: create(:catalog_drugstore, incomplete: true))).to be_valid
+      expect(build(:order, drugstore: create(:catalog_drugstore, withdrawn: true))).to be_valid
+    end
+
+    it 'refuses a disabled provider', :aggregate_failures do
+      disabled = build(:order, provider: create(:provider, active: false))
+
+      expect(disabled).not_to be_valid
+      expect(disabled.errors).to be_added(:provider, :disabled)
+    end
+
+    it 'leaves a saved cart alone when its provider is disabled later', :aggregate_failures do
+      saved = create(:order)
+      saved.provider.update!(active: false)
+
+      expect(saved.reload).to be_valid
+      expect(saved.save).to be(true)
+    end
+
+    it 'keeps the pharmacy and the provider fixed once saved', :aggregate_failures do
+      saved = create(:order)
+
+      expect { saved.update(drugstore_id: create(:catalog_drugstore).id) }
+        .to raise_error(ActiveRecord::ReadonlyAttributeError)
+      expect { saved.update(provider_id: create(:provider).id) }.to raise_error(ActiveRecord::ReadonlyAttributeError)
+    end
+
+    it 'words every refusal in the locale files', :aggregate_failures do
+      messages = refused.flat_map { |order| order.tap(&:validate).errors.full_messages }
+
+      expect(messages).not_to be_empty
+      expect(messages.grep(/translation missing/i)).to be_empty
+    end
+  end
+
   describe 'tokens' do
     it 'generates both tokens as soon as the cart is built', :aggregate_failures do
       expect(cart.token).to be_present
