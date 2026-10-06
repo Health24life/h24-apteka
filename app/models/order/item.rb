@@ -15,35 +15,13 @@ class Order::Item < ApplicationRecord
   validates :quantity, numericality: { greater_than_or_equal_to: MIN_QUANTITY, less_than: MAX_QUANTITY }
   # Price and availability are always fetched live, so a cart never stores them.
   validates :price, :total, absence: true
-  validate :goods_not_repeated
+  validates :goods_id, not_repeated: { among: :siblings }
   validates :goods, served_by_provider: true, not_hidden: { via: :goods_group }, on: :create
   # A disabled provider may come back, so items that already exist stay; no new ones are added meanwhile.
   validates :provider, enabled: true, on: :create
 
-  after_destroy :destroy_empty_cart
-
-  private
-
-  # An empty cart is never kept: removing its last item removes the order as well. Items that go away together with
-  # their cart must not try to destroy it a second time.
-  def destroy_empty_cart
-    return if destroyed_by_association
-
-    order.destroy! if order.cart? && !order.items.exists?
-  end
-
-  # Checked among the items of the cart in memory: a cart that is saved for the first time has no order_id yet,
-  # so a database uniqueness check would let the same SKU in twice.
-  def goods_not_repeated
-    return if goods_id.nil? || order.nil?
-
-    repeated = order.items.any? { |other| other.goods_id == goods_id && !same_item?(other) }
-    errors.add(:goods, :repeated) if repeated
-  end
-
-  def same_item?(other)
-    other.equal?(self) || (persisted? && other.id == id)
-  end
+  # The other items of the same cart, in memory, for the repeat check.
+  def siblings = order ? order.items.to_a : []
 end
 
 # == Schema Information

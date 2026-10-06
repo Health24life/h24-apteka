@@ -16,11 +16,9 @@ class Order < ApplicationRecord
   # The core lives in another database, so there is no foreign key; no user means a guest, known by the token.
   belongs_to :user, class_name: 'H24Core::User', optional: true, inverse_of: :orders
 
-  # :destroy, not :delete_all: items.delete must run the empty-cart callback of the item too. Rails still deletes
-  # with plain SQL on delete_all and clear even then, so both are redirected to destroy_all.
-  has_many :items, class_name: 'Order::Item', inverse_of: :order, dependent: :destroy do
-    def delete_all(*) = destroy_all
-  end
+  # An item has no callbacks of its own, so the cart deletes its items in one statement. A cart that loses its last
+  # item is removed by Orders::RemoveItem.
+  has_many :items, class_name: 'Order::Item', inverse_of: :order, dependent: :delete_all
 
   validates :items, presence: true
   validates :user_id, uniqueness: { conditions: -> { cart } }, allow_nil: true, if: :cart?

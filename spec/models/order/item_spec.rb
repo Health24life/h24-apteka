@@ -47,7 +47,7 @@ RSpec.describe Order::Item do
       repeated = build(:order_item, order: cart, goods: cart.items.first.goods)
 
       expect(repeated).not_to be_valid
-      expect(repeated.errors).to be_added(:goods, :repeated)
+      expect(repeated.errors).to be_added(:goods_id, :repeated)
     end
 
     it 'cannot repeat inside a cart that is saved for the first time' do

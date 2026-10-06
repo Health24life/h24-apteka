@@ -1,0 +1,8 @@
+class NotRepeatedValidator < ActiveModel::EachValidator
+  def validate_each: (untyped record, Symbol attribute, untyped value) -> void
+
+  private
+
+  def others: (untyped record) -> Array[untyped]
+  def same?: (untyped other, untyped record) -> bool
+end

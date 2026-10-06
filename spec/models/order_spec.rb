@@ -101,52 +101,11 @@ RSpec.describe Order do
       expect(empty.errors).to be_added(:items, :blank)
     end
 
-    {
-      'item.destroy!' => ->(_cart, item) { item.destroy! },
-      'items.destroy' => ->(cart, item) { cart.items.destroy(item) },
-      'items.delete' => ->(cart, item) { cart.items.delete(item) }
-    }.each do |way, remove|
-      it "is removed together with its last item through #{way}" do
-        cart = create(:order, items_count: 2)
-        first, last = cart.items.to_a
-        remove.call(cart, first)
-
-        expect { remove.call(cart, last) }.to change { described_class.exists?(cart.id) }.from(true).to(false)
-      end
-    end
-
-    %i[clear delete_all destroy_all].each do |way|
-      it "is removed when all its items are removed through items.#{way}" do
-        cart = create(:order, items_count: 2)
-
-        cart.items.public_send(way)
-
-        expect(described_class.exists?(cart.id)).to be(false)
-      end
-    end
-
-    it 'is not removed when it is no longer a cart and its last item is removed' do
-      sent = create(:order)
-      sent.update_column(:state, 'submitted') # rubocop:disable Rails/SkipsModelValidations
-
-      expect { sent.items.first.destroy! }.not_to change { described_class.exists?(sent.id) }.from(true)
-    end
-
     it 'is destroyed together with its items without errors', :aggregate_failures do
       cart = create(:order, items_count: 2)
 
       expect { cart.destroy! }.to change(Order::Item, :count).by(-2)
       expect(described_class.exists?(cart.id)).to be(false)
-    end
-
-    it 'does not look for the remaining items of each item destroyed together with it' do
-      cart = create(:order, items_count: 2)
-      queries = []
-      record = ->(*, payload) { queries << payload[:sql] }
-
-      ActiveSupport::Notifications.subscribed(record, 'sql.active_record') { cart.destroy! }
-
-      expect(queries.grep(/SELECT 1 AS one FROM "order_items"/)).to be_empty
     end
   end
 

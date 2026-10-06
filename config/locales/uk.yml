@@ -16,6 +16,7 @@ uk:
   errors:
     messages:
       invalid_week_working_hours: має містити сім значень — по одному на кожен день тижня — або бути порожнім
+      repeated: повторюється
       not_served_by_provider: немає в каталозі провайдера замовлення
       hidden: приховано адміністратором
       disabled: вимкнено
@@ -27,7 +28,3 @@ uk:
           attributes:
             finished_at:
               before_start: не може бути раніше за початок
-        order/item:
-          attributes:
-            goods:
-              repeated: уже є в замовленні

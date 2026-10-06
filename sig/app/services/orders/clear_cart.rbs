@@ -1,0 +1,6 @@
+class Orders::ClearCart
+  def self.call: (Order order) -> Order
+
+  def initialize: (Order order) -> void
+  def call: () -> Order
+end
