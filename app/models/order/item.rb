@@ -19,7 +19,17 @@ class Order::Item < ApplicationRecord
   validate :goods_not_hidden, on: :create
   validate :provider_enabled, on: :create
 
+  after_destroy :destroy_empty_cart
+
   private
+
+  # An empty cart is never kept: removing its last item removes the order as well. Items that go away together with
+  # their cart must not try to destroy it a second time.
+  def destroy_empty_cart
+    return if destroyed_by_association
+
+    order.destroy! if order.cart? && !order.items.exists?
+  end
 
   # Checked among the items of the cart in memory: a cart that is saved for the first time has no order_id yet,
   # so a database uniqueness check would let the same SKU in twice.

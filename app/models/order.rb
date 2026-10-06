@@ -16,8 +16,13 @@ class Order < ApplicationRecord
   belongs_to :drugstore, class_name: 'Catalog::Drugstore', inverse_of: :orders
   belongs_to :provider, inverse_of: :orders
 
-  has_many :items, class_name: 'Order::Item', inverse_of: :order, dependent: :destroy
+  # :destroy, not :delete_all: items.delete must run the empty-cart callback of the item too. Rails still deletes
+  # with plain SQL on delete_all and clear even then, so both are redirected to destroy_all.
+  has_many :items, class_name: 'Order::Item', inverse_of: :order, dependent: :destroy do
+    def delete_all(*) = destroy_all
+  end
 
+  validates :items, presence: true
   validate :drugstore_served_by_provider, on: :create
   validate :drugstore_not_hidden, on: :create
   validate :provider_enabled, on: :create
