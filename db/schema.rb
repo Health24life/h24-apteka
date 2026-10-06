@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -140,11 +140,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
     t.boolean "hidden", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug", null: false
     t.index ["goods_group_id"], name: "index_catalog_goods_on_goods_group_id"
+    t.index ["slug"], name: "index_catalog_goods_on_slug", unique: true
     t.check_constraint "jsonb_typeof(image_paths) = 'array'::text", name: "catalog_goods_image_paths_check"
     t.check_constraint "pack_quantity_in_pack IS NULL OR pack_quantity_in_pack >= 0", name: "catalog_goods_in_pack_check"
     t.check_constraint "pack_quantity_in_unit IS NULL OR pack_quantity_in_unit >= 0", name: "catalog_goods_in_unit_check"
     t.check_constraint "pack_quantity_unit_in_pack IS NULL OR pack_quantity_unit_in_pack >= 0", name: "catalog_goods_unit_in_pack_check"
+    t.check_constraint "slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100", name: "catalog_goods_slug_check"
   end
 
   create_table "catalog_goods_forms", force: :cascade do |t|

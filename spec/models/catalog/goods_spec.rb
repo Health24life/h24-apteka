@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Catalog::Goods do
   it_behaves_like 'a translatable catalog record', :catalog_goods
+  it_behaves_like 'a sluggable catalog record', :catalog_goods
 
   it 'keeps translations in the explicitly named table' do
     goods = create(:catalog_goods, name_uk: 'Аспірин')
@@ -140,6 +141,7 @@ end
 #  pack_quantity_unit_in_pack            :integer
 #  pack_unit_name                        :string
 #  release_form                          :string
+#  slug                                  :string           not null
 #  withdrawn                             :boolean          default(FALSE), not null
 #  created_at                            :datetime         not null
 #  updated_at                            :datetime         not null
@@ -158,6 +160,7 @@ end
 # Indexes
 #
 #  index_catalog_goods_on_goods_group_id  (goods_group_id)
+#  index_catalog_goods_on_slug            (slug) UNIQUE
 #
 # Foreign Keys
 #
@@ -177,5 +180,6 @@ end
 #  catalog_goods_image_paths_check   (jsonb_typeof(image_paths) = 'array'::text)
 #  catalog_goods_in_pack_check       (pack_quantity_in_pack IS NULL OR pack_quantity_in_pack >= 0)
 #  catalog_goods_in_unit_check       (pack_quantity_in_unit IS NULL OR pack_quantity_in_unit >= 0)
+#  catalog_goods_slug_check          (slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100)
 #  catalog_goods_unit_in_pack_check  (pack_quantity_unit_in_pack IS NULL OR pack_quantity_unit_in_pack >= 0)
 #
