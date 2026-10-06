@@ -1,0 +1,22 @@
+class Catalog::InstructionParser
+  type draft = { code: String, source_title: String, body: Array[String] }
+
+  ALLOWED_TAGS: Array[String]
+  DROPPED_WITH_CONTENT: String
+  MIN_SECTIONS: Integer
+  LEADING_PUNCTUATION: Regexp
+
+  def self.call: (String? html) -> Catalog::ParsedInstruction
+
+  def call: (String? html) -> Catalog::ParsedInstruction
+
+  private
+
+  def sanitize: (String html) -> String
+  def split: (Nokogiri::XML::DocumentFragment fragment) -> Array[Catalog::ParsedInstruction::Section]
+  def collect: (Nokogiri::XML::Node node, Array[draft] drafts) -> void
+  def heading_of: (Nokogiri::XML::Node node) -> Nokogiri::XML::Node?
+  def rest_after: (Nokogiri::XML::Node paragraph, Nokogiri::XML::Node heading) -> String?
+  def significant?: (Nokogiri::XML::Node node) -> bool
+  def number: (Array[draft] drafts) -> Array[Catalog::ParsedInstruction::Section]
+end
