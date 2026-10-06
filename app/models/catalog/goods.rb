@@ -8,7 +8,7 @@ class Catalog::Goods < ApplicationRecord
   RESTRICTIONS = %i[adult_restriction child_restriction diabetic_restriction driver_restriction
                     pregnant_and_lactating_restriction].freeze
 
-  translatable :name, backend: :table
+  translatable :name, :instruction_html, backend: :table
 
   belongs_to :goods_group, class_name: 'Catalog::GoodsGroup', inverse_of: :goods
   belongs_to :form, class_name: 'Catalog::GoodsForm', optional: true, inverse_of: :goods
@@ -49,7 +49,7 @@ end
 #  hidden                                :boolean          default(FALSE), not null
 #  image_paths                           :jsonb            not null
 #  in_medication_program                 :boolean          default(FALSE), not null
-#  instruction_html                      :text
+#  instruction_source_html               :text
 #  is_recipe                             :boolean          default(FALSE), not null
 #  is_strict_recipe                      :boolean          default(FALSE), not null
 #  mnn                                   :string

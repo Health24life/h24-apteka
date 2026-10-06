@@ -17,7 +17,7 @@ end
 #  hidden                                :boolean          default(FALSE), not null
 #  image_paths                           :jsonb            not null
 #  in_medication_program                 :boolean          default(FALSE), not null
-#  instruction_html                      :text
+#  instruction_source_html               :text
 #  is_recipe                             :boolean          default(FALSE), not null
 #  is_strict_recipe                      :boolean          default(FALSE), not null
 #  mnn                                   :string

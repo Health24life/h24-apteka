@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_120001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -132,7 +132,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
     t.integer "pack_quantity_unit_in_pack"
     t.integer "pack_quantity_in_unit"
     t.jsonb "image_paths", default: [], null: false
-    t.text "instruction_html"
     t.boolean "is_recipe", default: false, null: false
     t.boolean "is_strict_recipe", default: false, null: false
     t.boolean "in_medication_program", default: false, null: false
@@ -141,6 +140,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "slug", null: false
+    t.text "instruction_source_html"
     t.index ["goods_group_id"], name: "index_catalog_goods_on_goods_group_id"
     t.index ["slug"], name: "index_catalog_goods_on_slug", unique: true
     t.check_constraint "jsonb_typeof(image_paths) = 'array'::text", name: "catalog_goods_image_paths_check"
@@ -226,6 +226,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "instruction_html"
     t.index ["catalog_goods_id", "locale"], name: "index_catalog_goods_translations_uniqueness", unique: true
   end
 

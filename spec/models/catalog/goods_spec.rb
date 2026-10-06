@@ -119,6 +119,38 @@ RSpec.describe Catalog::Goods do
 
     expect { link.linkable.destroy }.to raise_error(ActiveRecord::DeleteRestrictionError)
   end
+
+  describe 'instruction' do
+    def stored_translation(goods, column)
+      ActiveRecord::Base.connection.select_value(
+        "SELECT #{column} FROM catalog_goods_translations WHERE catalog_goods_id = #{goods.id} AND locale = 'uk'"
+      )
+    end
+
+    it 'keeps the cleaned instruction as the Ukrainian translation' do
+      goods = create(:catalog_goods, instruction_html_uk: '<p>Таблетки.</p>')
+
+      expect(stored_translation(goods, :instruction_html)).to eq('<p>Таблетки.</p>')
+    end
+
+    it 'shows the Ukrainian instruction when the interface language has no translation' do
+      goods = create(:catalog_goods, instruction_html_uk: '<p>Таблетки.</p>')
+
+      expect(I18n.with_locale(:en) { goods.reload.instruction_html }).to eq('<p>Таблетки.</p>')
+    end
+
+    it 'allows a SKU without an instruction' do
+      expect(create(:catalog_goods).instruction_html).to be_nil
+    end
+
+    it "keeps the provider's source instruction untouched" do
+      source = '<p onclick="x"><b>Показання</b></p><script>alert(1)</script>'
+
+      goods = create(:catalog_goods, instruction_source_html: source)
+
+      expect(goods.reload.instruction_source_html).to eq(source)
+    end
+  end
 end
 
 # == Schema Information
@@ -131,7 +163,7 @@ end
 #  hidden                                :boolean          default(FALSE), not null
 #  image_paths                           :jsonb            not null
 #  in_medication_program                 :boolean          default(FALSE), not null
-#  instruction_html                      :text
+#  instruction_source_html               :text
 #  is_recipe                             :boolean          default(FALSE), not null
 #  is_strict_recipe                      :boolean          default(FALSE), not null
 #  mnn                                   :string
