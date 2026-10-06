@@ -107,7 +107,7 @@ RSpec.describe Order::Item do
       added = build(:order_item, order: cart)
 
       expect(added).not_to be_valid
-      expect(added.errors).to be_added(:order, :provider_disabled)
+      expect(added.errors).to be_added(:provider, :disabled)
     end
 
     it 'does not matter for an item that is already in the cart' do

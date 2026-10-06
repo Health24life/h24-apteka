@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Order::Item < ApplicationRecord
-  include ProviderServed
-
   # Mirrors decimal(12,4): below the minimum the column rounds down to zero, from the maximum it does not fit.
   MIN_QUANTITY = BigDecimal('0.0001')
   MAX_QUANTITY = BigDecimal(10**8)
@@ -10,14 +8,17 @@ class Order::Item < ApplicationRecord
   belongs_to :order, inverse_of: :items, touch: true
   belongs_to :goods, class_name: 'Catalog::Goods', optional: true, inverse_of: :order_items
 
+  # The provider of an item is the provider of its cart; the validators below read it from here.
+  delegate :provider, to: :order, allow_nil: true
+
   validates :goods, presence: true
   validates :quantity, numericality: { greater_than_or_equal_to: MIN_QUANTITY, less_than: MAX_QUANTITY }
   # Price and availability are always fetched live, so a cart never stores them.
   validates :price, :total, absence: true
   validate :goods_not_repeated
-  validate :goods_served_by_provider, on: :create
-  validate :goods_not_hidden, on: :create
-  validate :provider_enabled, on: :create
+  validates :goods, served_by_provider: true, not_hidden: { via: :goods_group }, on: :create
+  # A disabled provider may come back, so items that already exist stay; no new ones are added meanwhile.
+  validates :provider, enabled: true, on: :create
 
   after_destroy :destroy_empty_cart
 
@@ -42,19 +43,6 @@ class Order::Item < ApplicationRecord
 
   def same_item?(other)
     other.equal?(self) || (persisted? && other.id == id)
-  end
-
-  def goods_served_by_provider
-    validate_served_by_provider(:goods, order&.provider)
-  end
-
-  def goods_not_hidden
-    errors.add(:goods, :hidden) if goods && (goods.hidden? || goods.goods_group.hidden?)
-  end
-
-  # A disabled provider may come back, so items that already exist stay; no new ones are added meanwhile.
-  def provider_enabled
-    errors.add(:order, :provider_disabled) if order&.provider && !order.provider.active?
   end
 end
 

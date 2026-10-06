@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
-  include ProviderServed
-
   STATES = %w[cart].freeze
 
   enum :state, STATES.index_with(&:itself), validate: true
@@ -26,24 +24,9 @@ class Order < ApplicationRecord
 
   validates :items, presence: true
   validates :user_id, uniqueness: { conditions: -> { cart } }, allow_nil: true, if: :cart?
-  validate :drugstore_served_by_provider, on: :create
-  validate :drugstore_not_hidden, on: :create
-  validate :provider_enabled, on: :create
-
-  private
-
-  def drugstore_served_by_provider
-    validate_served_by_provider(:drugstore, provider)
-  end
-
-  def drugstore_not_hidden
-    errors.add(:drugstore, :hidden) if drugstore&.hidden?
-  end
-
   # A disabled provider may come back, so carts that already exist stay; they just cannot be created.
-  def provider_enabled
-    errors.add(:provider, :disabled) if provider && !provider.active?
-  end
+  validates :drugstore, served_by_provider: true, not_hidden: true, on: :create
+  validates :provider, enabled: true, on: :create
 end
 
 # == Schema Information

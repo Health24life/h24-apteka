@@ -1,0 +1,8 @@
+class NotHiddenValidator < ActiveModel::EachValidator
+  def validate_each: (untyped record, Symbol attribute, untyped value) -> void
+
+  private
+
+  def hidden?: (untyped value) -> bool
+  def via: () -> Symbol?
+end
