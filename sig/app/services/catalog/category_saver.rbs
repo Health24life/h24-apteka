@@ -1,0 +1,3 @@
+class Catalog::CategorySaver
+  def self.call: (Catalog::Category category) -> Catalog::Category
+end
