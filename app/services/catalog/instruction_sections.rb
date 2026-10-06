@@ -29,7 +29,8 @@ module Catalog::InstructionSections
   CODES = ALL.map(&:code).freeze
   CODE_BY_SYNONYM = ALL.flat_map { |section| section.synonyms.map { [ it, section.code ] } }.to_h.freeze
 
-  # Latin letters that look Cyrillic slip into Ukrainian texts typed on a mixed keyboard.
+  # Latin letters that look Cyrillic slip into Ukrainian texts typed on a mixed keyboard. The two strings look alike
+  # on purpose: the first is ASCII, the second is Cyrillic, letter for letter.
   LATIN_LOOKALIKES = 'aceiopxyABCEHIKMOPTXY'
   CYRILLIC_LETTERS = 'асеіорхуАВСЕНІКМОРТХУ'
 

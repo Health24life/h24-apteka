@@ -67,6 +67,12 @@ RSpec.describe Catalog::InstructionSections do
     expect(described_class.code_for('TEPMIН ПPИДАТНОСТІ')).to eq('termin-prydatnosti')
   end
 
+  it 'maps each Latin lookalike to a Cyrillic letter', :aggregate_failures do
+    expect(described_class::LATIN_LOOKALIKES).to be_ascii_only
+    expect(described_class::CYRILLIC_LETTERS).to match(/\A\p{Cyrillic}+\z/)
+    expect(described_class::CYRILLIC_LETTERS.length).to eq(described_class::LATIN_LOOKALIKES.length)
+  end
+
   it 'does not recognise a heading outside the list' do
     expect(described_class.code_for('Діти')).to be_nil
   end
