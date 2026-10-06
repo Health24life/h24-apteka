@@ -62,6 +62,11 @@ RSpec.describe Catalog::InstructionSections do
     expect(described_class.code_for('Лiкарська форма.')).to eq('likarska-forma')
   end
 
+  it 'recognises an upper-case heading typed with Latin letters that look Cyrillic', :aggregate_failures do
+    expect(described_class.code_for('ПОKАЗАHHЯ')).to eq('pokazannia')
+    expect(described_class.code_for('TEPMIН ПPИДАТНОСТІ')).to eq('termin-prydatnosti')
+  end
+
   it 'does not recognise a heading outside the list' do
     expect(described_class.code_for('Діти')).to be_nil
   end

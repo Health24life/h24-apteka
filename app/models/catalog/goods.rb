@@ -20,7 +20,6 @@ class Catalog::Goods < ApplicationRecord
   end
   # The core lives in another database, so there is no foreign key and the link is set by the import.
   belongs_to :core_inn, class_name: 'H24Core::Medication::Inn', optional: true, inverse_of: false
-  # destroy, not delete_all: the section texts live in their own translation rows.
   has_many :instruction_sections, -> { order(:position) }, class_name: 'Catalog::GoodsInstructionSection',
                                                            inverse_of: :goods, dependent: :destroy
 

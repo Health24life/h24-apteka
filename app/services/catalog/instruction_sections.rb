@@ -30,10 +30,10 @@ module Catalog::InstructionSections
   CODE_BY_SYNONYM = ALL.flat_map { |section| section.synonyms.map { [ it, section.code ] } }.to_h.freeze
 
   # Latin letters that look Cyrillic slip into Ukrainian texts typed on a mixed keyboard.
-  LATIN_LOOKALIKES = 'aceiopxy'
-  CYRILLIC_LETTERS = 'асеіорху'
+  LATIN_LOOKALIKES = 'aceiopxyABCEHIKMOPTXY'
+  CYRILLIC_LETTERS = 'асеіорхуАВСЕНІКМОРТХУ'
 
   def self.code_for(heading) = CODE_BY_SYNONYM[normalize(heading)]
 
-  def self.normalize(heading) = heading.squish.downcase.tr(LATIN_LOOKALIKES, CYRILLIC_LETTERS).sub(/[\s.:]+\z/, '')
+  def self.normalize(heading) = heading.squish.tr(LATIN_LOOKALIKES, CYRILLIC_LETTERS).downcase.sub(/[\s.:]+\z/, '')
 end

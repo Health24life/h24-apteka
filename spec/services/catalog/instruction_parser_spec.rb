@@ -81,6 +81,12 @@ RSpec.describe Catalog::InstructionParser do
       expect(section.body_html).to eq('<p>вода.</p>')
     end
 
+    it 'drops a non-breaking space and punctuation left outside the bold heading', :aggregate_failures do
+      result = parse('<p><b>Склад</b>&nbsp;: вода.</p><p><b>Лікарська форма.</b>&nbsp;Таблетки.</p>')
+
+      expect(result.sections.map(&:body_html)).to eq([ '<p>вода.</p>', '<p>Таблетки.</p>' ])
+    end
+
     it 'does not take bold text inside a paragraph for a heading' do
       result = parse('<p><b>Склад.</b></p><p>Спазмалгон<b><sup>®</sup></b> містить метамізол.</p>' \
                      '<p><b>Показання.</b></p><p>Біль.</p>')

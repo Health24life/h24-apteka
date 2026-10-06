@@ -7,8 +7,8 @@ class Catalog::InstructionParser
   # The safe-list sanitizer drops these tags but keeps their text.
   DROPPED_WITH_CONTENT = 'script, style'
   MIN_SECTIONS = 2
-  # Punctuation left outside the bold heading, as in <b>Склад</b>: ...
-  LEADING_PUNCTUATION = /\A[[:space:].:]+/
+  # Punctuation left outside the bold heading, as in <b>Склад</b>: ... Nokogiri writes a non-breaking space as &nbsp;.
+  LEADING_PUNCTUATION = /\A(?:[[:space:].:]|&nbsp;)+/
 
   def self.call(html) = new.call(html)
 
