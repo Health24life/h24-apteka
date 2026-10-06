@@ -34,6 +34,7 @@ end
 RSpec.configure do |config|
   config.include JwtHelper, type: :request
   config.include JwtHelper, type: :controller
+  config.include TranslatedNames, type: :model
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [

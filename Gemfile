@@ -68,6 +68,9 @@ gem 'ostruct', '~> 0.6'
 gem 'rswag-api', '2.17.0'
 gem 'rswag-ui', '2.17.0'
 
+gem 'mobility', '~> 1.3'
+gem 'uklatn', '~> 1.20'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', platforms: %i[mri windows], require: 'debug/prelude'

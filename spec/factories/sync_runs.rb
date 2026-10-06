@@ -18,13 +18,6 @@ FactoryBot.define do
       error_message { 'boom' }
     end
   end
-
-  factory :sync_run_failure, class: 'SyncRun::Failure' do
-    sync_run
-    entity_type { 'Catalog::Drugstore' }
-    sequence(:external_id, &:to_s)
-    error_class { 'StandardError' }
-  end
 end
 
 # == Schema Information

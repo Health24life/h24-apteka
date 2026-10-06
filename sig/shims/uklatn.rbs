@@ -1,0 +1,5 @@
+# uklatn ships no signatures; declare only what the app touches.
+class UkrainianLatin
+  def initialize: () -> void
+  def encode: (String text, ?String table) -> String
+end

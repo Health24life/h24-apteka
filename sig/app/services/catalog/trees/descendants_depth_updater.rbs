@@ -1,0 +1,5 @@
+class Catalog::Trees::DescendantsDepthUpdater
+  STATEMENT: String
+
+  def self.call: (Catalog::Category category) -> Integer
+end
