@@ -139,6 +139,26 @@ RSpec.describe Order do
     end
   end
 
+  describe 'owner' do
+    it 'is a core user or nobody, meaning a guest', :aggregate_failures do
+      expect(build(:order, user_id: create(:h24_core_user).id)).to be_valid
+      expect(build(:order, user_id: nil)).to be_valid
+    end
+
+    it 'allows one cart per user', :aggregate_failures do
+      user = create(:h24_core_user)
+      create(:order, user_id: user.id)
+      second = build(:order, user_id: user.id)
+
+      expect(second).not_to be_valid
+      expect(second.errors).to be_of_kind(:user_id, :taken)
+    end
+
+    it 'allows any number of guest carts' do
+      expect(create_list(:order, 2, user_id: nil)).to all(be_persisted)
+    end
+  end
+
   describe 'tokens' do
     it 'generates both tokens as soon as the cart is built', :aggregate_failures do
       expect(cart.token).to be_present
@@ -182,6 +202,18 @@ RSpec.describe Order do
       expect { store_row(row.merge(state: 'archived')) }.to raise_error(ActiveRecord::StatementInvalid)
     end
 
+    it 'refuses a second cart of one user' do
+      first = create(:order, user_id: create(:h24_core_user).id)
+
+      expect { store_row(row.merge(user_id: first.user_id)) }.to raise_error(ActiveRecord::RecordNotUnique)
+    end
+
+    it 'allows any number of guest carts' do
+      other = row.merge(token: SecureRandom.hex(12), share_token: SecureRandom.hex(12))
+
+      expect { [ row, other ].each { |attributes| store_row(attributes) } }.not_to raise_error
+    end
+
     it 'refuses a cart of a pharmacy that does not exist' do
       expect { store_row(row.merge(drugstore_id: 0)) }.to raise_error(ActiveRecord::InvalidForeignKey)
     end
@@ -208,8 +240,9 @@ end
 #
 # Indexes
 #
-#  index_orders_on_share_token  (share_token) UNIQUE
-#  index_orders_on_token        (token) UNIQUE
+#  index_orders_on_share_token   (share_token) UNIQUE
+#  index_orders_on_token         (token) UNIQUE
+#  index_orders_on_user_id_cart  (user_id) UNIQUE WHERE (((state)::text = 'cart'::text) AND (user_id IS NOT NULL))
 #
 # Foreign Keys
 #

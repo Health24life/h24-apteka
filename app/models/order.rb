@@ -15,6 +15,8 @@ class Order < ApplicationRecord
 
   belongs_to :drugstore, class_name: 'Catalog::Drugstore', inverse_of: :orders
   belongs_to :provider, inverse_of: :orders
+  # The core lives in another database, so there is no foreign key; no user means a guest, known by the token.
+  belongs_to :user, class_name: 'H24Core::User', optional: true, inverse_of: :orders
 
   # :destroy, not :delete_all: items.delete must run the empty-cart callback of the item too. Rails still deletes
   # with plain SQL on delete_all and clear even then, so both are redirected to destroy_all.
@@ -23,6 +25,7 @@ class Order < ApplicationRecord
   end
 
   validates :items, presence: true
+  validates :user_id, uniqueness: { conditions: -> { cart } }, allow_nil: true, if: :cart?
   validate :drugstore_served_by_provider, on: :create
   validate :drugstore_not_hidden, on: :create
   validate :provider_enabled, on: :create
@@ -59,8 +62,9 @@ end
 #
 # Indexes
 #
-#  index_orders_on_share_token  (share_token) UNIQUE
-#  index_orders_on_token        (token) UNIQUE
+#  index_orders_on_share_token   (share_token) UNIQUE
+#  index_orders_on_token         (token) UNIQUE
+#  index_orders_on_user_id_cart  (user_id) UNIQUE WHERE (((state)::text = 'cart'::text) AND (user_id IS NOT NULL))
 #
 # Foreign Keys
 #
