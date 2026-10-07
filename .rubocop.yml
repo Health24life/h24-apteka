@@ -16,7 +16,8 @@ Metrics/BlockLength:
     - 'app/admin/**/*'
     - 'spec/**/*'
 
-# annotaterb prints each check constraint of a table on a single comment line.
+# annotaterb prints each check constraint and each index of a table on a single comment line.
 Layout/LineLength:
   AllowedPatterns:
     - '\A#  \w+_check +\('
+    - '\A#  index_\w+ +\('

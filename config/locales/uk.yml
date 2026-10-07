@@ -13,8 +13,14 @@ uk:
       umovy-zberihannia: Умови зберігання
       termin-prydatnosti: Термін придатності
       katehoriia-vidpusku: Категорія відпуску
+  orders:
+    partner_statuses:
+      created: Створено
+      processed_by_pharmacy: Оброблено в аптеці
+      canceled: Скасовано
   errors:
     messages:
+      delivery_not_supported: "недоступна: провайдер не підтримує доставку"
       invalid_week_working_hours: має містити сім значень — по одному на кожен день тижня — або бути порожнім
       repeated: повторюється
       not_served_by_provider: немає в каталозі провайдера замовлення

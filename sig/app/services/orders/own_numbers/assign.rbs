@@ -1,0 +1,13 @@
+class Orders::OwnNumbers::Assign
+  LENGTH: Integer
+  ALPHABET: Array[String]
+
+  def self.call: (Order order) -> Order
+
+  def initialize: (Order order) -> void
+  def call: () -> Order
+
+  private
+
+  def free_number: () -> String
+end

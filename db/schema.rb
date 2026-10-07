@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_140100) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_07_100100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -274,6 +274,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_140100) do
     t.check_constraint "country_code IS NULL OR country_code::text ~ '^[A-Z]{2}$'::text", name: "catalog_producers_country_code_check"
   end
 
+  create_table "order_deliveries", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.string "delivery_type_code", default: "pick_up", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_deliveries_on_order_id", unique: true
+    t.check_constraint "delivery_type_code::text = ANY (ARRAY['pick_up'::character varying, 'ukr_post'::character varying, 'nova_poshta'::character varying, 'meest_express'::character varying, 'justin'::character varying, 'uklon'::character varying, 'ipost'::character varying]::text[])", name: "order_deliveries_type_check"
+  end
+
+  create_table "order_delivery_addresses", force: :cascade do |t|
+    t.bigint "delivery_id", null: false
+    t.string "city", null: false
+    t.string "street"
+    t.string "building"
+    t.string "post_office"
+    t.string "postal_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["delivery_id"], name: "index_order_delivery_addresses_on_delivery_id", unique: true
+    t.check_constraint "COALESCE(btrim(city::text), ''::text) <> ''::text", name: "order_delivery_addresses_city_check"
+    t.check_constraint "COALESCE(btrim(post_office::text), ''::text) <> ''::text OR COALESCE(btrim(street::text), ''::text) <> ''::text AND COALESCE(btrim(building::text), ''::text) <> ''::text", name: "order_delivery_addresses_place_check"
+    t.check_constraint "postal_code IS NULL OR postal_code::text ~ '^[0-9]{5}$'::text", name: "order_delivery_addresses_postal_code_check"
+  end
+
   create_table "order_items", force: :cascade do |t|
     t.bigint "order_id", null: false
     t.bigint "goods_id"
@@ -282,8 +306,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_140100) do
     t.integer "total_cents"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "provider_goods_external_id"
+    t.string "name"
+    t.string "producer"
+    t.string "release_form"
+    t.jsonb "image_paths", default: [], null: false
     t.index ["order_id"], name: "index_order_items_on_order_id"
+    t.check_constraint "jsonb_typeof(image_paths) = 'array'::text", name: "order_items_image_paths_check"
+    t.check_constraint "price_cents >= 0 AND total_cents >= 0", name: "order_items_amounts_check"
     t.check_constraint "quantity > 0::numeric", name: "order_items_quantity_check"
+  end
+
+  create_table "order_payments", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.string "payment_type_code", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_payments_on_order_id", unique: true
+    t.check_constraint "payment_type_code::text = ANY (ARRAY['cash_in_store'::character varying, 'cash_on_delivery'::character varying]::text[])", name: "order_payments_type_check"
   end
 
   create_table "orders", force: :cascade do |t|
@@ -295,9 +335,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_140100) do
     t.string "share_token", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "customer_first_name", limit: 100
+    t.string "customer_last_name", limit: 100
+    t.string "customer_middle_name", limit: 100
+    t.string "customer_phone_number"
+    t.string "customer_email"
+    t.boolean "register_account", default: false, null: false
+    t.datetime "personal_data_consent_at"
+    t.string "own_number"
+    t.string "provider_order_number"
+    t.string "provider_drugstore_external_id"
+    t.string "drugstore_name"
+    t.string "drugstore_address"
+    t.string "drugstore_phone"
+    t.string "status_name"
+    t.string "status_comment"
+    t.string "cancel_reason"
+    t.jsonb "progress", default: {}, null: false
+    t.datetime "provider_updated_at"
+    t.datetime "status_synced_at"
+    t.jsonb "provider_payload", default: {}, null: false
+    t.index ["own_number"], name: "index_orders_on_own_number", unique: true
+    t.index ["provider_id", "provider_order_number"], name: "index_orders_on_provider_id_and_provider_order_number", unique: true
     t.index ["share_token"], name: "index_orders_on_share_token", unique: true
     t.index ["token"], name: "index_orders_on_token", unique: true
     t.index ["user_id"], name: "index_orders_on_user_id_cart", unique: true, where: "(((state)::text = 'cart'::text) AND (user_id IS NOT NULL))"
+    t.check_constraint "customer_phone_number IS NULL OR customer_phone_number::text ~ '^380[0-9]{9}$'::text", name: "orders_customer_phone_number_check"
+    t.check_constraint "jsonb_typeof(progress) = 'object'::text AND jsonb_typeof(provider_payload) = 'object'::text", name: "orders_provider_objects_check"
+    t.check_constraint "state::text <> 'submitted'::text OR COALESCE(btrim(provider_order_number::text), ''::text) <> ''::text", name: "orders_submitted_provider_order_number_check"
+    t.check_constraint "state::text = 'cart'::text OR personal_data_consent_at IS NOT NULL AND COALESCE(btrim(own_number::text), ''::text) <> ''::text AND COALESCE(btrim(customer_first_name::text), ''::text) <> ''::text AND COALESCE(btrim(customer_phone_number::text), ''::text) <> ''::text AND COALESCE(btrim(provider_drugstore_external_id::text), ''::text) <> ''::text", name: "orders_sent_data_check"
     t.check_constraint "state::text = ANY (ARRAY['cart'::character varying, 'submitted'::character varying, 'submission_failed'::character varying]::text[])", name: "orders_state_check"
   end
 
@@ -384,8 +450,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_140100) do
   add_foreign_key "catalog_goods_instruction_section_translations", "catalog_goods_instruction_sections", on_delete: :cascade
   add_foreign_key "catalog_goods_instruction_sections", "catalog_goods", column: "goods_id"
   add_foreign_key "catalog_goods_translations", "catalog_goods", on_delete: :cascade
+  add_foreign_key "order_deliveries", "orders", on_delete: :cascade
+  add_foreign_key "order_delivery_addresses", "order_deliveries", column: "delivery_id", on_delete: :cascade
   add_foreign_key "order_items", "catalog_goods", column: "goods_id"
   add_foreign_key "order_items", "orders", on_delete: :cascade
+  add_foreign_key "order_payments", "orders", on_delete: :cascade
   add_foreign_key "orders", "catalog_drugstores", column: "drugstore_id"
   add_foreign_key "orders", "providers"
   add_foreign_key "provider_links", "providers"
