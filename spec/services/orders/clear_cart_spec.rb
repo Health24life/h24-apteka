@@ -23,8 +23,7 @@ RSpec.describe Orders::ClearCart do
   end
 
   it 'refuses an order that is no longer a cart', :aggregate_failures do
-    sent = create(:order)
-    sent.update_column(:state, 'submitted') # rubocop:disable Rails/SkipsModelValidations
+    sent = create(:order, :submitted)
 
     expect { described_class.call(sent) }.to raise_error(ArgumentError, /cart/)
     expect(Order.exists?(sent.id)).to be(true)
