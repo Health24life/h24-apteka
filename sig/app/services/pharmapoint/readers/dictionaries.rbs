@@ -1,11 +1,10 @@
 class Pharmapoint::Readers::Dictionaries
-  KEYS: Hash[String, Symbol]
+  def self.call: (Pharmapoint::json body) -> Pharmapoint::dictionaries
 
-  def self.call: (untyped body) -> Hash[Symbol, Array[Pharmapoint::record]]
-
-  def call: (untyped body) -> Hash[Symbol, Array[Pharmapoint::record]]
+  def call: (Pharmapoint::json body) -> Pharmapoint::dictionaries
 
   private
 
-  def entry: (untyped record) -> Pharmapoint::record?
+  def entries: (Pharmapoint::json value) -> Array[Pharmapoint::record]
+  def entry: (Pharmapoint::json record) -> Pharmapoint::record?
 end

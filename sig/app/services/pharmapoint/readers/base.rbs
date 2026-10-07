@@ -1,16 +1,16 @@
 module Pharmapoint::Readers::Base
   type field = [ String, String ]
 
-  def self?.envelope: (untyped body, ?String key) -> untyped
-  def self?.hash_or_empty: (untyped value) -> Hash[String, untyped]
-  def self?.list: (untyped value) -> Array[untyped]
-  def self?.text: (untyped value) -> String?
-  def self?.external_id: (untyped value) -> String?
-  def self?.integer: (untyped value) -> Integer?
-  def self?.float: (untyped value) -> Float?
-  def self?.affirmative?: (untyped value) -> bool
-  def self?.images: (untyped value) -> Array[String]
-  def self?.name: (Hash[String, untyped] record) -> String?
-  def self?.pick: (Hash[String, untyped] record, Hash[Symbol, field] fields) -> Pharmapoint::record
-  def self?.convert: (String type, untyped value) -> untyped
+  def self?.envelope: (Pharmapoint::json body, ?String key) -> Pharmapoint::json
+  def self?.hash_or_empty: (Pharmapoint::json value) -> Hash[String, Pharmapoint::json]
+  def self?.list: (Pharmapoint::json value) -> Array[Pharmapoint::json]
+  def self?.text: (Pharmapoint::json value) -> String?
+  def self?.external_id: (Pharmapoint::json value) -> String?
+  def self?.integer: (Pharmapoint::json value) -> Integer?
+  def self?.float: (Pharmapoint::json value) -> Float?
+  def self?.affirmative?: (Pharmapoint::json value) -> bool
+  def self?.images: (Pharmapoint::json value) -> Array[String]
+  def self?.name: (Hash[String, Pharmapoint::json] record) -> String?
+  def self?.pick: (Hash[String, Pharmapoint::json] record, Hash[Symbol, field] fields) -> Pharmapoint::record
+  def self?.convert: (String type, Pharmapoint::json value) -> (String | Integer | Float | bool | Array[String] | nil)
 end

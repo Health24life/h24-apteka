@@ -5,12 +5,8 @@
 # names by id (dictionary entries) must already be imported. A release form that cannot be saved is a failure of
 # its own and does not take the group down.
 class Catalog::Sync::Savers::GoodsGroup
-  REFERENCES = {
-    form: Catalog::Goods::Form, measure: Catalog::Goods::Measure, price_group: Catalog::Goods::PriceGroup,
-    temperature_mode: Catalog::Goods::TemperatureMode, adult_restriction: Catalog::Goods::Restriction,
-    child_restriction: Catalog::Goods::Restriction, diabetic_restriction: Catalog::Goods::Restriction,
-    driver_restriction: Catalog::Goods::Restriction, pregnant_and_lactating_restriction: Catalog::Goods::Restriction
-  }.freeze
+  RESTRICTIONS = %i[adult_restriction child_restriction diabetic_restriction driver_restriction
+                    pregnant_and_lactating_restriction].freeze
   CARD_ATTRIBUTES = %i[morion_code release_form dosage mnn composition is_recipe is_strict_recipe
                        in_medication_program].freeze
 
@@ -106,6 +102,14 @@ class Catalog::Sync::Savers::GoodsGroup
   end
 
   def references(record)
-    REFERENCES.to_h { |name, model| [ name, @linker.fetch(model, record[name]) ] }
+    { form: @linker.fetch(Catalog::Goods::Form, record[:form]),
+      measure: @linker.fetch(Catalog::Goods::Measure, record[:measure]),
+      price_group: @linker.fetch(Catalog::Goods::PriceGroup, record[:price_group]),
+      temperature_mode: @linker.fetch(Catalog::Goods::TemperatureMode, record[:temperature_mode]) }
+      .merge(restrictions(record))
+  end
+
+  def restrictions(record)
+    RESTRICTIONS.index_with { |name| @linker.fetch(Catalog::Goods::Restriction, record[name]) }
   end
 end

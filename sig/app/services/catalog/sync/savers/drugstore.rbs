@@ -6,8 +6,8 @@ class Catalog::Sync::Savers::Drugstore
 
   private
 
-  def attributes: (Pharmapoint::record record) -> Hash[Symbol, untyped]
-  def full_record_attributes: (Pharmapoint::record record) -> Hash[Symbol, untyped]
+  def attributes: (Pharmapoint::record record) -> Catalog::Sync::attributes
+  def full_record_attributes: (Pharmapoint::record record) -> Catalog::Sync::attributes
   def brand: (Pharmapoint::record? brand) -> Catalog::Drugstore::Brand?
   def save_address: (Catalog::Drugstore drugstore, Pharmapoint::record record) -> void
 end
