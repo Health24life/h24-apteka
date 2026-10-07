@@ -115,6 +115,111 @@ RSpec.describe Order::Item do
     end
   end
 
+  describe 'of a sent order' do
+    subject(:item) { build(:order_item, order: sent) }
+
+    let(:sent) { create(:order, :submitted) }
+
+    it { is_expected.to be_valid }
+
+    it 'needs no SKU of the catalog' do
+      expect(build(:order_item, order: sent, goods: nil, served: false)).to be_valid
+    end
+
+    it 'needs the name and the ID of the product at the provider', :aggregate_failures do
+      expect(build(:order_item, order: sent, name: nil).tap { it.name = nil }).not_to be_valid
+      expect(build(:order_item, order: sent).tap { it.provider_goods_external_id = '  ' }).not_to be_valid
+      expect(build(:order_item, order: sent).tap { it.name = '' }).not_to be_valid
+    end
+
+    it 'may repeat the same product of the provider', :aggregate_failures do
+      first = sent.items.first
+      repeated = build(:order_item, order: sent, goods: first.goods,
+                                    provider_goods_external_id: first.provider_goods_external_id)
+
+      expect(repeated).to be_valid
+      expect(repeated.save).to be(true)
+    end
+
+    it 'may repeat the same SKU' do
+      expect(build(:order_item, order: sent, goods: sent.items.first.goods)).to be_valid
+    end
+
+    it 'may carry the price and the total', :aggregate_failures do
+      expect(build(:order_item, order: sent, price: 10.5, total: 21)).to be_valid
+      expect(build(:order_item, order: sent, price: 0, total: 0)).to be_valid
+    end
+
+    it 'refuses a negative or too large price', :aggregate_failures do
+      expect(build(:order_item, order: sent, price: -1)).not_to be_valid
+      expect(build(:order_item, order: sent, total: -1)).not_to be_valid
+      expect(build(:order_item, order: sent, price: 10**10)).not_to be_valid
+    end
+
+    it 'keeps the price in kopecks and reads it back as money', :aggregate_failures do
+      item = create(:order_item, order: sent, price: '10.55')
+
+      expect(item.reload.price_cents).to eq(1055)
+      expect(item.price).to eq(Money.from_amount(BigDecimal('10.55'), 'UAH'))
+    end
+
+    it 'stores the largest amount that fits the column' do
+      expect(create(:order_item, order: sent).update(price: '21474836.47')).to be(true)
+    end
+
+    it 'keeps the quantity rule of the cart', :aggregate_failures do
+      [ 0, -1, nil ].each { |quantity| expect(build(:order_item, order: sent, quantity:)).not_to be_valid }
+    end
+
+    it 'does not mind a hidden SKU or a disabled provider' do
+      sent.provider.update!(active: false)
+      hidden = create(:catalog_goods, hidden: true)
+
+      expect(build(:order_item, order: sent, goods: hidden, served: false)).to be_valid
+    end
+
+    it 'keeps its snapshot when the SKU is renamed', :aggregate_failures do
+      item = create(:order_item, order: sent, name: 'Paracetamol')
+
+      item.goods.update!(name_uk: 'Renamed')
+
+      expect(item.reload.name).to eq('Paracetamol')
+    end
+
+    it 'keeps the producer, the form and the images of the snapshot', :aggregate_failures do
+      saved = create(:order_item, order: sent, producer: 'Acme', release_form: 'tablets', image_paths: [ 'a.jpg' ])
+
+      expect(saved.reload).to have_attributes(producer: 'Acme', release_form: 'tablets', image_paths: [ 'a.jpg' ])
+    end
+  end
+
+  describe 'database level, for an item of a sent order' do
+    let(:sent) { create(:order, :submitted) }
+    let(:now) { Time.current }
+    let(:row) do
+      { order_id: sent.id, quantity: 1, name: 'Medicine', provider_goods_external_id: '7', created_at: now,
+        updated_at: now }
+    end
+
+    def store_row(attributes)
+      described_class.insert_all!([ attributes ]) # rubocop:disable Rails/SkipsModelValidations
+    end
+
+    it 'accepts a row without a SKU, with the price, repeated', :aggregate_failures do
+      expect { store_row(row.merge(price_cents: 100, total_cents: 200)) }.not_to raise_error
+      expect { store_row(row) }.not_to raise_error
+    end
+
+    it 'refuses a negative price or total', :aggregate_failures do
+      expect { store_row(row.merge(price_cents: -1)) }.to raise_error(ActiveRecord::StatementInvalid)
+      expect { store_row(row.merge(total_cents: -1)) }.to raise_error(ActiveRecord::StatementInvalid)
+    end
+
+    it 'refuses images that are not a list' do
+      expect { store_row(row.merge(image_paths: { a: 1 }.to_json)) }.to raise_error(ActiveRecord::StatementInvalid)
+    end
+  end
+
   it 'refreshes the change time of its cart' do
     cart = create(:order)
     cart.update_column(:updated_at, 1.day.ago) # rubocop:disable Rails/SkipsModelValidations
@@ -173,14 +278,19 @@ end
 #
 # Table name: order_items
 #
-#  id          :bigint           not null, primary key
-#  price_cents :integer
-#  quantity    :decimal(12, 4)   not null
-#  total_cents :integer
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  goods_id    :bigint
-#  order_id    :bigint           not null
+#  id                         :bigint           not null, primary key
+#  image_paths                :jsonb            not null
+#  name                       :string
+#  price_cents                :integer
+#  producer                   :string
+#  quantity                   :decimal(12, 4)   not null
+#  release_form               :string
+#  total_cents                :integer
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  goods_id                   :bigint
+#  order_id                   :bigint           not null
+#  provider_goods_external_id :string
 #
 # Indexes
 #
@@ -193,5 +303,7 @@ end
 #
 # Check Constraints
 #
-#  order_items_quantity_check  (quantity > 0::numeric)
+#  order_items_amounts_check      (price_cents >= 0 AND total_cents >= 0)
+#  order_items_image_paths_check  (jsonb_typeof(image_paths) = 'array'::text)
+#  order_items_quantity_check     (quantity > 0::numeric)
 #
