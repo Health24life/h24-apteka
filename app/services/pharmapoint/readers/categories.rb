@@ -2,19 +2,21 @@
 
 # The category tree: every node carries its children, so the parent is the node it sits in.
 class Pharmapoint::Readers::Categories
+  include Pharmapoint::Readers::Base
+
   def self.call(body) = new.call(body)
 
-  def call(body) = Pharmapoint::Readers::Base.list(Pharmapoint::Readers::Base.envelope(body)).filter_map { node(it) }
+  def call(body) = list(envelope(body)).filter_map { node(it) }
 
   private
 
   def node(record)
     return unless record.is_a?(Hash)
 
-    external_id = Pharmapoint::Readers::Base.external_id(record['id'])
+    external_id = id_at(record, 'id')
     return unless external_id
 
-    { external_id:, name: Pharmapoint::Readers::Base.name(record),
-      children: Pharmapoint::Readers::Base.list(record['children']).filter_map { node(it) } }
+    children = list_at(record, 'children').filter_map { node(it) }
+    Pharmapoint::CategoryNode.new(external_id:, name: name(record), children:)
   end
 end

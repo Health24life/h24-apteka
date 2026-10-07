@@ -1,4 +1,9 @@
 class Catalog::Sync::RunTracker
+  # What a failure is logged with: anything that can say what it holds as plain data.
+  interface _Loggable
+    def as_json: () -> Pharmapoint::Logging::Masker::tree
+  end
+
   @run: SyncRun
 
   attr_reader run: SyncRun
@@ -10,8 +15,8 @@ class Catalog::Sync::RunTracker
   def initialize: (SyncRun run) -> void
   def running?: () -> bool
   def processed!: (?Integer count) -> void
-  def guard: [T] (String entity_type, String | Integer external_id, ?Pharmapoint::Logging::Masker::tree payload) { () -> T } -> T?
-  def record_failure: (String entity_type, String | Integer external_id, StandardError error, ?Pharmapoint::Logging::Masker::tree payload) -> void
+  def guard: [T] (String entity_type, String | Integer external_id, ?_Loggable payload) { () -> T } -> T?
+  def record_failure: (String entity_type, String | Integer external_id, StandardError error, ?_Loggable payload) -> void
   def advance: (Integer? cursor) -> void
   def update_progress: (Hash[String, Integer | bool | String | nil] values) -> void
   def page_failed!: (Integer? cursor, StandardError error) -> void

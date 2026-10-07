@@ -2,6 +2,7 @@
 
 # What every reader needs. The partner's contract is unstable: a key may be missing, hold null, an empty array in
 # place of an object or a number in place of a string, so each value is normalized here and absence is not an error.
+# A reader includes the module and calls these as its own methods; the `*_at` forms read a key of a record.
 module Pharmapoint::Readers::Base
   module_function
 
@@ -47,19 +48,19 @@ module Pharmapoint::Readers::Base
   # The Ukrainian name, or the main one: the Russian name field often holds Ukrainian text, so it is never used.
   def name(record) = text(record['name_uk']) || text(record['name'])
 
-  # Reads the fields a mapping lists, `{ out_name => [source_key, type] }`, each converted to its type.
-  def pick(record, fields)
-    fields.to_h { |out, (key, type)| [ out, convert(type, record[key]) ] }
-  end
+  def text_at(record, key) = text(record[key])
 
-  def convert(type, value)
-    case type
-    when 'id' then external_id(value)
-    when 'int' then integer(value)
-    when 'float' then float(value)
-    when 'flag' then affirmative?(value)
-    when 'images' then images(value)
-    else text(value)
-    end
-  end
+  def id_at(record, key) = external_id(record[key])
+
+  def int_at(record, key) = integer(record[key])
+
+  def float_at(record, key) = float(record[key])
+
+  def affirmative_at?(record, key) = affirmative?(record[key])
+
+  def images_at(record, key) = images(record[key])
+
+  def list_at(record, key) = list(record[key])
+
+  def hash_at(record, key) = hash_or_empty(record[key])
 end

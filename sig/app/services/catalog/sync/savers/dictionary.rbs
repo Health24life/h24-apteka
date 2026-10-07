@@ -3,10 +3,10 @@ class Catalog::Sync::Savers::Dictionary
   @tracker: Catalog::Sync::RunTracker
 
   def initialize: (Catalog::Sync::Linker linker, Catalog::Sync::RunTracker tracker) -> void
-  def call: (Pharmapoint::dictionaries dictionaries) -> void
+  def call: (Pharmapoint::Dictionaries dictionaries) -> void
 
   private
 
-  def save_all: [R < ActiveRecord::Base] (Catalog::Sync::Linker::_Model[R] model, Symbol attribute, Array[Pharmapoint::record] entries) -> void
-  def save_entry: [R < ActiveRecord::Base] (Catalog::Sync::Linker::_Model[R] model, Symbol attribute, Pharmapoint::record entry) -> void
+  def save_all: [R < ActiveRecord::Base] (Catalog::Sync::Linker::_Model[R] model, Symbol attribute, Array[Pharmapoint::DictionaryEntry] entries) -> void
+  def save_entry: [R < ActiveRecord::Base] (Catalog::Sync::Linker::_Model[R] model, Symbol attribute, Pharmapoint::DictionaryEntry entry) -> void
 end

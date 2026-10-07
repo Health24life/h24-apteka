@@ -14,12 +14,12 @@ class Pharmapoint::Client
 
   def initialize: (provider: Provider, ?config: Pharmapoint::Config, ?purpose: Symbol | String, ?user_id: Integer?,
                    ?sync_run: SyncRun?, ?attempt: Integer, ?rate_limiter: Pharmapoint::RateLimiter) -> void
-  def dictionaries: () -> Pharmapoint::dictionaries
-  def category_tree: () -> Array[Pharmapoint::record]
+  def dictionaries: () -> Pharmapoint::Dictionaries
+  def category_tree: () -> Array[Pharmapoint::CategoryNode]
   def goods_groups: (page: Integer, ?per_page: Integer) -> Pharmapoint::Page
-  def goods_group: (String external_id) -> Pharmapoint::record
-  def drugstores: (Pharmapoint::Config::Point point) -> Array[Pharmapoint::record]
-  def drugstore: (String external_id) -> Pharmapoint::record
+  def goods_group: (String external_id) -> Pharmapoint::GoodsGroup
+  def drugstores: (Pharmapoint::Config::Point point) -> Array[Pharmapoint::Drugstore]
+  def drugstore: (String external_id) -> Pharmapoint::Drugstore
 
   private
 

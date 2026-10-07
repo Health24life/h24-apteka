@@ -75,26 +75,35 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
   end
 
   it 'refuses a group whose producer has no name and saves nothing of it', :aggregate_failures do
-    item[:producer] = { external_id: '1', name: nil, country: nil, country_code: nil }
+    unnamed = item.with(producer: Pharmapoint::Producer.new(external_id: '1', name: nil, country: nil,
+                                                            country_code: nil))
 
-    expect { saver.call(item) }.to raise_error(ActiveRecord::RecordInvalid)
+    expect { saver.call(unnamed) }.to raise_error(ActiveRecord::RecordInvalid)
     expect(Catalog::Goods::Group.count).to eq(0)
   end
 
-  it 'logs a SKU that names a dictionary entry which is not there, and saves the others', :aggregate_failures do
-    item[:goods].first[:form] = '999'
+  describe 'when a SKU names a dictionary entry that is not there' do
+    let(:broken) do
+      missing_form = item.goods.first.references.with(form: '999')
+      item.with(goods: [ item.goods.first.with(references: missing_form), *item.goods.drop(1) ])
+    end
 
-    saver.call(item)
+    before { saver.call(broken) }
 
-    expect(tracker.run.failures.sole).to have_attributes(error_class: 'Catalog::Sync::MissingReference',
-                                                         external_id: '1795034')
-    expect(Catalog::Goods.pluck(:morion_code)).to eq([ '470685' ])
+    it 'logs that SKU' do
+      expect(tracker.run.failures.sole).to have_attributes(error_class: 'Catalog::Sync::MissingReference',
+                                                           external_id: '1795034')
+    end
+
+    it 'saves the other SKU' do
+      expect(Catalog::Goods.pluck(:morion_code)).to eq([ '470685' ])
+    end
   end
 
   it 'stores the Ukrainian name, or the main name when there is none' do
-    item[:goods].first[:name] = 'Основна назва'
+    renamed = item.with(goods: [ item.goods.first.with(name: 'Основна назва'), *item.goods.drop(1) ])
 
-    group = saver.call(item)
+    group = saver.call(renamed)
 
     expect(group.goods.find_by(morion_code: '470684').name_uk).to eq('Основна назва')
   end

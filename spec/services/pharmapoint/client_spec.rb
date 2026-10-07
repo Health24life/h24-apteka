@@ -23,14 +23,14 @@ RSpec.describe Pharmapoint::Client do
     it 'reads a goods group by id' do
       stub_pharmapoint('goods-group/get-by-id', fixture: 'goods_group_get_by_id', query: { id: 'abc' })
 
-      expect(client.goods_group('abc')[:external_id]).to eq('a060d7776d3d256af22378e018bea336')
+      expect(client.goods_group('abc').external_id).to eq('a060d7776d3d256af22378e018bea336')
     end
 
     it 'reads the dictionaries and the category tree', :aggregate_failures do
       stub_pharmapoint('dictionaries', fixture: 'dictionaries')
       stub_pharmapoint('category/tree', fixture: 'category_tree')
 
-      expect(client.dictionaries[:forms].size).to eq(2)
+      expect(client.dictionaries.forms.size).to eq(2)
       expect(client.category_tree.size).to eq(2)
     end
 
@@ -45,7 +45,7 @@ RSpec.describe Pharmapoint::Client do
     it 'reads a single drugstore' do
       stub_pharmapoint('drugstore/38628', fixture: 'drugstore')
 
-      expect(client.drugstore('38628')[:outer_id]).to eq('2369')
+      expect(client.drugstore('38628').outer_id).to eq('2369')
     end
   end
 
@@ -102,7 +102,7 @@ RSpec.describe Pharmapoint::Client do
       allow(Provider::RequestLog).to receive(:new).and_raise(ActiveRecord::StatementInvalid, 'disk full')
       allow(Rails.error).to receive(:report)
 
-      expect(client.dictionaries[:forms].size).to eq(2)
+      expect(client.dictionaries.forms.size).to eq(2)
       expect(Rails.error).to have_received(:report).with(an_instance_of(ActiveRecord::StatementInvalid), anything)
     end
   end
