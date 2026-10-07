@@ -1,9 +1,11 @@
 class Pharmapoint::Readers::Categories
-  def self.call: (Pharmapoint::json body) -> Array[Pharmapoint::record]
+  include Pharmapoint::Readers::Base
 
-  def call: (Pharmapoint::json body) -> Array[Pharmapoint::record]
+  def self.call: (Pharmapoint::json body) -> Array[Pharmapoint::CategoryNode]
+
+  def call: (Pharmapoint::json body) -> Array[Pharmapoint::CategoryNode]
 
   private
 
-  def node: (Pharmapoint::json record) -> Pharmapoint::record?
+  def node: (Pharmapoint::json record) -> Pharmapoint::CategoryNode?
 end

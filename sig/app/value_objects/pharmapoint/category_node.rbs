@@ -1,0 +1,9 @@
+class Pharmapoint::CategoryNode < Data
+  attr_reader external_id: String
+  attr_reader name: String?
+  attr_reader children: Array[Pharmapoint::CategoryNode]
+
+  def self.new: (external_id: String, name: String?, children: Array[Pharmapoint::CategoryNode]) -> instance
+
+  def as_json: () -> Pharmapoint::Logging::Masker::tree
+end

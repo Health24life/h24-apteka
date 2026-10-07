@@ -1,27 +1,22 @@
 class Pharmapoint::Readers::GoodsGroups
-  GOODS_FIELDS: Hash[Symbol, Pharmapoint::Readers::Base::field]
-  REFERENCE_FIELDS: Hash[Symbol, Pharmapoint::Readers::Base::field]
-  PACK_FIELDS: Hash[Symbol, Pharmapoint::Readers::Base::field]
+  include Pharmapoint::Readers::Base
 
   def self.page: (Pharmapoint::json body, page: Integer, per_page: Integer) -> Pharmapoint::Page
-  def self.one: (Pharmapoint::json body) -> Pharmapoint::record
+  def self.one: (Pharmapoint::json body) -> Pharmapoint::GoodsGroup
 
   def page: (Pharmapoint::json body, page: Integer, per_page: Integer) -> Pharmapoint::Page
-  def one: (Pharmapoint::json body) -> Pharmapoint::record
+  def one: (Pharmapoint::json body) -> Pharmapoint::GoodsGroup
 
   private
 
-  def base: () -> singleton(Pharmapoint::Readers::Base)
-  def group: (Pharmapoint::json record) -> Pharmapoint::record?
-  def links: (Hash[String, Pharmapoint::json] record) -> Pharmapoint::record
-  def producer: (Pharmapoint::json record) -> Pharmapoint::record?
-  def goods_name: (Pharmapoint::json record) -> Pharmapoint::record?
-  def atc_class: (Pharmapoint::json record, Pharmapoint::json ancestors) -> Pharmapoint::record?
-  def atc_entry: (Pharmapoint::json record) -> Pharmapoint::record?
-  def categories: (Hash[String, Pharmapoint::json] record) -> Array[Pharmapoint::record]
-  def category_path: (Array[Pharmapoint::json] paths, Integer? index) -> Array[Pharmapoint::record]
-  def category_node: (Pharmapoint::json record) -> Pharmapoint::record?
-  def goods: (Pharmapoint::json record) -> Pharmapoint::record?
-  def card: (Hash[String, Pharmapoint::json] record) -> Pharmapoint::record
-  def morion_code: (Hash[String, Pharmapoint::json] record) -> String?
+  def group: (Pharmapoint::json record) -> Pharmapoint::GoodsGroup?
+  def build_group: (String external_id, Pharmapoint::Readers::Base::record record) -> Pharmapoint::GoodsGroup
+  def producer: (Pharmapoint::json value) -> Pharmapoint::Producer?
+  def goods_name: (Pharmapoint::json value) -> Pharmapoint::GoodsName?
+  def atc_class: (Pharmapoint::Readers::Base::record record) -> Pharmapoint::AtcClass?
+  def atc_entry: (Pharmapoint::json value) -> Pharmapoint::AtcEntry?
+  def categories: (Pharmapoint::Readers::Base::record record) -> Array[Pharmapoint::GroupCategory]
+  def group_category: (Pharmapoint::json value, Array[Pharmapoint::json] paths) -> Pharmapoint::GroupCategory?
+  def category_path: (Array[Pharmapoint::json] paths, Integer? index) -> Array[Pharmapoint::PathNode]
+  def path_node: (Pharmapoint::json value) -> Pharmapoint::PathNode?
 end

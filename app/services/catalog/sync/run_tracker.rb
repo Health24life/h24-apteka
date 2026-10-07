@@ -50,7 +50,7 @@ class Catalog::Sync::RunTracker
   def record_failure(entity_type, external_id, error, payload = nil)
     masker = Pharmapoint::Logging::Masker.new
     run.failures.create!(entity_type:, external_id: external_id.to_s, error_class: error.class.name,
-                         message: masker.text(error.message), payload: masker.body(payload))
+                         message: masker.text(error.message), payload: masker.body(payload&.as_json))
   end
 
   def advance(cursor) = update_progress('cursor' => cursor)

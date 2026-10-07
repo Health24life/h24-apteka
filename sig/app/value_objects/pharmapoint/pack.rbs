@@ -1,0 +1,10 @@
+class Pharmapoint::Pack < Data
+  attr_reader unit_name: String?
+  attr_reader quantity_in_pack: Integer?
+  attr_reader quantity_unit_in_pack: Integer?
+  attr_reader quantity_in_unit: Integer?
+
+  def self.new: (unit_name: String?, quantity_in_pack: Integer?, quantity_unit_in_pack: Integer?, quantity_in_unit: Integer?) -> instance
+
+  def as_json: () -> Pharmapoint::Logging::Masker::tree
+end

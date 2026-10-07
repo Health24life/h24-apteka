@@ -1,19 +1,21 @@
 class Pharmapoint::Readers::Drugstores
-  FIELDS: Hash[Symbol, Pharmapoint::Readers::Base::field]
+  include Pharmapoint::Readers::Base
+
   COMPLETENESS_KEYS: Array[String]
 
-  def self.list: (Pharmapoint::json body) -> Array[Pharmapoint::record]
-  def self.one: (Pharmapoint::json body) -> Pharmapoint::record
+  def self.list: (Pharmapoint::json body) -> Array[Pharmapoint::Drugstore]
+  def self.one: (Pharmapoint::json body) -> Pharmapoint::Drugstore
 
-  def list: (Pharmapoint::json body) -> Array[Pharmapoint::record]
-  def one: (Pharmapoint::json body) -> Pharmapoint::record
+  def many: (Pharmapoint::json body) -> Array[Pharmapoint::Drugstore]
+  def one: (Pharmapoint::json body) -> Pharmapoint::Drugstore
 
   private
 
-  def base: () -> singleton(Pharmapoint::Readers::Base)
-  def drugstore: (Pharmapoint::json record) -> Pharmapoint::record?
-  def complete?: (Hash[String, Pharmapoint::json] record) -> bool
-  def coordinates: (Pharmapoint::json record) -> Pharmapoint::record
-  def week_hours: (Pharmapoint::json value) -> Array[String?]
-  def brand: (Pharmapoint::json record) -> Pharmapoint::record?
+  def drugstore: (Pharmapoint::json record) -> Pharmapoint::Drugstore?
+  def build: (String external_id, Pharmapoint::Readers::Base::record record) -> Pharmapoint::Drugstore
+  def complete?: (Pharmapoint::Readers::Base::record record) -> bool
+  def contacts: (Pharmapoint::Readers::Base::record record) -> Pharmapoint::Contacts
+  def location: (Pharmapoint::Readers::Base::record record) -> Pharmapoint::Location
+  def week_hours: (Pharmapoint::Readers::Base::record record) -> Array[String?]
+  def brand: (Pharmapoint::json value) -> Pharmapoint::Brand?
 end
