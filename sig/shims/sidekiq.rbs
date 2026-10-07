@@ -1,0 +1,16 @@
+# The collected sidekiq signatures describe the connection of the redis gem, while Sidekiq 8 yields a redis-client
+# adapter; declare only the commands the app sends.
+module Sidekiq
+  interface _RedisPipeline
+    def call: (*String | Integer args) -> void
+  end
+
+  interface _Redis
+    def call: (*String | Integer args) -> (String | Integer | nil)
+    def pipelined: () { (_RedisPipeline) -> void } -> Array[Integer]
+    def scan: (*String args) { (String) -> void } -> void
+  end
+
+  def self.redis: [T] () { (_Redis) -> T } -> T
+               | ...
+end

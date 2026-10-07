@@ -8,9 +8,9 @@ end
 module Translatable
   extend ActiveSupport::Concern
 
-  EMPTY_DEFAULT: ^() -> Hash[untyped, untyped]
+  EMPTY_DEFAULT: ^() -> Hash[String, String]
 
-  def self.included: (?untyped base) { () [self: singleton(ActiveRecord::Base)] -> untyped } -> untyped
+  def self.included: (?Module? base) { () [self: singleton(ActiveRecord::Base)] -> void } -> void
 
   module ClassMethods : _Translates
     def translatable: (*Symbol attributes, ?backend: Symbol, **untyped options) -> void

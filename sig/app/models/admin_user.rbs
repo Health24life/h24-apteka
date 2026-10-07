@@ -1,5 +1,5 @@
 class AdminUser
-  def self.ransackable_attributes: (?untyped _auth_object) -> Array[String]
+  def self.ransackable_attributes: (?Object? _auth_object) -> Array[String]
 
   def active_for_authentication?: () -> bool
 end

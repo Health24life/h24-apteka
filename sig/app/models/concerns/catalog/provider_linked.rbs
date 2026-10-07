@@ -6,10 +6,10 @@ end
 module Catalog::ProviderLinked : _ProviderLinkedRecord
   extend ActiveSupport::Concern
 
-  def self.included: (?untyped base) { () [self: singleton(ActiveRecord::Base)] -> untyped } -> untyped
+  def self.included: (?Module? base) { () [self: singleton(ActiveRecord::Base)] -> void } -> void
 
   module ClassMethods : ActiveRecord::Base::ClassMethods[untyped, untyped, untyped]
-    def find_linked: (Provider provider, String | Integer external_id) -> untyped
+    def find_linked: (Provider provider, String | Integer external_id) -> ActiveRecord::Base?
   end
 
   def provider_ref: (Provider provider) -> String?

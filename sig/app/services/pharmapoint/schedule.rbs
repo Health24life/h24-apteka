@@ -1,23 +1,23 @@
 class Pharmapoint::Schedule
-  interface _Env
-    def fetch: (String key, String default) -> String?
-  end
+  # One job as sidekiq-cron reads it: its cron, class and queue, and the arguments of the class.
+  type entry = Hash[String, String | Array[String]]
+  type jobs = Hash[String, entry]
 
   SOURCE: String
   SYNC_RUNS: Hash[String, [ String, String, String ]]
   LOG_CLEANUP: [ String, String ]
 
-  @env: _Env
+  @env: Pharmapoint::Config::_Env
 
-  def self.jobs: (?_Env env) -> Hash[String, Hash[String, untyped]]
+  def self.jobs: (?Pharmapoint::Config::_Env env) -> Pharmapoint::Schedule::jobs
 
-  def initialize: (_Env env) -> void
-  def jobs: () -> Hash[String, Hash[String, untyped]]
+  def initialize: (Pharmapoint::Config::_Env env) -> void
+  def jobs: () -> Pharmapoint::Schedule::jobs
 
   private
 
-  def sync_jobs: () -> Hash[String, Hash[String, untyped]]
-  def cleanup_job: () -> Hash[String, Hash[String, untyped]]
-  def job: (String klass, String cron, ?args: Array[String]) -> Hash[String, untyped]
+  def sync_jobs: () -> Pharmapoint::Schedule::jobs
+  def cleanup_job: () -> Pharmapoint::Schedule::jobs
+  def job: (String klass, String cron, ?args: Array[String]) -> Pharmapoint::Schedule::entry
   def cron: (String variable, String default) -> String?
 end

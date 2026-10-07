@@ -1,5 +1,5 @@
 class Catalog::Sync::Savers::GoodsGroup
-  REFERENCES: Hash[Symbol, untyped]
+  RESTRICTIONS: Array[Symbol]
   CARD_ATTRIBUTES: Array[Symbol]
 
   @linker: Catalog::Sync::Linker
@@ -19,7 +19,8 @@ class Catalog::Sync::Savers::GoodsGroup
   def ensure_category: (Pharmapoint::record category) -> Catalog::Category
   def ensure_category_node: (Pharmapoint::record node, Catalog::Category? parent) -> Catalog::Category
   def save_goods: (Catalog::Goods::Group group, Pharmapoint::record record) -> void
-  def goods_attributes: (Catalog::Goods::Group group, Pharmapoint::record record) -> Hash[Symbol, untyped]
-  def pack_attributes: (Pharmapoint::record pack) -> Hash[Symbol, untyped]
-  def references: (Pharmapoint::record record) -> Hash[Symbol, untyped]
+  def goods_attributes: (Catalog::Goods::Group group, Pharmapoint::record record) -> Catalog::Sync::attributes
+  def pack_attributes: (Pharmapoint::record pack) -> Catalog::Sync::attributes
+  def references: (Pharmapoint::record record) -> Hash[Symbol, ActiveRecord::Base?]
+  def restrictions: (Pharmapoint::record record) -> Hash[Symbol, Catalog::Goods::Restriction?]
 end

@@ -1,7 +1,9 @@
 class Catalog::Sync::Pull
   type kind = :goods_group | :drugstore
 
-  TYPES: Hash[Symbol, { model: untyped, kind: String }]
+  type type_config = { model: singleton(Catalog::Goods::Group) | singleton(Catalog::Drugstore), kind: String }
+
+  TYPES: Hash[Symbol, type_config]
 
   def self.enqueue: (kind type, String | Integer external_id, ?user_id: Integer?, ?config: Pharmapoint::Config) -> (:enqueued | :queued_already | :present)
   def self.present?: (kind type, String | Integer external_id, Pharmapoint::Config config) -> bool

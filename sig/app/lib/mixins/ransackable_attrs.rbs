@@ -6,7 +6,7 @@ end
 
 module Mixins
   module RansackableAttrs : _RansackAuthorizable
-    def ransackable_attributes: (?untyped _auth_object) -> Array[String]
-    def ransackable_associations: (?untyped _auth_object) -> Array[String]
+    def ransackable_attributes: (?Object? _auth_object) -> Array[String]
+    def ransackable_associations: (?Object? _auth_object) -> Array[String]
   end
 end

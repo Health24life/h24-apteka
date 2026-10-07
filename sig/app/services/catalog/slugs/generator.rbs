@@ -1,10 +1,10 @@
 class Catalog::Slugs::Generator
   interface _SlugScope
-    def where: (*untyped) -> _SlugRelation
+    def where: (Hash[Symbol, Array[String]] conditions) -> _SlugRelation
   end
 
   interface _SlugRelation
-    def pluck: (Symbol column) -> Array[untyped]
+    def pluck: (Symbol column) -> Array[String]
   end
 
   FALLBACK: String

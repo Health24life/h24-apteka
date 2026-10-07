@@ -22,9 +22,10 @@ class Catalog::Sync::Linker
 
   # A reference to a record that must already exist; no id means no reference.
   def fetch(model, external_id)
-    return if external_id.nil?
+    record = external_id && model.find_linked(@provider, external_id)
+    raise Catalog::Sync::MissingReference, "#{model.name} #{external_id} is not imported" if external_id && !record
 
-    find(model, external_id) || raise(Catalog::Sync::MissingReference, "#{model.name} #{external_id} is not imported")
+    record
   end
 
   def link!(record, external_id)

@@ -1,5 +1,7 @@
 class Catalog::Sync::Withdrawer
-  MODELS: Array[untyped]
+  type model = singleton(Catalog::Goods::Group) | singleton(Catalog::Goods)
+
+  MODELS: Array[model]
 
   @run: SyncRun
 
@@ -10,6 +12,6 @@ class Catalog::Sync::Withdrawer
 
   private
 
-  def withdraw: (untyped model) -> void
-  def failed_ids: (untyped model) -> untyped
+  def withdraw: (model model) -> void
+  def failed_ids: (model model) -> SyncRun::Failure::ActiveRecord_Associations_CollectionProxy
 end
