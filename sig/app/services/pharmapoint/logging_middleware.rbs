@@ -1,0 +1,36 @@
+class Pharmapoint::LoggingMiddleware < Faraday::Middleware
+  interface _Clock
+    def clock_gettime: (Integer id) -> Float
+  end
+
+  class Result < Data
+    attr_reader status: Integer?
+    attr_reader headers: Hash[untyped, untyped]
+    attr_reader body: untyped
+    attr_reader outcome: String
+    attr_reader error_class: String?
+
+    def self.new: (status: Integer?, headers: Hash[untyped, untyped], body: untyped, outcome: String,
+                   error_class: String?) -> instance
+  end
+
+  @logger: Pharmapoint::RequestLogger
+  @clock: _Clock
+
+  def initialize: (untyped app, logger: Pharmapoint::RequestLogger, ?clock: _Clock) -> void
+  def call: (Faraday::Env env) -> untyped
+
+  private
+
+  def elapsed_ms: (Float started) -> Integer
+  def entry: (Faraday::Env env, Faraday::Error? error, Integer duration) -> Pharmapoint::RequestLogger::Entry
+  def request_part: (Faraday::Env env) -> { http_method: String, path: String, query: Hash[String, untyped],
+                                           request_headers: Hash[untyped, untyped], request_body: untyped }
+  def response_part: (Result result) -> { response_status: Integer?, response_headers: Hash[untyped, untyped],
+                                           response_body: untyped, outcome: String, error_class: String? }
+  def query_of: (Faraday::Env env) -> Hash[String, untyped]
+  def failed: (Faraday::Error error) -> Result
+  def answered: (Faraday::Env env) -> Result
+  def outcome_of: (Integer status, untyped body) -> String
+  def json_value: (untyped body) -> untyped
+end

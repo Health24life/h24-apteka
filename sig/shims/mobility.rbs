@@ -1,0 +1,4 @@
+# Mobility ships no signatures; the app only extends a model with the module.
+module Mobility
+  def translates: (*Symbol attributes, **untyped options) -> void
+end

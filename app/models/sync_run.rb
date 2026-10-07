@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 class SyncRun < ApplicationRecord
-  KINDS = %w[dictionaries categories goods_groups drugstores].freeze
-  STATUSES = %w[running succeeded completed_with_failures failed].freeze
-
-  enum :kind, KINDS.index_with(&:itself), validate: true
-  enum :status, STATUSES.index_with(&:itself), validate: true
+  enum :kind, { dictionaries: 'dictionaries', categories: 'categories', goods_groups: 'goods_groups',
+                drugstores: 'drugstores' }, validate: true
+  enum :status, { running: 'running', succeeded: 'succeeded', completed_with_failures: 'completed_with_failures',
+                  failed: 'failed' }, validate: true
 
   belongs_to :provider, inverse_of: :sync_runs
 
   has_many :failures, class_name: 'SyncRun::Failure', inverse_of: :sync_run, dependent: :delete_all
+  has_many :request_logs, class_name: 'ProviderRequestLog', inverse_of: :sync_run, dependent: :nullify
 
   validates :started_at, presence: true
   validates :finished_at, presence: true, unless: :running?
@@ -17,9 +17,11 @@ class SyncRun < ApplicationRecord
   validate :finished_after_start
 
   scope :finished_successfully, -> { where(status: %w[succeeded completed_with_failures]) }
+  # A pull fetches a few records on demand; it is no pass over the provider's data and is kept apart from the runs.
+  scope :excluding_pulls, -> { where("COALESCE(progress ->> 'mode', 'full') <> 'pull'") }
 
   def self.last_successful(provider, kind)
-    where(provider:, kind:).finished_successfully.order(started_at: :desc).first
+    excluding_pulls.where(provider:, kind:).finished_successfully.order(started_at: :desc).first
   end
 
   private

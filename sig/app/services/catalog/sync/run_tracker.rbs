@@ -1,0 +1,21 @@
+class Catalog::Sync::RunTracker
+  @run: SyncRun
+
+  attr_reader run: SyncRun
+
+  def self.start: (provider: Provider, kind: String, ?config: Pharmapoint::Config) -> Catalog::Sync::RunTracker?
+  def self.open_run: (Provider provider, String kind, String mode) -> Catalog::Sync::RunTracker
+  def self.pull: (provider: Provider, kind: String) -> Catalog::Sync::RunTracker
+
+  def initialize: (SyncRun run) -> void
+  def running?: () -> bool
+  def processed!: (?Integer count) -> void
+  def guard: [T] (String entity_type, String | Integer external_id, ?untyped payload) { () -> T } -> T?
+  def record_failure: (String entity_type, String | Integer external_id, StandardError error, ?untyped payload) -> void
+  def advance: (Integer? cursor) -> void
+  def update_progress: (Hash[String, untyped] values) -> void
+  def page_failed!: (Integer? cursor, StandardError error) -> void
+  def partial?: () -> bool
+  def finish!: () -> void
+  def fail!: (String message) -> void
+end

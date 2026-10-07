@@ -4,9 +4,7 @@
 class Order::Payment < ApplicationRecord
   self.table_name = 'order_payments'
 
-  TYPES = %w[cash_in_store cash_on_delivery].freeze
-
-  enum :payment_type_code, TYPES.index_with(&:itself), validate: true
+  enum :payment_type_code, { cash_in_store: 'cash_in_store', cash_on_delivery: 'cash_on_delivery' }, validate: true
   belongs_to :order, inverse_of: :payment
 end
 

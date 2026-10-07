@@ -1,0 +1,38 @@
+class Pharmapoint::RequestLogger
+  class Entry < Data
+    attr_reader http_method: String
+    attr_reader path: String
+    attr_reader query: Hash[String, untyped]
+    attr_reader request_headers: Hash[untyped, untyped]
+    attr_reader request_body: untyped
+    attr_reader response_status: Integer?
+    attr_reader response_headers: Hash[untyped, untyped]
+    attr_reader response_body: untyped
+    attr_reader outcome: String
+    attr_reader error_class: String?
+    attr_reader duration_ms: Integer
+
+    def self.new: (http_method: String, path: String, query: Hash[String, untyped],
+                   request_headers: Hash[untyped, untyped], request_body: untyped, response_status: Integer?,
+                   response_headers: Hash[untyped, untyped], response_body: untyped, outcome: String,
+                   error_class: String?, duration_ms: Integer) -> instance
+  end
+
+  @provider: Provider
+  @category: Symbol | String
+  @user_id: Integer?
+  @sync_run: SyncRun?
+  @attempt: Integer
+  @masker: Pharmapoint::Masker
+  @last: ProviderRequestLog?
+
+  def initialize: (provider: Provider, category: Symbol | String, user_id: Integer?, sync_run: SyncRun?,
+                   attempt: Integer, ?masker: Pharmapoint::Masker) -> void
+  def record: (Entry entry) -> void
+  def mark_invalid_response!: () -> void
+
+  private
+
+  def context: () -> Hash[Symbol, untyped]
+  def attributes_of: (Entry entry) -> Hash[Symbol, untyped]
+end

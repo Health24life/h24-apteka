@@ -1,0 +1,7 @@
+class JobAttempt
+  KEY: Symbol
+
+  def self.current: () -> Integer
+
+  def call: (untyped _worker, Hash[String, untyped] job, String _queue) { () -> untyped } -> untyped
+end

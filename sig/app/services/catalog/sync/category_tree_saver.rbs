@@ -1,0 +1,11 @@
+class Catalog::Sync::CategoryTreeSaver
+  @linker: Catalog::Sync::Linker
+  @tracker: Catalog::Sync::RunTracker
+
+  def initialize: (Catalog::Sync::Linker linker, Catalog::Sync::RunTracker tracker) -> void
+  def call: (Array[Pharmapoint::record] nodes, ?Catalog::Category? parent) -> void
+
+  private
+
+  def save: (Pharmapoint::record node, Catalog::Category? parent) -> Catalog::Category?
+end

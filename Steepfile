@@ -5,9 +5,10 @@ D = Steep::Diagnostic
 target :app do
   signature 'sig', '.rbs_rails'
 
-  # Own code only. Rails code is not checked: the generated .rbs_rails gives own code the model types, and sig/
-  # describes only the model methods and constants that own code uses.
-  check 'app/services', 'app/service_objects', 'app/value_objects', 'app/validators', 'lib'
+  # Models and own code. What rbs_rails can generate (attributes, associations, scopes, enum) comes from .rbs_rails;
+  # what is written by hand (constants, custom methods, concerns, the DSL they add) is described in sig/.
+  check 'app/models', 'app/models_readonly', 'app/lib', 'app/services', 'app/service_objects', 'app/value_objects',
+        'app/validators', 'lib'
   ignore 'lib/tasks'
 
   configure_code_diagnostics(D::Ruby.default)

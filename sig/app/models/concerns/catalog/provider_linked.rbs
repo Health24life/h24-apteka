@@ -1,0 +1,16 @@
+# What the concern asks of the model it is included in.
+interface _ProviderLinkedRecord
+  def provider_links: () -> ProviderLink::ActiveRecord_Associations_CollectionProxy
+end
+
+module Catalog::ProviderLinked : _ProviderLinkedRecord
+  extend ActiveSupport::Concern
+
+  def self.included: (?untyped base) { () [self: singleton(ActiveRecord::Base)] -> untyped } -> untyped
+
+  module ClassMethods : ActiveRecord::Base::ClassMethods[untyped, untyped, untyped]
+    def find_linked: (Provider provider, String | Integer external_id) -> untyped
+  end
+
+  def provider_ref: (Provider provider) -> String?
+end

@@ -1,0 +1,14 @@
+class Catalog::Sync::DictionarySaver
+  MODELS: Hash[Symbol, untyped]
+  NAME_ATTRIBUTE: Hash[Symbol, Symbol]
+
+  @linker: Catalog::Sync::Linker
+  @tracker: Catalog::Sync::RunTracker
+
+  def initialize: (Catalog::Sync::Linker linker, Catalog::Sync::RunTracker tracker) -> void
+  def call: (Hash[Symbol, Array[Pharmapoint::record]] dictionaries) -> void
+
+  private
+
+  def save_entry: (untyped model, Symbol attribute, Pharmapoint::record entry) -> void
+end

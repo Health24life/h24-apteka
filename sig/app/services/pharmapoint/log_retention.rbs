@@ -1,0 +1,15 @@
+class Pharmapoint::LogRetention
+  BATCH: Integer
+
+  @config: Pharmapoint::Config
+  @now: Time
+
+  def self.call: (?config: Pharmapoint::Config, ?now: Time) -> Integer
+
+  def initialize: (Pharmapoint::Config config, Time now) -> void
+  def call: () -> Integer
+
+  private
+
+  def purge: (String category) -> Integer
+end

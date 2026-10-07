@@ -1,0 +1,7 @@
+class ProviderRequestLog
+  WITHOUT_RESPONSE: Array[String]
+
+  private
+
+  def status_matches_outcome: () -> void
+end

@@ -1,0 +1,16 @@
+class Pharmapoint::Masker
+  MARKER: String
+
+  @config: Pharmapoint::Config
+
+  def initialize: (?config: Pharmapoint::Config) -> void
+  def headers: (Hash[untyped, untyped] raw) -> Hash[String, String]
+  def body: (untyped value) -> untyped
+  def text: (String value) -> String
+
+  private
+
+  def secret_header?: (untyped name) -> bool
+  def secret_key?: (untyped key) -> bool
+  def clean: (String string) -> String
+end

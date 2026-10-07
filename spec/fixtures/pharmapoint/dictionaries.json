@@ -1,0 +1,31 @@
+{
+  "data": {
+    "drugstore_brands": [
+      { "id": 529, "name": "Аптеки ТАС" },
+      { "id": 57, "name": "Подорожник" }
+    ],
+    "goods_restrictions": [
+      { "id": 1, "name_ru": "Разрешено", "name_uk": "Дозволено" },
+      { "id": 3, "name_ru": "С осторожностью", "name_uk": "З обережністю" }
+    ],
+    "goods_form": [
+      { "id": 1, "name_ru": "Аэрозоль", "name_uk": "Аерозоль" },
+      { "id": 223, "name_ru": "Таблетки", "name_uk": "Таблетки" }
+    ],
+    "goods_price_group": [
+      { "id": 1, "name_ru": "Низкостоимостные", "name_uk": "Низьковартісні" },
+      { "id": 2, "name_ru": "Среднестоимостные", "name_uk": "Середньовартісні" }
+    ],
+    "goods_measure": [
+      { "id": 1, "name_en": "mg", "name_uk": "мг" },
+      { "id": 5, "name_en": null, "name_uk": "%" }
+    ],
+    "goods_temperature_mode": [
+      { "id": 2, "name_ru": "2-8° С", "name_uk": "2-8° С" },
+      { "id": 3, "name_ru": "до 25° С", "name_uk": "до 25° С" }
+    ],
+    "goods_category": [
+      { "id": 1126, "slug": "pesariji", "name_ru": "Пессарии", "name_uk": "Песарії" }
+    ]
+  }
+}

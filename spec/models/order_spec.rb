@@ -441,7 +441,7 @@ RSpec.describe Order do
     end
 
     it 'accepts every known state' do
-      rows = described_class::STATES.map do |state|
+      rows = described_class.states.values.map do |state|
         sent = state == 'cart' ? {} : sent_data(state)
         row.merge(sent).merge(state:, token: SecureRandom.hex(12), share_token: SecureRandom.hex(12))
       end

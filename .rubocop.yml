@@ -21,3 +21,8 @@ Layout/LineLength:
   AllowedPatterns:
     - '\A#  \w+_check +\('
     - '\A#  index_\w+ +\('
+
+# A value class is declared as `class X < Data.define(...)`: RBS describes it as a class, and Steep and the IDE check
+# the methods of a class body, but see neither a `Data.define` block nor its constant as that class.
+Style/DataInheritance:
+  Enabled: false

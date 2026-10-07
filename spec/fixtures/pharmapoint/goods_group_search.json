@@ -1,0 +1,79 @@
+{
+  "data": [
+    {
+      "id": "a060d7776d3d256af22378e018bea336",
+      "slug": "spazmalhon-tabl-50-balkanpharma",
+      "name": "Спазмалгон табл. №50(10х5)", "name_uk": "Спазмалгон табл. №50(10х5)", "name_ru": "Спазмалгон табл. №50(10х5)",
+      "goods_name": { "id": 3264, "name": "Спазмалгон" },
+      "goods_producer": { "id": 48424, "name": "Balkanpharma", "country": "Болгария", "country_code": "bg" },
+      "goods_atc_class": { "id": 7937, "atc_code": "N02B A51", "name": "Ацетилсалициловая кислота, комбинации" },
+      "goods_atc_class_tree": [
+        { "id": 7234, "atc_code": "N02", "name": "Анальгетики" },
+        { "id": 7454, "atc_code": "N02B", "name": "Другие анальгетики и антипиретики" }
+      ],
+      "goods_categories": [ { "id": 980, "tree_id": 0, "slug": "inshi-analhetyky", "name_uk": "Інші анальгетики й антипіретики" } ],
+      "goods_categories_trees": [
+        [
+          { "id": 950, "slug": "liki", "name_uk": "Ліки" },
+          { "id": 960, "slug": "zasobi-dlia-nervovoi-systemy", "name_uk": "Засоби для нервової системи" },
+          { "id": 970, "slug": "analhetyky", "name_uk": "Анальгетики" },
+          { "id": 980, "slug": "inshi-analhetyky", "name_uk": "Інші анальгетики й антипіретики" }
+        ]
+      ],
+      "included_to_offers": false,
+      "online_price": 28.99, "drugstore_price": 45, "quantity": 17774.2, "preorder": false,
+      "drugstores_count_available": 481, "drugstores_count_all": 688, "is_preorder": false,
+      "release_forms": [
+        {
+          "id": 1795034, "morion_id": 470684, "barcode": "470684",
+          "name": "Спазмалгон табл. №50(10х5)", "name_uk": "Спазмалгон табл. №50(10х5)", "name_ru": "Спазмалгон табл. №50(10х5)",
+          "release_form": "табл.", "form_id": 223, "dosage": "500mg", "measure_id": 1,
+          "mnn": "Pitofenone and analgesics",
+          "supplement_facts": "1 таблетка містить метамізолу натрію 500 мг, пітофенону гідрохлориду 5 мг",
+          "medication_name": "1 таблетка містить метамізолу натрію 500 мг, пітофенону гідрохлориду 5 мг",
+          "instruction": "<p><b>ІНСТРУКЦІЯ </b></p><p><b>СПАЗМАЛГОН<sup>®</sup></b></p><p><b><i>Склад: </i></b></p><p><i>діючі речовини: </i>метамізол натрію, пітофенон</p><p><b>Показання. </b>Біль різного походження.</p><p><b>Протипоказання. </b>Підвищена чутливість.</p>",
+          "goods_description": { "image_url": [], "text": null },
+          "image_url": [ "goods_profile_photo/1795034/J8Fqd8dtKgZrde3L.jpg" ],
+          "is_recipe": false, "is_strict_recipe": false, "in_medication_program": false,
+          "adult_restriction_id": 1, "child_restriction_id": 3, "driver_restriction_id": null,
+          "diabetic_restriction_id": null, "pregnant_and_lactating_restriction_id": null,
+          "temperature_mode_id": 3, "price_group_id": 2, "group_id": null, "offers": [], "is_preorder": false,
+          "pack_info": { "unit_name": "plate", "quantity_in_pack": 50, "quantity_unit_in_pack": 5, "quantity_in_unit": 10 },
+          "online_price": 277.51, "drugstore_price": 431.9, "quantity": 2531.796, "nds": [ 7 ]
+        },
+        {
+          "id": 1795035, "morion_id": 470685, "barcode": "470685",
+          "name": "Спазмалгон табл. №20", "release_form": "Таблетки", "form_id": null, "dosage": null, "measure_id": null,
+          "mnn": null, "supplement_facts": null, "instruction": null,
+          "goods_description": [], "image_url": [],
+          "is_recipe": true, "is_strict_recipe": false, "in_medication_program": true,
+          "adult_restriction_id": null, "child_restriction_id": null, "driver_restriction_id": null,
+          "diabetic_restriction_id": null, "pregnant_and_lactating_restriction_id": null,
+          "temperature_mode_id": null, "price_group_id": null,
+          "pack_info": { "unit_name": null, "quantity_in_pack": 20, "quantity_unit_in_pack": null, "quantity_in_unit": null },
+          "online_price": 120.0, "drugstore_price": 130.0, "quantity": 12.5, "nds": []
+        }
+      ]
+    },
+    {
+      "id": "122c4abff4ae26d0068e7b4cfce236a6",
+      "slug": "tsitramon-darnitsya",
+      "name": "Цитрамон-Дарниця табл. №10", "name_uk": "Цитрамон-Дарниця табл. №10",
+      "goods_name": { "id": null, "name": null },
+      "goods_producer": { "id": 5001, "name": "Дарниця", "country": null, "country_code": null },
+      "goods_atc_class": { "atc_code": null, "name": null, "id": null },
+      "goods_atc_class_tree": [],
+      "included_to_offers": false,
+      "release_forms": [
+        {
+          "id": 2001001, "morion_id": 10001, "barcode": "10001", "name": "Цитрамон-Дарниця табл. №10",
+          "release_form": "табл.", "form_id": 223, "dosage": "0.5g", "instruction": "",
+          "image_url": [ "goods_profile_photo/2001001/abc.jpg" ], "is_recipe": false, "is_strict_recipe": false,
+          "in_medication_program": false,
+          "pack_info": { "unit_name": "blister", "quantity_in_pack": 10, "quantity_unit_in_pack": 1, "quantity_in_unit": 10 }
+        }
+      ]
+    }
+  ],
+  "meta": { "page": 1, "per_page": 2, "total": 5 }
+}

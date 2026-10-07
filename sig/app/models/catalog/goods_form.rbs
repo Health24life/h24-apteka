@@ -1,0 +1,10 @@
+class Catalog::GoodsForm
+  include Catalog::Dictionary
+  include Catalog::ProviderLinked
+  extend Catalog::ProviderLinked::ClassMethods
+
+  def self.find_linked: (Provider provider, String | Integer external_id) -> Catalog::GoodsForm?
+  include Translatable
+  extend Translatable::ClassMethods
+  extend Mobility
+end

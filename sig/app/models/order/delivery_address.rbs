@@ -1,0 +1,3 @@
+class Order::DeliveryAddress
+  POSTAL_CODE_FORMAT: Regexp
+end

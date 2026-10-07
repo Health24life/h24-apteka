@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_07_100100) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_07_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -370,6 +370,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_07_100100) do
     t.check_constraint "linkable_type::text = ANY (ARRAY['Catalog::DrugstoreBrand'::character varying, 'Catalog::GoodsForm'::character varying, 'Catalog::GoodsMeasure'::character varying, 'Catalog::GoodsPriceGroup'::character varying, 'Catalog::GoodsTemperatureMode'::character varying, 'Catalog::GoodsRestriction'::character varying, 'Catalog::Category'::character varying, 'Catalog::Producer'::character varying, 'Catalog::GoodsName'::character varying, 'Catalog::AtcClass'::character varying, 'Catalog::GoodsGroup'::character varying, 'Catalog::Goods'::character varying, 'Catalog::Drugstore'::character varying]::text[])", name: "provider_links_linkable_type_check"
   end
 
+  create_table "provider_request_logs", force: :cascade do |t|
+    t.bigint "provider_id", null: false
+    t.bigint "sync_run_id"
+    t.integer "user_id"
+    t.string "category", null: false
+    t.string "http_method", null: false
+    t.string "path", null: false
+    t.jsonb "query", default: {}, null: false
+    t.jsonb "request_headers", default: {}, null: false
+    t.jsonb "response_headers", default: {}, null: false
+    t.jsonb "request_body"
+    t.jsonb "response_body"
+    t.integer "response_status"
+    t.string "outcome", null: false
+    t.string "error_class"
+    t.integer "duration_ms", default: 0, null: false
+    t.integer "attempt", default: 1, null: false
+    t.datetime "created_at", null: false
+    t.index ["category", "created_at"], name: "index_provider_request_logs_on_category_and_created_at"
+    t.index ["provider_id"], name: "index_provider_request_logs_on_provider_id"
+    t.index ["sync_run_id"], name: "index_provider_request_logs_on_sync_run_id"
+    t.index ["user_id", "created_at"], name: "index_provider_request_logs_on_user_id_and_created_at"
+    t.check_constraint "(outcome::text = ANY (ARRAY['timeout'::character varying, 'connection_error'::character varying]::text[])) = (response_status IS NULL)", name: "provider_request_logs_status_check"
+    t.check_constraint "attempt >= 1", name: "provider_request_logs_attempt_check"
+    t.check_constraint "category::text = ANY (ARRAY['booking'::character varying, 'search'::character varying, 'refresh'::character varying, 'other'::character varying]::text[])", name: "provider_request_logs_category_check"
+    t.check_constraint "duration_ms >= 0", name: "provider_request_logs_duration_check"
+    t.check_constraint "outcome::text = ANY (ARRAY['success'::character varying, 'http_error'::character varying, 'timeout'::character varying, 'connection_error'::character varying, 'invalid_response'::character varying]::text[])", name: "provider_request_logs_outcome_check"
+  end
+
   create_table "providers", force: :cascade do |t|
     t.string "code", null: false
     t.string "name", null: false
@@ -442,6 +471,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_07_100100) do
   add_foreign_key "orders", "catalog_drugstores", column: "drugstore_id"
   add_foreign_key "orders", "providers"
   add_foreign_key "provider_links", "providers"
+  add_foreign_key "provider_request_logs", "providers"
+  add_foreign_key "provider_request_logs", "sync_runs", on_delete: :nullify
   add_foreign_key "sync_run_failures", "sync_runs", on_delete: :cascade
   add_foreign_key "sync_runs", "providers"
 end

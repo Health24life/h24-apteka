@@ -13,6 +13,26 @@ SECRET_JWT_TOKEN = "local-jwt-secret-stub"
 H24_CORE_REPLICA_DB_URL = "postgresql://user:123456@localhost:2401/h24_development"
 H24_CORE_MASTER_DB_URL = "postgresql://user:123456@localhost:2400/h24_development"
 H24_CORE_TEST_DB_URL = "postgresql://user:123456@localhost:2400/h24_test"
+# Pharmapoint partner API. The key stays empty here: a run without it ends as failed instead of calling the partner.
+# Real values go to mise.local.toml.
+PHARMAPOINT_BASE_URL = "https://pharmapoint.ua/api/v1/online-drugstore"
+PHARMAPOINT_API_KEY = ""
+PHARMAPOINT_DOMAIN_NAME = "h24.ua"
+PHARMAPOINT_RATE_LIMIT_PER_MINUTE = "60"
+PHARMAPOINT_GOODS_GROUPS_PER_PAGE = "50"
+# JSON array of {latitude, longitude, radius}: the drugstore directory is fetched around these points.
+PHARMAPOINT_DRUGSTORE_SEARCH_POINTS = '[{"latitude": 50.4501, "longitude": 30.5234, "radius": 50000}]'
+# Recurring runs, cron syntax. Goods groups stay off until a full import is agreed with the partner.
+SYNC_CRON_DICTIONARIES = "0 3 * * *"
+SYNC_CRON_CATEGORIES = "10 3 * * *"
+SYNC_CRON_GOODS_GROUPS = ""
+SYNC_CRON_DRUGSTORES = "30 3 * * *"
+LOG_CLEANUP_CRON = "0 4 * * *"
+# Days a provider request log entry is kept, per category.
+PHARMAPOINT_LOG_RETENTION_BOOKING_DAYS = "14"
+PHARMAPOINT_LOG_RETENTION_SEARCH_DAYS = "1"
+PHARMAPOINT_LOG_RETENTION_REFRESH_DAYS = "7"
+PHARMAPOINT_LOG_RETENTION_OTHER_DAYS = "7"
 
 [tasks.server]
 run = "bundle exec rails s"
@@ -34,6 +54,10 @@ run = "docker compose down"
 
 [tasks.rbs]
 run = ["bundle exec rbs collection install", "rm -rf .rbs_rails", "bundle exec rails rbs_rails:all"]
+
+[tasks.hooks]
+description = "Install the git hooks (RuboCop and Steep before a commit) and sign their config and plugins"
+run = ["bundle exec overcommit --install", "bundle exec overcommit --sign", "bundle exec overcommit --sign pre-commit"]
 
 [tasks.typecheck]
 run = ["bundle exec rbs collection install --frozen", "rm -rf .rbs_rails", "bundle exec rails rbs_rails:all", "bundle exec rbs -I sig -I .rbs_rails validate", "bundle exec steep check"]

@@ -1,0 +1,23 @@
+class Catalog::Sync::TopList
+  class Result < Data
+    attr_reader enqueued: Integer
+    attr_reader present: Integer
+    attr_reader failed: Integer
+    attr_reader messages: Array[String]
+
+    def self.new: (enqueued: Integer, present: Integer, failed: Integer, messages: Array[String]) -> instance
+  end
+
+  ID_FORMAT: Regexp
+
+  @path: String
+
+  def self.call: (String path) -> Result
+
+  def initialize: (String path) -> void
+  def call: () -> Result
+
+  private
+
+  def queue: (String id, Integer number, Array[String] messages) -> (:enqueued | :present | :failed)
+end

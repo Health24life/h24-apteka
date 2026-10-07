@@ -19,7 +19,7 @@ class Order::Item < ApplicationRecord
   with_options if: :in_cart? do
     validates :goods, presence: true
     validates :price, :total, absence: true
-    validates :goods_id, not_repeated: { among: ->(item) { item.order ? item.order.items.to_a : [] } }
+    validates :goods_id, not_repeated: { among: ->(item) { Array(item.order&.items) } }
     validates :goods, served_by_provider: true, not_hidden: { via: :goods_group }, on: :create
     # A disabled provider may come back, so items that already exist stay; no new ones are added meanwhile.
     validates :provider, enabled: true, on: :create
