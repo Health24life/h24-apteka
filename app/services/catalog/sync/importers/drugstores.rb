@@ -18,10 +18,10 @@ class Catalog::Sync::Importers::Drugstores
   def self.following(cursor, size) = cursor.to_i + 1 < size ? cursor.to_i + 1 : nil
 
   def self.save(tracker, saver, record)
-    saved = tracker.guard('Catalog::Drugstore', record[:external_id], record) do
+    saved = tracker.guard('Catalog::Drugstore', record.external_id, record) do
       saver.call(record)
       tracker.processed!
     end
-    Catalog::Sync::Pull.enqueue(:drugstore, record[:external_id]) if saved && !record[:complete]
+    Catalog::Sync::Pull.enqueue(:drugstore, record.external_id) if saved && !record.complete
   end
 end

@@ -1,0 +1,11 @@
+class Pharmapoint::Location < Data
+  attr_reader address: String?
+  attr_reader city: String?
+  attr_reader state: String?
+  attr_reader latitude: Float?
+  attr_reader longitude: Float?
+
+  def self.new: (address: String?, city: String?, state: String?, latitude: Float?, longitude: Float?) -> instance
+
+  def as_json: () -> Pharmapoint::Masker::tree
+end

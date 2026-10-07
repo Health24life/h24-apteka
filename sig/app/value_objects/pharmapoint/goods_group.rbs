@@ -1,0 +1,14 @@
+class Pharmapoint::GoodsGroup < Data
+  attr_reader external_id: String
+  attr_reader name: String?
+  attr_reader included_to_offers: bool
+  attr_reader producer: Pharmapoint::Producer?
+  attr_reader goods_name: Pharmapoint::GoodsName?
+  attr_reader atc_class: Pharmapoint::AtcClass?
+  attr_reader categories: Array[Pharmapoint::GroupCategory]
+  attr_reader goods: Array[Pharmapoint::Goods]
+
+  def self.new: (external_id: String, name: String?, included_to_offers: bool, producer: Pharmapoint::Producer?, goods_name: Pharmapoint::GoodsName?, atc_class: Pharmapoint::AtcClass?, categories: Array[Pharmapoint::GroupCategory], goods: Array[Pharmapoint::Goods]) -> instance
+
+  def as_json: () -> Pharmapoint::Masker::tree
+end

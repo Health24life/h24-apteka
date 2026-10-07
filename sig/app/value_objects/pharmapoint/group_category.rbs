@@ -1,0 +1,9 @@
+class Pharmapoint::GroupCategory < Data
+  attr_reader external_id: String
+  attr_reader name: String?
+  attr_reader path: Array[Pharmapoint::PathNode]
+
+  def self.new: (external_id: String, name: String?, path: Array[Pharmapoint::PathNode]) -> instance
+
+  def as_json: () -> Pharmapoint::Masker::tree
+end

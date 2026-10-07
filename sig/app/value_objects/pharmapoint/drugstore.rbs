@@ -1,0 +1,17 @@
+class Pharmapoint::Drugstore < Data
+  attr_reader external_id: String
+  attr_reader outer_id: String?
+  attr_reader name: String?
+  attr_reader complete: bool
+  attr_reader legal_entity_name: String?
+  attr_reader legal_entity_code: String?
+  attr_reader week_working_hours: Array[String?]
+  attr_reader work_with_reimbursement: bool
+  attr_reader brand: Pharmapoint::Brand?
+  attr_reader contacts: Pharmapoint::Contacts
+  attr_reader location: Pharmapoint::Location
+
+  def self.new: (external_id: String, outer_id: String?, name: String?, complete: bool, legal_entity_name: String?, legal_entity_code: String?, week_working_hours: Array[String?], work_with_reimbursement: bool, brand: Pharmapoint::Brand?, contacts: Pharmapoint::Contacts, location: Pharmapoint::Location) -> instance
+
+  def as_json: () -> Pharmapoint::Masker::tree
+end

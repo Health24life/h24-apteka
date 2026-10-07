@@ -3,5 +3,5 @@ class Catalog::Sync::Importers::Drugstores
   def self.call: (Catalog::Sync::RunTracker tracker, Pharmapoint::Client client, Catalog::Sync::Linker linker, Integer? cursor) -> Integer?
   def self.skip: (Catalog::Sync::RunTracker _tracker, Integer? cursor) -> Integer?
   def self.following: (Integer? cursor, Integer size) -> Integer?
-  def self.save: (Catalog::Sync::RunTracker tracker, Catalog::Sync::DrugstoreSaver saver, Pharmapoint::record record) -> void
+  def self.save: (Catalog::Sync::RunTracker tracker, Catalog::Sync::DrugstoreSaver saver, Pharmapoint::Drugstore record) -> void
 end

@@ -1,0 +1,15 @@
+class Pharmapoint::GoodsCard < Data
+  attr_reader release_form: String?
+  attr_reader dosage: String?
+  attr_reader mnn: String?
+  attr_reader composition: String?
+  attr_reader instruction_html: String?
+  attr_reader image_paths: Array[String]
+  attr_reader is_recipe: bool
+  attr_reader is_strict_recipe: bool
+  attr_reader in_medication_program: bool
+
+  def self.new: (release_form: String?, dosage: String?, mnn: String?, composition: String?, instruction_html: String?, image_paths: Array[String], is_recipe: bool, is_strict_recipe: bool, in_medication_program: bool) -> instance
+
+  def as_json: () -> Pharmapoint::Masker::tree
+end

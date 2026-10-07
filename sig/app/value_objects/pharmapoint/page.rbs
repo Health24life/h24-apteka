@@ -1,11 +1,13 @@
 class Pharmapoint::Page < Data
-  attr_reader items: Array[Pharmapoint::record]
+  attr_reader items: Array[Pharmapoint::GoodsGroup]
   attr_reader page: Integer
   attr_reader per_page: Integer
   attr_reader total: Integer
 
-  def self.new: (items: Array[Pharmapoint::record], page: Integer, per_page: Integer, total: Integer) -> instance
+  def self.new: (items: Array[Pharmapoint::GoodsGroup], page: Integer, per_page: Integer, total: Integer) -> instance
 
   def last_page: () -> Integer
   def last?: () -> bool
+
+  def as_json: () -> Pharmapoint::Masker::tree
 end

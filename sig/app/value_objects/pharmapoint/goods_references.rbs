@@ -1,0 +1,15 @@
+class Pharmapoint::GoodsReferences < Data
+  attr_reader form: String?
+  attr_reader measure: String?
+  attr_reader price_group: String?
+  attr_reader temperature_mode: String?
+  attr_reader adult_restriction: String?
+  attr_reader child_restriction: String?
+  attr_reader diabetic_restriction: String?
+  attr_reader driver_restriction: String?
+  attr_reader pregnant_and_lactating_restriction: String?
+
+  def self.new: (form: String?, measure: String?, price_group: String?, temperature_mode: String?, adult_restriction: String?, child_restriction: String?, diabetic_restriction: String?, driver_restriction: String?, pregnant_and_lactating_restriction: String?) -> instance
+
+  def as_json: () -> Pharmapoint::Masker::tree
+end

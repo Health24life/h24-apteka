@@ -1,26 +1,25 @@
 class Catalog::Sync::GoodsGroupSaver
-  RESTRICTIONS: Array[Symbol]
-  CARD_ATTRIBUTES: Array[Symbol]
-
   @linker: Catalog::Sync::Linker
   @tracker: Catalog::Sync::RunTracker
 
   def initialize: (Catalog::Sync::Linker linker, Catalog::Sync::RunTracker tracker) -> void
-  def call: (Pharmapoint::record item) -> Catalog::GoodsGroup
+  def call: (Pharmapoint::GoodsGroup item) -> Catalog::GoodsGroup
 
   private
 
-  def save_group: (Pharmapoint::record item) -> Catalog::GoodsGroup
-  def producer: (Pharmapoint::record? record) -> Catalog::Producer?
-  def goods_name: (Pharmapoint::record? record) -> Catalog::GoodsName?
-  def atc_class: (Pharmapoint::record? record) -> Catalog::AtcClass?
-  def save_atc_class: (Pharmapoint::record record, Catalog::AtcClass? parent) -> Catalog::AtcClass
-  def save_categories: (Catalog::GoodsGroup group, Array[Pharmapoint::record] categories) -> void
-  def ensure_category: (Pharmapoint::record category) -> Catalog::Category
-  def ensure_category_node: (Pharmapoint::record node, Catalog::Category? parent) -> Catalog::Category
-  def save_goods: (Catalog::GoodsGroup group, Pharmapoint::record record) -> void
-  def goods_attributes: (Catalog::GoodsGroup group, Pharmapoint::record record) -> Catalog::Sync::attributes
-  def pack_attributes: (Pharmapoint::record pack) -> Catalog::Sync::attributes
-  def references: (Pharmapoint::record record) -> Hash[Symbol, ActiveRecord::Base?]
-  def restrictions: (Pharmapoint::record record) -> Hash[Symbol, Catalog::GoodsRestriction?]
+  def save_group: (Pharmapoint::GoodsGroup item) -> Catalog::GoodsGroup
+  def producer: (Pharmapoint::Producer? record) -> Catalog::Producer?
+  def goods_name: (Pharmapoint::GoodsName? record) -> Catalog::GoodsName?
+  def atc_class: (Pharmapoint::AtcClass? record) -> Catalog::AtcClass?
+  def save_atc_class: (Pharmapoint::AtcEntry | Pharmapoint::AtcClass record, Catalog::AtcClass? parent) -> Catalog::AtcClass
+  def save_categories: (Catalog::GoodsGroup group, Array[Pharmapoint::GroupCategory] categories) -> void
+  def ensure_category: (Pharmapoint::GroupCategory category) -> Catalog::Category
+  def ensure_category_node: (Pharmapoint::PathNode node, Catalog::Category? parent) -> Catalog::Category
+  def save_goods: (Catalog::GoodsGroup group, Pharmapoint::Goods goods) -> void
+  def goods_attributes: (Catalog::GoodsGroup group, Pharmapoint::Goods goods) -> Catalog::Sync::attributes
+  def card_attributes: (Pharmapoint::GoodsCard card) -> Catalog::Sync::attributes
+  def pack_attributes: (Pharmapoint::Pack pack) -> Catalog::Sync::attributes
+  def references: (Pharmapoint::GoodsReferences refs) -> Hash[Symbol, ActiveRecord::Base?]
+  def restrictions: (Pharmapoint::GoodsReferences refs) -> Hash[Symbol, Catalog::GoodsRestriction?]
+  def restriction: (String? external_id) -> Catalog::GoodsRestriction?
 end

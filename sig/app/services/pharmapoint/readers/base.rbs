@@ -1,8 +1,8 @@
 module Pharmapoint::Readers::Base
-  type field = [ String, String ]
+  type record = Hash[String, Pharmapoint::json]
 
   def self?.envelope: (Pharmapoint::json body, ?String key) -> Pharmapoint::json
-  def self?.hash_or_empty: (Pharmapoint::json value) -> Hash[String, Pharmapoint::json]
+  def self?.hash_or_empty: (Pharmapoint::json value) -> record
   def self?.list: (Pharmapoint::json value) -> Array[Pharmapoint::json]
   def self?.text: (Pharmapoint::json value) -> String?
   def self?.external_id: (Pharmapoint::json value) -> String?
@@ -10,7 +10,13 @@ module Pharmapoint::Readers::Base
   def self?.float: (Pharmapoint::json value) -> Float?
   def self?.affirmative?: (Pharmapoint::json value) -> bool
   def self?.images: (Pharmapoint::json value) -> Array[String]
-  def self?.name: (Hash[String, Pharmapoint::json] record) -> String?
-  def self?.pick: (Hash[String, Pharmapoint::json] record, Hash[Symbol, field] fields) -> Pharmapoint::record
-  def self?.convert: (String type, Pharmapoint::json value) -> (String | Integer | Float | bool | Array[String] | nil)
+  def self?.name: (record record) -> String?
+  def self?.text_at: (record record, String key) -> String?
+  def self?.id_at: (record record, String key) -> String?
+  def self?.int_at: (record record, String key) -> Integer?
+  def self?.float_at: (record record, String key) -> Float?
+  def self?.affirmative_at?: (record record, String key) -> bool
+  def self?.images_at: (record record, String key) -> Array[String]
+  def self?.list_at: (record record, String key) -> Array[Pharmapoint::json]
+  def self?.hash_at: (record record, String key) -> record
 end

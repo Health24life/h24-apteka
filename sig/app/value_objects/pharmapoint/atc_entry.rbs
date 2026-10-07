@@ -1,0 +1,9 @@
+class Pharmapoint::AtcEntry < Data
+  attr_reader external_id: String
+  attr_reader atc_code: String?
+  attr_reader name: String?
+
+  def self.new: (external_id: String, atc_code: String?, name: String?) -> instance
+
+  def as_json: () -> Pharmapoint::Masker::tree
+end

@@ -1,0 +1,8 @@
+class Pharmapoint::DictionaryEntry < Data
+  attr_reader external_id: String
+  attr_reader name: String?
+
+  def self.new: (external_id: String, name: String?) -> instance
+
+  def as_json: () -> Pharmapoint::Masker::tree
+end

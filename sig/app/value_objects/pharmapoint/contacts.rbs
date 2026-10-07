@@ -1,0 +1,9 @@
+class Pharmapoint::Contacts < Data
+  attr_reader phone: String?
+  attr_reader mobile_phone: String?
+  attr_reader email: String?
+
+  def self.new: (phone: String?, mobile_phone: String?, email: String?) -> instance
+
+  def as_json: () -> Pharmapoint::Masker::tree
+end

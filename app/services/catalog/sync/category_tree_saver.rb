@@ -10,15 +10,15 @@ class Catalog::Sync::CategoryTreeSaver
   def call(nodes, parent = nil)
     nodes.each do |node|
       category = save(node, parent)
-      call(node[:children], category) if category
+      call(node.children, category) if category
     end
   end
 
   private
 
   def save(node, parent)
-    @tracker.guard('Catalog::Category', node[:external_id], node.except(:children)) do
-      category = @linker.sync(Catalog::Category, node[:external_id], { name_uk: node[:name], parent: }) do |record|
+    @tracker.guard('Catalog::Category', node.external_id, node) do
+      category = @linker.sync(Catalog::Category, node.external_id, { name_uk: node.name, parent: }) do |record|
         Catalog::CategorySaver.call(record)
       end
       @tracker.processed!

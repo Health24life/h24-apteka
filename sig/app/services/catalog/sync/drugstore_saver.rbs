@@ -2,12 +2,13 @@ class Catalog::Sync::DrugstoreSaver
   @linker: Catalog::Sync::Linker
 
   def initialize: (Catalog::Sync::Linker linker) -> void
-  def call: (Pharmapoint::record record) -> Catalog::Drugstore
+  def call: (Pharmapoint::Drugstore record) -> Catalog::Drugstore
 
   private
 
-  def attributes: (Pharmapoint::record record) -> Catalog::Sync::attributes
-  def full_record_attributes: (Pharmapoint::record record) -> Catalog::Sync::attributes
-  def brand: (Pharmapoint::record? brand) -> Catalog::DrugstoreBrand?
-  def save_address: (Catalog::Drugstore drugstore, Pharmapoint::record record) -> void
+  def attributes: (Pharmapoint::Drugstore record) -> Catalog::Sync::attributes
+  def contact_attributes: (Pharmapoint::Contacts contacts) -> Catalog::Sync::attributes
+  def full_record_attributes: (Pharmapoint::Drugstore record) -> Catalog::Sync::attributes
+  def brand: (Pharmapoint::Brand? brand) -> Catalog::DrugstoreBrand?
+  def save_address: (Catalog::Drugstore drugstore, Pharmapoint::Location location) -> void
 end

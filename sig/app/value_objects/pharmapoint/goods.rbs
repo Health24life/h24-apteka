@@ -1,0 +1,12 @@
+class Pharmapoint::Goods < Data
+  attr_reader external_id: String
+  attr_reader name: String?
+  attr_reader morion_code: String?
+  attr_reader card: Pharmapoint::GoodsCard
+  attr_reader pack: Pharmapoint::Pack
+  attr_reader references: Pharmapoint::GoodsReferences
+
+  def self.new: (external_id: String, name: String?, morion_code: String?, card: Pharmapoint::GoodsCard, pack: Pharmapoint::Pack, references: Pharmapoint::GoodsReferences) -> instance
+
+  def as_json: () -> Pharmapoint::Masker::tree
+end
