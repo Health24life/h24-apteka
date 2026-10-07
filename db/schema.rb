@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_120002) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_140100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -274,6 +274,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_120002) do
     t.check_constraint "country_code IS NULL OR country_code::text ~ '^[A-Z]{2}$'::text", name: "catalog_producers_country_code_check"
   end
 
+  create_table "order_items", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.bigint "goods_id"
+    t.decimal "quantity", precision: 12, scale: 4, null: false
+    t.decimal "price", precision: 12, scale: 2
+    t.decimal "total", precision: 12, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+    t.check_constraint "quantity > 0::numeric", name: "order_items_quantity_check"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.bigint "drugstore_id", null: false
+    t.bigint "provider_id", null: false
+    t.integer "user_id"
+    t.string "state", default: "cart", null: false
+    t.string "token", null: false
+    t.string "share_token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["share_token"], name: "index_orders_on_share_token", unique: true
+    t.index ["token"], name: "index_orders_on_token", unique: true
+    t.index ["user_id"], name: "index_orders_on_user_id_cart", unique: true, where: "(((state)::text = 'cart'::text) AND (user_id IS NOT NULL))"
+    t.check_constraint "state::text = ANY (ARRAY['cart'::character varying, 'submitted'::character varying, 'submission_failed'::character varying]::text[])", name: "orders_state_check"
+  end
+
   create_table "provider_links", force: :cascade do |t|
     t.bigint "provider_id", null: false
     t.string "linkable_type", null: false
@@ -357,6 +384,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_120002) do
   add_foreign_key "catalog_goods_instruction_section_translations", "catalog_goods_instruction_sections", on_delete: :cascade
   add_foreign_key "catalog_goods_instruction_sections", "catalog_goods", column: "goods_id"
   add_foreign_key "catalog_goods_translations", "catalog_goods", on_delete: :cascade
+  add_foreign_key "order_items", "catalog_goods", column: "goods_id"
+  add_foreign_key "order_items", "orders", on_delete: :cascade
+  add_foreign_key "orders", "catalog_drugstores", column: "drugstore_id"
+  add_foreign_key "orders", "providers"
   add_foreign_key "provider_links", "providers"
   add_foreign_key "sync_run_failures", "sync_runs", on_delete: :cascade
   add_foreign_key "sync_runs", "providers"
