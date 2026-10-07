@@ -1,0 +1,5 @@
+module Catalog::Dictionary
+  extend ActiveSupport::Concern
+
+  def self.included: (?untyped base) { () [self: singleton(ActiveRecord::Base) & Translatable::ClassMethods] -> untyped } -> untyped
+end

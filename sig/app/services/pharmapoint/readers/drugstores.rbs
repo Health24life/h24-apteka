@@ -1,0 +1,19 @@
+class Pharmapoint::Readers::Drugstores
+  FIELDS: Hash[Symbol, Pharmapoint::Readers::Base::field]
+  COMPLETENESS_KEYS: Array[String]
+
+  def self.list: (untyped body) -> Array[Pharmapoint::record]
+  def self.one: (untyped body) -> Pharmapoint::record
+
+  def list: (untyped body) -> Array[Pharmapoint::record]
+  def one: (untyped body) -> Pharmapoint::record
+
+  private
+
+  def base: () -> singleton(Pharmapoint::Readers::Base)
+  def drugstore: (untyped record) -> Pharmapoint::record?
+  def complete?: (Hash[String, untyped] record) -> bool
+  def coordinates: (untyped record) -> Pharmapoint::record
+  def week_hours: (untyped value) -> Array[String?]
+  def brand: (untyped record) -> Pharmapoint::record?
+end

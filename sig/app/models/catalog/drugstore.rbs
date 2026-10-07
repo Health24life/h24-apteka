@@ -1,0 +1,8 @@
+class Catalog::Drugstore
+  include Catalog::ProviderLinked
+  extend Catalog::ProviderLinked::ClassMethods
+
+  def self.find_linked: (Provider provider, String | Integer external_id) -> Catalog::Drugstore?
+
+  LEGAL_ENTITY_CODE_FORMAT: Regexp
+end

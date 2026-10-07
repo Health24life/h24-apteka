@@ -1,0 +1,11 @@
+module Catalog::Sync::Importers
+  interface _Importer
+    def first_cursor: () -> Integer?
+    def call: (Catalog::Sync::RunTracker tracker, Pharmapoint::Client client, Catalog::Sync::Linker linker, Integer? cursor) -> Integer?
+    def skip: (Catalog::Sync::RunTracker tracker, Integer? cursor) -> Integer?
+  end
+
+  BY_KIND: Hash[String, _Importer]
+
+  def self.for: (String | Symbol kind) -> _Importer
+end

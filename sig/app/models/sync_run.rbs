@@ -1,0 +1,7 @@
+class SyncRun
+  def self.last_successful: (Provider provider, String kind) -> SyncRun?
+
+  private
+
+  def finished_after_start: () -> void
+end

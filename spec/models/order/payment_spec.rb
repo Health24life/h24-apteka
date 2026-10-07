@@ -9,8 +9,10 @@ RSpec.describe Order::Payment do
   it { is_expected.to belong_to(:order).inverse_of(:payment) }
 
   it 'takes only the offline methods', :aggregate_failures do
-    expect(described_class::TYPES).to eq(%w[cash_in_store cash_on_delivery])
-    described_class::TYPES.each { |type| expect(build(:order_payment, payment_type_code: type)).to be_valid }
+    expect(described_class.payment_type_codes.values).to eq(%w[cash_in_store cash_on_delivery])
+    described_class.payment_type_codes.each_value do |type|
+ expect(build(:order_payment, payment_type_code: type)).to be_valid
+    end
   end
 
   it 'refuses an online payment, an unknown one and none', :aggregate_failures do

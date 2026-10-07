@@ -1,0 +1,7 @@
+class Catalog::Goods::InstructionSection
+  include Translatable
+  extend Translatable::ClassMethods
+  extend Mobility
+
+  def title: () -> String
+end

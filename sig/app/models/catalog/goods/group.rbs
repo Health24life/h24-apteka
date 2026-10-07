@@ -1,0 +1,9 @@
+class Catalog::Goods::Group
+  include Catalog::ProviderLinked
+  extend Catalog::ProviderLinked::ClassMethods
+
+  def self.find_linked: (Provider provider, String | Integer external_id) -> Catalog::Goods::Group?
+  include Translatable
+  extend Translatable::ClassMethods
+  extend Mobility
+end

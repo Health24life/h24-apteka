@@ -1,0 +1,5 @@
+class Order::Delivery
+  private
+
+  def provider_supports_delivery: () -> void
+end

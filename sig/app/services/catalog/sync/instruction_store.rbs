@@ -1,0 +1,9 @@
+class Catalog::Sync::InstructionStore
+  def self.call: (Catalog::Goods goods, String? html) -> void
+
+  def call: (Catalog::Goods goods, String? html) -> void
+
+  private
+
+  def create_section: (Catalog::Goods goods, Catalog::Instructions::ParsedInstruction::Section section) -> void
+end

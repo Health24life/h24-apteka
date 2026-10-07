@@ -1,0 +1,11 @@
+class Pharmapoint::Readers::Dictionaries
+  KEYS: Hash[String, Symbol]
+
+  def self.call: (untyped body) -> Hash[Symbol, Array[Pharmapoint::record]]
+
+  def call: (untyped body) -> Hash[Symbol, Array[Pharmapoint::record]]
+
+  private
+
+  def entry: (untyped record) -> Pharmapoint::record?
+end

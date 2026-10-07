@@ -1,0 +1,8 @@
+# The collected railties signatures lack the error reporter accessor; declare only what the app calls.
+module Rails
+  interface _ErrorReporter
+    def report: (Exception error, handled: bool, ?context: Hash[Symbol, untyped]) -> void
+  end
+
+  def self.error: () -> _ErrorReporter
+end

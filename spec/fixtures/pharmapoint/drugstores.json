@@ -1,0 +1,23 @@
+{
+  "data": [
+    {
+      "id": 38628, "state": "Харківська обл.", "city": "Харків",
+      "legal_entity_name": "Товариство з обмеженою відповідальністю «Подорожник Харків»", "legal_entity_code": "42517597",
+      "address": "м.  Харків, вул.  Чернишевська,  1", "coordinates": { "latitude": 49.995691, "longitude": 36.2359392 },
+      "distance": 1910, "average_order_processing_time": 2636, "phone": "(093)   087-41-68", "mobile_phone": null,
+      "email": "apteka2369@da.lviv.ua", "drugstore_brand": { "id": 57, "name": "Подорожник", "image_url": "drugstore_brand_photo/57/p.png" },
+      "working_hours": { "from": "08:00", "to": "20:00", "is_open": true, "is_24h": false },
+      "week_working_hours": [ "08:00-21:00", "08:00-21:00", "08:00-21:00", "08:00-21:00", "08:00-21:00", "09:00-20:00", "09:00-20:00" ],
+      "work_with_reimbursement": true
+    },
+    {
+      "id": 38629, "state": "Київська", "city": "Київ",
+      "legal_entity_name": "ТОВ «Аптеки ТАС»", "legal_entity_code": "01234567",
+      "address": "м. Київ, вул. Хрещатик, 1", "coordinates": { "latitude": 50.4501, "longitude": 30.5234 },
+      "distance": null, "phone": "380445949238", "email": null,
+      "drugstore_brand": { "id": 529, "name": "Аптеки ТАС" },
+      "week_working_hours": [ "00:00-23:59", "00:00-23:59", "00:00-23:59", "00:00-23:59", "00:00-23:59", "00:00-23:59", "00:00-23:59" ],
+      "work_with_reimbursement": false
+    }
+  ]
+}
