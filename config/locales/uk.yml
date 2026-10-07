@@ -16,6 +16,10 @@ uk:
   errors:
     messages:
       invalid_week_working_hours: має містити сім значень — по одному на кожен день тижня — або бути порожнім
+      repeated: повторюється
+      not_served_by_provider: немає в каталозі провайдера замовлення
+      hidden: приховано адміністратором
+      disabled: вимкнено
       not_a_catalog_locale: "зберігається лише мовами каталогу, а не «%{language}»"
   activerecord:
     errors:

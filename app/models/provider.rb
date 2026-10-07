@@ -11,6 +11,7 @@ class Provider < ApplicationRecord
 
   has_many :sync_runs, inverse_of: :provider, dependent: :restrict_with_exception
   has_many :provider_links, inverse_of: :provider, dependent: :restrict_with_exception
+  has_many :orders, inverse_of: :provider, dependent: :restrict_with_exception
 
   validates :code, presence: true, uniqueness: true, format: { with: CODE_FORMAT }
   validates :name, presence: true

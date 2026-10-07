@@ -40,4 +40,19 @@ RSpec.describe H24Core::User do
 
     expect(described_class.find(user.id)).to eq(user)
   end
+
+  describe 'orders' do
+    it 'lists the orders of the user and finds the cart', :aggregate_failures do
+      user = create(:h24_core_user)
+      cart = create(:order, user_id: user.id)
+
+      expect(user.orders).to contain_exactly(cart)
+      expect(user.cart_order).to eq(cart)
+      expect(cart.user).to eq(user)
+    end
+
+    it 'has no cart without an order' do
+      expect(create(:h24_core_user).cart_order).to be_nil
+    end
+  end
 end

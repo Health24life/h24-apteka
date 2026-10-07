@@ -22,6 +22,7 @@ class Catalog::Goods < ApplicationRecord
   belongs_to :core_inn, class_name: 'H24Core::Medication::Inn', optional: true, inverse_of: false
   has_many :instruction_sections, -> { order(:position) }, class_name: 'Catalog::GoodsInstructionSection',
                                                            inverse_of: :goods, dependent: :destroy
+  has_many :order_items, class_name: '::Order::Item', inverse_of: :goods, dependent: :restrict_with_exception
 
   has_one :producer, through: :goods_group
   has_one :goods_name, through: :goods_group
