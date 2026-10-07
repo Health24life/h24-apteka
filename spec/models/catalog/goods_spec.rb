@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Catalog::Goods do
   it_behaves_like 'a translatable catalog record', :catalog_goods
+  it_behaves_like 'a sluggable catalog record', :catalog_goods
 
   it 'keeps translations in the explicitly named table' do
     goods = create(:catalog_goods, name_uk: 'Аспірин')
@@ -118,6 +119,38 @@ RSpec.describe Catalog::Goods do
 
     expect { link.linkable.destroy }.to raise_error(ActiveRecord::DeleteRestrictionError)
   end
+
+  describe 'instruction' do
+    def stored_translation(goods, column)
+      ActiveRecord::Base.connection.select_value(
+        "SELECT #{column} FROM catalog_goods_translations WHERE catalog_goods_id = #{goods.id} AND locale = 'uk'"
+      )
+    end
+
+    it 'keeps the cleaned instruction as the Ukrainian translation' do
+      goods = create(:catalog_goods, instruction_html_uk: '<p>Таблетки.</p>')
+
+      expect(stored_translation(goods, :instruction_html)).to eq('<p>Таблетки.</p>')
+    end
+
+    it 'shows the Ukrainian instruction when the interface language has no translation' do
+      goods = create(:catalog_goods, instruction_html_uk: '<p>Таблетки.</p>')
+
+      expect(I18n.with_locale(:en) { goods.reload.instruction_html }).to eq('<p>Таблетки.</p>')
+    end
+
+    it 'allows a SKU without an instruction' do
+      expect(create(:catalog_goods).instruction_html).to be_nil
+    end
+
+    it "keeps the provider's source instruction untouched" do
+      source = '<p onclick="x"><b>Показання</b></p><script>alert(1)</script>'
+
+      goods = create(:catalog_goods, instruction_source_html: source)
+
+      expect(goods.reload.instruction_source_html).to eq(source)
+    end
+  end
 end
 
 # == Schema Information
@@ -130,7 +163,7 @@ end
 #  hidden                                :boolean          default(FALSE), not null
 #  image_paths                           :jsonb            not null
 #  in_medication_program                 :boolean          default(FALSE), not null
-#  instruction_html                      :text
+#  instruction_source_html               :text
 #  is_recipe                             :boolean          default(FALSE), not null
 #  is_strict_recipe                      :boolean          default(FALSE), not null
 #  mnn                                   :string
@@ -140,6 +173,7 @@ end
 #  pack_quantity_unit_in_pack            :integer
 #  pack_unit_name                        :string
 #  release_form                          :string
+#  slug                                  :string           not null
 #  withdrawn                             :boolean          default(FALSE), not null
 #  created_at                            :datetime         not null
 #  updated_at                            :datetime         not null
@@ -158,6 +192,7 @@ end
 # Indexes
 #
 #  index_catalog_goods_on_goods_group_id  (goods_group_id)
+#  index_catalog_goods_on_slug            (slug) UNIQUE
 #
 # Foreign Keys
 #
@@ -177,5 +212,6 @@ end
 #  catalog_goods_image_paths_check   (jsonb_typeof(image_paths) = 'array'::text)
 #  catalog_goods_in_pack_check       (pack_quantity_in_pack IS NULL OR pack_quantity_in_pack >= 0)
 #  catalog_goods_in_unit_check       (pack_quantity_in_unit IS NULL OR pack_quantity_in_unit >= 0)
+#  catalog_goods_slug_check          (slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100)
 #  catalog_goods_unit_in_pack_check  (pack_quantity_unit_in_pack IS NULL OR pack_quantity_unit_in_pack >= 0)
 #

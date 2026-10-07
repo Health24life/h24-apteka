@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_120002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -132,7 +132,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
     t.integer "pack_quantity_unit_in_pack"
     t.integer "pack_quantity_in_unit"
     t.jsonb "image_paths", default: [], null: false
-    t.text "instruction_html"
     t.boolean "is_recipe", default: false, null: false
     t.boolean "is_strict_recipe", default: false, null: false
     t.boolean "in_medication_program", default: false, null: false
@@ -140,11 +139,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
     t.boolean "hidden", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug", null: false
+    t.text "instruction_source_html"
     t.index ["goods_group_id"], name: "index_catalog_goods_on_goods_group_id"
+    t.index ["slug"], name: "index_catalog_goods_on_slug", unique: true
     t.check_constraint "jsonb_typeof(image_paths) = 'array'::text", name: "catalog_goods_image_paths_check"
     t.check_constraint "pack_quantity_in_pack IS NULL OR pack_quantity_in_pack >= 0", name: "catalog_goods_in_pack_check"
     t.check_constraint "pack_quantity_in_unit IS NULL OR pack_quantity_in_unit >= 0", name: "catalog_goods_in_unit_check"
     t.check_constraint "pack_quantity_unit_in_pack IS NULL OR pack_quantity_unit_in_pack >= 0", name: "catalog_goods_unit_in_pack_check"
+    t.check_constraint "slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100", name: "catalog_goods_slug_check"
   end
 
   create_table "catalog_goods_forms", force: :cascade do |t|
@@ -187,6 +190,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
     t.index ["producer_id"], name: "index_catalog_goods_groups_on_producer_id"
   end
 
+  create_table "catalog_goods_instruction_section_translations", force: :cascade do |t|
+    t.bigint "catalog_goods_instruction_section_id", null: false
+    t.string "locale", null: false
+    t.text "body_html"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catalog_goods_instruction_section_id", "locale"], name: "index_catalog_instruction_section_translations_uniqueness", unique: true
+  end
+
+  create_table "catalog_goods_instruction_sections", force: :cascade do |t|
+    t.bigint "goods_id", null: false
+    t.integer "position", null: false
+    t.string "code", null: false
+    t.string "anchor", null: false
+    t.string "source_title", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goods_id", "anchor"], name: "index_catalog_instruction_sections_on_goods_and_anchor", unique: true
+    t.index ["goods_id", "position"], name: "index_catalog_instruction_sections_on_goods_and_position", unique: true
+    t.check_constraint "\"position\" >= 1", name: "catalog_goods_instruction_sections_position_check"
+    t.check_constraint "anchor::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text", name: "catalog_goods_instruction_sections_anchor_check"
+  end
+
   create_table "catalog_goods_measures", force: :cascade do |t|
     t.jsonb "name", null: false
     t.datetime "created_at", null: false
@@ -223,6 +249,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "instruction_html"
     t.index ["catalog_goods_id", "locale"], name: "index_catalog_goods_translations_uniqueness", unique: true
   end
 
@@ -311,6 +338,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
   add_foreign_key "catalog_goods_groups", "catalog_atc_classes", column: "atc_class_id"
   add_foreign_key "catalog_goods_groups", "catalog_goods_names", column: "goods_name_id"
   add_foreign_key "catalog_goods_groups", "catalog_producers", column: "producer_id"
+  add_foreign_key "catalog_goods_instruction_section_translations", "catalog_goods_instruction_sections", on_delete: :cascade
+  add_foreign_key "catalog_goods_instruction_sections", "catalog_goods", column: "goods_id"
   add_foreign_key "catalog_goods_translations", "catalog_goods", on_delete: :cascade
   add_foreign_key "provider_links", "providers"
   add_foreign_key "sync_run_failures", "sync_runs", on_delete: :cascade

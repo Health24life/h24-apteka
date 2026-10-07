@@ -1,0 +1,4 @@
+# The collected nokogiri signatures predate the HTML5 parser; declare only what the app touches.
+module Nokogiri::HTML5
+  def self.fragment: (String html) -> Nokogiri::XML::DocumentFragment
+end
