@@ -1,0 +1,3 @@
+class Catalog::Sync::Starter
+  def self.call: (String kind) -> void
+end

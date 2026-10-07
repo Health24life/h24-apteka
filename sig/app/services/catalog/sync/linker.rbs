@@ -1,0 +1,11 @@
+class Catalog::Sync::Linker
+  @provider: Provider
+  @now: ActiveSupport::TimeWithZone
+
+  def initialize: (Provider provider, ?now: ActiveSupport::TimeWithZone) -> void
+  # The record is of whatever model is passed, so it is untyped here; the callers know the model they ask for.
+  def sync: (untyped model, String | Integer external_id, Hash[Symbol, untyped] attributes) ?{ (untyped record) -> untyped } -> untyped
+  def find: (untyped model, String | Integer external_id) -> untyped
+  def fetch: (untyped model, String? external_id) -> untyped
+  def link!: (untyped record, String | Integer external_id) -> void
+end

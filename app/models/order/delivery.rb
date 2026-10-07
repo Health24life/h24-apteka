@@ -4,10 +4,9 @@
 class Order::Delivery < ApplicationRecord
   self.table_name = 'order_deliveries'
 
-  PICK_UP = 'pick_up'
-  TYPES = [ PICK_UP, 'ukr_post', 'nova_poshta', 'meest_express', 'justin', 'uklon', 'ipost' ].freeze
-
-  enum :delivery_type_code, TYPES.index_with(&:itself), validate: true, default: PICK_UP
+  enum :delivery_type_code, { pick_up: 'pick_up', ukr_post: 'ukr_post', nova_poshta: 'nova_poshta',
+                              meest_express: 'meest_express', justin: 'justin', uklon: 'uklon', ipost: 'ipost' },
+       validate: true, default: 'pick_up'
 
   belongs_to :order, inverse_of: :delivery
   has_one :address, class_name: 'Order::DeliveryAddress', inverse_of: :delivery, dependent: :delete, autosave: true

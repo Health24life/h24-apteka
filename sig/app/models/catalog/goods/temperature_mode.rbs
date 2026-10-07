@@ -1,0 +1,10 @@
+class Catalog::Goods::TemperatureMode
+  include Catalog::Dictionary
+  include Catalog::ProviderLinked
+  extend Catalog::ProviderLinked::ClassMethods
+
+  def self.find_linked: (Provider provider, String | Integer external_id) -> Catalog::Goods::TemperatureMode?
+  include Translatable
+  extend Translatable::ClassMethods
+  extend Mobility
+end

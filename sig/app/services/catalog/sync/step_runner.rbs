@@ -1,0 +1,21 @@
+class Catalog::Sync::StepRunner
+  LOST_STEP_ERRORS: Array[singleton(StandardError)]
+
+  @tracker: Catalog::Sync::RunTracker
+
+  def self.call: (Integer run_id, Integer? cursor) -> void
+  def self.give_up: (Integer run_id, Integer? cursor, StandardError error) -> void
+
+  def initialize: (Integer run_id) -> void
+  def call: (Integer? cursor) -> void
+  def give_up: (Integer? cursor, StandardError error) -> void
+
+  private
+
+  def proceed: (Integer? next_cursor, ?failed: bool) -> void
+  def finish: (bool failed) -> void
+  def lost_everything?: (bool failed) -> bool
+  def withdrawal_due?: () -> bool
+  def importer: () -> Catalog::Sync::Importers::_Importer
+  def client: () -> Pharmapoint::Client
+end

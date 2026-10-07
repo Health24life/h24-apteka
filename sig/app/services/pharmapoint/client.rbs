@@ -1,0 +1,32 @@
+class Pharmapoint::Client
+  GOODS_GROUPS_PATH: String
+  GOODS_GROUP_PATH: String
+  DICTIONARIES_PATH: String
+  CATEGORY_TREE_PATH: String
+  DRUGSTORES_PATH: String
+  DRUGSTORE_PATH: String
+  ERROR_BODY_LIMIT: Integer
+
+  @config: Pharmapoint::Config
+  @rate_limiter: Pharmapoint::RateLimiter
+  @masker: Pharmapoint::Logging::Masker
+  @logger: Pharmapoint::Logging::RequestLogger
+
+  def initialize: (provider: Provider, ?config: Pharmapoint::Config, ?purpose: Symbol | String, ?user_id: Integer?,
+                   ?sync_run: SyncRun?, ?attempt: Integer, ?rate_limiter: Pharmapoint::RateLimiter) -> void
+  def dictionaries: () -> Hash[Symbol, Array[Pharmapoint::record]]
+  def category_tree: () -> Array[Pharmapoint::record]
+  def goods_groups: (page: Integer, ?per_page: Integer) -> Pharmapoint::Page
+  def goods_group: (String external_id) -> Pharmapoint::record
+  def drugstores: (Pharmapoint::Config::Point point) -> Array[Pharmapoint::record]
+  def drugstore: (String external_id) -> Pharmapoint::record
+
+  private
+
+  def fetch: [T] (String path, ?Hash[Symbol, untyped] params) { (untyped) -> T } -> T
+  def request: (String path, Hash[Symbol, untyped] params) -> Faraday::Response
+  def parse: (untyped body) -> untyped
+  def check_status!: (Faraday::Response response) -> void
+  def rate_limited: (Faraday::Response response) -> Pharmapoint::RateLimited
+  def connection: () -> Faraday::Connection
+end

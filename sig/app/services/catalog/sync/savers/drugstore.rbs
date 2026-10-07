@@ -1,0 +1,13 @@
+class Catalog::Sync::Savers::Drugstore
+  @linker: Catalog::Sync::Linker
+
+  def initialize: (Catalog::Sync::Linker linker) -> void
+  def call: (Pharmapoint::record record) -> Catalog::Drugstore
+
+  private
+
+  def attributes: (Pharmapoint::record record) -> Hash[Symbol, untyped]
+  def full_record_attributes: (Pharmapoint::record record) -> Hash[Symbol, untyped]
+  def brand: (Pharmapoint::record? brand) -> Catalog::Drugstore::Brand?
+  def save_address: (Catalog::Drugstore drugstore, Pharmapoint::record record) -> void
+end

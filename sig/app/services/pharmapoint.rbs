@@ -1,0 +1,33 @@
+module Pharmapoint
+  # What a reader makes of a partner answer: plain values with symbol keys, never the partner's own shape.
+  type record = Hash[Symbol, untyped]
+  # A body as the partner sent it, parsed from JSON.
+  type payload = untyped
+end
+
+module Pharmapoint::Readers
+end
+
+class Pharmapoint::Error < StandardError
+end
+
+class Pharmapoint::ConfigurationError < Pharmapoint::Error
+end
+
+class Pharmapoint::TransientError < Pharmapoint::Error
+end
+
+class Pharmapoint::PermanentError < Pharmapoint::Error
+  attr_reader status: Integer
+
+  def initialize: (String message, status: Integer) -> void
+end
+
+class Pharmapoint::InvalidResponse < Pharmapoint::Error
+end
+
+class Pharmapoint::RateLimited < Pharmapoint::TransientError
+  attr_reader retry_after: Integer
+
+  def initialize: (Integer retry_after) -> void
+end

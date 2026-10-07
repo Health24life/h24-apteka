@@ -1,0 +1,22 @@
+class Pharmapoint::RateLimiter
+  interface _Clock
+    def now: () -> Time
+  end
+
+  KEY: String
+  MINUTE: Integer
+
+  @config: Pharmapoint::Config
+  @clock: _Clock
+
+  def initialize: (?config: Pharmapoint::Config, ?clock: _Clock) -> void
+  def guard!: () -> void
+  def record: (Hash[String, String] headers) -> void
+  def block!: (Integer seconds) -> void
+
+  private
+
+  def blocked_for: (Integer now) -> Integer
+  def spend: (Integer now) -> Integer
+  def redis: () { (untyped) -> untyped } -> untyped
+end

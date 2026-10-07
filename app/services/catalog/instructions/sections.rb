@@ -4,7 +4,7 @@
 # Ukrainian heading and doubles as the anchor, so it is fixed here as a literal: published links depend on it.
 # Headings shown to people live in the locale files under catalog.instruction_sections.
 module Catalog::Instructions::Sections
-  Section = Data.define(:code, :synonyms)
+  class Section < Data.define(:code, :synonyms); end
 
   ALL = [
     Section.new(code: 'sklad', synonyms: [ 'склад', 'склад лікарського засобу', 'склад препарату' ]),

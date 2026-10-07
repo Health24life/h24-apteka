@@ -1,0 +1,11 @@
+module Catalog::Sync
+  PROVIDER_CODE: String
+
+  def self.provider: () -> Provider
+end
+
+class Catalog::Sync::MissingReference < StandardError
+end
+
+class Catalog::Sync::MissingData < StandardError
+end

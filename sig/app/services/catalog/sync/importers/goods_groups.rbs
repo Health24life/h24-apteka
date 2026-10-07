@@ -1,0 +1,5 @@
+class Catalog::Sync::Importers::GoodsGroups
+  def self.first_cursor: () -> Integer
+  def self.call: (Catalog::Sync::RunTracker tracker, Pharmapoint::Client client, Catalog::Sync::Linker linker, Integer? cursor) -> Integer?
+  def self.skip: (Catalog::Sync::RunTracker tracker, Integer? cursor) -> Integer?
+end

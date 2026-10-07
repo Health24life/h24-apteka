@@ -1,0 +1,9 @@
+class Pharmapoint::Readers::Categories
+  def self.call: (untyped body) -> Array[Pharmapoint::record]
+
+  def call: (untyped body) -> Array[Pharmapoint::record]
+
+  private
+
+  def node: (untyped record) -> Pharmapoint::record?
+end

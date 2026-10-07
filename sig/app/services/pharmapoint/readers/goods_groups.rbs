@@ -1,0 +1,27 @@
+class Pharmapoint::Readers::GoodsGroups
+  GOODS_FIELDS: Hash[Symbol, Pharmapoint::Readers::Base::field]
+  REFERENCE_FIELDS: Hash[Symbol, Pharmapoint::Readers::Base::field]
+  PACK_FIELDS: Hash[Symbol, Pharmapoint::Readers::Base::field]
+
+  def self.page: (untyped body, page: Integer, per_page: Integer) -> Pharmapoint::Page
+  def self.one: (untyped body) -> Pharmapoint::record
+
+  def page: (untyped body, page: Integer, per_page: Integer) -> Pharmapoint::Page
+  def one: (untyped body) -> Pharmapoint::record
+
+  private
+
+  def base: () -> singleton(Pharmapoint::Readers::Base)
+  def group: (untyped record) -> Pharmapoint::record?
+  def links: (Hash[String, untyped] record) -> Pharmapoint::record
+  def producer: (untyped record) -> Pharmapoint::record?
+  def goods_name: (untyped record) -> Pharmapoint::record?
+  def atc_class: (untyped record, untyped ancestors) -> Pharmapoint::record?
+  def atc_entry: (untyped record) -> Pharmapoint::record?
+  def categories: (Hash[String, untyped] record) -> Array[Pharmapoint::record]
+  def category_path: (Array[untyped] paths, Integer? index) -> Array[Pharmapoint::record]
+  def category_node: (untyped record) -> Pharmapoint::record?
+  def goods: (untyped record) -> Pharmapoint::record?
+  def card: (Hash[String, untyped] record) -> Pharmapoint::record
+  def morion_code: (Hash[String, untyped] record) -> String?
+end

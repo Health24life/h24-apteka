@@ -1,0 +1,15 @@
+class Catalog::Sync::Withdrawer
+  MODELS: Array[untyped]
+
+  @run: SyncRun
+
+  def self.call: (SyncRun run) -> void
+
+  def initialize: (SyncRun run) -> void
+  def call: () -> void
+
+  private
+
+  def withdraw: (untyped model) -> void
+  def failed_ids: (untyped model) -> untyped
+end

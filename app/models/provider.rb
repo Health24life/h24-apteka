@@ -1,17 +1,18 @@
 # frozen_string_literal: true
 
 class Provider < ApplicationRecord
-  KINDS = %w[external own].freeze
   CODE_FORMAT = /\A[a-z][a-z0-9_]*\z/
 
   # Adapters and credentials are looked up by code, so it never changes.
   attr_readonly :code
 
-  enum :kind, KINDS.index_with(&:itself), validate: true
+  enum :kind, { external: 'external', own: 'own' }, validate: true
 
   has_many :sync_runs, inverse_of: :provider, dependent: :restrict_with_exception
   has_many :provider_links, class_name: 'Provider::Link', inverse_of: :provider, dependent: :restrict_with_exception
   has_many :orders, inverse_of: :provider, dependent: :restrict_with_exception
+  has_many :request_logs, class_name: 'Provider::RequestLog', inverse_of: :provider,
+                          dependent: :restrict_with_exception
 
   validates :code, presence: true, uniqueness: true, format: { with: CODE_FORMAT }
   validates :name, presence: true

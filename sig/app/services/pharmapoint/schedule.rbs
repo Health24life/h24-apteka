@@ -1,0 +1,23 @@
+class Pharmapoint::Schedule
+  interface _Env
+    def fetch: (String key, String default) -> String?
+  end
+
+  SOURCE: String
+  SYNC_RUNS: Hash[String, [ String, String, String ]]
+  LOG_CLEANUP: [ String, String ]
+
+  @env: _Env
+
+  def self.jobs: (?_Env env) -> Hash[String, Hash[String, untyped]]
+
+  def initialize: (_Env env) -> void
+  def jobs: () -> Hash[String, Hash[String, untyped]]
+
+  private
+
+  def sync_jobs: () -> Hash[String, Hash[String, untyped]]
+  def cleanup_job: () -> Hash[String, Hash[String, untyped]]
+  def job: (String klass, String cron, ?args: Array[String]) -> Hash[String, untyped]
+  def cron: (String variable, String default) -> String?
+end

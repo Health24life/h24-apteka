@@ -1,0 +1,16 @@
+module Pharmapoint::Readers::Base
+  type field = [ String, String ]
+
+  def self?.envelope: (untyped body, ?String key) -> untyped
+  def self?.hash_or_empty: (untyped value) -> Hash[String, untyped]
+  def self?.list: (untyped value) -> Array[untyped]
+  def self?.text: (untyped value) -> String?
+  def self?.external_id: (untyped value) -> String?
+  def self?.integer: (untyped value) -> Integer?
+  def self?.float: (untyped value) -> Float?
+  def self?.affirmative?: (untyped value) -> bool
+  def self?.images: (untyped value) -> Array[String]
+  def self?.name: (Hash[String, untyped] record) -> String?
+  def self?.pick: (Hash[String, untyped] record, Hash[Symbol, field] fields) -> Pharmapoint::record
+  def self?.convert: (String type, untyped value) -> untyped
+end
