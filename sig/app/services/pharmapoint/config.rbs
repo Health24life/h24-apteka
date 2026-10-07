@@ -1,6 +1,7 @@
-class Pharmapoint::Config
+class Pharmapoint::Config < Data
+  # What the code asks of the environment: ENV, or any hash of strings in a spec.
   interface _Env
-    def fetch: (String key, untyped default) -> untyped
+    def fetch: [T] (String key, T default) -> (String | T)
   end
 
   class Point < Data
@@ -13,12 +14,10 @@ class Pharmapoint::Config
 
   DEFAULT_BASE_URL: String
   RETENTION_DAYS: Hash[String, Integer]
-  DEFAULTS: Hash[Symbol, untyped]
   SECRET_HEADERS: Array[String]
   SECRET_BODY_KEYS: Array[String]
 
   @current: Pharmapoint::Config?
-  @search_points: Array[Point]?
 
   attr_reader base_url: String
   attr_reader api_key: String?
@@ -28,7 +27,7 @@ class Pharmapoint::Config
   attr_reader open_timeout: Integer
   attr_reader read_timeout: Integer
   attr_reader goods_groups_per_page: Integer
-  def search_points: () -> Array[Point]
+  attr_reader search_points: Array[Point]
   attr_reader stale_run_after: ActiveSupport::Duration
   attr_reader stale_record_after: ActiveSupport::Duration
   attr_reader retention_days: Hash[String, Integer]
@@ -38,6 +37,12 @@ class Pharmapoint::Config
   def self.from_env: (?_Env env) -> Pharmapoint::Config
   def self.parse_points: (String? json) -> Array[Point]
   def self.parse_retention: (_Env env) -> Hash[String, Integer]
+
+  def self.new: (?base_url: String, ?api_key: String?, ?domain_name: String?, ?rate_limit_per_minute: Integer,
+                 ?rate_limit_window: Integer, ?open_timeout: Integer, ?read_timeout: Integer,
+                 ?goods_groups_per_page: Integer, ?search_points: Array[Point],
+                 ?stale_run_after: ActiveSupport::Duration, ?stale_record_after: ActiveSupport::Duration,
+                 ?retention_days: Hash[String, Integer]) -> instance
 
   def initialize: (?base_url: String, ?api_key: String?, ?domain_name: String?, ?rate_limit_per_minute: Integer,
                    ?rate_limit_window: Integer, ?open_timeout: Integer, ?read_timeout: Integer,

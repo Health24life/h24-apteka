@@ -1,8 +1,12 @@
 module Pharmapoint
   # What a reader makes of a partner answer: plain values with symbol keys, never the partner's own shape.
   type record = Hash[Symbol, untyped]
-  # A body as the partner sent it, parsed from JSON.
-  type payload = untyped
+  # Any value of the partner's JSON, which is all the client knows about an answer until a reader looks at it.
+  type json = nil | bool | Integer | Float | String | Array[json] | Hash[String, json]
+  type headers = Hash[String, String]
+  # The six dictionaries of the catalog, each a list of `{ external_id:, name: }`.
+  type dictionaries = { forms: Array[record], measures: Array[record], price_groups: Array[record],
+                        temperature_modes: Array[record], restrictions: Array[record], brands: Array[record] }
 end
 
 module Pharmapoint::Readers

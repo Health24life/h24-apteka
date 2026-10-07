@@ -14,7 +14,7 @@ class Pharmapoint::Client
 
   def initialize: (provider: Provider, ?config: Pharmapoint::Config, ?purpose: Symbol | String, ?user_id: Integer?,
                    ?sync_run: SyncRun?, ?attempt: Integer, ?rate_limiter: Pharmapoint::RateLimiter) -> void
-  def dictionaries: () -> Hash[Symbol, Array[Pharmapoint::record]]
+  def dictionaries: () -> Pharmapoint::dictionaries
   def category_tree: () -> Array[Pharmapoint::record]
   def goods_groups: (page: Integer, ?per_page: Integer) -> Pharmapoint::Page
   def goods_group: (String external_id) -> Pharmapoint::record
@@ -23,9 +23,9 @@ class Pharmapoint::Client
 
   private
 
-  def fetch: [T] (String path, ?Hash[Symbol, untyped] params) { (untyped) -> T } -> T
-  def request: (String path, Hash[Symbol, untyped] params) -> Faraday::Response
-  def parse: (untyped body) -> untyped
+  def fetch: [T] (String path, ?Hash[Symbol, String | Integer | Float] params) { (Pharmapoint::json) -> T } -> T
+  def request: (String path, Hash[Symbol, String | Integer | Float] params) -> Faraday::Response
+  def parse: (String? body) -> Pharmapoint::json
   def check_status!: (Faraday::Response response) -> void
   def rate_limited: (Faraday::Response response) -> Pharmapoint::RateLimited
   def connection: () -> Faraday::Connection

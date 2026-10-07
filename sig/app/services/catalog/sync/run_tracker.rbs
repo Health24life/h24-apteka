@@ -10,10 +10,10 @@ class Catalog::Sync::RunTracker
   def initialize: (SyncRun run) -> void
   def running?: () -> bool
   def processed!: (?Integer count) -> void
-  def guard: [T] (String entity_type, String | Integer external_id, ?untyped payload) { () -> T } -> T?
-  def record_failure: (String entity_type, String | Integer external_id, StandardError error, ?untyped payload) -> void
+  def guard: [T] (String entity_type, String | Integer external_id, ?Pharmapoint::Masker::tree payload) { () -> T } -> T?
+  def record_failure: (String entity_type, String | Integer external_id, StandardError error, ?Pharmapoint::Masker::tree payload) -> void
   def advance: (Integer? cursor) -> void
-  def update_progress: (Hash[String, untyped] values) -> void
+  def update_progress: (Hash[String, Integer | bool | String | nil] values) -> void
   def page_failed!: (Integer? cursor, StandardError error) -> void
   def partial?: () -> bool
   def finish!: () -> void

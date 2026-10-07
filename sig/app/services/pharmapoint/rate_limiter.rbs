@@ -18,5 +18,5 @@ class Pharmapoint::RateLimiter
 
   def blocked_for: (Integer now) -> Integer
   def spend: (Integer now) -> Integer
-  def redis: () { (untyped) -> untyped } -> untyped
+  def redis: [T] () { (Sidekiq::_Redis) -> T } -> T
 end

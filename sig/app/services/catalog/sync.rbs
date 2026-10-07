@@ -1,4 +1,7 @@
 module Catalog::Sync
+  # The values a model's attributes are assigned from: whatever types its columns have.
+  type attributes = Hash[Symbol, untyped]
+
   PROVIDER_CODE: String
 
   def self.provider: () -> Provider

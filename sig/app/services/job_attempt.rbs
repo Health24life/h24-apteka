@@ -3,5 +3,5 @@ class JobAttempt
 
   def self.current: () -> Integer
 
-  def call: (untyped _worker, Hash[String, untyped] job, String _queue) { () -> untyped } -> untyped
+  def call: (Object _worker, Hash[String, Pharmapoint::json] job, String _queue) { () -> void } -> void
 end

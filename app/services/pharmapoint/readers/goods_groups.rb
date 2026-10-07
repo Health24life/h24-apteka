@@ -27,7 +27,8 @@ class Pharmapoint::Readers::GoodsGroups
 
   def page(body, page:, per_page:)
     items = base.list(base.envelope(body)).filter_map { group(it) }
-    total = base.integer(base.hash_or_empty(body['meta'])['total']) || items.size
+    meta = base.hash_or_empty(base.hash_or_empty(body)['meta'])
+    total = base.integer(meta['total']) || items.size
     Pharmapoint::Page.new(items:, page:, per_page:, total:)
   end
 

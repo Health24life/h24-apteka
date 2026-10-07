@@ -12,7 +12,7 @@ module Catalog::Sluggable : ActiveRecord::Base, _Sluggable
   FORMAT: Regexp
   MAX_LENGTH: Integer
 
-  def self.included: (?untyped base) { () [self: singleton(ActiveRecord::Base)] -> untyped } -> untyped
+  def self.included: (?Module? base) { () [self: singleton(ActiveRecord::Base)] -> void } -> void
 
   def slug=: (String value) -> String
 

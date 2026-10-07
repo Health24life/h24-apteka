@@ -9,7 +9,8 @@ class JobAttempt
 
   def call(_worker, job, _queue)
     # A job that has not failed yet has no retry count; the first retry has count 0.
-    Thread.current[KEY] = job.key?('retry_count') ? job['retry_count'].to_i + 2 : 1
+    retries = job['retry_count']
+    Thread.current[KEY] = retries.is_a?(Integer) ? retries + 2 : 1
     yield
   ensure
     Thread.current[KEY] = nil
