@@ -14,7 +14,9 @@ RSpec.describe Order do
   end
 
   it 'knows the states of a sent order as well', :aggregate_failures do
-    described_class::STATES.each { |state| expect(build(:order, state:)).to be_valid }
+    expect(build(:order)).to be_valid
+    expect(build(:order, :submitted)).to be_valid
+    expect(build(:order, :submission_failed)).to be_valid
   end
 
   it 'refuses a state outside the known list' do
@@ -130,15 +132,14 @@ RSpec.describe Order do
 
     it 'lets a user start a new cart after the previous one was sent' do
       user = create(:h24_core_user)
-      create(:order, user_id: user.id).update_column(:state, 'submitted') # rubocop:disable Rails/SkipsModelValidations
+      create(:order, :submitted, user_id: user.id)
 
       expect(build(:order, user_id: user.id)).to be_valid
     end
 
     it 'allows a user any number of orders that are no longer carts' do
       user = create(:h24_core_user)
-      orders = create_list(:order, 2)
-      orders.each { |order| order.update_columns(user_id: user.id, state: 'submitted') } # rubocop:disable Rails/SkipsModelValidations
+      orders = create_list(:order, 2, :submitted, user_id: user.id)
 
       expect(orders.map(&:reload)).to all(have_attributes(user_id: user.id, state: 'submitted'))
     end
@@ -163,6 +164,252 @@ RSpec.describe Order do
     end
   end
 
+  # Fills a cart with what a sent order must have, as the checkout would before the state changes.
+  def send_out(cart, **overrides)
+    cart.assign_attributes(state: 'submitted', personal_data_consent_at: Time.current, customer_first_name: 'Anna',
+                           customer_phone_number: '380501234567', own_number: 'H24-0000000009',
+                           provider_drugstore_external_id: '42', provider_order_number: 'PP9', **overrides)
+    cart.build_delivery(delivery_type_code: 'pick_up')
+    cart.build_payment(payment_type_code: 'cash_in_store')
+  end
+
+  describe 'a sent order' do
+    subject(:sent) { build(:order, :submitted) }
+
+    it { is_expected.to be_valid }
+    it { is_expected.to have_one(:delivery).inverse_of(:order) }
+    it { is_expected.to have_one(:payment).inverse_of(:order) }
+
+    it 'refuses to leave the cart without the moment of consent', :aggregate_failures do
+      cart = create(:order)
+      send_out(cart, personal_data_consent_at: nil)
+
+      expect(cart).not_to be_valid
+      expect(cart.errors).to be_added(:personal_data_consent_at, :blank)
+    end
+
+    it 'keeps a cart without any customer data' do
+      expect(build(:order)).to be_valid
+    end
+
+    it 'refuses an empty name, phone, own number and pharmacy ID of the provider', :aggregate_failures do
+      blanks = [ nil, '', '   ' ]
+      %i[customer_first_name customer_phone_number own_number provider_drugstore_external_id].each do |attribute|
+        blanks.each { |blank| expect(build(:order, :submitted, attribute => blank)).not_to be_valid }
+      end
+    end
+
+    it 'does not need the last name, the patronymic and the e-mail', :aggregate_failures do
+      order = build(:order, :submitted, customer_last_name: nil, customer_middle_name: nil, customer_email: nil)
+
+      expect(order).to be_valid
+    end
+
+    it 'limits the names to a hundred characters', :aggregate_failures do
+      %i[customer_first_name customer_last_name customer_middle_name].each do |attribute|
+        expect(build(:order, :submitted, attribute => 'a' * 101)).not_to be_valid
+        expect(build(:order, :submitted, attribute => 'a' * 100)).to be_valid
+      end
+    end
+
+    it 'takes a phone as 380 and nine digits only', :aggregate_failures do
+      valid = %w[380501234567 380000000000]
+      malformed = %w[+380501234567 0501234567 38050123456 3805012345678 38050123456a]
+
+      valid.each { |phone| expect(build(:order, :submitted, customer_phone_number: phone)).to be_valid }
+      malformed.each { |phone| expect(build(:order, :submitted, customer_phone_number: phone)).not_to be_valid }
+    end
+
+    it 'refuses a malformed e-mail but takes a proper one', :aggregate_failures do
+      expect(build(:order, :submitted, customer_email: 'anna@')).not_to be_valid
+      expect(build(:order, :submitted, customer_email: 'anna@example.com')).to be_valid
+    end
+
+    it 'does not create an account unless asked', :aggregate_failures do
+      expect(described_class.new.register_account).to be(false)
+      expect(create(:order, :submitted).reload.register_account).to be(false)
+    end
+
+    it 'needs a delivery and a payment', :aggregate_failures do
+      expect(build(:order, :submitted, delivery: nil)).not_to be_valid
+      expect(build(:order, :submitted, payment: nil)).not_to be_valid
+    end
+
+    it 'saves its delivery and payment in the same save', :aggregate_failures do
+      saved = create(:order, :submitted)
+
+      expect(saved.reload.delivery).to be_persisted
+      expect(saved.payment).to be_persisted
+    end
+
+    it 'removes its delivery and payment with it', :aggregate_failures do
+      saved = create(:order, :submitted)
+
+      expect { saved.destroy! }.to change(Order::Delivery, :count).by(-1).and change(Order::Payment, :count).by(-1)
+    end
+
+    it 'keeps its provider payload and progress as objects' do
+      expect(create(:order, :submitted).reload).to have_attributes(provider_payload: {}, progress: {})
+    end
+  end
+
+  describe 'own number' do
+    it 'must be unique', :aggregate_failures do
+      first = create(:order, :submitted)
+      second = build(:order, :submitted, own_number: first.own_number)
+
+      expect(second).not_to be_valid
+      expect(second.errors).to be_added(:own_number, :taken, value: first.own_number)
+    end
+  end
+
+  describe 'state of Health24' do
+    it 'requires the number of the provider for a submitted order', :aggregate_failures do
+      order = build(:order, :submitted, provider_order_number: nil)
+
+      expect(order).not_to be_valid
+      expect(order.errors).to be_added(:provider_order_number, :blank)
+    end
+
+    it 'does not require it after a failed submission' do
+      expect(build(:order, :submission_failed)).to be_valid
+    end
+
+    it 'lets a failed order be sent again with the same own number', :aggregate_failures do
+      failed = create(:order, :submission_failed)
+
+      expect { failed.update!(state: 'submitted', provider_order_number: 'PP-1') }
+        .not_to(change { failed.reload.own_number })
+      expect(failed).to be_submitted
+    end
+
+    it 'refuses the number of the provider that another order of this provider has', :aggregate_failures do
+      first = create(:order, :submitted)
+      second = build(:order, :submitted, provider: first.provider, drugstore: first.drugstore,
+                                         provider_order_number: first.provider_order_number)
+
+      expect(second).not_to be_valid
+      expect(second.errors).to be_of_kind(:provider_order_number, :taken)
+    end
+
+    it 'accepts the same number of another provider' do
+      first = create(:order, :submitted)
+
+      expect(build(:order, :submitted, provider_order_number: first.provider_order_number)).to be_valid
+    end
+  end
+
+  describe 'leaving the cart' do
+    it 'is refused through a disabled provider and the order stays a cart', :aggregate_failures do
+      cart = create(:order).tap { it.provider.update!(active: false) }
+      send_out(cart)
+
+      expect(cart).not_to be_valid
+      expect(cart.errors).to be_added(:provider, :disabled)
+      expect(cart.reload).to be_cart
+    end
+
+    it 'is allowed through an enabled provider', :aggregate_failures do
+      cart = create(:order)
+      send_out(cart)
+
+      expect(cart).to be_valid
+    end
+
+    it 'does not look at the provider once the order is sent' do
+      sent = create(:order, :submitted)
+      sent.provider.update!(active: false)
+
+      expect(sent.update(status_name: 'processed_by_pharmacy', status_synced_at: Time.current)).to be(true)
+    end
+
+    it 'does not look at what the provider supports once the order is sent' do
+      sent = create(:order, :submitted)
+      sent.provider.update!(supports_delivery: false)
+      sent.delivery.update_columns(delivery_type_code: 'ukr_post') # rubocop:disable Rails/SkipsModelValidations
+      create(:order_delivery_address, delivery: sent.delivery)
+
+      expect(sent.reload.update(status_name: 'canceled')).to be(true)
+    end
+  end
+
+  describe 'status of the provider' do
+    it 'is stored as sent, without checks', :aggregate_failures do
+      sent = create(:order, :submitted, status_name: 'awaiting_courier', status_comment: 'Wait', cancel_reason: nil,
+                                        progress: { step: 3, completed: false, label: 'Courier' })
+
+      expect(sent.reload).to have_attributes(status_name: 'awaiting_courier', status_comment: 'Wait')
+      expect(sent.progress).to eq('step' => 3, 'completed' => false, 'label' => 'Courier')
+    end
+  end
+
+  describe 'refusals of a sent order' do
+    it 'are worded in the locale files', :aggregate_failures do
+      refused = [ build(:order, :submitted, customer_phone_number: '1'), build(:order, :submitted, own_number: ''),
+                  build(:order, :submitted, customer_email: 'a@'), build(:order, :submitted, delivery: nil) ]
+      messages = refused.flat_map { |record| record.tap(&:validate).errors.full_messages }
+
+      expect(messages).not_to be_empty
+      expect(messages.grep(/translation missing/i)).to be_empty
+    end
+  end
+
+  describe 'database level, bypassing validations, for a sent order' do
+    let(:saved) { create(:order) }
+    let(:now) { Time.current }
+    let(:row) do
+      { drugstore_id: saved.drugstore_id, provider_id: saved.provider_id, state: 'submitted',
+        token: SecureRandom.hex(12), share_token: SecureRandom.hex(12), created_at: now, updated_at: now,
+        personal_data_consent_at: now, own_number: 'H24-0000000001', customer_first_name: 'Anna',
+        customer_phone_number: '380501234567', provider_drugstore_external_id: '42', provider_order_number: 'PP1' }
+    end
+
+    def store_row(attributes)
+      described_class.insert_all!([ attributes ]) # rubocop:disable Rails/SkipsModelValidations
+    end
+
+    it 'accepts a complete sent order' do
+      expect { store_row(row) }.not_to raise_error
+    end
+
+    it 'refuses a sent order missing any required value, empty or made of spaces', :aggregate_failures do
+      texts = %i[own_number customer_first_name customer_phone_number provider_drugstore_external_id]
+      texts.product([ nil, '', '   ' ]).push([ :personal_data_consent_at, nil ]).each do |column, value|
+        expect { store_row(row.merge(column => value)) }.to raise_error(ActiveRecord::StatementInvalid)
+      end
+    end
+
+    it 'keeps a cart without any of them' do
+      expect { store_row(row.slice(:drugstore_id, :provider_id, :token, :share_token, :created_at, :updated_at)) }
+        .not_to raise_error
+    end
+
+    it 'refuses a submitted order without the number of the provider', :aggregate_failures do
+      [ nil, '', '  ' ].each do |number|
+        expect { store_row(row.merge(provider_order_number: number)) }.to raise_error(ActiveRecord::StatementInvalid)
+      end
+    end
+
+    it 'refuses a malformed phone' do
+      expect { store_row(row.merge(customer_phone_number: '+380501234567')) }
+        .to raise_error(ActiveRecord::StatementInvalid)
+    end
+
+    it 'refuses a repeated own number' do
+      store_row(row)
+
+      expect { store_row(row.merge(token: SecureRandom.hex(12), share_token: SecureRandom.hex(12))) }
+        .to raise_error(ActiveRecord::RecordNotUnique)
+    end
+
+    it 'refuses a repeated number of the provider within one provider' do
+      store_row(row)
+      other = row.merge(own_number: 'H24-0000000002', token: SecureRandom.hex(12), share_token: SecureRandom.hex(12))
+
+      expect { store_row(other) }.to raise_error(ActiveRecord::RecordNotUnique)
+    end
+  end
+
   describe 'database level, bypassing validations' do
     let(:saved) { create(:order) }
     let(:now) { Time.current }
@@ -173,6 +420,12 @@ RSpec.describe Order do
 
     def store_row(attributes)
       described_class.insert_all!([ attributes ]) # rubocop:disable Rails/SkipsModelValidations
+    end
+
+    def sent_data(state)
+      { personal_data_consent_at: now, own_number: "H24-#{state}", customer_first_name: 'Anna',
+        customer_phone_number: '380501234567', provider_drugstore_external_id: '42',
+        provider_order_number: "PP-#{state}" }
     end
 
     it 'refuses a repeated secret token' do
@@ -189,7 +442,8 @@ RSpec.describe Order do
 
     it 'accepts every known state' do
       rows = described_class::STATES.map do |state|
-        row.merge(state:, token: SecureRandom.hex(12), share_token: SecureRandom.hex(12))
+        sent = state == 'cart' ? {} : sent_data(state)
+        row.merge(sent).merge(state:, token: SecureRandom.hex(12), share_token: SecureRandom.hex(12))
       end
 
       expect { rows.each { |attributes| store_row(attributes) } }.not_to raise_error
@@ -221,21 +475,43 @@ end
 #
 # Table name: orders
 #
-#  id           :bigint           not null, primary key
-#  share_token  :string           not null
-#  state        :string           default("cart"), not null
-#  token        :string           not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  drugstore_id :bigint           not null
-#  provider_id  :bigint           not null
-#  user_id      :integer
+#  id                             :bigint           not null, primary key
+#  cancel_reason                  :string
+#  customer_email                 :string
+#  customer_first_name            :string(100)
+#  customer_last_name             :string(100)
+#  customer_middle_name           :string(100)
+#  customer_phone_number          :string
+#  drugstore_address              :string
+#  drugstore_name                 :string
+#  drugstore_phone                :string
+#  own_number                     :string
+#  personal_data_consent_at       :datetime
+#  progress                       :jsonb            not null
+#  provider_order_number          :string
+#  provider_payload               :jsonb            not null
+#  provider_updated_at            :datetime
+#  register_account               :boolean          default(FALSE), not null
+#  share_token                    :string           not null
+#  state                          :string           default("cart"), not null
+#  status_comment                 :string
+#  status_name                    :string
+#  status_synced_at               :datetime
+#  token                          :string           not null
+#  created_at                     :datetime         not null
+#  updated_at                     :datetime         not null
+#  drugstore_id                   :bigint           not null
+#  provider_drugstore_external_id :string
+#  provider_id                    :bigint           not null
+#  user_id                        :integer
 #
 # Indexes
 #
-#  index_orders_on_share_token   (share_token) UNIQUE
-#  index_orders_on_token         (token) UNIQUE
-#  index_orders_on_user_id_cart  (user_id) UNIQUE WHERE (((state)::text = 'cart'::text) AND (user_id IS NOT NULL))
+#  index_orders_on_own_number                             (own_number) UNIQUE
+#  index_orders_on_provider_id_and_provider_order_number  (provider_id,provider_order_number) UNIQUE
+#  index_orders_on_share_token                            (share_token) UNIQUE
+#  index_orders_on_token                                  (token) UNIQUE
+#  index_orders_on_user_id_cart                           (user_id) UNIQUE WHERE (((state)::text = 'cart'::text) AND (user_id IS NOT NULL))
 #
 # Foreign Keys
 #
@@ -244,5 +520,9 @@ end
 #
 # Check Constraints
 #
-#  orders_state_check  (state::text = ANY (ARRAY['cart'::character varying, 'submitted'::character varying, 'submission_failed'::character varying]::text[]))
+#  orders_customer_phone_number_check            (customer_phone_number IS NULL OR customer_phone_number::text ~ '^380[0-9]{9}$'::text)
+#  orders_provider_objects_check                 (jsonb_typeof(progress) = 'object'::text AND jsonb_typeof(provider_payload) = 'object'::text)
+#  orders_sent_data_check                        (state::text = 'cart'::text OR personal_data_consent_at IS NOT NULL AND COALESCE(btrim(own_number::text), ''::text) <> ''::text AND COALESCE(btrim(customer_first_name::text), ''::text) <> ''::text AND COALESCE(btrim(customer_phone_number::text), ''::text) <> ''::text AND COALESCE(btrim(provider_drugstore_external_id::text), ''::text) <> ''::text)
+#  orders_state_check                            (state::text = ANY (ARRAY['cart'::character varying, 'submitted'::character varying, 'submission_failed'::character varying]::text[]))
+#  orders_submitted_provider_order_number_check  (state::text <> 'submitted'::text OR COALESCE(btrim(provider_order_number::text), ''::text) <> ''::text)
 #
