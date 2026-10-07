@@ -28,6 +28,20 @@
 #       enabled: "ON"
 
 en:
+  catalog:
+    instruction_sections:
+      sklad: Composition
+      likarska-forma: Pharmaceutical form
+      farmakoterapevtychna-hrupa: Pharmacotherapeutic group
+      pokazannia: Indications
+      protypokazannia: Contraindications
+      vzaiemodiia-z-inshymy-likarskymy-zasobamy: Interactions with other medicinal products
+      sposib-zastosuvannia-ta-dozy: Posology and method of administration
+      pobichni-reaktsii: Adverse reactions
+      peredozuvannia: Overdose
+      umovy-zberihannia: Storage conditions
+      termin-prydatnosti: Shelf life
+      katehoriia-vidpusku: Dispensing category
   hello: "Hello world"
   errors:
     messages:
