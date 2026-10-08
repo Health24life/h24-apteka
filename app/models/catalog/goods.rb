@@ -34,6 +34,13 @@ class Catalog::Goods < ApplicationRecord
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validate :image_paths_are_strings
 
+  # The name lives in the translations table, so the admin filters by it through this scope rather than a column.
+  scope :name_cont, lambda { |text|
+    joins(:translations).where('catalog_goods_translations.name ILIKE ?', "%#{sanitize_sql_like(text.to_s)}%")
+  }
+
+  def self.ransackable_scopes(_auth_object = nil) = %i[name_cont]
+
   private
 
   def image_paths_are_strings

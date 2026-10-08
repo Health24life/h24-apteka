@@ -1,0 +1,26 @@
+<div class="main-content-container">
+  <%= form_with url: request.path, method: :put, class: "formtastic" do %>
+    <%= hidden_field_tag :hidden, hidden %>
+    <fieldset class="inputs">
+      <ol>
+        <li class="text input <%= hidden ? 'required' : 'optional' %>">
+          <%= label_tag :reason, t("admin.visibility.reason"), class: "label" %>
+          <%= text_area_tag :reason, params[:reason], rows: 3, required: hidden %>
+          <p class="inline-hints">
+            <%= t(hidden ? "admin.visibility.reason_hint_hide" : "admin.visibility.reason_hint_show") %>
+          </p>
+        </li>
+      </ol>
+    </fieldset>
+    <fieldset class="actions">
+      <ol>
+        <li class="action input_action">
+          <%= submit_tag t(hidden ? "admin.visibility.hide" : "admin.visibility.show") %>
+        </li>
+        <li class="cancel">
+          <%= link_to t("active_admin.cancel"), resource_path(resource) %>
+        </li>
+      </ol>
+    </fieldset>
+  <% end %>
+</div>

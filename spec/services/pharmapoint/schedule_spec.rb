@@ -31,6 +31,22 @@ RSpec.describe Pharmapoint::Schedule do
     expect(jobs(env)).to eq({})
   end
 
+  describe '.sync_enabled?' do
+    it 'answers yes for a kind scheduled by default and no for the goods groups kept off', :aggregate_failures do
+      expect(described_class.sync_enabled?('drugstores', {})).to be(true)
+      expect(described_class.sync_enabled?('goods_groups', {})).to be(false)
+    end
+
+    it 'follows the cron set in the environment', :aggregate_failures do
+      expect(described_class.sync_enabled?('goods_groups', 'SYNC_CRON_GOODS_GROUPS' => '0 2 * * *')).to be(true)
+      expect(described_class.sync_enabled?('categories', 'SYNC_CRON_CATEGORIES' => ' ')).to be(false)
+    end
+
+    it 'answers no for a kind the schedule does not know' do
+      expect(described_class.sync_enabled?('symptoms', {})).to be(false)
+    end
+  end
+
   it 'names a worker that exists for every entry' do
     expect(jobs.values.pluck('class').map(&:constantize)).to all(include(Sidekiq::Job))
   end

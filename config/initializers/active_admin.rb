@@ -281,6 +281,8 @@ ActiveAdmin.setup do |config|
   # the menu as plain links opening in a new tab.
   config.namespace :admin do |admin|
     admin.build_menu :default do |menu|
+      menu.add id: 'catalog', label: proc { I18n.t('admin.menu.catalog') }, priority: 10
+      menu.add id: 'sync', label: proc { I18n.t('admin.menu.sync') }, priority: 20
       new_tab = { target: '_blank', rel: 'noopener' }
       menu.add label: 'Sidekiq', priority: 90 do |sidekiq|
         sidekiq.add label: 'Queues', priority: 1, url: '/admin/sidekiq', html_options: new_tab
