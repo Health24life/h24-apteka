@@ -65,7 +65,7 @@ client.drugstore('38628')           # => запис однієї аптеки
 `connection_error`, `invalid_response`), номер спроби, клас помилки, посилання на користувача й на прогін.
 
 - Ключ і телефон клієнта в журнал не потрапляють (`Masker`): заголовки `API-Key`, `Customer-Phone`, `Authorization`,
-  `Cookie` і поле `customer_phone` у тілах замінені маркером.
+  `Cookie` і поля `customer_phone_number` та `repayment_code` (код погашення е-рецепта) у тілах замінені маркером.
 - Збій запису в журнал не ламає запит: його видно в `Rails.error`.
 - Прострочені записи видаляє `Pharmapoint::LogCleanupWorker` за строком категорії; нову категорію чи інший строк задають
   у `Config`/змінних середовища.

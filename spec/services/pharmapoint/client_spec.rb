@@ -91,11 +91,11 @@ RSpec.describe Pharmapoint::Client do
     end
 
     it 'hides the phone of a client in the stored bodies' do
-      stub_pharmapoint('drugstore/1', body: '{"data":[{"id":1,"customer_phone":"380501112233"}]}')
+      stub_pharmapoint('drugstore/1', body: '{"data":[{"id":1,"customer_phone_number":"380501112233"}]}')
 
       client.drugstore('1')
 
-      expect(log.response_body.dig('data', 0, 'customer_phone')).to eq('[masked]')
+      expect(log.response_body.dig('data', 0, 'customer_phone_number')).to eq('[masked]')
     end
 
     it 'reports a failure to write the log and still returns the answer', :aggregate_failures do
