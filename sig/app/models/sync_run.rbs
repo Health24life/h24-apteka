@@ -1,4 +1,5 @@
 class SyncRun
+  def self.ransackable_scopes: (?untyped auth_object) -> Array[Symbol]
   def self.last_successful: (Provider provider, String kind) -> SyncRun?
 
   private

@@ -10,9 +10,11 @@ class Pharmapoint::Schedule
   @env: Pharmapoint::Config::_Env
 
   def self.jobs: (?Pharmapoint::Config::_Env env) -> Pharmapoint::Schedule::jobs
+  def self.sync_enabled?: (String kind, ?Pharmapoint::Config::_Env env) -> bool
 
   def initialize: (Pharmapoint::Config::_Env env) -> void
   def jobs: () -> Pharmapoint::Schedule::jobs
+  def sync_enabled?: (String kind) -> bool
 
   private
 

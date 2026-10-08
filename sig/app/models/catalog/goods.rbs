@@ -6,6 +6,8 @@ class Catalog::Goods
   include Translatable
   extend Translatable::ClassMethods
   extend Mobility
+
+  def self.ransackable_scopes: (?untyped auth_object) -> Array[Symbol]
   include Catalog::Sluggable
 
   RESTRICTIONS: Array[Symbol]
