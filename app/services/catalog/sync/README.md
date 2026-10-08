@@ -11,7 +11,7 @@ sidekiq-cron ──► StartWorker(kind) ──► Starter ──► RunTracker.
                                           │
                                           ▼
                               StepWorker(run_id, cursor) ──► StepRunner ──► Importers::<вид>
-                                          ▲                         │          └─► *Saver ─► Linker (запис + посилання на провайдера)
+                                          ▲                         │          └─► Savers::* ─► Linker (запис + посилання на провайдера)
                                           └──── наступний крок ◄────┘
                                                     │ останній крок
                                                     ▼

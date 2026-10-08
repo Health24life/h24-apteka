@@ -59,9 +59,9 @@ RSpec.describe Catalog::Sync::RunTracker do
     end
 
     it 'keeps the phone of a client out of the stored data' do
-      tracker.guard('Catalog::Drugstore', 1, { customer_phone: '380501112233' }) { raise 'x' }
+      tracker.guard('Catalog::Drugstore', 1, { customer_phone_number: '380501112233' }) { raise 'x' }
 
-      expect(tracker.run.failures.sole.payload).to eq('customer_phone' => '[masked]')
+      expect(tracker.run.failures.sole.payload).to eq('customer_phone_number' => '[masked]')
     end
   end
 

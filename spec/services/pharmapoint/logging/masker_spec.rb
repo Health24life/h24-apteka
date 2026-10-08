@@ -16,10 +16,17 @@ RSpec.describe Pharmapoint::Logging::Masker do
 
   describe '#body' do
     it 'hides the phone of a client at any depth and leaves the rest as it is' do
-      body = { 'customer_phone' => '380501112233', 'goods' => [ { 'id' => 1, 'customer_phone' => '1' } ], 'total' => 5 }
+      body = { 'customer_phone_number' => '380501112233', 'total' => 5,
+               'goods' => [ { 'id' => 1, 'customer_phone_number' => '1' } ] }
 
-      expect(masker.body(body)).to eq('customer_phone' => '[masked]', 'total' => 5,
-                                      'goods' => [ { 'id' => 1, 'customer_phone' => '[masked]' } ])
+      expect(masker.body(body)).to eq('customer_phone_number' => '[masked]', 'total' => 5,
+                                      'goods' => [ { 'id' => 1, 'customer_phone_number' => '[masked]' } ])
+    end
+
+    it 'hides the code that redeems a prescription' do
+      body = { 'repayment_code' => '1234', 'drugstore_id' => 38_049, 'goods_id' => 1_826_972 }
+
+      expect(masker.body(body)).to eq('repayment_code' => '[masked]', 'drugstore_id' => 38_049, 'goods_id' => 1_826_972)
     end
 
     it 'removes what jsonb refuses: NUL characters and invalid UTF-8', :aggregate_failures do

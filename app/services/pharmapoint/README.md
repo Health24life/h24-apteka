@@ -12,9 +12,9 @@
 | `client.rb` | Клієнт: `dictionaries`, `category_tree`, `goods_groups`, `goods_group`, `drugstores`, `drugstore` |
 | `readers/` | По читачу на оболонку відповіді; повертають прості значення з символьними ключами |
 | `rate_limiter.rb` | Ліміт запитів, спільний для всіх воркерів (стан у Redis) |
-| `logging_middleware.rb`, `request_logger.rb` | Запис кожної спроби запиту в журнал звернень |
-| `masker.rb` | Маскування ключа й телефону клієнта перед записом |
-| `log_retention.rb` | Видалення прострочених записів журналу |
+| `logging/middleware.rb`, `logging/request_logger.rb` | Запис кожної спроби запиту в журнал звернень |
+| `logging/masker.rb` | Маскування ключа й телефону клієнта перед записом |
+| `logging/retention.rb` | Видалення прострочених записів журналу |
 | `schedule.rb` | Розклад повторюваних задач для sidekiq-cron |
 
 ## Як користуватися
@@ -64,8 +64,8 @@ client.drugstore('38628')           # => запис однієї аптеки
 код відповіді (окрема колонка, порожній без відповіді), **результат** (`success`, `http_error`, `timeout`,
 `connection_error`, `invalid_response`), номер спроби, клас помилки, посилання на користувача й на прогін.
 
-- Ключ і телефон клієнта в журнал не потрапляють (`Masker`): заголовки `API-Key`, `Customer-Phone`, `Authorization`,
-  `Cookie` і поле `customer_phone` у тілах замінені маркером.
+- Ключ і телефон клієнта в журнал не потрапляють (`Logging::Masker`): заголовки `API-Key`, `Customer-Phone`, `Authorization`,
+  `Cookie` і поля `customer_phone_number` та `repayment_code` (код погашення е-рецепта) у тілах замінені маркером.
 - Збій запису в журнал не ламає запит: його видно в `Rails.error`.
 - Прострочені записи видаляє `Pharmapoint::LogCleanupWorker` за строком категорії; нову категорію чи інший строк задають
   у `Config`/змінних середовища.
