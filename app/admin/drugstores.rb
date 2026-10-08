@@ -9,6 +9,10 @@ ActiveAdmin.register Catalog::Drugstore, as: 'Drugstore' do
 
   includes :brand, :address
 
+  # Options for the drugstore filter of the orders: there are too many drugstores to list them all.
+  searchable_select_options(scope: -> { Catalog::Drugstore.order(:name) }, text_attribute: :name,
+                            display_text: ->(drugstore) { drugstore.name || drugstore.drugstore_legal_entity_name })
+
   filter :name
   filter :drugstore_legal_entity_code
   filter :brand, as: :tom_select

@@ -2,3 +2,6 @@ uk:
   active_admin:
     access_denied:
       message: "Немає доступу."
+    scopes:
+      sent: Відправлені
+      cart: Кошики
