@@ -4,6 +4,9 @@ class Order < ApplicationRecord
   NAME_LENGTH = 100
   # 380 and nine digits, no plus sign.
   PHONE_FORMAT = /\A380\d{9}\z/
+  # The tokens are a guest's keys to the cart and the order, and the rest is the client's personal data, so they stay
+  # out of filters and sorting. A new column is not filterable until it is added here.
+  FILTERABLE = %w[id own_number provider_order_number state status_name drugstore_id provider_id created_at].freeze
 
   enum :state, { cart: 'cart', submitted: 'submitted', submission_failed: 'submission_failed' }, validate: true
 
@@ -47,6 +50,15 @@ class Order < ApplicationRecord
     validates :delivery, :payment, presence: true
   end
   validates :provider_order_number, presence: true, if: :submitted?
+
+  scope :customer_phone_eq, lambda { |value|
+    phone = Orders::PhoneNormalizer.call(value)
+    phone ? where(customer_phone_number: phone) : none
+  }
+
+  def self.ransackable_attributes(_auth_object = nil) = FILTERABLE
+  def self.ransackable_associations(_auth_object = nil) = %w[drugstore provider]
+  def self.ransackable_scopes(_auth_object = nil) = %i[customer_phone_eq]
 
   private
 

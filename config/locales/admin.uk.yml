@@ -39,6 +39,28 @@ uk:
     request_logs:
       expand: Розгорнути
       empty: порожньо
+    orders:
+      guest: гість
+      customer: Клієнт
+      drugstore: Аптека
+      receipt: Отримання й оплата
+      items: Позиції
+      provider_payload: Відповідь партнера
+      states:
+        cart: Кошик
+        submitted: Передано партнеру
+        submission_failed: Помилка передачі
+      delivery_types:
+        pick_up: Самовивіз
+        ukr_post: Укрпошта
+        nova_poshta: Нова пошта
+        meest_express: Meest Express
+        justin: Justin
+        uklon: Uklon
+        ipost: iPost
+      payment_types:
+        cash_in_store: Оплата в аптеці
+        cash_on_delivery: Оплата при отриманні
   activerecord:
     models:
       goods_group:
@@ -56,6 +78,9 @@ uk:
       provider_request_log:
         one: Звернення до провайдера
         other: Звернення до провайдерів
+      order:
+        one: Замовлення
+        other: Замовлення
     attributes:
       catalog/goods_group:
         name: Назва
@@ -155,3 +180,43 @@ uk:
         request_body: Тіло запиту
         response_body: Тіло відповіді
         created_at: Час
+      order:
+        own_number: Номер Health24
+        provider_order_number: Номер партнера
+        provider: Провайдер
+        state: Стан Health24
+        status_name: Статус партнера
+        status_name_eq: Статус партнера
+        status_comment: Коментар партнера
+        cancel_reason: Причина скасування
+        progress: Прогрес у партнера
+        provider_updated_at: Оновлено в партнера
+        status_synced_at: Статус звірено
+        drugstore: Аптека
+        drugstore_name: Назва аптеки
+        drugstore_address: Адреса аптеки
+        drugstore_phone: Телефон аптеки
+        provider_drugstore_external_id: Ідентифікатор аптеки в провайдера
+        customer: Клієнт
+        customer_last_name: Прізвище
+        customer_first_name: Ім'я
+        customer_middle_name: По батькові
+        customer_phone_number: Телефон
+        customer_phone_eq: Телефон
+        customer_email: E-mail
+        personal_data_consent_at: Згода на обробку ПД
+        register_account: Створити акаунт
+        user_id: Користувач
+        delivery_type_code: Спосіб отримання
+        delivery_address: Адреса доставки
+        payment_type_code: Спосіб оплати
+        created_at: Створено
+        updated_at: Оновлено
+      order/item:
+        goods: SKU
+        name: Назва
+        producer: Виробник
+        release_form: Форма випуску
+        quantity: Кількість
+        price: Ціна
+        total: Сума
