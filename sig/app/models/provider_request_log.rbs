@@ -1,5 +1,9 @@
 class ProviderRequestLog
   WITHOUT_RESPONSE: Array[String]
+  FILTERABLE: Array[String]
+
+  def self.ransackable_attributes: (?untyped auth_object) -> Array[String]
+  def self.ransackable_associations: (?untyped auth_object) -> Array[String]
 
   private
 

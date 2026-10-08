@@ -19,6 +19,9 @@ class SyncRun < ApplicationRecord
   scope :finished_successfully, -> { where(status: %w[succeeded completed_with_failures]) }
   # A pull fetches a few records on demand; it is no pass over the provider's data and is kept apart from the runs.
   scope :excluding_pulls, -> { where("COALESCE(progress ->> 'mode', 'full') <> 'pull'") }
+  scope :mode_eq, ->(mode) { where("COALESCE(progress ->> 'mode', 'full') = ?", mode) }
+
+  def self.ransackable_scopes(_auth_object = nil) = %i[mode_eq]
 
   def self.last_successful(provider, kind)
     excluding_pulls.where(provider:, kind:).finished_successfully.order(started_at: :desc).first

@@ -1,0 +1,4 @@
+module ActiveAdmin
+  class Comment < ::ActiveRecord::Base
+  end
+end

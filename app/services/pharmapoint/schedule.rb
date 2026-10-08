@@ -16,12 +16,18 @@ class Pharmapoint::Schedule
 
   def self.jobs(env = ENV) = new(env).jobs
 
+  def self.sync_enabled?(kind, env = ENV) = new(env).sync_enabled?(kind)
+
   def initialize(env)
     @env = env
   end
 
   def jobs
     sync_jobs.merge(cleanup_job)
+  end
+
+  def sync_enabled?(kind)
+    SYNC_RUNS.each_value.any? { |variable, default, run_kind| run_kind == kind && !cron(variable, default).nil? }
   end
 
   private

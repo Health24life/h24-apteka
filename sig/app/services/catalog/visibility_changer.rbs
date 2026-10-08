@@ -1,0 +1,10 @@
+class Catalog::VisibilityChanger
+  type record = Catalog::GoodsGroup | Catalog::Goods | Catalog::Drugstore
+  type result = :changed | :unchanged | :reason_required
+
+  def self.call: (record: record, hidden: bool, reason: String?, admin: AdminUser) -> result
+
+  private
+
+  def self.comment: (record record, AdminUser admin, String action, String reason) -> void
+end

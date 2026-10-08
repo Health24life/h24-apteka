@@ -1,0 +1,5 @@
+class Catalog::Sync::ManualStart
+  type result = :started | :already_running | :disabled
+
+  def self.call: (String kind, ?env: Pharmapoint::Config::_Env) -> result
+end

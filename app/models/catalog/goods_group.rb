@@ -20,6 +20,13 @@ class Catalog::GoodsGroup < ApplicationRecord
   has_one :primary_category, through: :primary_goods_group_category, source: :category
 
   validates :name_uk, presence: true
+
+  # The name lives in the translations table, so the admin filters by it through this scope rather than a column.
+  scope :name_cont, lambda { |text|
+    joins(:translations).where('catalog_goods_group_translations.name ILIKE ?', "%#{sanitize_sql_like(text.to_s)}%")
+  }
+
+  def self.ransackable_scopes(_auth_object = nil) = %i[name_cont]
 end
 
 # == Schema Information

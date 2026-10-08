@@ -4,6 +4,7 @@
 class ProviderRequestLog < ApplicationRecord
   # An outcome with no answer from the provider has no status code, and any other outcome has one.
   WITHOUT_RESPONSE = %w[timeout connection_error].freeze
+  FILTERABLE = %w[id provider_id category outcome response_status sync_run_id user_id created_at].freeze
 
   enum :category, { booking: 'booking', search: 'search', refresh: 'refresh', other: 'other' }, validate: true
   enum :outcome, { success: 'success', http_error: 'http_error', timeout: 'timeout',
@@ -20,6 +21,12 @@ class ProviderRequestLog < ApplicationRecord
   validate :status_matches_outcome
 
   scope :older_than, ->(time) { where(created_at: ...time) }
+
+  # Only the metadata can be filtered on. A filter on the bodies, the path or the headers would tell whether a request
+  # with a given phone exists, however well the page masks the value itself.
+  def self.ransackable_attributes(_auth_object = nil) = FILTERABLE
+
+  def self.ransackable_associations(_auth_object = nil) = %w[provider sync_run]
 
   private
 

@@ -1,0 +1,22 @@
+class Pharmapoint::DisplayMasker
+  type tree = Pharmapoint::Masker::tree
+
+  MARKER: String
+  CUSTOMER_PREFIX: String
+  ANYWHERE: Array[String]
+  WHOLE_OBJECTS: Array[String]
+  KEPT_INSIDE: Array[String]
+  INSIDE: Hash[String, Array[String]]
+  PATTERNS: Array[Regexp]
+
+  def self.body: (tree value) -> tree
+  def self.query: (tree value) -> tree
+  def self.headers: (Hash[String, String] value) -> Hash[String, String]
+  def self.text: (String value) -> String
+
+  private
+
+  def self.walk: (tree value, String? parent) -> tree
+  def self.mask_field: (String key, String? parent, tree value) -> tree
+  def self.personal?: (String key, String? parent) -> bool
+end
