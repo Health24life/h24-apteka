@@ -10,8 +10,8 @@ class Pharmapoint::Config < Data.define(:base_url, :api_key, :domain_name, :rate
   RETENTION_DAYS = { 'booking' => 14, 'search' => 1, 'refresh' => 7, 'other' => 7 }.freeze
   # Request headers whose value never reaches a log.
   SECRET_HEADERS = %w[api-key customer-phone authorization cookie].freeze
-  # Keys of a request or response body that hold a client's phone number.
-  SECRET_BODY_KEYS = %w[customer_phone].freeze
+  # Keys of a request or response body that hold a client's phone number or the code that redeems a prescription.
+  SECRET_BODY_KEYS = %w[customer_phone_number repayment_code].freeze
   def self.current = @current ||= from_env
 
   def self.reset! = @current = nil
