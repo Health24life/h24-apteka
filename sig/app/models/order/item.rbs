@@ -1,0 +1,9 @@
+class Order::Item
+  MIN_QUANTITY: BigDecimal
+  MAX_QUANTITY: BigDecimal
+  MAX_AMOUNT: BigDecimal
+
+  private
+
+  def in_cart?: () -> bool
+end

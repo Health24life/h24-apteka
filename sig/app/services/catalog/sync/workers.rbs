@@ -1,0 +1,8 @@
+# Own code queues these workers by name only.
+class Catalog::Sync::StepWorker
+  def self.perform_async: (Integer run_id, Integer? cursor) -> String?
+end
+
+class Catalog::Sync::PullWorker
+  def self.perform_async: (String type, String external_id, Integer? user_id) -> String?
+end

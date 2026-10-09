@@ -1,0 +1,12 @@
+class Pharmapoint::Dictionaries < Data
+  attr_reader forms: Array[Pharmapoint::DictionaryEntry]
+  attr_reader measures: Array[Pharmapoint::DictionaryEntry]
+  attr_reader price_groups: Array[Pharmapoint::DictionaryEntry]
+  attr_reader temperature_modes: Array[Pharmapoint::DictionaryEntry]
+  attr_reader restrictions: Array[Pharmapoint::DictionaryEntry]
+  attr_reader brands: Array[Pharmapoint::DictionaryEntry]
+
+  def self.new: (forms: Array[Pharmapoint::DictionaryEntry], measures: Array[Pharmapoint::DictionaryEntry], price_groups: Array[Pharmapoint::DictionaryEntry], temperature_modes: Array[Pharmapoint::DictionaryEntry], restrictions: Array[Pharmapoint::DictionaryEntry], brands: Array[Pharmapoint::DictionaryEntry]) -> instance
+
+  def as_json: () -> Pharmapoint::Logging::Masker::tree
+end

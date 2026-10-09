@@ -1,0 +1,12 @@
+# What the concern asks of the class it is extended into.
+interface _DefinesMethods
+  def define_method: (interned symbol) { (?) [self: top] -> untyped } -> Symbol
+end
+
+module H24Core::HstoreTranslated
+  extend ActiveSupport::Concern
+
+  module ClassMethods : _DefinesMethods
+    def hstore_translated: (Symbol name, Symbol column) -> void
+  end
+end

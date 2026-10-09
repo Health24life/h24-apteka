@@ -1,0 +1,32 @@
+module Pharmapoint
+  # Any value of the partner's JSON, which is all the client knows about an answer until a reader looks at it.
+  type json = nil | bool | Integer | Float | String | Array[json] | Hash[String, json]
+  type headers = Hash[String, String]
+end
+
+module Pharmapoint::Readers
+end
+
+class Pharmapoint::Error < StandardError
+end
+
+class Pharmapoint::ConfigurationError < Pharmapoint::Error
+end
+
+class Pharmapoint::TransientError < Pharmapoint::Error
+end
+
+class Pharmapoint::PermanentError < Pharmapoint::Error
+  attr_reader status: Integer
+
+  def initialize: (String message, status: Integer) -> void
+end
+
+class Pharmapoint::InvalidResponse < Pharmapoint::Error
+end
+
+class Pharmapoint::RateLimited < Pharmapoint::TransientError
+  attr_reader retry_after: Integer
+
+  def initialize: (Integer retry_after) -> void
+end

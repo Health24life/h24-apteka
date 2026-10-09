@@ -4,8 +4,8 @@ class Order::Item < ApplicationRecord
   # Mirrors decimal(12,4): below the minimum the column rounds down to zero, from the maximum it does not fit.
   MIN_QUANTITY = BigDecimal('0.0001')
   MAX_QUANTITY = BigDecimal(10**8)
-  # Mirrors the integer kopecks column.
-  MAX_AMOUNT = BigDecimal(2**31) / 100
+  # Mirrors the integer kopecks column: 2**31 kopecks.
+  MAX_AMOUNT = BigDecimal('21474836.48')
 
   belongs_to :order, inverse_of: :items, touch: true
   belongs_to :goods, class_name: 'Catalog::Goods', optional: true, inverse_of: :order_items
@@ -22,7 +22,7 @@ class Order::Item < ApplicationRecord
   with_options if: :in_cart? do
     validates :goods, presence: true
     validates :price, :total, absence: true
-    validates :goods_id, not_repeated: { among: ->(item) { item.order ? item.order.items.to_a : [] } }
+    validates :goods_id, not_repeated: { among: ->(item) { Array(item.order&.items) } }
     validates :goods, served_by_provider: true, not_hidden: { via: :goods_group }, on: :create
     # A disabled provider may come back, so items that already exist stay; no new ones are added meanwhile.
     validates :provider, enabled: true, on: :create

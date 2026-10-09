@@ -1,0 +1,12 @@
+class Pharmapoint::Readers::Dictionaries
+  include Pharmapoint::Readers::Base
+
+  def self.call: (Pharmapoint::json body) -> Pharmapoint::Dictionaries
+
+  def call: (Pharmapoint::json body) -> Pharmapoint::Dictionaries
+
+  private
+
+  def entries: (Pharmapoint::Readers::Base::record data, String key) -> Array[Pharmapoint::DictionaryEntry]
+  def entry: (Pharmapoint::json record) -> Pharmapoint::DictionaryEntry?
+end

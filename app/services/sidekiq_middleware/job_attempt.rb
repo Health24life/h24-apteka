@@ -1,0 +1,18 @@
+# frozen_string_literal: true
+
+# Sidekiq does not tell a worker which attempt it is on; this server middleware remembers it for the running job, so
+# the request log can say which attempt a request belongs to.
+class SidekiqMiddleware::JobAttempt
+  KEY = :job_attempt
+
+  def self.current = Thread.current[KEY] || 1
+
+  def call(_worker, job, _queue)
+    # A job that has not failed yet has no retry count; the first retry has count 0.
+    retries = job['retry_count']
+    Thread.current[KEY] = retries.is_a?(Integer) ? retries + 2 : 1
+    yield
+  ensure
+    Thread.current[KEY] = nil
+  end
+end

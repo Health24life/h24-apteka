@@ -1,0 +1,12 @@
+class Catalog::Category
+  include Catalog::ProviderLinked
+  extend Catalog::ProviderLinked::ClassMethods
+
+  def self.find_linked: (Provider provider, String | Integer external_id) -> Catalog::Category?
+  include Translatable
+  extend Translatable::ClassMethods
+  extend Mobility
+  include Catalog::Sluggable
+
+  def name_uk: () -> String?
+end

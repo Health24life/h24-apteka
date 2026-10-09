@@ -1,0 +1,9 @@
+class Pharmapoint::Brand < Data
+  attr_reader external_id: String
+  attr_reader name: String?
+  attr_reader image_path: String?
+
+  def self.new: (external_id: String, name: String?, image_path: String?) -> instance
+
+  def as_json: () -> Pharmapoint::Logging::Masker::tree
+end

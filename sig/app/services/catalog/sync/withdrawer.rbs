@@ -1,0 +1,17 @@
+class Catalog::Sync::Withdrawer
+  type model = singleton(Catalog::Goods::Group) | singleton(Catalog::Goods)
+
+  MODELS: Array[model]
+
+  @run: SyncRun
+
+  def self.call: (SyncRun run) -> void
+
+  def initialize: (SyncRun run) -> void
+  def call: () -> void
+
+  private
+
+  def withdraw: (model model) -> void
+  def failed_ids: (model model) -> SyncRun::Failure::ActiveRecord_Associations_CollectionProxy
+end

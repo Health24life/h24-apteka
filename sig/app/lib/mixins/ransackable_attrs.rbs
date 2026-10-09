@@ -1,0 +1,12 @@
+# Ransack adds the authorizable_* class methods to every model it is loaded into.
+interface _RansackAuthorizable
+  def authorizable_ransackable_attributes: () -> Array[String]
+  def authorizable_ransackable_associations: () -> Array[String]
+end
+
+module Mixins
+  module RansackableAttrs : _RansackAuthorizable
+    def ransackable_attributes: (?Object? _auth_object) -> Array[String]
+    def ransackable_associations: (?Object? _auth_object) -> Array[String]
+  end
+end

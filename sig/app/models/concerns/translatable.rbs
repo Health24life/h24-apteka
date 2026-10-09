@@ -1,0 +1,18 @@
+# Mobility attributes of a model: `translatable :name` makes `name_uk` and friends and checks the languages.
+interface _Translates
+  def translates: (*Symbol attributes, **untyped options) -> void
+  def attribute: (Symbol name, ?untyped type, **untyped options) -> void
+  def validates: (*untyped attributes, **untyped options) -> void
+end
+
+module Translatable
+  extend ActiveSupport::Concern
+
+  EMPTY_DEFAULT: ^() -> Hash[String, String]
+
+  def self.included: (?Module? base) { () [self: singleton(ActiveRecord::Base)] -> void } -> void
+
+  module ClassMethods : _Translates
+    def translatable: (*Symbol attributes, ?backend: Symbol, **untyped options) -> void
+  end
+end

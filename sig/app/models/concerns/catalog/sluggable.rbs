@@ -1,3 +1,23 @@
-module Catalog::Sluggable
+# What the concern asks of the model it is included in: a slug column and a Ukrainian name.
+interface _Sluggable
+  def slug: () -> String?
+  def slug=: (String value) -> String
+  def slug_changed?: () -> bool
+  def name_uk: () -> String?
+end
+
+module Catalog::Sluggable : ActiveRecord::Base, _Sluggable
+  extend ActiveSupport::Concern
+
+  FORMAT: Regexp
   MAX_LENGTH: Integer
+
+  def self.included: (?Module? base) { () [self: singleton(ActiveRecord::Base)] -> void } -> void
+
+  def slug=: (String value) -> String
+
+  private
+
+  def assign_slug: () -> void
+  def slug_is_unchanged: () -> void
 end

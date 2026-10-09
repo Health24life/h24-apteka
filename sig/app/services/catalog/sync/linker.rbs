@@ -1,0 +1,17 @@
+class Catalog::Sync::Linker
+  # A model class the provider's records can be linked to: it can build a record and find one by the provider's id.
+  interface _Model[out R]
+    def new: () -> R
+    def find_linked: (Provider provider, String | Integer external_id) -> R?
+    def name: () -> String
+  end
+
+  @provider: Provider
+  @now: ActiveSupport::TimeWithZone
+
+  def initialize: (Provider provider, ?now: ActiveSupport::TimeWithZone) -> void
+  def sync: [R < ActiveRecord::Base] (_Model[R] model, String | Integer external_id, Catalog::Sync::attributes attributes) ?{ (R record) -> void } -> R
+  def find: [R < ActiveRecord::Base] (_Model[R] model, String | Integer external_id) -> R?
+  def fetch: [R < ActiveRecord::Base] (_Model[R] model, String? external_id) -> R?
+  def link!: (ActiveRecord::Base record, String | Integer external_id) -> void
+end
