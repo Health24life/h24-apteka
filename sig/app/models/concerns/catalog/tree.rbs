@@ -1,5 +1,0 @@
-module Catalog::Tree
-  extend ActiveSupport::Concern
-
-  def self.included: (?Module? base) { () [self: singleton(ActiveRecord::Base)] -> void } -> void
-end

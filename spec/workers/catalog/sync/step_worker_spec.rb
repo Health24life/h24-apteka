@@ -86,8 +86,9 @@ RSpec.describe Catalog::Sync::StepWorker do
         sync('categories')
       end
 
-      it 'updates the depth of its descendants' do
+      it 'moves its descendants along with it', :aggregate_failures do
         expect(leaf.reload.depth).to eq(2)
+        expect(leaf.ancestors.last).to eq(Catalog::Category.find_linked(provider, '960'))
       end
 
       it 'keeps the address of the category' do

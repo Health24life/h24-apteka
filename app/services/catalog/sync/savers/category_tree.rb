@@ -18,9 +18,7 @@ class Catalog::Sync::Savers::CategoryTree
 
   def save(node, parent)
     @tracker.guard('Catalog::Category', node.external_id, node) do
-      category = @linker.sync(Catalog::Category, node.external_id, { name_uk: node.name, parent: }) do |record|
-        Catalog::Categories::Saver.call(record)
-      end
+      category = @linker.sync(Catalog::Category, node.external_id, { name_uk: node.name, parent: })
       @tracker.processed!
       category
     end

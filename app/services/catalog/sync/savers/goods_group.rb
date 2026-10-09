@@ -78,9 +78,7 @@ class Catalog::Sync::Savers::GoodsGroup
 
   def ensure_category_node(node, parent)
     @linker.find(Catalog::Category, node.external_id) ||
-      @linker.sync(Catalog::Category, node.external_id, { name_uk: node.name, parent: }) do |record|
-        Catalog::Categories::Saver.call(record)
-      end
+      @linker.sync(Catalog::Category, node.external_id, { name_uk: node.name, parent: })
   end
 
   def save_goods(group, goods)

@@ -3,7 +3,6 @@ class Catalog::Category
   extend Catalog::ProviderLinked::ClassMethods
 
   def self.find_linked: (Provider provider, String | Integer external_id) -> Catalog::Category?
-  include Catalog::Tree
   include Translatable
   extend Translatable::ClassMethods
   extend Mobility

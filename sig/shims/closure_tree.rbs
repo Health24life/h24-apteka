@@ -1,0 +1,10 @@
+# closure_tree ships no signatures. Own code only declares the tree; the associations it adds come from rbs_rails.
+module ClosureTree
+  module HasClosureTree
+    def has_closure_tree: (?dependent: Symbol) -> void
+  end
+end
+
+class ActiveRecord::Base
+  extend ClosureTree::HasClosureTree
+end
