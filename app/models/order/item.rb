@@ -4,8 +4,8 @@ class Order::Item < ApplicationRecord
   # Mirrors decimal(12,4): below the minimum the column rounds down to zero, from the maximum it does not fit.
   MIN_QUANTITY = BigDecimal('0.0001')
   MAX_QUANTITY = BigDecimal(10**8)
-  # Mirrors the integer kopecks column.
-  MAX_AMOUNT = BigDecimal(2**31) / 100
+  # Mirrors the integer kopecks column: 2**31 kopecks.
+  MAX_AMOUNT = BigDecimal('21474836.48')
 
   belongs_to :order, inverse_of: :items, touch: true
   belongs_to :goods, class_name: 'Catalog::Goods', optional: true, inverse_of: :order_items
