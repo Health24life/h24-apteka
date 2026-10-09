@@ -1,0 +1,16 @@
+class Orders::PartnerStatuses::Describe
+  SCOPE: String
+
+  class Result < Data
+    attr_reader title: String?
+    attr_reader comment: String?
+    attr_reader known: bool
+
+    def self.new: (title: String?, comment: String?, known: bool) -> instance
+  end
+
+  def self.call: (Order order) -> Result
+
+  def initialize: (Order order) -> void
+  def call: () -> Result
+end
