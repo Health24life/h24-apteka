@@ -46,6 +46,10 @@ en:
   errors:
     messages:
       invalid_week_working_hours: must hold seven values, one per weekday, or be empty
+      repeated: is repeated
+      not_served_by_provider: is not in the catalog of the provider of the order
+      hidden: is hidden by an administrator
+      disabled: is disabled
       not_a_catalog_locale: "is stored in the catalog languages only, not in \"%{language}\""
   closure_tree:
     loop_error: cannot be its own descendant

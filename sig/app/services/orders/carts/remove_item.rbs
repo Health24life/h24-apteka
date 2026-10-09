@@ -1,0 +1,6 @@
+class Orders::Carts::RemoveItem
+  def self.call: (Order::Item item) -> Order
+
+  def initialize: (Order::Item item) -> void
+  def call: () -> Order
+end
