@@ -136,8 +136,8 @@ ActiveAdmin.register Order do
           column :producer
           column :release_form
           column :quantity
-          column :price
-          column :total
+          column(:price) { |item| item.price&.format }
+          column(:total) { |item| item.total&.format }
           column(:goods) { |item| item.goods && auto_link(item.goods) }
         end
       end

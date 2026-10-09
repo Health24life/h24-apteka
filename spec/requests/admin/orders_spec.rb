@@ -89,7 +89,8 @@ RSpec.describe 'Admin orders' do
     end
 
     it 'shows the items with prices and a link to the SKU' do
-      expect(response.body).to include('Парацетамол', 'Дарниця', '25.5', admin_sku_path(sent.items.first.goods))
+      expect(response.body).to include('Парацетамол', 'Дарниця', '25.50 ₴', '51.00 ₴',
+                                       admin_sku_path(sent.items.first.goods))
     end
 
     it 'never shows the guest keys' do
