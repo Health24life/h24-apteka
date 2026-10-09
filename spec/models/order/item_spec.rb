@@ -173,14 +173,14 @@ end
 #
 # Table name: order_items
 #
-#  id         :bigint           not null, primary key
-#  price      :decimal(12, 2)
-#  quantity   :decimal(12, 4)   not null
-#  total      :decimal(12, 2)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  goods_id   :bigint
-#  order_id   :bigint           not null
+#  id          :bigint           not null, primary key
+#  price_cents :integer
+#  quantity    :decimal(12, 4)   not null
+#  total_cents :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  goods_id    :bigint
+#  order_id    :bigint           not null
 #
 # Indexes
 #

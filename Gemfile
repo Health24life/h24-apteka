@@ -69,6 +69,9 @@ gem 'rswag-api', '2.17.0'
 gem 'rswag-ui', '2.17.0'
 
 gem 'mobility', '~> 1.3'
+# Amounts as Money over integer *_cents columns, so a price never passes through Float.
+# [https://github.com/RubyMoney/money-rails]
+gem 'money-rails', '~> 3.0.0'
 # Category and ATC trees: ancestors and descendants through a closure (hierarchy) table.
 # [https://github.com/ClosureTree/closure_tree]
 gem 'closure_tree', '~> 9.8'

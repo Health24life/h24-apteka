@@ -157,6 +157,10 @@ gems:
   version: '0'
   source:
     type: stdlib
+- name: dbm
+  version: '0'
+  source:
+    type: stdlib
 - name: delegate
   version: '0'
   source:
@@ -309,6 +313,10 @@ gems:
     revision: aa277106e7cbbabd01ff57ee6988271e19000f34
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
+- name: money
+  version: 7.1.1
+  source:
+    type: rubygems
 - name: monitor
   version: '0'
   source:
@@ -357,6 +365,18 @@ gems:
   version: 1.9.0
   source:
     type: rubygems
+- name: pstore
+  version: '0.2'
+  source:
+    type: git
+    name: ruby/gem_rbs_collection
+    revision: da02a7c672dfc9b7ed2d0a2508994b5b183ad0a6
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    repo_dir: gems
+- name: psych
+  version: '0'
+  source:
+    type: stdlib
 - name: pundit
   version: '2.5'
   source:
@@ -502,6 +522,10 @@ gems:
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: uri
+  version: '0'
+  source:
+    type: stdlib
+- name: yaml
   version: '0'
   source:
     type: stdlib

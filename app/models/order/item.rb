@@ -11,6 +11,8 @@ class Order::Item < ApplicationRecord
   # The provider of an item is the provider of its cart; the validators below read it from here.
   delegate :provider, to: :order, allow_nil: true
 
+  monetize :price_cents, :total_cents, allow_nil: true
+
   validates :goods, presence: true
   validates :quantity, numericality: { greater_than_or_equal_to: MIN_QUANTITY, less_than: MAX_QUANTITY }
   # Price and availability are always fetched live, so a cart never stores them.
@@ -25,14 +27,14 @@ end
 #
 # Table name: order_items
 #
-#  id         :bigint           not null, primary key
-#  price      :decimal(12, 2)
-#  quantity   :decimal(12, 4)   not null
-#  total      :decimal(12, 2)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  goods_id   :bigint
-#  order_id   :bigint           not null
+#  id          :bigint           not null, primary key
+#  price_cents :integer
+#  quantity    :decimal(12, 4)   not null
+#  total_cents :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  goods_id    :bigint
+#  order_id    :bigint           not null
 #
 # Indexes
 #
