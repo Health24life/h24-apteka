@@ -2,11 +2,14 @@
 
 class Catalog::Category < ApplicationRecord
   include Catalog::ProviderLinked
-  include Catalog::Tree
   include Translatable
   include Catalog::Sluggable
 
   translatable :name
+
+  # Save callbacks keep the hierarchy table, so a write past them (insert_all, upsert_all, update_all on parent_id)
+  # has to be followed by rebuild!.
+  has_closure_tree dependent: :restrict_with_exception
 
   has_many :goods_group_categories, class_name: 'Catalog::Goods::Group::Category', inverse_of: :category,
                                     dependent: :restrict_with_exception
@@ -20,7 +23,6 @@ end
 # Table name: catalog_categories
 #
 #  id         :bigint           not null, primary key
-#  depth      :integer          default(0), not null
 #  name       :jsonb            not null
 #  slug       :string           not null
 #  created_at :datetime         not null
@@ -38,7 +40,6 @@ end
 #
 # Check Constraints
 #
-#  catalog_categories_depth_check   (depth >= 0)
 #  catalog_categories_parent_check  (parent_id IS NULL OR parent_id <> id)
 #  catalog_categories_slug_check    (slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100)
 #

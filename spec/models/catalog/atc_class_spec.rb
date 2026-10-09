@@ -46,6 +46,7 @@ RSpec.describe Catalog::AtcClass do
 
     expect(described_class.roots).to contain_exactly(root)
     expect(root.children).to contain_exactly(child)
+    expect(child.self_and_ancestors).to eq([ child, root ])
   end
 
   it 'refuses a class as its own parent, in the model and in the database', :aggregate_failures do

@@ -3,8 +3,6 @@
 FactoryBot.define do
   factory :catalog_category, class: 'Catalog::Category' do
     sequence(:name_uk) { |n| "Категорія #{n}" }
-
-    to_create { Catalog::Categories::Saver.call(it) }
   end
 end
 
@@ -13,7 +11,6 @@ end
 # Table name: catalog_categories
 #
 #  id         :bigint           not null, primary key
-#  depth      :integer          default(0), not null
 #  name       :jsonb            not null
 #  slug       :string           not null
 #  created_at :datetime         not null
@@ -31,7 +28,6 @@ end
 #
 # Check Constraints
 #
-#  catalog_categories_depth_check   (depth >= 0)
 #  catalog_categories_parent_check  (parent_id IS NULL OR parent_id <> id)
 #  catalog_categories_slug_check    (slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100)
 #

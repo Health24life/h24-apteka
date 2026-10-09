@@ -2,10 +2,13 @@
 
 class Catalog::AtcClass < ApplicationRecord
   include Catalog::ProviderLinked
-  include Catalog::Tree
   include Translatable
 
   translatable :name
+
+  # Save callbacks keep the hierarchy table, so a write past them (insert_all, upsert_all, update_all on parent_id)
+  # has to be followed by rebuild!.
+  has_closure_tree dependent: :restrict_with_exception
 
   has_many :goods_groups, class_name: 'Catalog::Goods::Group', inverse_of: :atc_class,
                           dependent: :restrict_with_exception

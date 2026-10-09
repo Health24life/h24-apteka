@@ -39,6 +39,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
     t.index ["email"], name: "index_admin_users_on_email", unique: true
   end
 
+  create_table "catalog_atc_class_hierarchies", primary_key: ["ancestor_id", "descendant_id", "generations"], force: :cascade do |t|
+    t.bigint "ancestor_id", null: false
+    t.bigint "descendant_id", null: false
+    t.integer "generations", null: false
+    t.index ["descendant_id"], name: "index_catalog_atc_class_hierarchies_on_descendant_id"
+  end
+
   create_table "catalog_atc_classes", force: :cascade do |t|
     t.bigint "parent_id"
     t.string "atc_code", null: false
@@ -53,15 +60,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
   create_table "catalog_categories", force: :cascade do |t|
     t.bigint "parent_id"
     t.string "slug", null: false
-    t.integer "depth", default: 0, null: false
     t.jsonb "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["parent_id"], name: "index_catalog_categories_on_parent_id"
     t.index ["slug"], name: "index_catalog_categories_on_slug", unique: true
-    t.check_constraint "depth >= 0", name: "catalog_categories_depth_check"
     t.check_constraint "parent_id IS NULL OR parent_id <> id", name: "catalog_categories_parent_check"
     t.check_constraint "slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100", name: "catalog_categories_slug_check"
+  end
+
+  create_table "catalog_category_hierarchies", primary_key: ["ancestor_id", "descendant_id", "generations"], force: :cascade do |t|
+    t.bigint "ancestor_id", null: false
+    t.bigint "descendant_id", null: false
+    t.integer "generations", null: false
+    t.index ["descendant_id"], name: "index_catalog_category_hierarchies_on_descendant_id"
   end
 
   create_table "catalog_drugstore_addresses", force: :cascade do |t|
@@ -291,8 +303,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_120006) do
     t.check_constraint "status::text = ANY (ARRAY['running'::character varying::text, 'succeeded'::character varying::text, 'completed_with_failures'::character varying::text, 'failed'::character varying::text])", name: "sync_runs_status_check"
   end
 
+  add_foreign_key "catalog_atc_class_hierarchies", "catalog_atc_classes", column: "ancestor_id", on_delete: :cascade
+  add_foreign_key "catalog_atc_class_hierarchies", "catalog_atc_classes", column: "descendant_id", on_delete: :cascade
   add_foreign_key "catalog_atc_classes", "catalog_atc_classes", column: "parent_id"
   add_foreign_key "catalog_categories", "catalog_categories", column: "parent_id"
+  add_foreign_key "catalog_category_hierarchies", "catalog_categories", column: "ancestor_id", on_delete: :cascade
+  add_foreign_key "catalog_category_hierarchies", "catalog_categories", column: "descendant_id", on_delete: :cascade
   add_foreign_key "catalog_drugstore_addresses", "catalog_drugstores", column: "drugstore_id", on_delete: :cascade
   add_foreign_key "catalog_drugstores", "catalog_drugstore_brands", column: "brand_id"
   add_foreign_key "catalog_goods", "catalog_goods_forms", column: "form_id"

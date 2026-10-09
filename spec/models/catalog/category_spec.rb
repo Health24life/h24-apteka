@@ -34,7 +34,7 @@ RSpec.describe Catalog::Category do
       root.parent = grandchild
 
       expect(root).not_to be_valid
-      expect(root.errors[:parent]).to be_present
+      expect(root.errors[:parent_id]).to be_present
     end
 
     it 'allows moving a category under an unrelated branch' do
@@ -56,10 +56,26 @@ RSpec.describe Catalog::Category do
       expect { root.destroy }.to raise_error(ActiveRecord::DeleteRestrictionError)
     end
 
-    it 'refuses a negative depth at the database level' do
-      category = create(:catalog_category)
+    context 'with a branch of three levels' do
+      let(:root) { create(:catalog_category) }
+      let(:child) { create(:catalog_category, parent: root) }
+      let(:grandchild) { create(:catalog_category, parent: child) }
 
-      expect { category.update_column(:depth, -1) }.to raise_error(ActiveRecord::StatementInvalid) # rubocop:disable Rails/SkipsModelValidations
+      it 'knows the ancestors, the descendants and the depth of a node', :aggregate_failures do
+        expect(grandchild.ancestors).to eq([ child, root ])
+        expect(root.self_and_descendants).to contain_exactly(root, child, grandchild)
+        expect(grandchild.depth).to eq(2)
+      end
+
+      it 'carries the whole branch along when a category moves', :aggregate_failures do
+        new_root = create(:catalog_category)
+        grandchild
+
+        child.update!(parent: new_root)
+
+        expect(grandchild.reload.ancestors).to eq([ child, new_root ])
+        expect(root.descendants).to be_empty
+      end
     end
   end
 
@@ -75,7 +91,6 @@ end
 # Table name: catalog_categories
 #
 #  id         :bigint           not null, primary key
-#  depth      :integer          default(0), not null
 #  name       :jsonb            not null
 #  slug       :string           not null
 #  created_at :datetime         not null
@@ -93,7 +108,6 @@ end
 #
 # Check Constraints
 #
-#  catalog_categories_depth_check   (depth >= 0)
 #  catalog_categories_parent_check  (parent_id IS NULL OR parent_id <> id)
 #  catalog_categories_slug_check    (slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100)
 #
