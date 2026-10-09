@@ -469,6 +469,37 @@ RSpec.describe Order do
       expect { store_row(row.merge(provider_id: 0)) }.to raise_error(ActiveRecord::InvalidForeignKey)
     end
   end
+
+  describe 'search' do
+    it 'finds an order by the whole phone written in any usual way', :aggregate_failures do
+      order = create(:order, :submitted, customer_phone_number: '380501234567')
+      create(:order, :submitted, customer_phone_number: '380671234567')
+
+      expect(described_class.customer_phone_eq('+38 (050) 123-45-67')).to contain_exactly(order)
+      expect(described_class.customer_phone_eq('0501234567')).to contain_exactly(order)
+    end
+
+    it 'finds nothing by a part of a phone' do
+      create(:order, :submitted, customer_phone_number: '380501234567')
+
+      expect(described_class.customer_phone_eq('4567')).to be_empty
+    end
+
+    it 'keeps the guest tokens and the personal data out of filters and sorting', :aggregate_failures do
+      hidden = %w[token share_token customer_first_name customer_last_name customer_middle_name customer_phone_number
+                  customer_email provider_payload]
+
+      expect(described_class.ransackable_attributes & hidden).to be_empty
+      expect(described_class.ransortable_attributes & hidden).to be_empty
+      expect(described_class.ransackable_associations).to contain_exactly('drugstore', 'provider')
+    end
+
+    it 'ignores a filter on a guest token' do
+      order = create(:order)
+
+      expect(described_class.ransack(token_start: order.token[0, 3], token_eq: 'nothing').result).to include(order)
+    end
+  end
 end
 
 # == Schema Information
