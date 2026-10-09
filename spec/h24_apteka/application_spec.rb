@@ -14,6 +14,18 @@ RSpec.describe H24Apteka::Application do
   it 'treats goods as uncountable', :aggregate_failures do
     expect('goods'.pluralize).to eq('goods')
     expect('goods'.singularize).to eq('goods')
+    expect('catalog_goods'.singularize).to eq('catalog_goods')
+  end
+
+  it 'falls back to Ukrainian for English and to English for Ukrainian', :aggregate_failures do
+    expect(I18n.fallbacks[:en]).to include(:uk)
+    expect(I18n.fallbacks[:uk]).to include(:en)
+  end
+
+  it 'lets the application-wide fallbacks rule every environment' do
+    Rails.root.glob('config/environments/*.rb').each do |file|
+      expect(File.read(file)).not_to include('i18n.fallbacks'), "#{File.basename(file)} overrides i18n fallbacks"
+    end
   end
 
   it 'has pg_trgm enabled' do

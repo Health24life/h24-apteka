@@ -29,6 +29,12 @@
 
 en:
   hello: "Hello world"
+  errors:
+    messages:
+      invalid_week_working_hours: must hold seven values, one per weekday, or be empty
+      not_a_catalog_locale: "is stored in the catalog languages only, not in \"%{language}\""
+  closure_tree:
+    loop_error: cannot be its own descendant
   activerecord:
     errors:
       models:
