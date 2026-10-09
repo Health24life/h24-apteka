@@ -1,0 +1,160 @@
+uk:
+  admin:
+    menu:
+      catalog: Каталог
+      sync: Синхронізація
+    visibility:
+      hide: Приховати
+      show: Показати
+      hide_title: Приховати з вітрини
+      show_title: Повернути на вітрину
+      reason: Причина
+      reason_hint_hide: Обов'язкова. Її побачать інші адміністратори на картці запису.
+      reason_hint_show: Необов'язкова.
+      hidden_with_reason: "Приховано з вітрини. Причина: %{reason}"
+      shown: Повернуто на вітрину
+      shown_with_reason: "Повернуто на вітрину. Причина: %{reason}"
+      changed: Зміну збережено.
+      unchanged: Запис уже в цьому стані — нічого не змінено.
+      reason_required: Вкажіть причину, щоб приховати запис.
+    provider_links:
+      title: Посилання на провайдерів
+    sync_runs:
+      start: "Запустити: %{kind}"
+      disabled_hint: Вид вимкнено в розкладі
+      started: "Прогін «%{kind}» поставлено в чергу."
+      already_running: "Прогін «%{kind}» уже виконується — другий не запущено."
+      disabled: "Вид «%{kind}» вимкнено в розкладі — запуск недоступний."
+      failures: Збої прогону
+      request_logs: Звернення до провайдера в межах прогону
+      open_request_logs: Відкрити в журналі звернень
+      mode:
+        full: прогін
+        pull: дотягування
+      kinds:
+        dictionaries: Довідники
+        categories: Категорії
+        goods_groups: Групи товарів
+        drugstores: Аптеки
+    request_logs:
+      expand: Розгорнути
+      empty: порожньо
+  activerecord:
+    models:
+      goods_group:
+        one: Група товарів
+        other: Групи товарів
+      sku:
+        one: SKU
+        other: SKU
+      drugstore:
+        one: Аптека
+        other: Аптеки
+      sync_run:
+        one: Прогін синхронізації
+        other: Прогони синхронізації
+      provider_request_log:
+        one: Звернення до провайдера
+        other: Звернення до провайдерів
+      provider/request_log:
+        one: Звернення до провайдера
+        other: Звернення до провайдерів
+    attributes:
+      catalog/goods/group:
+        name: Назва
+        producer: Виробник
+        goods_name: Торгова назва
+        atc_class: Клас АТХ
+        categories: Категорії
+        included_to_offers: У пропозиціях
+        withdrawn: Знятий
+        hidden: Прихований
+        name_cont: Назва
+        created_at: Створено
+        updated_at: Оновлено
+      catalog/goods:
+        name: Назва
+        goods_group: Група товарів
+        mnn: МНН
+        dosage: Дозування
+        release_form: Форма випуску
+        form: Лікарська форма
+        measure: Одиниця
+        morion_code: Код Моріон
+        is_recipe: Рецептурний
+        is_strict_recipe: Суворий облік
+        in_medication_program: Програма реімбурсації
+        pack_quantity_in_pack: Кількість в упаковці
+        pack_unit_name: Одиниця в упаковці
+        composition: Склад
+        image_paths: Зображення
+        slug: Адреса картки
+        instruction_sections: Розділи інструкції
+        withdrawn: Знятий
+        hidden: Прихований
+        name_cont: Назва
+        created_at: Створено
+        updated_at: Оновлено
+      catalog/goods/instruction_section:
+        position: Порядок
+        title: Розділ
+        anchor: Якір
+      catalog/drugstore:
+        name: Назва
+        brand: Бренд
+        drugstore_legal_entity_name: Юридична особа
+        drugstore_legal_entity_code: Код ЄДРПОУ / податковий номер
+        address: Адреса
+        coordinates: Координати
+        week_working_hours: Графік роботи
+        phone: Телефон
+        mobile_phone: Мобільний телефон
+        email: E-mail
+        work_with_reimbursement: Реімбурсація
+        incomplete: Неповний запис
+        withdrawn: Знятий
+        hidden: Прихований
+        created_at: Створено
+        updated_at: Оновлено
+      provider/link:
+        provider: Провайдер
+        external_id: Зовнішній ідентифікатор
+        synced_at: Синхронізовано
+        attrs: Дані провайдера
+      sync_run:
+        provider: Провайдер
+        kind: Вид даних
+        mode: Режим
+        status: Стан
+        started_at: Початок
+        finished_at: Завершення
+        processed_count: Оброблено
+        failed_count: Збоїв
+        progress: Курсор
+        error_message: Помилка прогону
+      sync_run/failure:
+        entity_type: Тип запису
+        external_id: Зовнішній ідентифікатор
+        error_class: Клас помилки
+        message: Повідомлення
+        payload: Вхідні дані
+        created_at: Час
+      provider/request_log:
+        provider: Провайдер
+        category: Категорія
+        http_method: Метод
+        path: Шлях
+        query: Параметри
+        response_status: Код відповіді
+        outcome: Результат
+        attempt: Спроба
+        duration_ms: Тривалість, мс
+        error_class: Клас помилки
+        sync_run: Прогін
+        sync_run_id: Прогін
+        user_id: Користувач
+        request_headers: Заголовки запиту
+        response_headers: Заголовки відповіді
+        request_body: Тіло запиту
+        response_body: Тіло відповіді
+        created_at: Час
