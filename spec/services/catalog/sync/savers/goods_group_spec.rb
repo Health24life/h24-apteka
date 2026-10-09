@@ -40,7 +40,7 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
   end
 
   it 'uses a category that is already there instead of building another', :aggregate_failures do
-    existing = linker.sync(Catalog::Category, '980', name_uk: 'Раніше') { Catalog::Categories::Saver.call(it) }
+    existing = linker.sync(Catalog::Category, '980', name_uk: 'Раніше')
 
     group = saver.call(item)
 
