@@ -278,8 +278,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_140100) do
     t.bigint "order_id", null: false
     t.bigint "goods_id"
     t.decimal "quantity", precision: 12, scale: 4, null: false
-    t.decimal "price", precision: 12, scale: 2
-    t.decimal "total", precision: 12, scale: 2
+    t.integer "price_cents"
+    t.integer "total_cents"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["order_id"], name: "index_order_items_on_order_id"

@@ -19,8 +19,8 @@ class CreateOrdersAndOrderItems < ActiveRecord::Migration[8.1]
       t.references :order, null: false, foreign_key: { on_delete: :cascade }
       t.references :goods, foreign_key: { to_table: :catalog_goods }, index: false
       t.decimal :quantity, precision: 12, scale: 4, null: false
-      t.decimal :price, precision: 12, scale: 2
-      t.decimal :total, precision: 12, scale: 2
+      t.integer :price_cents
+      t.integer :total_cents
 
       t.timestamps
     end
