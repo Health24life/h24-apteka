@@ -1,0 +1,19 @@
+class Catalog::Instructions::ParsedInstruction < Data
+  class Section < Data
+    attr_reader position: Integer
+    attr_reader code: String
+    attr_reader anchor: String
+    attr_reader source_title: String
+    attr_reader body_html: String
+
+    def self.new: (position: Integer, code: String, anchor: String, source_title: String, body_html: String) -> instance
+  end
+
+  attr_reader sections: Array[Section]
+  attr_reader fallback_html: String?
+
+  def self.new: (sections: Array[Section], fallback_html: String?) -> instance
+  def self.empty: () -> Catalog::Instructions::ParsedInstruction
+
+  def parsed?: () -> bool
+end

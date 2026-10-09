@@ -1,0 +1,17 @@
+module Catalog::Instructions::Sections
+  class Section < Data
+    attr_reader code: String
+    attr_reader synonyms: Array[String]
+
+    def self.new: (code: String, synonyms: Array[String]) -> instance
+  end
+
+  ALL: Array[Section]
+  CODES: Array[String]
+  CODE_BY_SYNONYM: Hash[String, String]
+  LATIN_LOOKALIKES: String
+  CYRILLIC_LETTERS: String
+
+  def self.code_for: (String heading) -> String?
+  def self.normalize: (String heading) -> String
+end
