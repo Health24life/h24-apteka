@@ -79,6 +79,9 @@ gem 'money-rails', '~> 3.0.0'
 # [https://github.com/ClosureTree/closure_tree]
 gem 'closure_tree', '~> 9.8'
 gem 'uklatn', '~> 1.20'
+# Bulk insert and upsert of models with their has_many children (sync of the provider's catalog).
+# [https://github.com/zdennis/activerecord-import]
+gem 'activerecord-import', '~> 2.3'
 
 # HTTP client for the Pharmapoint partner API; Typhoeus is the adapter the ecosystem uses (libcurl, no GET-body quirks).
 gem 'faraday', '~> 2.14'

@@ -1,0 +1,15 @@
+# The collection's signatures for activerecord-import answer `import` with void and are ignored in
+# rbs_collection.yaml. Own code calls `import` with model instances only and reads the failed ones.
+module ActiveRecord
+  module Import
+    class Result
+      def failed_instances: () -> Array[ActiveRecord::Base]
+    end
+  end
+end
+
+class ActiveRecord::Base
+  def self.import: (Array[ActiveRecord::Base] models, ?validate: bool, ?recursive: bool,
+                    ?on_duplicate_key_update: Array[Symbol],
+                    ?recursive_on_duplicate_key_update: Hash[Symbol, Array[Symbol]]) -> ActiveRecord::Import::Result
+end

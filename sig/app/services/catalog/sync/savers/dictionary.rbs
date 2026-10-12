@@ -7,6 +7,5 @@ class Catalog::Sync::Savers::Dictionary
 
   private
 
-  def save_all: [R < ActiveRecord::Base] (Catalog::Sync::Linker::_Model[R] model, Symbol attribute, Array[Pharmapoint::DictionaryEntry] entries) -> void
-  def save_entry: [R < ActiveRecord::Base] (Catalog::Sync::Linker::_Model[R] model, Symbol attribute, Pharmapoint::DictionaryEntry entry) -> void
+  def save_all: [R < ActiveRecord::Base & _ProviderLinkedRecord] (Catalog::Sync::BulkSave::model[R] model, Symbol attribute, Array[Pharmapoint::DictionaryEntry] entries) -> void
 end

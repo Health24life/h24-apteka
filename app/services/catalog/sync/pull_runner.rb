@@ -38,10 +38,7 @@ class Catalog::Sync::PullRunner
   end
 
   def pull_goods_group(client, linker, tracker)
-    record = client.goods_group(@external_id)
-    tracker.guard('Catalog::Goods::Group', @external_id, record) do
-      Catalog::Sync::Savers::GoodsGroup.new(linker, tracker).call(record)
-    end
+    Catalog::Sync::Savers::GoodsGroup.new(linker, tracker).call([ client.goods_group(@external_id) ])
   end
 
   def pull_drugstore(client, linker, tracker)

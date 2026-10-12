@@ -4,14 +4,42 @@ class Catalog::Sync::Linker
     def new: () -> R
     def find_linked: (Provider provider, String | Integer external_id) -> R?
     def name: () -> String
+    def includes: (*Symbol associations) -> _Relation[R]
+    def reflect_on_association: (Symbol name) -> ActiveRecord::Reflection::AssociationReflection?
+  end
+
+  # A model as the cache and the batch lookup see it: by name, with or without a translations table.
+  interface _Named
+    def name: () -> String
+    def reflect_on_association: (Symbol name) -> ActiveRecord::Reflection::AssociationReflection?
+  end
+
+  # What a batch lookup is read through.
+  interface _Relation[out R]
+    def where: (Hash[Symbol, Hash[Symbol, Integer | Array[String]]] conditions) -> _Relation[R]
+    def to_a: () -> Array[R]
   end
 
   @provider: Provider
   @now: ActiveSupport::TimeWithZone
+  # Records of different models under one key space; the generic methods give each lookup its type back.
+  @records: Hash[[String, String], untyped]
 
   def initialize: (Provider provider, ?now: ActiveSupport::TimeWithZone) -> void
   def sync: [R < ActiveRecord::Base] (_Model[R] model, String | Integer external_id, Catalog::Sync::attributes attributes) ?{ (R record) -> void } -> R
   def find: [R < ActiveRecord::Base] (_Model[R] model, String | Integer external_id) -> R?
   def fetch: [R < ActiveRecord::Base] (_Model[R] model, String? external_id) -> R?
+  def preload: [R < ActiveRecord::Base & _ProviderLinkedRecord] (_Model[R] model, Array[String | Integer] external_ids) -> void
+  def build: [R < ActiveRecord::Base & _ProviderLinkedRecord] (_Model[R] model, String | Integer external_id, Catalog::Sync::attributes attributes) -> R
+  def link_of: (ActiveRecord::Base & _ProviderLinkedRecord record) -> Provider::Link
+  def forget: (_Named model) -> void
   def link!: (ActiveRecord::Base record, String | Integer external_id) -> void
+
+  private
+
+  # The cache holds records of every model, so what it gives back is typed by the public method that asked.
+  def lookup: (_Model[ActiveRecord::Base] model, String | Integer external_id) -> untyped
+  def linked: [R < ActiveRecord::Base] (_Model[R] model, Array[String] external_ids) -> Array[R]
+  def key: (_Named model, String | Integer external_id) -> [String, String]
+  def preloaded_associations: (_Named model) -> Array[Symbol]
 end
