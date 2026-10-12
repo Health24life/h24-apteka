@@ -1,4 +1,5 @@
-# Mobility ships no signatures; the app only extends a model with the module.
+# Mobility ships no signatures; the app extends a model with the module and asks which attributes it translates.
 module Mobility
   def translates: (*Symbol attributes, **untyped options) -> void
+  def mobility_attribute?: (String name) -> bool
 end

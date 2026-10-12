@@ -104,4 +104,10 @@ RSpec.describe Catalog::Slugs::Generator do
   it 'produces slugs that match the catalog format' do
     expect(slug_for('Їжак у тумані')).to match(Catalog::Sluggable::FORMAT)
   end
+
+  it 'skips slugs already handed out in the same batch' do
+    reserved = Set['zneboliuvalni']
+
+    expect(described_class.call('Знеболювальні', scope: taken_scope.new, reserved:)).to eq('zneboliuvalni-2')
+  end
 end

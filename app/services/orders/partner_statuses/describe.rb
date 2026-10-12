@@ -5,7 +5,7 @@
 # statuses are not merged into states of our own.
 class Orders::PartnerStatuses::Describe
   SCOPE = 'orders.partner_statuses'
-  Result = Data.define(:title, :comment, :known)
+  class Result < Data.define(:title, :comment, :known); end
 
   def self.call(order) = new(order).call
 

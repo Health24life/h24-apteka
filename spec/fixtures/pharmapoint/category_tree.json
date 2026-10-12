@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "id": 950, "slug": "liki", "name_ru": "Лекарства", "name_uk": "Ліки", "parent_id": null,
+      "children": [
+        {
+          "id": 960, "slug": "zasobi-dlia-nervovoi-systemy", "name_ru": "Средства для нервной системы",
+          "name_uk": "Засоби для нервової системи", "parent_id": 950,
+          "children": [
+            { "id": 970, "slug": "analhetyky", "name_ru": "Анальгетики", "name_uk": "Анальгетики", "parent_id": 960,
+              "children": [
+                { "id": 980, "slug": "inshi-analhetyky", "name_ru": "Другие анальгетики",
+                  "name_uk": "Інші анальгетики й антипіретики", "parent_id": 970, "children": [] }
+              ] }
+          ]
+        }
+      ]
+    },
+    { "id": 953, "slug": "klinichne-harchuvannya", "name_ru": "Клиническое питание", "name_uk": "Клінічне харчування",
+      "parent_id": null, "children": [] }
+  ]
+}

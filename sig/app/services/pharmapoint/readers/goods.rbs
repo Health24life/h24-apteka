@@ -1,0 +1,14 @@
+class Pharmapoint::Readers::Goods
+  include Pharmapoint::Readers::Base
+
+  def self.call: (Pharmapoint::json value) -> Pharmapoint::Goods?
+
+  def call: (Pharmapoint::json value) -> Pharmapoint::Goods?
+
+  private
+
+  def morion_code: (Pharmapoint::Readers::Base::record record) -> String?
+  def card: (Pharmapoint::Readers::Base::record record) -> Pharmapoint::GoodsCard
+  def pack: (Pharmapoint::Readers::Base::record record) -> Pharmapoint::Pack
+  def references: (Pharmapoint::Readers::Base::record record) -> Pharmapoint::GoodsReferences
+end

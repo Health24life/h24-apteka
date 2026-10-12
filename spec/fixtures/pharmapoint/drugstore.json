@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "id": 38628, "ext_drugstore_id": "2369", "city_id": 628, "state": "Харківська обл.", "city": "Харків",
+      "name": "Аптека №2369, \"Подорожник\"",
+      "legal_entity_name": "Товариство з обмеженою відповідальністю «Подорожник Харків»", "legal_entity_code": "42517597",
+      "address": "м.  Харків, вул.  Чернишевська,  1", "coordinates": { "latitude": 49.995691, "longitude": 36.2359392 },
+      "distance": null, "phone": "(093)   087-41-68", "mobile_phone": "380674673984", "email": "apteka2369@da.lviv.ua",
+      "photos": [], "drugstore_brand": { "id": 57, "name": "Подорожник", "image_url": "drugstore_brand_photo/57/p.png" },
+      "working_hours": { "from": "08:00", "to": "20:00", "is_open": true, "is_24h": false },
+      "week_working_hours": [ "08:00-21:00", "08:00-21:00", "08:00-21:00", "08:00-21:00", "08:00-21:00", "09:00-20:00", "09:00-20:00" ],
+      "work_with_reimbursement": true
+    }
+  ]
+}

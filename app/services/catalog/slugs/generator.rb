@@ -9,10 +9,12 @@ class Catalog::Slugs::Generator
   NON_KMU_LETTERS = 'ʼ‘`´ЫыЭэЁёЪъ'
   KMU_LETTERS = '’’’’ИиЕеЕе’’'
 
-  def self.call(text, scope:) = new(scope).call(text)
+  # `reserved` holds the slugs a batch has handed out but not saved yet, which the scope cannot see.
+  def self.call(text, scope:, reserved: Set.new) = new(scope, reserved:).call(text)
 
-  def initialize(scope)
+  def initialize(scope, reserved: Set.new)
     @scope = scope
+    @reserved = reserved
   end
 
   def call(text)
@@ -21,7 +23,7 @@ class Catalog::Slugs::Generator
     loop do
       candidates = (first...(first + BATCH)).map { it == 1 ? base : with_suffix(base, "-#{it}") }
       taken = @scope.where(slug: candidates).pluck(:slug)
-      free = candidates.find { taken.exclude?(it) }
+      free = candidates.find { taken.exclude?(it) && @reserved.exclude?(it) }
       return free if free
 
       first += BATCH

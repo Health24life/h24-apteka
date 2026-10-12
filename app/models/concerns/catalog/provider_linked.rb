@@ -4,8 +4,9 @@ module Catalog::ProviderLinked
   extend ActiveSupport::Concern
 
   included do
+    # A link is saved and validated on its own; the unique indexes guard it when a batch writes it with its record.
     has_many :provider_links, class_name: 'Provider::Link', as: :linkable, inverse_of: :linkable,
-                              dependent: :restrict_with_exception
+                              dependent: :restrict_with_exception, validate: false
     has_many :providers, through: :provider_links
   end
 

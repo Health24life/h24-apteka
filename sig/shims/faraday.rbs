@@ -1,0 +1,4 @@
+# The collected faraday signatures lack the query parser; declare only what the app touches.
+module Faraday::Utils
+  def self.parse_nested_query: (String? query) -> Hash[String, Pharmapoint::json]?
+end

@@ -9,6 +9,7 @@ class SyncRun < ApplicationRecord
   belongs_to :provider, inverse_of: :sync_runs
 
   has_many :failures, class_name: 'SyncRun::Failure', inverse_of: :sync_run, dependent: :delete_all
+  has_many :request_logs, class_name: 'Provider::RequestLog', inverse_of: :sync_run, dependent: :nullify
 
   validates :started_at, presence: true
   validates :finished_at, presence: true, unless: :running?
@@ -16,9 +17,11 @@ class SyncRun < ApplicationRecord
   validate :finished_after_start
 
   scope :finished_successfully, -> { where(status: %w[succeeded completed_with_failures]) }
+  # A pull fetches a few records on demand; it is no pass over the provider's data and is kept apart from the runs.
+  scope :excluding_pulls, -> { where("COALESCE(progress ->> 'mode', 'full') <> 'pull'") }
 
   def self.last_successful(provider, kind)
-    where(provider:, kind:).finished_successfully.order(started_at: :desc).first
+    excluding_pulls.where(provider:, kind:).finished_successfully.order(started_at: :desc).first
   end
 
   private

@@ -1,0 +1,19 @@
+class Catalog::Sync::Savers::Goods
+  @linker: Catalog::Sync::Linker
+  @tracker: Catalog::Sync::RunTracker
+
+  def initialize: (Catalog::Sync::Linker linker, Catalog::Sync::RunTracker tracker) -> void
+  def call: (Hash[String, Catalog::Goods::Group] groups, Array[Pharmapoint::GoodsGroup] items) -> void
+
+  private
+
+  def entries: (Catalog::Goods::Group group, Array[Pharmapoint::Goods] goods) -> Array[[Catalog::Sync::BulkSave::Entry, Pharmapoint::Goods]]
+  def entry: (Catalog::Goods::Group group, Pharmapoint::Goods goods) -> [Catalog::Sync::BulkSave::Entry, Pharmapoint::Goods]?
+  def store_instruction: (Catalog::Goods? record, Pharmapoint::Goods goods) -> bool?
+  def attributes: (Catalog::Goods::Group group, Pharmapoint::Goods goods) -> Catalog::Sync::attributes
+  def card_attributes: (Pharmapoint::GoodsCard card) -> Catalog::Sync::attributes
+  def pack_attributes: (Pharmapoint::Pack pack) -> Catalog::Sync::attributes
+  def references: (Pharmapoint::GoodsReferences refs) -> Hash[Symbol, ActiveRecord::Base?]
+  def restrictions: (Pharmapoint::GoodsReferences refs) -> Hash[Symbol, Catalog::Goods::Restriction?]
+  def restriction: (String? external_id) -> Catalog::Goods::Restriction?
+end

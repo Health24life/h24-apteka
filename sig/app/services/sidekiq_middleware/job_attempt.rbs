@@ -1,0 +1,7 @@
+class SidekiqMiddleware::JobAttempt
+  KEY: Symbol
+
+  def self.current: () -> Integer
+
+  def call: (Object _worker, Hash[String, Pharmapoint::json] job, String _queue) { () -> void } -> void
+end

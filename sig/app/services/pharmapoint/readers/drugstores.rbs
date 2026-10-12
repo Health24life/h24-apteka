@@ -1,0 +1,21 @@
+class Pharmapoint::Readers::Drugstores
+  include Pharmapoint::Readers::Base
+
+  COMPLETENESS_KEYS: Array[String]
+
+  def self.list: (Pharmapoint::json body) -> Array[Pharmapoint::Drugstore]
+  def self.one: (Pharmapoint::json body) -> Pharmapoint::Drugstore
+
+  def many: (Pharmapoint::json body) -> Array[Pharmapoint::Drugstore]
+  def one: (Pharmapoint::json body) -> Pharmapoint::Drugstore
+
+  private
+
+  def drugstore: (Pharmapoint::json record) -> Pharmapoint::Drugstore?
+  def build: (String external_id, Pharmapoint::Readers::Base::record record) -> Pharmapoint::Drugstore
+  def complete?: (Pharmapoint::Readers::Base::record record) -> bool
+  def contacts: (Pharmapoint::Readers::Base::record record) -> Pharmapoint::Contacts
+  def location: (Pharmapoint::Readers::Base::record record) -> Pharmapoint::Location
+  def week_hours: (Pharmapoint::Readers::Base::record record) -> Array[String?]
+  def brand: (Pharmapoint::json value) -> Pharmapoint::Brand?
+end

@@ -1,0 +1,42 @@
+class Catalog::Sync::BulkSave
+  class Entry
+    attr_reader external_id: String | Integer
+    attr_reader attributes: Catalog::Sync::attributes
+    attr_reader payload: Catalog::Sync::RunTracker::_Loggable?
+
+    def initialize: (external_id: String | Integer, attributes: Catalog::Sync::attributes,
+                     payload: Catalog::Sync::RunTracker::_Loggable?) -> void
+  end
+
+  # What a batch needs of a model beyond what the linker does: the import, and a lookup of taken slugs.
+  interface _Importable[R]
+    def import: (Array[R] models, validate: bool, recursive: bool, on_duplicate_key_update: Array[Symbol],
+                 recursive_on_duplicate_key_update: Hash[Symbol, Array[Symbol]]) -> ActiveRecord::Import::Result
+    def transaction: [T] (requires_new: bool) { () -> T } -> T
+    def where: (Hash[Symbol, Array[String]] conditions) -> Catalog::Slugs::Generator::_SlugRelation
+  end
+
+  type model[R] = Catalog::Sync::Linker::_Model[R] & _Importable[R]
+
+  @linker: Catalog::Sync::Linker
+  @tracker: Catalog::Sync::RunTracker
+
+  def initialize: (Catalog::Sync::Linker linker, Catalog::Sync::RunTracker tracker) -> void
+  def call: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Array[Entry] entries) -> Hash[String, R]
+
+  private
+
+  def build_all: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Array[Entry] entries) -> Hash[Entry, R]
+  def build: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Entry entry) -> R
+  def write: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Array[R] records) -> Array[R]
+  def import: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Array[R] records) -> void
+  def translated_columns: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Array[R] records) -> Array[Symbol]?
+  def changed_columns: (Array[ActiveRecord::Base] rows) -> Array[Symbol]
+  def reserve_slugs: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Array[R] records) -> void
+  def drop_empty_translations: (ActiveRecord::Base record) -> void
+  def move_links_on: (Array[ActiveRecord::Base & _ProviderLinkedRecord] records) -> void
+  def reset_unloaded: (ActiveRecord::Base record) -> void
+  def log_invalid: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Entry entry, R record) -> void
+  def fall_back: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Array[Entry] entries, StandardError error) -> Hash[String, R]
+  def one_by_one: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Array[Entry] entries) -> Hash[String, R]
+end

@@ -1,0 +1,20 @@
+class Catalog::Sync::Savers::GoodsGroup
+  @linker: Catalog::Sync::Linker
+  @tracker: Catalog::Sync::RunTracker
+
+  def initialize: (Catalog::Sync::Linker linker, Catalog::Sync::RunTracker tracker) -> void
+  def call: (Array[Pharmapoint::GoodsGroup] items) -> Hash[String, Catalog::Goods::Group]
+
+  private
+
+  def save_contents: (Hash[String, Catalog::Goods::Group] groups, Array[Pharmapoint::GoodsGroup] saved) -> void
+  def guard: [T] (Pharmapoint::GoodsGroup item) { () -> T } -> T?
+  def entry: (Pharmapoint::GoodsGroup item) -> Catalog::Sync::BulkSave::Entry
+  def save_categories: (Catalog::Goods::Group group, Array[Pharmapoint::GroupCategory] categories) -> void
+  def producer: (Pharmapoint::Producer? record) -> Catalog::Producer?
+  def goods_name: (Pharmapoint::GoodsName? record) -> Catalog::Goods::Name?
+  def atc_class: (Pharmapoint::AtcClass? record) -> Catalog::AtcClass?
+  def save_atc_class: (Pharmapoint::AtcEntry | Pharmapoint::AtcClass record, Catalog::AtcClass? parent) -> Catalog::AtcClass
+  def ensure_category: (Pharmapoint::GroupCategory category) -> Catalog::Category
+  def ensure_category_node: (Pharmapoint::PathNode node, Catalog::Category? parent) -> Catalog::Category
+end

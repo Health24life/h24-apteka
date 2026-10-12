@@ -12,9 +12,12 @@ class Catalog::Slugs::Generator
   NON_KMU_LETTERS: String
   KMU_LETTERS: String
 
-  def self.call: (String? text, scope: _SlugScope) -> String
+  @scope: _SlugScope
+  @reserved: Set[String]
 
-  def initialize: (_SlugScope scope) -> void
+  def self.call: (String? text, scope: _SlugScope, ?reserved: Set[String]) -> String
+
+  def initialize: (_SlugScope scope, ?reserved: Set[String]) -> void
   def call: (String? text) -> String
 
   private

@@ -197,6 +197,14 @@ gems:
   version: '0'
   source:
     type: stdlib
+- name: faraday
+  version: '2.7'
+  source:
+    type: git
+    name: ruby/gem_rbs_collection
+    revision: 33602f9e883980d74ae05833ce76d818a8269f09
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    repo_dir: gems
 - name: ffi
   version: 1.17.4
   source:
@@ -217,12 +225,28 @@ gems:
     revision: aa277106e7cbbabd01ff57ee6988271e19000f34
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
+- name: hashdiff
+  version: '1.1'
+  source:
+    type: git
+    name: ruby/gem_rbs_collection
+    revision: 33602f9e883980d74ae05833ce76d818a8269f09
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    repo_dir: gems
 - name: i18n
   version: '1.10'
   source:
     type: git
     name: ruby/gem_rbs_collection
     revision: aa277106e7cbbabd01ff57ee6988271e19000f34
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    repo_dir: gems
+- name: image_processing
+  version: '2.2'
+  source:
+    type: git
+    name: ruby/gem_rbs_collection
+    revision: c69c75ba79d7c19870f8d0e6fa7fe2c1d356e5ae
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: io-console
@@ -318,6 +342,10 @@ gems:
   source:
     type: rubygems
 - name: monitor
+  version: '0'
+  source:
+    type: stdlib
+- name: net-http
   version: '0'
   source:
     type: stdlib
@@ -525,6 +553,14 @@ gems:
   version: '0'
   source:
     type: stdlib
+- name: webmock
+  version: '3.19'
+  source:
+    type: git
+    name: ruby/gem_rbs_collection
+    revision: 33602f9e883980d74ae05833ce76d818a8269f09
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    repo_dir: gems
 - name: yaml
   version: '0'
   source:

@@ -1,0 +1,16 @@
+class Catalog::Sync::PullRunner
+  @type: Catalog::Sync::Pull::kind
+  @external_id: String
+  @user_id: Integer?
+
+  def self.call: (Catalog::Sync::Pull::kind | String type, String external_id, ?user_id: Integer?) -> void
+
+  def initialize: (Catalog::Sync::Pull::kind | String type, String external_id, Integer? user_id) -> void
+  def call: () -> void
+
+  private
+
+  def fetch_and_save: (Provider provider, Catalog::Sync::RunTracker tracker) -> void
+  def pull_goods_group: (Pharmapoint::Client client, Catalog::Sync::Linker linker, Catalog::Sync::RunTracker tracker) -> void
+  def pull_drugstore: (Pharmapoint::Client client, Catalog::Sync::Linker linker, Catalog::Sync::RunTracker tracker) -> void
+end
