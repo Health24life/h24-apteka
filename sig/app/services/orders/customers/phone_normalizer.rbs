@@ -1,0 +1,6 @@
+class Orders::Customers::PhoneNormalizer
+  INTERNATIONAL: Regexp
+  NATIONAL: Regexp
+
+  def self.call: (String? value) -> String?
+end
