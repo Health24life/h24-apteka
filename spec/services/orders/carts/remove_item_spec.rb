@@ -39,8 +39,7 @@ RSpec.describe Orders::Carts::RemoveItem do
   end
 
   it 'keeps an order that is no longer a cart when its last item is removed' do
-    sent = create(:order)
-    sent.update_column(:state, 'submitted') # rubocop:disable Rails/SkipsModelValidations
+    sent = create(:order, :submitted)
 
     expect { described_class.call(sent.items.first) }.not_to change { Order.exists?(sent.id) }.from(true)
   end
