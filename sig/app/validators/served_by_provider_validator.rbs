@@ -1,0 +1,16 @@
+class ServedByProviderValidator < ActiveModel::EachValidator
+  interface _ProviderOwner
+    def provider: () -> Provider?
+    def errors: () -> ActiveModel::Errors
+  end
+
+  interface _LinkRelation
+    def exists?: (**untyped conditions) -> bool
+  end
+
+  interface _ProviderLinked
+    def provider_links: () -> _LinkRelation
+  end
+
+  def validate_each: (_ProviderOwner record, Symbol attribute, _ProviderLinked? value) -> void
+end

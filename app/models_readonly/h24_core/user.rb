@@ -6,6 +6,9 @@ class H24Core::User < H24Core::ApplicationRecord
   # Phone-only sign-ups get a placeholder address to satisfy the NOT NULL unique email column.
   TEMP_EMAIL_PREFIX = 'change@me'
 
+  has_many :orders, class_name: '::Order', inverse_of: :user, dependent: nil
+  has_one :cart_order, -> { cart }, class_name: '::Order', inverse_of: false, dependent: nil
+
   def contact_email
     email.presence unless email.to_s.start_with?(TEMP_EMAIL_PREFIX)
   end

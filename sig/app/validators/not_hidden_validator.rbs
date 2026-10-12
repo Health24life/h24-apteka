@@ -1,0 +1,13 @@
+class NotHiddenValidator < ActiveModel::EachValidator
+  interface _Hideable
+    def hidden?: () -> bool
+    def public_send: (Symbol name) -> untyped
+  end
+
+  def validate_each: (ActiveModel::Validations record, Symbol attribute, _Hideable? value) -> void
+
+  private
+
+  def hidden?: (_Hideable value) -> bool
+  def via: () -> Symbol?
+end
