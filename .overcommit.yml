@@ -1,0 +1,58 @@
+# Git hooks (https://github.com/sds/overcommit). Install them once per clone: `mise run hooks`.
+# After this file or a hook changes, sign it again with `mise run hooks`.
+#
+# Ruby and Rails commands go through `mise exec`, as everywhere in the repository, so a hook finds the right Ruby
+# even when git is started from an IDE.
+
+gemfile: Gemfile
+plugin_directory: .git-hooks
+
+# Only RuboCop and Steep run; the checks overcommit enables by default are switched off.
+CommitMsg:
+  CapitalizedSubject:
+    enabled: false
+  SingleLineSubject:
+    enabled: false
+  TextWidth:
+    enabled: false
+  TrailingPeriod:
+    enabled: false
+
+PreCommit:
+  AuthorEmail:
+    enabled: false
+  AuthorName:
+    enabled: false
+  BrokenSymlinks:
+    enabled: false
+  CaseConflicts:
+    enabled: false
+  MergeConflicts:
+    enabled: false
+
+  ALL:
+    problem_on_unmodified_line: ignore
+    requires_files: true
+    quiet: false
+
+  RuboCop:
+    enabled: true
+    command: ['mise', 'exec', '--', 'bundle', 'exec', 'rubocop']
+    required_executable: 'mise'
+    include:
+      - '**/*.rb'
+      - '**/*.rake'
+      - '**/Gemfile'
+      - '**/Rakefile'
+
+  # Type check of own code and models. It checks the whole project, so any change to Ruby code or signatures runs it.
+  Steep:
+    enabled: true
+    command: ['mise', 'exec', '--', 'bundle', 'exec', 'steep', 'check']
+    required_executable: 'mise'
+    include:
+      - '**/*.rb'
+      - '**/*.rbs'
+      - 'Steepfile'
+      - 'Gemfile.lock'
+      - 'rbs_collection.lock.yaml'

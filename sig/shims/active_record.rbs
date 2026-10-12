@@ -1,0 +1,15 @@
+# The collected activerecord signatures type the class-level query methods only for the generated model classes
+# (rbs_rails extends each with ClassMethods). A concern or a base class works with any model, so the base gets the same
+# methods with the model, the relation and the key left open.
+class ActiveRecord::Base
+  extend ActiveRecord::Base::ClassMethods[untyped, untyped, untyped]
+end
+
+class ActiveRecord::ReadonlyAttributeError < ActiveRecord::ActiveRecordError
+end
+
+# Ransack adds these to every model.
+class ActiveRecord::Base
+  def self.authorizable_ransackable_attributes: () -> Array[String]
+  def self.authorizable_ransackable_associations: () -> Array[String]
+end

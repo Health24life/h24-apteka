@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
-  STATES = %w[cart submitted submission_failed].freeze
   NAME_LENGTH = 100
   # 380 and nine digits, no plus sign.
   PHONE_FORMAT = /\A380\d{9}\z/
 
-  enum :state, STATES.index_with(&:itself), validate: true
+  enum :state, { cart: 'cart', submitted: 'submitted', submission_failed: 'submission_failed' }, validate: true
 
   has_secure_token :token
   has_secure_token :share_token

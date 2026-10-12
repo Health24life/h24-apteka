@@ -1,0 +1,14 @@
+# money-rails ships no signatures. Own code only declares the money attributes; Money comes typed with the money gem.
+module MoneyRails
+  module ActiveRecord
+    module Monetizable
+      module ClassMethods
+        def monetize: (*Symbol fields, **untyped options) -> void
+      end
+    end
+  end
+end
+
+class ActiveRecord::Base
+  extend MoneyRails::ActiveRecord::Monetizable::ClassMethods
+end

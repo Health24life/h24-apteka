@@ -35,5 +35,9 @@ run = "docker compose down"
 [tasks.rbs]
 run = ["bundle exec rbs collection install", "rm -rf .rbs_rails", "bundle exec rails rbs_rails:all"]
 
+[tasks.hooks]
+description = "Install the git hooks (RuboCop and Steep before a commit) and sign their config and plugins"
+run = ["bundle exec overcommit --install", "bundle exec overcommit --sign", "bundle exec overcommit --sign pre-commit"]
+
 [tasks.typecheck]
 run = ["bundle exec rbs collection install --frozen", "rm -rf .rbs_rails", "bundle exec rails rbs_rails:all", "bundle exec rbs -I sig -I .rbs_rails validate", "bundle exec steep check"]
