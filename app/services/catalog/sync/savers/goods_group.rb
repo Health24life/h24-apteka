@@ -59,15 +59,17 @@ class Catalog::Sync::Savers::GoodsGroup
     @linker.sync(Catalog::AtcClass, record.external_id, { atc_code: record.atc_code, name_uk: record.name, parent: })
   end
 
-  # The first category of the provider's list is the primary one. The flags are cleared before the rows are written,
-  # because a group may have only one primary category at a time.
+  # The primary category is set once, to the first of the provider's list, and kept while the group stays in it: the
+  # breadcrumbs and the SEO template of the card follow it, and an editor may have chosen it by hand.
   def save_categories(group, categories)
     ids = categories.map { ensure_category(it).id }.uniq
     links = group.goods_group_categories
     links.where.not(category_id: ids).delete_all
-    links.update_all(is_primary: false) # rubocop:disable Rails/SkipsModelValidations
-    rows = ids.each_with_index.map { |id, at| { goods_group_id: group.id, category_id: id, is_primary: at.zero? } }
-    Catalog::Goods::Group::Category.upsert_all(rows, unique_by: %i[goods_group_id category_id]) if rows.any? # rubocop:disable Rails/SkipsModelValidations
+    return if ids.empty?
+
+    primary_id = links.where(is_primary: true).pick(:category_id) || ids.first
+    rows = ids.map { { goods_group_id: group.id, category_id: it, is_primary: it == primary_id } }
+    Catalog::Goods::Group::Category.upsert_all(rows, unique_by: %i[goods_group_id category_id]) # rubocop:disable Rails/SkipsModelValidations
   end
 
   # A category the tree import has not brought yet is built from the path the group carries, root down.

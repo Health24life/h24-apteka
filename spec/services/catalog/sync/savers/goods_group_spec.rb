@@ -69,6 +69,46 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
     expect(group.reload.goods_group_categories.sole).to have_attributes(is_primary: true)
   end
 
+  describe 'the primary category' do
+    def first = Pharmapoint::GroupCategory.new(external_id: '7001', name: 'Знеболювальні', path: [])
+
+    def second = Pharmapoint::GroupCategory.new(external_id: '7002', name: 'Протизапальні', path: [])
+
+    def third = Pharmapoint::GroupCategory.new(external_id: '7003', name: 'Від головного болю', path: [])
+
+    def primary_of(group) = group.reload.goods_group_categories.find_by!(is_primary: true).category.name_uk
+
+    def save_with(*categories) = save_one(item.with(categories:))
+
+    it 'is the first of the list for a new group' do
+      expect(primary_of(save_with(first, second))).to eq('Знеболювальні')
+    end
+
+    it 'stays when the provider lists the same categories in another order' do
+      save_with(first, second)
+
+      expect(primary_of(save_with(second, first))).to eq('Знеболювальні')
+    end
+
+    it 'stays when it was chosen by hand, whatever the order of the list' do
+      group = save_with(first, second)
+      group.goods_group_categories.update_all(is_primary: false) # rubocop:disable Rails/SkipsModelValidations
+      group.goods_group_categories.where(category: Catalog::Category.find_linked(provider, '7002'))
+           .update_all(is_primary: true) # rubocop:disable Rails/SkipsModelValidations
+
+      expect(primary_of(save_with(first, second))).to eq('Протизапальні')
+    end
+
+    it 'goes to the first of the rest when the provider drops it', :aggregate_failures do
+      save_with(first, second, third)
+
+      group = save_with(third, second)
+
+      expect(group.reload.categories.map(&:name_uk)).to contain_exactly('Протизапальні', 'Від головного болю')
+      expect(primary_of(group)).to eq('Від головного болю')
+    end
+  end
+
   it 'stores the SKU without a barcode column and with the Morion code', :aggregate_failures do
     group = save_one(item)
 
@@ -92,6 +132,17 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
     expect(Catalog::Goods::Group.count).to eq(0)
     expect(tracker.run.failures.sole).to have_attributes(entity_type: 'Catalog::Goods::Group',
                                                          error_class: 'ActiveRecord::RecordInvalid')
+  end
+
+  it 'leaves the update time of the groups, SKU, their translations and instruction sections alone on the same data',
+     :aggregate_failures do
+    saver.call(items)
+    before = update_stamps
+
+    described_class.new(Catalog::Sync::Linker.new(provider), tracker).call(items)
+
+    expect(before.values).to all(be_present)
+    expect(update_stamps).to eq(before)
   end
 
   it 'saves the groups and the SKU of a page in one insert each' do
@@ -158,4 +209,10 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
   end
 
   def group_without_optionals = items.last
+
+  def update_stamps
+    [ Catalog::Goods::Group, Catalog::Goods, Catalog::Goods::InstructionSection,
+      Catalog::Goods::Group.reflect_on_association(:translations).klass,
+      Catalog::Goods.reflect_on_association(:translations).klass ].to_h { [ it.name, it.order(:id).pluck(:updated_at) ] }
+  end
 end
