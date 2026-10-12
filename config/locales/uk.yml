@@ -1,4 +1,18 @@
 uk:
+  catalog:
+    instruction_sections:
+      sklad: Склад
+      likarska-forma: Лікарська форма
+      farmakoterapevtychna-hrupa: Фармакотерапевтична група
+      pokazannia: Показання
+      protypokazannia: Протипоказання
+      vzaiemodiia-z-inshymy-likarskymy-zasobamy: Взаємодія з іншими лікарськими засобами
+      sposib-zastosuvannia-ta-dozy: Спосіб застосування та дози
+      pobichni-reaktsii: Побічні реакції
+      peredozuvannia: Передозування
+      umovy-zberihannia: Умови зберігання
+      termin-prydatnosti: Термін придатності
+      katehoriia-vidpusku: Категорія відпуску
   errors:
     messages:
       invalid_week_working_hours: має містити сім значень — по одному на кожен день тижня — або бути порожнім
