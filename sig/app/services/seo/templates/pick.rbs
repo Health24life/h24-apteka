@@ -1,0 +1,10 @@
+class Seo::Templates::Pick
+  class Missing < StandardError
+  end
+
+  def self.call: (page_type: String, ?category: Catalog::Category?, ?recipe: bool?) -> Seo::Template
+
+  private
+
+  def self.branch: (Seo::Template::ActiveRecord_Relation scope, Catalog::Category? category) -> Seo::Template::ActiveRecord_Relation
+end

@@ -2,6 +2,8 @@
 
 # One pass over a kind of the provider's data, as the sync journal sees it: counts, failures, cursor and the end.
 class Catalog::Sync::RunTracker
+  SITEMAP_KINDS = %w[categories goods_groups].freeze
+
   attr_reader :run
 
   # Starts a run unless the same kind is already running. A run that has hung longer than the allowed time is
@@ -71,9 +73,19 @@ class Catalog::Sync::RunTracker
     run.reload
     status = run.failed_count.positive? || partial? ? 'completed_with_failures' : 'succeeded'
     run.update!(status:, finished_at: Time.current)
+    refresh_sitemap
   end
 
   def fail!(message)
     run.update!(status: 'failed', finished_at: Time.current, error_message: Pharmapoint::Logging::Masker.new.text(message))
+  end
+
+  private
+
+  # A full pass over the catalog may have added, changed or withdrawn pages; an on-demand fetch waits for the schedule.
+  def refresh_sitemap
+    return unless SITEMAP_KINDS.include?(run.kind) && run.progress['mode'] != 'pull'
+
+    Seo::SitemapWorker.perform_async
   end
 end

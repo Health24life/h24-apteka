@@ -1,0 +1,3 @@
+module Seo
+  def self.table_name_prefix: () -> String
+end

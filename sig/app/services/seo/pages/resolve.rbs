@@ -1,0 +1,58 @@
+class Seo::Pages::Resolve
+  type page_type = :home | :category | :goods | :cart | :order
+  type record = Catalog::Goods | Catalog::Category
+
+  class Page < Data
+    attr_reader type: Seo::Pages::Resolve::page_type
+    attr_reader record: Seo::Pages::Resolve::record?
+    attr_reader order_number: String?
+    attr_reader page_number: Integer?
+    attr_reader filters: Hash[String, String]
+
+    def self.new: (type: Seo::Pages::Resolve::page_type, record: Seo::Pages::Resolve::record?, order_number: String?,
+                   page_number: Integer?, filters: Hash[String, String]) -> instance
+    def with: (?type: Seo::Pages::Resolve::page_type, ?record: Seo::Pages::Resolve::record?, ?order_number: String?,
+               ?page_number: Integer?, ?filters: Hash[String, String]) -> Page
+  end
+
+  class Result < Data
+    attr_reader status: Integer
+    attr_reader page: Page?
+    attr_reader location: String?
+
+    def self.new: (status: Integer, page: Page?, location: String?) -> instance
+    def self.found: (Page page) -> Result
+    def self.moved: (String location) -> Result
+    def self.missing: () -> Result
+    def self.gone: () -> Result
+  end
+
+  ROUTES: Hash[Regexp, page_type]
+  MODELS: Hash[page_type, singleton(Catalog::Goods) | singleton(Catalog::Category)]
+
+  @query: String?
+  @config: Seo::Config
+  @paths: Seo::Pages::Path
+  @given: String?
+  @normal_relative: String
+  @parsed_query: Array[[ String, String ]]
+
+  def self.call: (String? path, ?config: Seo::Config) -> Result
+
+  def initialize: (String? path, Seo::Config config) -> void
+  def call: () -> Result
+
+  private
+
+  def inside_section: (String path) -> String?
+  def normal_relative: () -> String
+  def normal?: () -> bool
+  def route: () -> [ page_type, String? ]?
+  def build_page: (page_type type, String key, Hash[String, String] params) -> Page
+  def record_missing: (page_type type, String slug, Hash[String, String] params) -> Result
+  def finish: (Page page, Hash[String, String] params, bool normal) -> Result
+  def normal_path: (Page page) -> String
+  def known_params: (page_type type) -> [ Hash[String, String], bool ]
+  def later_page?: (String number) -> bool
+  def query: () -> Array[[ String, String ]]
+end

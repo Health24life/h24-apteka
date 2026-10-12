@@ -1,0 +1,5 @@
+class Seo::Templates::Truncate
+  ELLIPSIS: String
+
+  def self.call: (String text, Integer limit) -> String
+end

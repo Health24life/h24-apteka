@@ -7,6 +7,7 @@ RSpec.describe Catalog::Instructions::Sections do
     Class.new do
       def where(*) = self
       def pluck(_column) = []
+      def polymorphic_name = 'Catalog::Goods::InstructionSection'
     end.new
   end
 

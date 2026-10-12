@@ -1,0 +1,5 @@
+class Seo::Templates::Defaults
+  TEXTS: Hash[String, [ String, String, String ]]
+
+  def self.call: () -> Array[String]
+end

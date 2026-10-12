@@ -1,0 +1,11 @@
+class Seo::Pages::Robots
+  INDEX: String
+  FOLLOW_ONLY: String
+  NONE: String
+
+  def self.call: (Seo::Pages::Resolve::Page page) -> String
+
+  private
+
+  def self.category_shown?: (Seo::Pages::Resolve::record? category) -> bool
+end

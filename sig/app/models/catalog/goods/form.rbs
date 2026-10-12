@@ -7,4 +7,6 @@ class Catalog::Goods::Form
   include Translatable
   extend Translatable::ClassMethods
   extend Mobility
+
+  def name_uk: () -> String?
 end

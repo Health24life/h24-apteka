@@ -85,6 +85,35 @@ RSpec.describe Catalog::Sync::RunTracker do
 
       expect(tracker.run.status).to eq('completed_with_failures')
     end
+
+    it 'queues the sitemap after a full pass over the categories or the goods groups', :aggregate_failures do
+      %w[categories goods_groups].each { described_class.start(provider:, kind: it).finish! }
+
+      expect(Seo::SitemapWorker.jobs.size).to eq(2)
+    end
+
+    it 'queues the sitemap after a pass that finished with failures too' do
+      categories = described_class.start(provider:, kind: 'categories')
+      categories.guard('Catalog::Category', 1) { raise 'x' }
+      categories.finish!
+
+      expect(Seo::SitemapWorker.jobs.size).to eq(1)
+    end
+
+    it 'leaves the sitemap to the schedule after other kinds and on-demand fetches', :aggregate_failures do
+      tracker.finish!
+      described_class.pull(provider:, kind: 'goods_groups').finish!
+
+      expect(Seo::SitemapWorker.jobs).to be_empty
+    end
+  end
+
+  describe '#fail!' do
+    it 'does not queue the sitemap' do
+      described_class.start(provider:, kind: 'goods_groups').fail!('the partner is down')
+
+      expect(Seo::SitemapWorker.jobs).to be_empty
+    end
   end
 
   describe '#processed!' do

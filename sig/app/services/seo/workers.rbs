@@ -1,0 +1,4 @@
+# Own code queues these workers by name only.
+class Seo::SitemapWorker
+  def self.perform_async: () -> String?
+end

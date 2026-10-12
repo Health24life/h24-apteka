@@ -1,0 +1,28 @@
+class Seo::Config < Data
+  class MissingSetting < StandardError
+  end
+
+  FORBIDDEN_WORDS: Array[String]
+
+  @current: Seo::Config?
+
+  attr_reader front_base_url: String?
+  attr_reader filter_params: Array[String]
+  attr_reader forbidden_words: Array[String]
+  attr_reader redirect_ttl: ActiveSupport::Duration
+  attr_reader sitemap_dir: String?
+
+  def self.current: () -> Seo::Config
+  def self.reset!: () -> nil
+  def self.from_env: (?Pharmapoint::Config::_Env env) -> Seo::Config
+  def self.list: (String? value) -> Array[String]
+
+  def self.new: (?front_base_url: String?, ?filter_params: Array[String], ?forbidden_words: Array[String],
+                 ?redirect_ttl: ActiveSupport::Duration, ?sitemap_dir: String?) -> instance
+
+  def initialize: (?front_base_url: String?, ?filter_params: Array[String], ?forbidden_words: Array[String],
+                   ?redirect_ttl: ActiveSupport::Duration, ?sitemap_dir: String?) -> void
+  def front_base_url!: () -> String
+  def sitemap_dir!: () -> String
+  def front_path_prefix: () -> String
+end

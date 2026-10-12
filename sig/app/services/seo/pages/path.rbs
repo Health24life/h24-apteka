@@ -1,0 +1,16 @@
+class Seo::Pages::Path
+  SEGMENTS: Hash[Symbol, String]
+
+  @config: Seo::Config
+
+  def initialize: (?Seo::Config config) -> void
+  def home: () -> String
+  def cart: () -> String
+  def order: (String number) -> String
+  def category: (String? slug) -> String
+  def goods: (String? slug) -> String
+  def record: (ActiveRecord::Base? record) -> String?
+  def with_query: (String path, Hash[String, String] params) -> String
+  def url: (String path) -> String
+  def prefix: () -> String
+end

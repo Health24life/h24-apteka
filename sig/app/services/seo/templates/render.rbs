@@ -1,0 +1,9 @@
+class Seo::Templates::Render
+  SEPARATOR: String
+
+  def self.call: (String text, Hash[String, String?] values) -> String
+
+  private
+
+  def self.tidy: (String text) -> String
+end

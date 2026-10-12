@@ -1,0 +1,14 @@
+class Seo::Template
+  PLACEHOLDER: Regexp
+  PLACEHOLDERS: Hash[String, Array[String]]
+  TEXTS: Array[Symbol]
+
+  def general?: () -> bool
+  def placeholders: () -> Array[String]
+
+  private
+
+  def recipe_only_for_goods: () -> void
+  def placeholders_are_known: () -> void
+  def keep_general: () -> void
+end

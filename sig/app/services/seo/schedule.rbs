@@ -1,0 +1,6 @@
+class Seo::Schedule
+  SOURCE: String
+  JOBS: Hash[String, [ String, String, String ]]
+
+  def self.jobs: (?Pharmapoint::Config::_Env env) -> Pharmapoint::Schedule::jobs
+end

@@ -2,8 +2,8 @@
 interface _Sluggable
   def slug: () -> String?
   def slug=: (String value) -> String
-  def slug_changed?: () -> bool
   def name_uk: () -> String?
+  def saved_change_to_slug: () -> Array[String?]?
 end
 
 module Catalog::Sluggable : ActiveRecord::Base, _Sluggable
@@ -14,10 +14,11 @@ module Catalog::Sluggable : ActiveRecord::Base, _Sluggable
 
   def self.included: (?Module? base) { () [self: singleton(ActiveRecord::Base)] -> void } -> void
 
-  def slug=: (String value) -> String
+  def seo_redirects: () -> Seo::Redirect::ActiveRecord_Associations_CollectionProxy
 
   private
 
   def assign_slug: () -> void
-  def slug_is_unchanged: () -> void
+  def slug_is_not_redirected_elsewhere: () -> void
+  def redirect_previous_slug: () -> void
 end

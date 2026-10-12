@@ -24,6 +24,7 @@ class Catalog::Goods < ApplicationRecord
   has_many :instruction_sections, -> { order(:position) }, class_name: 'Catalog::Goods::InstructionSection',
                                                            inverse_of: :goods, dependent: :destroy
   has_many :order_items, class_name: '::Order::Item', inverse_of: :goods, dependent: :restrict_with_exception
+  has_one :seo_page_setting, class_name: 'Seo::PageSetting', as: :settable, inverse_of: :settable, dependent: :delete
 
   has_one :producer, through: :goods_group
   has_one :goods_name, through: :goods_group
@@ -39,7 +40,16 @@ class Catalog::Goods < ApplicationRecord
     joins(:translations).where('catalog_goods_translations.name ILIKE ?', "%#{sanitize_sql_like(text.to_s)}%")
   }
 
+  # On the storefront: neither the SKU nor its group is withdrawn by the provider or hidden by an operator.
+  scope :shown, lambda {
+    joins(:goods_group).where(hidden: false, withdrawn: false, goods_group: { hidden: false, withdrawn: false })
+  }
+
   def self.ransackable_scopes(_auth_object = nil) = %i[name_cont]
+
+  def shown? = !(hidden || withdrawn || goods_group.hidden || goods_group.withdrawn)
+
+  def withdrawn_with_group? = withdrawn || goods_group.withdrawn
 
   private
 

@@ -83,6 +83,9 @@ gem 'uklatn', '~> 1.20'
 # [https://github.com/zdennis/activerecord-import]
 gem 'activerecord-import', '~> 2.3'
 
+# Serializes the API responses.
+gem 'blueprinter', '~> 1.1'
+
 # HTTP client for the Pharmapoint partner API; Typhoeus is the adapter the ecosystem uses (libcurl, no GET-body quirks).
 gem 'faraday', '~> 2.14'
 gem 'faraday-typhoeus', '~> 1.1'

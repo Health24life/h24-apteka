@@ -1,4 +1,8 @@
 uk:
+  api:
+    errors:
+      unauthorized: Сесія недійсна або завершилася. Увійдіть знову.
+      invalid_path: "Параметр path має бути шляхом сторінки, що починається з «/», не довшим за 2048 символів."
   catalog:
     instruction_sections:
       sklad: Склад
@@ -13,6 +17,11 @@ uk:
       umovy-zberihannia: Умови зберігання
       termin-prydatnosti: Термін придатності
       katehoriia-vidpusku: Категорія відпуску
+  seo:
+    breadcrumbs:
+      home: Головна
+      cart: Кошик
+      order: Замовлення
   orders:
     partner_statuses:
       created: Створено
@@ -27,6 +36,9 @@ uk:
       hidden: приховано адміністратором
       disabled: вимкнено
       not_a_catalog_locale: "зберігається лише мовами каталогу, а не «%{language}»"
+      not_neutral: "містить недопустимі для ліків формулювання: %{words}"
+      unknown_placeholders: "містить невідомі підстановки: %{placeholders}"
+      general_template_required: "загальний шаблон типу сторінки не можна видалити"
   closure_tree:
     loop_error: не може бути власним нащадком
   activerecord:

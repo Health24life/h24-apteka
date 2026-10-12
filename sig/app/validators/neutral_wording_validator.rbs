@@ -1,0 +1,5 @@
+class NeutralWordingValidator < ActiveModel::EachValidator
+  WORD: Regexp
+
+  def validate_each: (ActiveModel::Validations record, Symbol attribute, String? value) -> void
+end

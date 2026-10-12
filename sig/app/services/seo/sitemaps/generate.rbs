@@ -1,0 +1,21 @@
+class Seo::Sitemaps::Generate
+  INDEX: String
+  CURRENT: String
+  VERSIONS: String
+
+  @paths: Seo::Pages::Path
+  @root: Pathname
+
+  def self.call: (?config: Seo::Config) -> Array[String]
+  def self.current_dir: (?config: Seo::Config) -> Pathname
+
+  def initialize: (Seo::Config config) -> void
+  def call: () -> Array[String]
+
+  private
+
+  def categories: (Pathname version) -> Array[Seo::Sitemaps::Parts::Part]
+  def goods: (Pathname version) -> Array[Seo::Sitemaps::Parts::Part]
+  def write_index: (Pathname version, Array[Seo::Sitemaps::Parts::Part] parts) -> void
+  def publish: (Pathname version) -> void
+end

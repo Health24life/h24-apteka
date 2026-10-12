@@ -19,6 +19,8 @@ RSpec.describe Catalog::Slugs::Generator do
       end
 
       def pluck(_column) = @found
+
+      def polymorphic_name = 'Catalog::Goods'
     end
   end
 
@@ -103,6 +105,13 @@ RSpec.describe Catalog::Slugs::Generator do
 
   it 'produces slugs that match the catalog format' do
     expect(slug_for('Їжак у тумані')).to match(Catalog::Sluggable::FORMAT)
+  end
+
+  it 'skips a slug that still redirects to a record of the same kind', :aggregate_failures do
+    create(:seo_redirect, slug: 'nurofen')
+
+    expect(slug_for('Нурофен')).to eq('nurofen-2')
+    expect(described_class.call('Нурофен', scope: Catalog::Category)).to eq('nurofen')
   end
 
   it 'skips slugs already handed out in the same batch' do

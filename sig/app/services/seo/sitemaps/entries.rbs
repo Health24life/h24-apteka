@@ -1,0 +1,13 @@
+class Seo::Sitemaps::Entries
+  BATCH: Integer
+
+  def self.categories: () { (String slug, ActiveSupport::TimeWithZone? changed_at) -> void } -> void
+  def self.goods: () { (String slug, ActiveSupport::TimeWithZone? changed_at) -> void } -> void
+
+  private
+
+  def self.each: (ActiveRecord::Relation scope, String changed_at) { (String slug, ActiveSupport::TimeWithZone? changed_at) -> void } -> void
+  def self.category_changed_at: () -> String
+  def self.goods_changed_at: () -> String
+  def self.setting_changed_at: (String type, String table) -> String
+end

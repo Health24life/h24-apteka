@@ -4,6 +4,8 @@ class Catalog::Sync::RunTracker
     def as_json: () -> Pharmapoint::Logging::Masker::tree
   end
 
+  SITEMAP_KINDS: Array[String]
+
   @run: SyncRun
 
   attr_reader run: SyncRun
@@ -23,4 +25,8 @@ class Catalog::Sync::RunTracker
   def partial?: () -> bool
   def finish!: () -> void
   def fail!: (String message) -> void
+
+  private
+
+  def refresh_sitemap: () -> void
 end

@@ -28,6 +28,10 @@
 #       enabled: "ON"
 
 en:
+  api:
+    errors:
+      unauthorized: The session is invalid or has expired. Sign in again.
+      invalid_path: "The path parameter must be a page path that starts with \"/\" and is at most 2048 characters long."
   catalog:
     instruction_sections:
       sklad: Composition
@@ -43,6 +47,11 @@ en:
       termin-prydatnosti: Shelf life
       katehoriia-vidpusku: Dispensing category
   hello: "Hello world"
+  seo:
+    breadcrumbs:
+      home: Home
+      cart: Cart
+      order: Order
   errors:
     messages:
       invalid_week_working_hours: must hold seven values, one per weekday, or be empty
@@ -51,6 +60,9 @@ en:
       hidden: is hidden by an administrator
       disabled: is disabled
       not_a_catalog_locale: "is stored in the catalog languages only, not in \"%{language}\""
+      not_neutral: "has wording not allowed for medicines: %{words}"
+      unknown_placeholders: "has unknown placeholders: %{placeholders}"
+      general_template_required: "the general template of a page type cannot be removed"
   closure_tree:
     loop_error: cannot be its own descendant
   activerecord:
