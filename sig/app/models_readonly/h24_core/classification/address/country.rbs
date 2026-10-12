@@ -1,0 +1,4 @@
+class H24Core::Classification::Address::Country
+  include H24Core::HstoreTranslated
+  extend H24Core::HstoreTranslated::ClassMethods
+end

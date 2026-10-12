@@ -1,0 +1,18 @@
+class Catalog::Goods
+  include Catalog::ProviderLinked
+  extend Catalog::ProviderLinked::ClassMethods
+
+  def self.find_linked: (Provider provider, String | Integer external_id) -> Catalog::Goods?
+  include Translatable
+  extend Translatable::ClassMethods
+  extend Mobility
+  include Catalog::Sluggable
+
+  RESTRICTIONS: Array[Symbol]
+
+  def name_uk: () -> String?
+
+  private
+
+  def image_paths_are_strings: () -> void
+end

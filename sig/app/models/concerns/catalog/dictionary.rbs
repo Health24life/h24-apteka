@@ -1,0 +1,5 @@
+module Catalog::Dictionary
+  extend ActiveSupport::Concern
+
+  def self.included: (?Module? base) { () [self: singleton(ActiveRecord::Base) & Translatable::ClassMethods] -> void } -> void
+end

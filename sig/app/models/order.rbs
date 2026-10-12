@@ -1,0 +1,8 @@
+class Order
+  NAME_LENGTH: Integer
+  PHONE_FORMAT: Regexp
+
+  private
+
+  def leaving_cart?: () -> bool
+end

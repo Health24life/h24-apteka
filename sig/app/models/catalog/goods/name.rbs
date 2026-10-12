@@ -1,0 +1,6 @@
+class Catalog::Goods::Name
+  include Catalog::ProviderLinked
+  extend Catalog::ProviderLinked::ClassMethods
+
+  def self.find_linked: (Provider provider, String | Integer external_id) -> Catalog::Goods::Name?
+end
