@@ -9,7 +9,7 @@ class Catalog::Sync::Savers::Goods
 
   def entries: (Catalog::Goods::Group group, Array[Pharmapoint::Goods] goods) -> Array[[Catalog::Sync::BulkSave::Entry, Pharmapoint::Goods]]
   def entry: (Catalog::Goods::Group group, Pharmapoint::Goods goods) -> [Catalog::Sync::BulkSave::Entry, Pharmapoint::Goods]?
-  def store_instruction: (Catalog::Goods? record, Pharmapoint::Goods goods) -> void
+  def store_instruction: (Catalog::Goods? record, Pharmapoint::Goods goods) -> bool?
   def attributes: (Catalog::Goods::Group group, Pharmapoint::Goods goods) -> Catalog::Sync::attributes
   def card_attributes: (Pharmapoint::GoodsCard card) -> Catalog::Sync::attributes
   def pack_attributes: (Pharmapoint::Pack pack) -> Catalog::Sync::attributes

@@ -115,6 +115,16 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
     expect(save_one(twice).goods_group_categories.count).to eq(1)
   end
 
+  it 'does not count a SKU whose instruction could not be stored', :aggregate_failures do
+    allow(Catalog::Sync::InstructionStore).to receive(:call).and_call_original
+    allow(Catalog::Sync::InstructionStore).to receive(:call).with(have_attributes(morion_code: '470684'), anything)
+                                                            .and_raise(ArgumentError, 'broken')
+
+    saver.call(items)
+
+    expect(tracker.run.reload.processed_count).to eq(items.size + items.sum { it.goods.size } - 1)
+  end
+
   it 'counts every group and SKU it saved' do
     saver.call(items)
 

@@ -12,8 +12,9 @@ class Catalog::Sync::Linker
 
   # Finds the record the external id points to or builds a new one, applies the attributes and saves it. A block may
   # save the record instead, for models that have their own saver.
+  # A record seen missing earlier in the step may have been linked since by another worker, so a save looks again.
   def sync(model, external_id, attributes)
-    record = lookup(model, external_id) || model.new
+    record = @records[key(model, external_id)] || model.find_linked(@provider, external_id) || model.new
     record.assign_attributes(attributes)
     block_given? ? yield(record) : record.save!
     link!(record, external_id)
@@ -43,7 +44,8 @@ class Catalog::Sync::Linker
   def build(model, external_id, attributes)
     record = lookup(model, external_id) || model.new
     record.assign_attributes(attributes)
-    link = record.persisted? ? link_of(record) : record.provider_links.build(provider: @provider)
+    links = record.provider_links
+    link = links.find { it.provider_id == @provider.id } || links.build(provider: @provider)
     link.assign_attributes(external_id: external_id.to_s, synced_at: @now)
     @records[key(model, external_id)] = record
   end

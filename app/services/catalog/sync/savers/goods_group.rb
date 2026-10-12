@@ -10,7 +10,6 @@ class Catalog::Sync::Savers::GoodsGroup
     @tracker = tracker
   end
 
-  # Returns the saved groups by the provider's id.
   def call(items)
     entries = items.filter_map { |item| guard(item) { entry(item) } }
     groups = Catalog::Sync::BulkSave.new(@linker, @tracker).call(Catalog::Goods::Group, entries)
@@ -21,7 +20,6 @@ class Catalog::Sync::Savers::GoodsGroup
 
   private
 
-  # The categories and SKU of the groups that were saved.
   def save_contents(groups, saved)
     saved.each { |item| guard(item) { save_categories(groups.fetch(item.external_id), item.categories) } }
     Catalog::Sync::Savers::Goods.new(@linker, @tracker).call(groups, saved)

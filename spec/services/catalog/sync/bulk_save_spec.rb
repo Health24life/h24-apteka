@@ -102,6 +102,44 @@ RSpec.describe Catalog::Sync::BulkSave do
     expect(tracker.run.failures.sole).to have_attributes(external_id: '1', entity_type: 'Catalog::Goods')
   end
 
+  it 'leaves the link to the database indexes instead of checking it when validating' do
+    statements = QueryLog.capture { bulk.call(Catalog::Goods, [ goods('1', 'Аспірин') ]) }
+
+    expect(statements.grep(/SELECT 1 AS one FROM "provider_links"/)).to be_empty
+  end
+
+  it 'keeps the record a saved record refers to' do
+    saved = bulk.call(Catalog::Goods, [ goods('1', 'Аспірин') ]).fetch('1')
+
+    expect(QueryLog.capture { saved.goods_group }).to be_empty
+  end
+
+  it 'saves a record the batch names twice once, without falling back', :aggregate_failures do
+    statements = QueryLog.capture { bulk.call(Catalog::Goods, [ goods('1', 'Аспірин'), goods('1', 'Аспірин C') ]) }
+
+    expect(Catalog::Goods.sole.name_uk).to eq('Аспірин C')
+    expect(QueryLog.inserts_into(statements, 'catalog_goods')).to eq(1)
+  end
+
+  it 'reports why the batch was refused' do
+    allow(Catalog::Goods).to receive(:import).and_raise(ActiveRecord::RecordNotUnique, 'duplicate key')
+    allow(Rails.error).to receive(:report)
+
+    bulk.call(Catalog::Goods, [ goods('1', 'Аспірин') ])
+
+    expect(Rails.error).to have_received(:report).with(an_instance_of(ActiveRecord::RecordNotUnique),
+                                                       hash_including(handled: true))
+  end
+
+  it 'moves the link of a record that did not change as a save would' do
+    bulk.call(Catalog::Goods, [ goods('1', 'Аспірин') ])
+    Provider::Link.update_all(updated_at: 1.year.ago) # rubocop:disable Rails/SkipsModelValidations
+
+    next_step.call(Catalog::Goods, [ goods('1', 'Аспірин') ])
+
+    expect(Provider::Link.sole.updated_at).to be > 1.minute.ago
+  end
+
   it 'leaves the associations of a saved record to be read from the database' do
     saved = bulk.call(Catalog::Goods, [ goods('1', 'Аспірин') ]).fetch('1')
     Catalog::Goods::InstructionSection.create!(goods_id: saved.id, position: 1, anchor: 'x', source_title: 'X',

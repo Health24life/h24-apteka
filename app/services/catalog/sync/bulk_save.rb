@@ -17,10 +17,9 @@ class Catalog::Sync::BulkSave
     return {} if entries.empty?
 
     records = build_all(model, entries)
-    invalid = write(model, records.values)
-  rescue StandardError
-    @linker.forget(model)
-    one_by_one(model, entries)
+    invalid = write(model, records.values.uniq)
+  rescue StandardError => e
+    fall_back(model, entries, e)
   else
     records.each { |entry, record| log_invalid(model, entry, record) if invalid.include?(record) }
     records.reject { |_, record| invalid.include?(record) }.transform_keys { it.external_id.to_s }
@@ -75,8 +74,6 @@ class Catalog::Sync::BulkSave
 
   # The import checks no uniqueness, so two new records of a batch must not get the same slug.
   def reserve_slugs(model, records)
-    return unless model.include?(Catalog::Sluggable)
-
     reserved = Set.new
     records.each do |record|
       next unless record.is_a?(Catalog::Sluggable) && record.new_record? && record.slug.blank?
@@ -102,13 +99,14 @@ class Catalog::Sync::BulkSave
     links = records.map { @linker.link_of(it) }
     return if links.empty?
 
-    Provider::Link.where(id: links.map(&:id)).update_all(synced_at: links.first.synced_at) # rubocop:disable Rails/SkipsModelValidations
+    moved = { synced_at: links.first.synced_at, updated_at: Time.current }
+    Provider::Link.where(id: links.map(&:id)).update_all(moved) # rubocop:disable Rails/SkipsModelValidations
   end
 
-  # The import marks every association of a saved record as loaded, empty where it was not loaded before.
+  # The import marks every has_many and has_one of a saved record as loaded, empty where it was not loaded before.
   def reset_unloaded(record)
     record.class.reflect_on_all_associations.each do |reflection|
-      next if %i[provider_links translations].include?(reflection.name)
+      next if reflection.belongs_to? || %i[provider_links translations].include?(reflection.name)
 
       record.association(reflection.name).reset
     end
@@ -116,6 +114,12 @@ class Catalog::Sync::BulkSave
 
   def log_invalid(model, entry, record)
     @tracker.record_failure(model.name, entry.external_id, ActiveRecord::RecordInvalid.new(record), entry.payload)
+  end
+
+  def fall_back(model, entries, error)
+    Rails.error.report(error, handled: true, context: { source: 'catalog_sync_bulk_save', model: model.name })
+    @linker.forget(model)
+    one_by_one(model, entries)
   end
 
   def one_by_one(model, entries)

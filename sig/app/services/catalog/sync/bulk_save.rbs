@@ -13,7 +13,6 @@ class Catalog::Sync::BulkSave
     def import: (Array[R] models, validate: bool, recursive: bool, on_duplicate_key_update: Array[Symbol],
                  recursive_on_duplicate_key_update: Hash[Symbol, Array[Symbol]]) -> ActiveRecord::Import::Result
     def transaction: [T] (requires_new: bool) { () -> T } -> T
-    def include?: (Module mod) -> bool
     def where: (Hash[Symbol, Array[String]] conditions) -> Catalog::Slugs::Generator::_SlugRelation
   end
 
@@ -38,5 +37,6 @@ class Catalog::Sync::BulkSave
   def move_links_on: (Array[ActiveRecord::Base & _ProviderLinkedRecord] records) -> void
   def reset_unloaded: (ActiveRecord::Base record) -> void
   def log_invalid: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Entry entry, R record) -> void
+  def fall_back: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Array[Entry] entries, StandardError error) -> Hash[String, R]
   def one_by_one: [R < ActiveRecord::Base & _ProviderLinkedRecord] (model[R] model, Array[Entry] entries) -> Hash[String, R]
 end

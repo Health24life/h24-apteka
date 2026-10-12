@@ -33,6 +33,15 @@ RSpec.describe Catalog::Sync::Linker do
       expect(Provider::Link.find_by(linkable: form).synced_at).to eq(now + 1.day)
     end
 
+    it 'updates a record another worker linked after the step looked it up', :aggregate_failures do
+      linker.preload(Catalog::Goods::Form, [ '8' ])
+      form = Catalog::Goods::Form.create!(name_uk: 'Від воркера')
+      ProviderLinking.link(provider, form).update!(external_id: '8')
+
+      expect(linker.sync(Catalog::Goods::Form, '8', name_uk: 'Від кроку')).to eq(form)
+      expect(Catalog::Goods::Form.count).to eq(1)
+    end
+
     it 'lets a block save the record instead' do
       saved = false
       linker.sync(Catalog::Goods::Form, '1', name_uk: 'A') { it.save!; saved = true }

@@ -9,12 +9,10 @@ class Catalog::Sync::Savers::Goods
     @tracker = tracker
   end
 
-  # Saves the SKU of the given groups, each with the group it was saved as.
   def call(groups, items)
     pairs = items.flat_map { |item| entries(groups.fetch(item.external_id), item.goods) }
     saved = Catalog::Sync::BulkSave.new(@linker, @tracker).call(Catalog::Goods, pairs.map(&:first))
-    pairs.each { |entry, goods| store_instruction(saved[entry.external_id], goods) }
-    @tracker.processed!(saved.size)
+    @tracker.processed!(pairs.count { |entry, goods| store_instruction(saved[entry.external_id], goods) })
   end
 
   private
@@ -34,6 +32,7 @@ class Catalog::Sync::Savers::Goods
 
     @tracker.guard(Catalog::Goods.name, goods.external_id, goods) do
       Catalog::Sync::InstructionStore.call(record, goods.card.instruction_html)
+      true
     end
   end
 
