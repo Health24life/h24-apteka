@@ -1,0 +1,8 @@
+panel t('admin.provider_links.title') do
+  table_for record.provider_links.includes(:provider).order(:id) do
+    column(Provider::Link.human_attribute_name(:provider)) { |link| link.provider.name }
+    column(Provider::Link.human_attribute_name(:external_id), &:external_id)
+    column(Provider::Link.human_attribute_name(:synced_at)) { |link| l(link.synced_at, format: :long) }
+    column(Provider::Link.human_attribute_name(:attrs)) { |link| pre JSON.pretty_generate(link.attrs) }
+  end
+end
