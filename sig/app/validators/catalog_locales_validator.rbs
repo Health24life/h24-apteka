@@ -1,0 +1,7 @@
+class CatalogLocalesValidator < ActiveModel::EachValidator
+  def validate_each: (untyped record, Symbol attribute, untyped value) -> void
+
+  private
+
+  def catalog_locale?: (String locale) -> bool
+end
