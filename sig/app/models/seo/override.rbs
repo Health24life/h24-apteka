@@ -4,6 +4,7 @@ class Seo::Override
   extend Mobility
 
   TARGET_TYPES: Array[String]
+  TEXTS: Array[Symbol]
 
   def title: () -> String?
   def description: () -> String?

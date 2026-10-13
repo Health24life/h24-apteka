@@ -7,13 +7,14 @@ class Seo::Override < ApplicationRecord
 
   # The records that have a page of their own. A new kind of page is added here; the database does not list them.
   TARGET_TYPES = %w[Catalog::Goods Catalog::Category].freeze
-
-  # Short texts live in jsonb columns of the row, the long SEO text in a translations table.
-  translatable :title, :description, :h1
-  translatable :seo_text, backend: :table
+  TEXTS = %i[title description h1].freeze
 
   # `auto` follows the rules of the page; `index` and `noindex` force the answer.
   enum :robots, { auto: 'auto', index: 'index', noindex: 'noindex' }, validate: true, prefix: :robots
+
+  # Short texts live in jsonb columns of the row, the long SEO text in a translations table.
+  translatable(*TEXTS)
+  translatable :seo_text, backend: :table
 
   belongs_to :target, polymorphic: true, inverse_of: :seo_override
 
