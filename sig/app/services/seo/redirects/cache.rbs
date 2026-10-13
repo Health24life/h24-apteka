@@ -10,4 +10,8 @@ class Seo::Redirects::Cache
   def self.rebuild: () -> Integer
   def self.clear: () -> void
   def self.key: (String type, String slug) -> String
+
+  private
+
+  def self.reporting: [T] () { () -> T } -> T?
 end

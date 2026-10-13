@@ -23,6 +23,8 @@ class Seo::Sitemaps::Refresh
     parts = listed_parts
     @storage.prune(parts + [ INDEX ])
     parts
+  ensure
+    @storage.cleanup
   end
 
   private

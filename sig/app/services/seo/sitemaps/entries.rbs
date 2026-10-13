@@ -6,6 +6,7 @@ class Seo::Sitemaps::Entries
 
   private
 
+  def self.forced: (String type, String robots) -> Seo::Override::ActiveRecord_Relation
   def self.each: (ActiveRecord::Relation scope, String changed_at) { (String slug, ActiveSupport::TimeWithZone? changed_at) -> void } -> void
   def self.category_changed_at: () -> String
   def self.goods_changed_at: () -> String

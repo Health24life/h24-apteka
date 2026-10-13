@@ -12,5 +12,6 @@ class Seo::Pages::Path
   def record: (ActiveRecord::Base? record) -> String?
   def with_query: (String path, Hash[String, String] params) -> String
   def url: (String path) -> String
+  def relative: (String path) -> String
   def prefix: () -> String
 end

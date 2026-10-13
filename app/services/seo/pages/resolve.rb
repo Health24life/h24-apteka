@@ -18,12 +18,13 @@ class Seo::Pages::Resolve
     def self.gone = new(status: 410, page: nil, location: nil)
   end
 
+  # The segments match in any case; a slug is looked up in lower case, an order number exactly as given.
   ROUTES = {
     %r{\A/\z} => :home,
-    %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:category)}/([^/]+)\z} => :category,
-    %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:goods)}/([^/]+)\z} => :goods,
-    %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:cart)}\z} => :cart,
-    %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:order)}/([^/]+)\z} => :order
+    %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:category)}/([^/]+)\z}i => :category,
+    %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:goods)}/([^/]+)\z}i => :goods,
+    %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:cart)}\z}i => :cart,
+    %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:order)}/([^/]+)\z}i => :order
   }.freeze
   MODELS = { category: Catalog::Category, goods: Catalog::Goods }.freeze
 
@@ -40,31 +41,32 @@ class Seo::Pages::Resolve
     type, key = (route if @given)
     return Result.missing unless type
 
+    key = type == :order ? key.to_s : key.to_s.downcase
     params, page_dropped = known_params(type)
-    page = build_page(type, key.to_s, params)
-    return record_missing(type, key.to_s, params) if MODELS.key?(type) && page.record.nil?
+    page = build_page(type, key, params)
+    return record_missing(type, key, params) if MODELS.key?(type) && page.record.nil?
 
-    finish(page, params, normal? && !page_dropped)
+    finish(page, params, normal?(page) && !page_dropped)
   end
 
   private
 
-  # The path inside the section as given, or nil when it lies outside the section's prefix.
+  # The path inside the section as given, or nil when it lies outside the section's prefix. The home page of a prefixed
+  # section is the empty rest, so `/apteka/` is told apart from `/apteka`.
   def inside_section(path)
     prefix = @paths.prefix
     return path.presence || '/' if prefix.empty?
     return unless path.downcase == prefix || path.downcase.start_with?("#{prefix}/")
 
-    path[prefix.length..].presence || '/'
+    path[prefix.length..].to_s
   end
 
-  def normal_relative = @normal_relative ||= @given.to_s == '/' ? '/' : @given.to_s.downcase.sub(%r{/+\z}, '')
-
-  def normal? = @given == normal_relative
+  def normal?(page) = @given == @paths.relative(normal_path(page))
 
   def route
+    routed = @given.to_s.sub(%r{/+\z}, '').presence || '/'
     ROUTES.each do |pattern, type|
-      match = pattern.match(normal_relative.presence || '/') or next
+      match = pattern.match(routed) or next
       return [ type, match[1] ]
     end
     nil
@@ -76,7 +78,7 @@ class Seo::Pages::Resolve
              filters: params.except('page'))
   end
 
-  # Redirects are read from the cache, not the table; a redirect to a record that is gone leads nowhere.
+  # Redirects are read through the cache; a redirect to a record that is gone leads nowhere.
   def record_missing(type, slug, params)
     model = MODELS.fetch(type)
     id = Seo::Redirects::Cache.target_id(model.polymorphic_name, slug)

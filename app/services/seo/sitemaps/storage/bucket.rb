@@ -14,14 +14,18 @@ class Seo::Sitemaps::Storage::Bucket
 
   def adapter = SitemapGenerator::AwsSdkAdapter.new(@bucket, **client_options)
 
-  # Removes the objects of the earlier runs that the new index no longer lists.
+  # Removes the objects of the earlier runs that the new index no longer lists. A listing and a deletion take at most
+  # a thousand keys each, so both go page by page.
   def prune(keep)
-    keys = client.list_objects_v2(bucket: @bucket, prefix: Seo::Sitemaps::Storage::PREFIX).contents.map(&:key)
-    stale = keys.reject { keep.include?(File.basename(it)) }
-    return if stale.empty?
-
-    client.delete_objects(bucket: @bucket, delete: { objects: stale.map { { key: it } } })
+    listing = client.list_objects_v2(bucket: @bucket, prefix: Seo::Sitemaps::Storage::PREFIX)
+    stale = listing.each_page.flat_map { |page| page.contents.map(&:key) }.reject { keep.include?(File.basename(it)) }
+    stale.each_slice(1_000) do |keys|
+      client.delete_objects(bucket: @bucket, delete: { objects: keys.map { { key: it } } })
+    end
   end
+
+  # The local copy is only a step on the way to the bucket.
+  def cleanup = FileUtils.rm_rf(@staging)
 
   private
 

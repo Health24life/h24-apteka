@@ -34,7 +34,6 @@ class Seo::Pages::Resolve
   @config: Seo::Config
   @paths: Seo::Pages::Path
   @given: String?
-  @normal_relative: String
   @parsed_query: Array[[ String, String ]]
 
   def self.call: (String? path, ?config: Seo::Config) -> Result
@@ -45,8 +44,7 @@ class Seo::Pages::Resolve
   private
 
   def inside_section: (String path) -> String?
-  def normal_relative: () -> String
-  def normal?: () -> bool
+  def normal?: (Page page) -> bool
   def route: () -> [ page_type, String? ]?
   def build_page: (page_type type, String key, Hash[String, String] params) -> Page
   def record_missing: (page_type type, String slug, Hash[String, String] params) -> Result

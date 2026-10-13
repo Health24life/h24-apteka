@@ -34,6 +34,18 @@ RSpec.describe Seo::Pages::Resolve do
       expect(resolve('/order/999999999').status).to eq(200)
     end
 
+    it 'keeps the case of an order number, which is part of it', :aggregate_failures do
+      expect(resolve('/order/AB12CD34EF').page).to have_attributes(type: :order, order_number: 'AB12CD34EF')
+      expect(resolve('/ORDER/AB12CD34EF/')).to moved_to('/order/AB12CD34EF')
+    end
+
+    it 'redirects the home page of a prefixed section from its trailing slash', :aggregate_failures do
+      prefixed = Seo::Config.new(front_base_url: 'https://h24.ua/apteka')
+
+      expect(described_class.call('/apteka/', config: prefixed)).to moved_to('/apteka')
+      expect(described_class.call('/apteka/tovar/nema/', config: prefixed).status).to eq(404)
+    end
+
     it 'recognises the paths under the section prefix only', :aggregate_failures do
       prefixed = Seo::Config.new(front_base_url: 'https://h24.ua/apteka')
 
@@ -116,11 +128,19 @@ RSpec.describe Seo::Pages::Resolve do
       expect(resolve('/tovar/nurofen').status).to eq(200)
     end
 
-    it 'stops redirecting once the cache no longer holds the redirect' do
+    it 'stops redirecting once the period is over' do
       goods.update!(slug: 'nurofen-forte')
+      Seo::Redirect.update_all(created_at: 4.months.ago) # rubocop:disable Rails/SkipsModelValidations
       Seo::Redirects::Cache.clear
 
       expect(resolve('/tovar/nurofen').status).to eq(404)
+    end
+
+    it 'still redirects when the cache lost the redirect' do
+      goods.update!(slug: 'nurofen-forte')
+      Seo::Redirects::Cache.clear
+
+      expect(resolve('/tovar/nurofen')).to moved_to('/tovar/nurofen-forte')
     end
 
     it 'leads nowhere when the record of a redirect is gone' do

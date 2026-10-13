@@ -59,6 +59,30 @@ RSpec.describe Seo::Sitemaps::Refresh do
     end
   end
 
+  describe 'an override of robots' do
+    it 'leaves out a product an operator took out of the index' do
+      create(:seo_override, target: stocked('nurofen'), robots: 'noindex')
+      stocked('aspiryn')
+      refresh
+
+      expect(locs('goods.xml.gz')).to eq([ 'https://apteka.h24.ua/tovar/aspiryn' ])
+    end
+
+    it 'lists a category with nothing to show that an operator opened' do
+      create(:seo_override, target: create(:catalog_category, slug: 'sezonni'), robots: 'index')
+      refresh
+
+      expect(locs('categories.xml.gz')).to include('https://apteka.h24.ua/katalog/sezonni')
+    end
+
+    it 'leaves out a category with products that an operator closed' do
+      create(:seo_override, target: category, robots: 'noindex')
+      stocked('nurofen') && refresh
+
+      expect(locs('categories.xml.gz')).not_to include('https://apteka.h24.ua/katalog/zneboliuvalni')
+    end
+  end
+
   it 'splits a kind into parts within the limit' do
     limit_parts_to_two
     3.times { stocked("tovar-#{it}") }

@@ -9,6 +9,7 @@ module Aws
 
       class ListObjectsOutput
         def contents: () -> Array[Object]
+        def each_page: () -> Enumerator[ListObjectsOutput, void]
       end
 
       def initialize: (**untyped options) -> void

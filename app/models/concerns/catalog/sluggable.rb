@@ -7,8 +7,9 @@ module Catalog::Sluggable
   MAX_LENGTH = 100
 
   included do
+    # destroy, not delete_all: the cache drops the redirects of a record that is gone.
     has_many :seo_redirects, class_name: 'Seo::Redirect', as: :redirectable, inverse_of: :redirectable,
-                             dependent: :delete_all
+                             dependent: :destroy
 
     validates :slug, presence: true, uniqueness: true, length: { maximum: MAX_LENGTH }, format: { with: FORMAT }
     validate :slug_is_not_redirected_elsewhere, if: :slug_changed?

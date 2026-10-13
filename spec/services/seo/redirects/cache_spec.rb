@@ -50,4 +50,34 @@ RSpec.describe Seo::Redirects::Cache do
     expect(described_class.rebuild).to eq(1)
     expect(described_class.target_id('Catalog::Goods', 'nurofen')).to eq(goods.id)
   end
+
+  it 'finds a redirect Redis lost in the table and caches it again', :aggregate_failures do
+    goods.update!(slug: 'nurofen-forte')
+    described_class.clear
+
+    expect(described_class.target_id('Catalog::Goods', 'nurofen')).to eq(goods.id)
+    expect(described_class.redis.get(described_class.key('Catalog::Goods', 'nurofen'))).to eq(goods.id.to_s)
+  end
+
+  describe 'while Redis is unreachable' do
+    before do
+      %i[get set del].each { allow(described_class.redis).to receive(it).and_raise(Redis::CannotConnectError) }
+      allow(Rails.error).to receive(:report)
+    end
+
+    it 'saves a slug change and answers from the table', :aggregate_failures do
+      expect { goods.update!(slug: 'nurofen-forte') }.not_to raise_error
+      expect(described_class.target_id('Catalog::Goods', 'nurofen')).to eq(goods.id)
+      expect(Rails.error).to have_received(:report).with(an_instance_of(Redis::CannotConnectError), handled: true)
+                                                   .at_least(:once)
+    end
+  end
+
+  it 'drops the cached redirects of a record that is gone' do
+    goods.update!(slug: 'nurofen-forte')
+
+    goods.destroy!
+
+    expect(described_class.redis.get(described_class.key('Catalog::Goods', 'nurofen'))).to be_nil
+  end
 end

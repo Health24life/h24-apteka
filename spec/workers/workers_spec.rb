@@ -57,6 +57,13 @@ RSpec.describe 'the workers of the partner integration' do # rubocop:disable RSp
   end
 
   describe Seo::SitemapWorker do
+    it 'gives up at once on a missing setting and retries anything else', :aggregate_failures do
+      retry_in = described_class.sidekiq_retry_in_block
+
+      expect(retry_in.call(1, Seo::Config::MissingSetting.new('SEO_SITEMAP_DIR is not set'), {})).to eq(:kill)
+      expect(retry_in.call(1, Redis::CannotConnectError.new, {})).to be_nil
+    end
+
     it 'lets one generation wait behind the running one and merges the rest into it' do
       results = with_unique_jobs { Array.new(3) { described_class.perform_async } }
 

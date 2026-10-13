@@ -50,5 +50,28 @@ RSpec.describe Seo::Sitemaps::Storage do
       deleted = client.api_requests.find { it[:operation_name] == :delete_objects }
       expect(deleted[:params][:delete][:objects]).to eq([ { key: 'sitemaps/goods2.xml.gz' } ])
     end
+
+    context 'when the listing takes more than one page' do
+      let(:pages) do
+        [ { contents: [ { key: 'sitemaps/goods3.xml.gz' } ], is_truncated: true, next_continuation_token: 'more' },
+          { contents: [ { key: 'sitemaps/goods4.xml.gz' } ], is_truncated: false } ]
+      end
+
+      before { client.stub_responses(:list_objects_v2, pages) }
+
+      it 'goes through every page' do
+        described_class.new(s3).prune(%w[sitemap.xml.gz])
+
+        deleted = client.api_requests.select { it[:operation_name] == :delete_objects }
+        expect(deleted.flat_map { it[:params][:delete][:objects] }.pluck(:key))
+          .to contain_exactly('sitemaps/goods3.xml.gz', 'sitemaps/goods4.xml.gz')
+      end
+    end
+
+    it 'removes its local copy once done' do
+      storage = described_class.new(s3)
+
+      expect { storage.cleanup }.to change { File.exist?(storage.public_path) }.from(true).to(false)
+    end
   end
 end

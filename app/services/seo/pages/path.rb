@@ -36,5 +36,8 @@ class Seo::Pages::Path
     "#{origin}#{path}"
   end
 
+  # A path inside the section, without the section prefix: the home page of a prefixed section is the empty path.
+  def relative(path) = prefix.empty? ? path : path.delete_prefix(prefix)
+
   def prefix = @config.front_path_prefix
 end

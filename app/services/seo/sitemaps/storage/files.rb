@@ -10,6 +10,8 @@ class Seo::Sitemaps::Storage::Files
 
   def adapter = SitemapGenerator::FileAdapter.new
 
+  def cleanup = nil
+
   # Removes the files of the earlier runs that the new index no longer lists.
   def prune(keep)
     @root.join(Seo::Sitemaps::Storage::PREFIX).glob('*').each { it.delete unless keep.include?(it.basename.to_s) }

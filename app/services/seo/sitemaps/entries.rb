@@ -1,13 +1,20 @@
 # frozen_string_literal: true
 
 # The pages a sitemap lists, read in batches as slug and the moment their content last changed. The moment is the
-# latest change of any table the page is built from, so a sync that changed nothing leaves it where it was.
+# latest change of any table the page is built from, so a sync that changed nothing leaves it where it was. A page is
+# listed exactly when its robots allow indexing: an operator's override wins over the rules, as on the page itself.
 class Seo::Sitemaps::Entries
   BATCH = 5_000
 
-  def self.categories(&) = each(Catalog::Category.with_shown_goods, category_changed_at, &)
+  def self.categories(&)
+    indexed = Catalog::Category.with_shown_goods.or(Catalog::Category.where(id: forced('Catalog::Category', 'index')))
+    each(indexed.where.not(id: forced('Catalog::Category', 'noindex')), category_changed_at, &)
+  end
 
-  def self.goods(&) = each(Catalog::Goods.shown, goods_changed_at, &)
+  def self.goods(&) = each(Catalog::Goods.shown.where.not(id: forced('Catalog::Goods', 'noindex')), goods_changed_at, &)
+
+  # The ids of the records whose override forces the given robots.
+  def self.forced(type, robots) = Seo::Override.where(target_type: type, robots:).select(:target_id)
 
   def self.each(scope, changed_at, &)
     scope.in_batches(of: BATCH) { it.reorder(:id).pluck(:slug, Arel.sql(changed_at)).each(&) }
@@ -40,5 +47,5 @@ class Seo::Sitemaps::Entries
     SQL
   end
 
-  private_class_method :each, :category_changed_at, :goods_changed_at, :override_changed_at
+  private_class_method :forced, :each, :category_changed_at, :goods_changed_at, :override_changed_at
 end

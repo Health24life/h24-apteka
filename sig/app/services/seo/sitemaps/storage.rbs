@@ -5,6 +5,7 @@ module Seo::Sitemaps::Storage
     def public_path: () -> String
     def adapter: () -> (SitemapGenerator::FileAdapter | SitemapGenerator::AwsSdkAdapter)
     def prune: (Array[String] keep) -> void
+    def cleanup: () -> void
   end
 
   PREFIX: String
@@ -19,6 +20,7 @@ class Seo::Sitemaps::Storage::Files
   def public_path: () -> String
   def adapter: () -> SitemapGenerator::FileAdapter
   def prune: (Array[String] keep) -> void
+  def cleanup: () -> nil
 end
 
 class Seo::Sitemaps::Storage::Bucket
@@ -31,6 +33,7 @@ class Seo::Sitemaps::Storage::Bucket
   def public_path: () -> String
   def adapter: () -> SitemapGenerator::AwsSdkAdapter
   def prune: (Array[String] keep) -> void
+  def cleanup: () -> void
 
   private
 
