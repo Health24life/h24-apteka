@@ -55,6 +55,15 @@ RSpec.shared_examples 'a sluggable catalog record' do |factory|
     expect(record.errors.details[:slug]).to include(error: :taken)
   end
 
+  it 'refuses a slug of its kind of page that redirects to a record of another kind', :aggregate_failures do
+    record = create(factory)
+    other = create(record.is_a?(Catalog::Goods) ? :catalog_category : :catalog_goods)
+    create(:seo_redirect, page_type: Seo::Redirect.page_type_for(record.class), slug: 'staryi', redirectable: other)
+
+    expect(record.update(slug: 'staryi')).to be(false)
+    expect(record.errors.details[:slug]).to include(error: :taken)
+  end
+
   it 'refuses such a slug given on creation' do
     create(factory, slug: 'nurofen').update!(slug: 'nurofen-forte')
 

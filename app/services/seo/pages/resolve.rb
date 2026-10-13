@@ -78,14 +78,16 @@ class Seo::Pages::Resolve
              filters: params.except('page'))
   end
 
-  # Redirects are read through the cache; a redirect to a record that is gone leads nowhere.
   def record_missing(type, slug, params)
-    model = MODELS.fetch(type)
-    id = Seo::Redirects::Cache.target_id(model.polymorphic_name, slug)
-    record = id && model.find_by(id:)
-    return Result.missing unless record
+    record = redirect_target(type, slug) or return Result.missing
 
     Result.moved(@paths.with_query(@paths.record(record).to_s, params))
+  end
+
+  # Redirects are read through the cache; a redirect to a record that is gone leads nowhere.
+  def redirect_target(type, slug)
+    target_type, id = Seo::Redirects::Cache.target(type.to_s, slug) || return
+    MODELS.values.find { it.polymorphic_name == target_type }&.find_by(id:)
   end
 
   def finish(page, params, normal)

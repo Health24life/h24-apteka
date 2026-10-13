@@ -1,15 +1,19 @@
 # frozen_string_literal: true
 
-# An old slug of a record that the front still answers with a permanent redirect. It points at the record, not at the
-# new slug, so the old one always leads to the slug the record has now and no chain builds up over several changes.
+# An old slug of a kind of page that the front still answers with a permanent redirect. It points at a record, not at
+# the record's new slug, so the old one always leads to the slug the record has now and no chain builds up over several
+# changes. The kind of page and the kind of record are kept apart: an old slug of a product page may lead to a category.
 class Seo::Redirect < ApplicationRecord
+  # The kind of page whose slugs a record with a slug takes.
+  PAGE_TYPES = { 'Catalog::Goods' => 'goods', 'Catalog::Category' => 'category' }.freeze
   REDIRECTABLE_TYPES = %w[Catalog::Goods Catalog::Category].freeze
 
   belongs_to :redirectable, polymorphic: true, inverse_of: :seo_redirects
 
+  validates :page_type, inclusion: { in: PAGE_TYPES.values }
   validates :redirectable_type, inclusion: { in: REDIRECTABLE_TYPES }
   validates :slug, presence: true, length: { maximum: Catalog::Sluggable::MAX_LENGTH },
-                   format: { with: Catalog::Sluggable::FORMAT }, uniqueness: { scope: :redirectable_type }
+                   format: { with: Catalog::Sluggable::FORMAT }, uniqueness: { scope: :page_type }
 
   # The endpoint reads redirects from the cache, so it follows each committed change of the table.
   after_create_commit :cache
@@ -17,6 +21,8 @@ class Seo::Redirect < ApplicationRecord
 
   scope :active, -> { where(created_at: Seo::Config.current.redirect_ttl.ago..) }
   scope :expired, -> { where(created_at: ...Seo::Config.current.redirect_ttl.ago) }
+
+  def self.page_type_for(record_class) = PAGE_TYPES.fetch(record_class.polymorphic_name)
 
   private
 
@@ -30,6 +36,7 @@ end
 # Table name: seo_redirects
 #
 #  id                :bigint           not null, primary key
+#  page_type         :string           not null
 #  redirectable_type :string           not null
 #  slug              :string           not null
 #  created_at        :datetime         not null
@@ -37,11 +44,12 @@ end
 #
 # Indexes
 #
+#  index_seo_redirects_on_page_type_and_slug                     (page_type,slug) UNIQUE
 #  index_seo_redirects_on_redirectable_type_and_redirectable_id  (redirectable_type,redirectable_id)
-#  index_seo_redirects_on_redirectable_type_and_slug             (redirectable_type,slug) UNIQUE
 #
 # Check Constraints
 #
-#  seo_redirects_slug_check  (slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100)
-#  seo_redirects_type_check  (redirectable_type::text = ANY (ARRAY['Catalog::Goods'::character varying, 'Catalog::Category'::character varying]::text[]))
+#  seo_redirects_page_type_check  (page_type::text = ANY (ARRAY['goods'::character varying, 'category'::character varying]::text[]))
+#  seo_redirects_slug_check       (slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100)
+#  seo_redirects_type_check       (redirectable_type::text = ANY (ARRAY['Catalog::Goods'::character varying, 'Catalog::Category'::character varying]::text[]))
 #

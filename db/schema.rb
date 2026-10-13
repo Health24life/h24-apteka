@@ -447,12 +447,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_120200) do
   end
 
   create_table "seo_redirects", force: :cascade do |t|
+    t.string "page_type", null: false
+    t.string "slug", null: false
     t.string "redirectable_type", null: false
     t.bigint "redirectable_id", null: false
-    t.string "slug", null: false
     t.datetime "created_at", null: false
+    t.index ["page_type", "slug"], name: "index_seo_redirects_on_page_type_and_slug", unique: true
     t.index ["redirectable_type", "redirectable_id"], name: "index_seo_redirects_on_redirectable_type_and_redirectable_id"
-    t.index ["redirectable_type", "slug"], name: "index_seo_redirects_on_redirectable_type_and_slug", unique: true
+    t.check_constraint "page_type::text = ANY (ARRAY['goods'::character varying, 'category'::character varying]::text[])", name: "seo_redirects_page_type_check"
     t.check_constraint "redirectable_type::text = ANY (ARRAY['Catalog::Goods'::character varying, 'Catalog::Category'::character varying]::text[])", name: "seo_redirects_type_check"
     t.check_constraint "slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100", name: "seo_redirects_slug_check"
   end

@@ -48,6 +48,7 @@ class Seo::Pages::Resolve
   def route: () -> [ page_type, String? ]?
   def build_page: (page_type type, String key, Hash[String, String] params) -> Page
   def record_missing: (page_type type, String slug, Hash[String, String] params) -> Result
+  def redirect_target: (page_type type, String slug) -> record?
   def finish: (Page page, Hash[String, String] params, bool normal) -> Result
   def normal_path: (Page page) -> String
   def known_params: (page_type type) -> [ Hash[String, String], bool ]

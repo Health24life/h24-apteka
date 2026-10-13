@@ -6,10 +6,10 @@ class Seo::Redirects::Cache
   def self.redis: () -> Redis
   def self.write: (Seo::Redirect redirect, ?config: Seo::Config) -> void
   def self.delete: (Seo::Redirect redirect) -> void
-  def self.target_id: (String type, String slug) -> Integer?
+  def self.target: (String page_type, String slug) -> [ String, Integer ]?
   def self.rebuild: () -> Integer
   def self.clear: () -> void
-  def self.key: (String type, String slug) -> String
+  def self.key: (String page_type, String slug) -> String
 
   private
 

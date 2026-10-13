@@ -27,17 +27,20 @@ module Catalog::Sluggable
     self.slug = Catalog::Slugs::Generator.call(name_uk, scope: self.class)
   end
 
-  # A slug that still redirects to another record belongs to that record until the redirect expires.
+  # A slug of this kind of page that still redirects to another record, of any kind, belongs to that record until the
+  # redirect expires.
   def slug_is_not_redirected_elsewhere
-    held = Seo::Redirect.where(redirectable_type: self.class.polymorphic_name, slug:)
-    held = held.where.not(redirectable_id: id) if persisted?
+    held = Seo::Redirect.where(page_type: seo_page_type, slug:)
+    held = held.where.not(redirectable: self) if persisted?
     errors.add(:slug, :taken) if held.exists?
   end
 
   def redirect_previous_slug
     previous, current = saved_change_to_slug
     # destroy_all, not delete_all: the cache drops the redirect of a slug the record takes back.
-    seo_redirects.where(slug: [ previous, current ]).destroy_all
-    seo_redirects.create!(slug: previous)
+    seo_redirects.where(page_type: seo_page_type, slug: [ previous, current ]).destroy_all
+    seo_redirects.create!(page_type: seo_page_type, slug: previous)
   end
+
+  def seo_page_type = Seo::Redirect.page_type_for(self.class)
 end

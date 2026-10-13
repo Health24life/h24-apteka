@@ -145,9 +145,15 @@ RSpec.describe Seo::Pages::Resolve do
 
     it 'leads nowhere when the record of a redirect is gone' do
       goods.update!(slug: 'nurofen-forte')
-      Seo::Redirects::Cache.redis.set(Seo::Redirects::Cache.key('Catalog::Goods', 'nurofen'), 0)
+      Seo::Redirects::Cache.redis.set(Seo::Redirects::Cache.key('goods', 'nurofen'), 'Catalog::Goods:0')
 
       expect(resolve('/tovar/nurofen').status).to eq(404)
+    end
+
+    it 'leads an old slug to a record of another kind' do
+      create(:seo_redirect, page_type: 'goods', slug: 'staryi', redirectable: category)
+
+      expect(resolve('/tovar/staryi')).to moved_to('/katalog/zneboliuvalni')
     end
 
     it 'does not take a slug of a goods for a category' do
