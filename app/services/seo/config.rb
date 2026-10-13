@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 # Settings of the section's SEO data. They come from the environment, so a host or a period changes without code.
-class Seo::Config < Data.define(:front_base_url, :filter_params, :forbidden_words, :redirect_ttl, :sitemap_storage,
-                                :sitemap_dir, :sitemap_s3)
+class Seo::Config
   class MissingSetting < StandardError; end
 
   # Where the sitemap goes in the S3 storage: an S3-compatible service such as MinIO.
@@ -15,6 +14,9 @@ class Seo::Config < Data.define(:front_base_url, :filter_params, :forbidden_word
     купити купіть купуйте купи купую куплю купувати купівля купівлі купівлю купівлею
     ціна ціни ціні ціну ціною цін цінам цінами цінах
   ].freeze
+
+  attr_reader :front_base_url, :filter_params, :forbidden_words, :redirect_ttl, :sitemap_storage, :sitemap_dir,
+              :sitemap_s3
 
   def self.current = @current ||= from_env
 
@@ -50,7 +52,13 @@ class Seo::Config < Data.define(:front_base_url, :filter_params, :forbidden_word
   # rubocop:disable-next Metrics/ParameterLists -- a settings object takes every setting as a keyword.
   def initialize(front_base_url: nil, filter_params: [], forbidden_words: FORBIDDEN_WORDS, redirect_ttl: 3.months,
                  sitemap_storage: 'file', sitemap_dir: nil, sitemap_s3: nil)
-    super
+    @front_base_url = front_base_url
+    @filter_params = filter_params
+    @forbidden_words = forbidden_words
+    @redirect_ttl = redirect_ttl
+    @sitemap_storage = sitemap_storage
+    @sitemap_dir = sitemap_dir
+    @sitemap_s3 = sitemap_s3
   end
 
   # The scheme, host and the section's path prefix of the front, without a trailing slash: `https://apteka.h24.ua`.
