@@ -1,0 +1,3 @@
+en:
+  closure_tree:
+    loop_error: cannot be its own descendant
