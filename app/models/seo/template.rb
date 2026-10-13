@@ -16,7 +16,7 @@ class Seo::Template < ApplicationRecord
 
   belongs_to :category, class_name: 'Catalog::Category', optional: true, inverse_of: :seo_templates
 
-  validates :title_uk, :description_uk, :h1_uk, presence: true, neutral_wording: true
+  validates(*TEXTS.map { :"#{it}_uk" }, presence: true, neutral_wording: true)
   validates :page_type, uniqueness: { scope: %i[category_id is_recipe] }
   validates :category, absence: true, unless: -> { for_category? || for_goods? }
   validate :recipe_only_for_goods

@@ -20,7 +20,7 @@ class Seo::Override < ApplicationRecord
 
   validates :target_type, inclusion: { in: TARGET_TYPES }
   validates :target_id, uniqueness: { scope: :target_type }
-  validates :title_uk, :description_uk, :h1_uk, :seo_text_uk, neutral_wording: true
+  validates(*TEXTS.map { :"#{it}_uk" }, :seo_text_uk, neutral_wording: true)
 end
 
 # == Schema Information
