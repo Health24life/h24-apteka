@@ -4,9 +4,9 @@ class CreateSeoTemplates < ActiveRecord::Migration[8.1]
       t.string :page_type, null: false
       t.references :category, foreign_key: { to_table: :catalog_categories }, index: false
       t.boolean :is_recipe
-      t.string :title, null: false
-      t.string :description, null: false
-      t.string :h1, null: false
+      t.jsonb :title, null: false, default: {}
+      t.jsonb :description, null: false, default: {}
+      t.jsonb :h1, null: false, default: {}
 
       t.timestamps
     end

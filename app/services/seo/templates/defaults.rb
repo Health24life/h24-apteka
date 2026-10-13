@@ -22,7 +22,7 @@ class Seo::Templates::Defaults
     TEXTS.filter_map do |page_type, (title, description, h1)|
       next if Seo::Template.exists?(page_type:, category_id: nil, is_recipe: nil)
 
-      Seo::Template.create!(page_type:, title:, description:, h1:)
+      Seo::Template.create!(page_type:, title_uk: title, description_uk: description, h1_uk: h1)
       page_type
     end
   end

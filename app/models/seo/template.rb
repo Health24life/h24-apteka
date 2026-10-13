@@ -3,6 +3,8 @@
 # Title, description and H1 of a kind of page, with placeholders filled from the record. A template may narrow down to a
 # branch of the catalog and, for a product, to prescription goods; the narrowest one that fits a page applies.
 class Seo::Template < ApplicationRecord
+  include Translatable
+
   PLACEHOLDER = /\{([^{}]*)\}/
   PLACEHOLDERS = { 'goods' => %w[name inn producer form dosage], 'category' => %w[name] }.freeze
   TEXTS = %i[title description h1].freeze
@@ -10,9 +12,11 @@ class Seo::Template < ApplicationRecord
   enum :page_type, { home: 'home', category: 'category', goods: 'goods', cart: 'cart', order: 'order' },
        validate: true, prefix: :for
 
+  translatable(*TEXTS)
+
   belongs_to :category, class_name: 'Catalog::Category', optional: true, inverse_of: :seo_templates
 
-  validates(*TEXTS, presence: true, neutral_wording: true)
+  validates :title_uk, :description_uk, :h1_uk, presence: true, neutral_wording: true
   validates :page_type, uniqueness: { scope: %i[category_id is_recipe] }
   validates :category, absence: true, unless: -> { for_category? || for_goods? }
   validate :recipe_only_for_goods
@@ -30,9 +34,10 @@ class Seo::Template < ApplicationRecord
     errors.add(:is_recipe, :present) unless is_recipe.nil? || for_goods?
   end
 
+  # Every language of a text is checked, not only the one being read.
   def placeholders_are_known
     TEXTS.each do |text|
-      unknown = public_send(text).to_s.scan(PLACEHOLDER).flatten - placeholders
+      unknown = self[text].to_h.values.join(' ').scan(PLACEHOLDER).flatten.uniq - placeholders
       errors.add(text, :unknown_placeholders, placeholders: unknown.map { "{#{it}}" }.join(', ')) if unknown.any?
     end
   end
@@ -51,11 +56,11 @@ end
 # Table name: seo_templates
 #
 #  id          :bigint           not null, primary key
-#  description :string           not null
-#  h1          :string           not null
+#  description :jsonb            not null
+#  h1          :jsonb            not null
 #  is_recipe   :boolean
 #  page_type   :string           not null
-#  title       :string           not null
+#  title       :jsonb            not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  category_id :bigint

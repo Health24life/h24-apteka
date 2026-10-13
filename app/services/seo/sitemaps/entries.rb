@@ -15,7 +15,7 @@ class Seo::Sitemaps::Entries
 
   def self.category_changed_at
     <<~SQL.squish
-      GREATEST(catalog_categories.updated_at, (#{setting_changed_at('Catalog::Category', 'catalog_categories')}))
+      GREATEST(catalog_categories.updated_at, (#{override_changed_at('Catalog::Category', 'catalog_categories')}))
     SQL
   end
 
@@ -27,13 +27,18 @@ class Seo::Sitemaps::Entries
         (SELECT MAX(updated_at) FROM catalog_goods_group_translations WHERE catalog_goods_group_id = catalog_goods.goods_group_id),
         (SELECT producer.updated_at FROM catalog_producers producer JOIN catalog_goods_groups owner
           ON owner.producer_id = producer.id WHERE owner.id = catalog_goods.goods_group_id),
-        (#{setting_changed_at('Catalog::Goods', 'catalog_goods')}))
+        (#{override_changed_at('Catalog::Goods', 'catalog_goods')}))
     SQL
   end
 
-  def self.setting_changed_at(type, table)
-    "SELECT updated_at FROM seo_page_settings WHERE settable_type = '#{type}' AND settable_id = #{table}.id"
+  # The texts set by hand: the row with the short ones and the translations with the SEO text.
+  def self.override_changed_at(type, table)
+    <<~SQL.squish
+      SELECT GREATEST(seo_override.updated_at, MAX(translation.updated_at)) FROM seo_overrides seo_override
+      LEFT JOIN seo_override_translations translation ON translation.seo_override_id = seo_override.id
+      WHERE seo_override.target_type = '#{type}' AND seo_override.target_id = #{table}.id GROUP BY seo_override.id
+    SQL
   end
 
-  private_class_method :each, :category_changed_at, :goods_changed_at, :setting_changed_at
+  private_class_method :each, :category_changed_at, :goods_changed_at, :override_changed_at
 end

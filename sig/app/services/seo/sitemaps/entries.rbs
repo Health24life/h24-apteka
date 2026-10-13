@@ -9,5 +9,5 @@ class Seo::Sitemaps::Entries
   def self.each: (ActiveRecord::Relation scope, String changed_at) { (String slug, ActiveSupport::TimeWithZone? changed_at) -> void } -> void
   def self.category_changed_at: () -> String
   def self.goods_changed_at: () -> String
-  def self.setting_changed_at: (String type, String table) -> String
+  def self.override_changed_at: (String type, String table) -> String
 end

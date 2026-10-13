@@ -116,9 +116,16 @@ RSpec.describe Seo::Pages::Resolve do
       expect(resolve('/tovar/nurofen').status).to eq(200)
     end
 
-    it 'stops redirecting once the period is over' do
+    it 'stops redirecting once the cache no longer holds the redirect' do
       goods.update!(slug: 'nurofen-forte')
-      Seo::Redirect.update_all(created_at: 4.months.ago) # rubocop:disable Rails/SkipsModelValidations
+      Seo::Redirects::Cache.clear
+
+      expect(resolve('/tovar/nurofen').status).to eq(404)
+    end
+
+    it 'leads nowhere when the record of a redirect is gone' do
+      goods.update!(slug: 'nurofen-forte')
+      Seo::Redirects::Cache.redis.set(Seo::Redirects::Cache.key('Catalog::Goods', 'nurofen'), 0)
 
       expect(resolve('/tovar/nurofen').status).to eq(404)
     end

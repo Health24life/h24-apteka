@@ -7,9 +7,13 @@ RSpec.describe Seo::Template do
 
   it { is_expected.to be_valid }
   it { is_expected.to belong_to(:category).optional }
-  it { is_expected.to validate_presence_of(:title) }
-  it { is_expected.to validate_presence_of(:description) }
-  it { is_expected.to validate_presence_of(:h1) }
+  it { is_expected.to validate_presence_of(:title_uk) }
+  it { is_expected.to validate_presence_of(:description_uk) }
+  it { is_expected.to validate_presence_of(:h1_uk) }
+
+  it 'stores the texts by language' do
+    expect(create(:seo_template).read_attribute(:h1)).to eq('uk' => '{name}')
+  end
 
   it 'refuses a page type outside the scheme' do
     expect(build(:seo_template, page_type: 'search')).not_to be_valid
@@ -60,7 +64,7 @@ RSpec.describe Seo::Template do
     template = build(:seo_template, description: 'Купити {name} недорого')
 
     expect(template).not_to be_valid
-    expect(template.errors).to be_added(:description, :not_neutral, words: 'купити')
+    expect(template.errors).to be_added(:description_uk, :not_neutral, words: 'купити')
   end
 
   describe 'removal' do
@@ -85,3 +89,33 @@ RSpec.describe Seo::Template do
     end
   end
 end
+
+# == Schema Information
+#
+# Table name: seo_templates
+#
+#  id          :bigint           not null, primary key
+#  description :jsonb            not null
+#  h1          :jsonb            not null
+#  is_recipe   :boolean
+#  page_type   :string           not null
+#  title       :jsonb            not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  category_id :bigint
+#
+# Indexes
+#
+#  index_seo_templates_on_category_id  (category_id)
+#  index_seo_templates_uniqueness      (page_type,category_id,is_recipe) UNIQUE NULLS NOT DISTINCT
+#
+# Foreign Keys
+#
+#  fk_rails_...  (category_id => catalog_categories.id)
+#
+# Check Constraints
+#
+#  seo_templates_category_check   (category_id IS NULL OR (page_type::text = ANY (ARRAY['category'::character varying, 'goods'::character varying]::text[])))
+#  seo_templates_page_type_check  (page_type::text = ANY (ARRAY['home'::character varying, 'category'::character varying, 'goods'::character varying, 'cart'::character varying, 'order'::character varying]::text[]))
+#  seo_templates_recipe_check     (is_recipe IS NULL OR page_type::text = 'goods'::text)
+#

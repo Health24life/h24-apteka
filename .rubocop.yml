@@ -52,3 +52,11 @@ RSpec/NestedGroups:
 RSpec/VariableName:
   AllowedPatterns:
     - '\AAuthorization\z'
+
+# `h1` is the name of the page heading the SEO data carries, not a lazy abbreviation.
+Naming/MethodParameterName:
+  inherit_mode:
+    merge:
+      - AllowedNames
+  AllowedNames:
+    - h1

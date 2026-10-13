@@ -1,4 +1,12 @@
 class Seo::Template
+  include Translatable
+  extend Translatable::ClassMethods
+  extend Mobility
+
+  def title: () -> String?
+  def description: () -> String?
+  def h1: () -> String?
+
   PLACEHOLDER: Regexp
   PLACEHOLDERS: Hash[String, Array[String]]
   TEXTS: Array[Symbol]

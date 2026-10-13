@@ -101,7 +101,7 @@ RSpec.describe Seo::Sitemaps::Refresh do
 
     it 'follows a change of the texts set by hand' do
       changed_at = 1.hour.from_now.change(usec: 0)
-      travel_to(changed_at) { create(:seo_page_setting, settable: goods, title: 'Нурофен: інструкція') }
+      travel_to(changed_at) { create(:seo_override, target: goods, title_uk: 'Нурофен: інструкція') }
 
       refresh
 

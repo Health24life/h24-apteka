@@ -24,7 +24,7 @@ class Catalog::Goods < ApplicationRecord
   has_many :instruction_sections, -> { order(:position) }, class_name: 'Catalog::Goods::InstructionSection',
                                                            inverse_of: :goods, dependent: :destroy
   has_many :order_items, class_name: '::Order::Item', inverse_of: :goods, dependent: :restrict_with_exception
-  has_one :seo_page_setting, class_name: 'Seo::PageSetting', as: :settable, inverse_of: :settable, dependent: :delete
+  has_one :seo_override, class_name: 'Seo::Override', as: :target, inverse_of: :target, dependent: :destroy
 
   has_one :producer, through: :goods_group
   has_one :goods_name, through: :goods_group

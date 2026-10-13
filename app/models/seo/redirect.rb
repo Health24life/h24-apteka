@@ -11,8 +11,18 @@ class Seo::Redirect < ApplicationRecord
   validates :slug, presence: true, length: { maximum: Catalog::Sluggable::MAX_LENGTH },
                    format: { with: Catalog::Sluggable::FORMAT }, uniqueness: { scope: :redirectable_type }
 
+  # The endpoint reads redirects from the cache, so it follows each committed change of the table.
+  after_create_commit :cache
+  after_destroy_commit :uncache
+
   scope :active, -> { where(created_at: Seo::Config.current.redirect_ttl.ago..) }
   scope :expired, -> { where(created_at: ...Seo::Config.current.redirect_ttl.ago) }
+
+  private
+
+  def cache = Seo::Redirects::Cache.write(self)
+
+  def uncache = Seo::Redirects::Cache.delete(self)
 end
 
 # == Schema Information

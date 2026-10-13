@@ -41,4 +41,25 @@ RSpec.describe Seo::Pages::Robots do
   it 'only follows a category with nothing to show' do
     expect(described_class.call(page(:category, record: category))).to eq('noindex, follow')
   end
+
+  describe 'an override of the page' do
+    it 'keeps a product out of the index when an operator says so' do
+      goods = create(:seo_override, robots: 'noindex').target
+
+      expect(described_class.call(page(:goods, record: goods))).to eq('noindex, follow')
+    end
+
+    it 'indexes a category with nothing to show when an operator says so' do
+      create(:seo_override, target: category, robots: 'index')
+
+      expect(described_class.call(page(:category, record: category))).to eq('index, follow')
+    end
+
+    it 'keeps a filtered list out of the index whatever its category says' do
+      create(:seo_override, target: category, robots: 'index')
+
+      expect(described_class.call(page(:category, record: category, filters: { 'form' => 'tabletky' })))
+        .to eq('noindex, follow')
+    end
+  end
 end

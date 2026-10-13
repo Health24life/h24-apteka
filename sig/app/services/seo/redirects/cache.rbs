@@ -1,0 +1,13 @@
+class Seo::Redirects::Cache
+  PREFIX: String
+
+  self.@redis: Redis?
+
+  def self.redis: () -> Redis
+  def self.write: (Seo::Redirect redirect, ?config: Seo::Config) -> void
+  def self.delete: (Seo::Redirect redirect) -> void
+  def self.target_id: (String type, String slug) -> Integer?
+  def self.rebuild: () -> Integer
+  def self.clear: () -> void
+  def self.key: (String type, String slug) -> String
+end

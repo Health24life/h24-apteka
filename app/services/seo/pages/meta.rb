@@ -3,22 +3,27 @@
 # Title, description, H1 and SEO text of a page. A field an operator set by hand wins; the rest come from the narrowest
 # template, filled from the page's record. Generated texts are cut to the length search engines show, and a later page
 # of a list says its number so it does not repeat the first one.
-class Seo::Pages::Meta < Data.define(:title, :description, :h1, :seo_text)
+class Seo::Pages::Meta
   TITLE_LIMIT = 70
   DESCRIPTION_LIMIT = 160
 
+  attr_reader :title, :description, :h1, :seo_text
+
   def self.call(page)
-    setting = page.record&.seo_page_setting
-    generated = generate(template_for(page), values_for(page.record), page.page_number.to_i)
-    new(title: setting&.title || generated[:title], description: setting&.description || generated[:description],
-        h1: setting&.h1 || generated[:h1], seo_text: setting&.seo_text)
+    override = page.record&.seo_override
+    title, description, h1 = generate(template_for(page), values_for(page.record), page.page_number.to_i)
+    new(title: by_hand(override, :title) || title, description: by_hand(override, :description) || description,
+        h1: by_hand(override, :h1) || h1, seo_text: override&.seo_text.presence)
   end
+
+  # A field an operator filled in; an empty one leaves the template's.
+  def self.by_hand(override, field) = override&.public_send(field).presence
 
   def self.generate(template, values, page_number)
     suffix = page_number > 1 ? " — сторінка #{page_number}" : ''
-    { title: limited(template.title, values, TITLE_LIMIT, suffix),
-      description: limited(template.description, values, DESCRIPTION_LIMIT, suffix),
-      h1: Seo::Templates::Render.call(template.h1, values) }
+    [ limited(template.title.to_s, values, TITLE_LIMIT, suffix),
+      limited(template.description.to_s, values, DESCRIPTION_LIMIT, suffix),
+      Seo::Templates::Render.call(template.h1.to_s, values) ]
   end
 
   def self.template_for(page)
@@ -45,5 +50,12 @@ class Seo::Pages::Meta < Data.define(:title, :description, :h1, :seo_text)
     Seo::Templates::Truncate.call(Seo::Templates::Render.call(text, values), limit - suffix.length) + suffix
   end
 
-  private_class_method :generate, :template_for, :values_for, :limited
+  private_class_method :by_hand, :generate, :template_for, :values_for, :limited
+
+  def initialize(title:, description:, h1:, seo_text:)
+    @title = title
+    @description = description
+    @h1 = h1
+    @seo_text = seo_text
+  end
 end

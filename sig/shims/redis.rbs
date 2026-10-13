@@ -1,0 +1,4 @@
+# The collected redis signatures (4.2) lack the SCAN iterator the SEO redirect cache clears its keys with.
+class Redis
+  def scan_each: (?match: String, ?count: Integer) -> Enumerator[String, void]
+end

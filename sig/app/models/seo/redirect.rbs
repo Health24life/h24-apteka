@@ -1,3 +1,8 @@
 class Seo::Redirect
   REDIRECTABLE_TYPES: Array[String]
+
+  private
+
+  def cache: () -> void
+  def uncache: () -> void
 end

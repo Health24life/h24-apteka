@@ -15,7 +15,7 @@ class Catalog::Category < ApplicationRecord
                                     dependent: :restrict_with_exception
   has_many :goods_groups, through: :goods_group_categories
   has_many :seo_templates, class_name: 'Seo::Template', inverse_of: :category, dependent: :delete_all
-  has_one :seo_page_setting, class_name: 'Seo::PageSetting', as: :settable, inverse_of: :settable, dependent: :delete
+  has_one :seo_override, class_name: 'Seo::Override', as: :target, inverse_of: :target, dependent: :destroy
 
   validates :name_uk, presence: true
 

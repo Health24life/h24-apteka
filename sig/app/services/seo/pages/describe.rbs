@@ -1,4 +1,4 @@
-class Seo::Pages::Describe < Data
+class Seo::Pages::Describe
   attr_reader status: Integer
   attr_reader location: String?
   attr_reader title: String?
@@ -8,11 +8,23 @@ class Seo::Pages::Describe < Data
   attr_reader breadcrumbs: Array[Seo::Pages::Breadcrumbs::Crumb]
   attr_reader seo_text: String?
 
-  def self.new: (status: Integer, location: String?, title: String?, description: String?, h1: String?,
-                 robots: String?, breadcrumbs: Array[Seo::Pages::Breadcrumbs::Crumb], seo_text: String?) -> instance
+  @status: Integer
+  @location: String?
+  @title: String?
+  @description: String?
+  @h1: String?
+  @robots: String?
+  @breadcrumbs: Array[Seo::Pages::Breadcrumbs::Crumb]
+  @seo_text: String?
+
   def self.call: (String path) -> Seo::Pages::Describe
 
   private
 
   def self.elsewhere: (Seo::Pages::Resolve::Result result) -> Seo::Pages::Describe
+
+  public
+
+  def initialize: (status: Integer, location: String?, title: String?, description: String?, h1: String?,
+                   robots: String?, breadcrumbs: Array[Seo::Pages::Breadcrumbs::Crumb], seo_text: String?) -> void
 end

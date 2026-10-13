@@ -27,7 +27,7 @@ RSpec.describe Seo::Pages::Meta do
   end
 
   it 'takes a field set by hand over the template', :aggregate_failures do
-    create(:seo_page_setting, settable: goods, title: 'Нурофен: інструкція', seo_text: 'Текст')
+    create(:seo_override, target: goods, title_uk: 'Нурофен: інструкція', seo_text_uk: 'Текст')
 
     meta = described_class.call(page(goods))
 
@@ -57,6 +57,6 @@ RSpec.describe Seo::Pages::Meta do
   it 'never puts a price or the stock into the texts' do
     meta = described_class.call(page(goods))
 
-    expect(meta.to_h.values.compact.join(' ')).not_to match(/ціна|грн|наявн/i)
+    expect([ meta.title, meta.description, meta.h1, meta.seo_text ].compact.join(' ')).not_to match(/ціна|грн|наявн/i)
   end
 end

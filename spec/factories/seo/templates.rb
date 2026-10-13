@@ -14,11 +14,11 @@ end
 # Table name: seo_templates
 #
 #  id          :bigint           not null, primary key
-#  description :string           not null
-#  h1          :string           not null
+#  description :jsonb            not null
+#  h1          :jsonb            not null
 #  is_recipe   :boolean
 #  page_type   :string           not null
-#  title       :string           not null
+#  title       :jsonb            not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  category_id :bigint

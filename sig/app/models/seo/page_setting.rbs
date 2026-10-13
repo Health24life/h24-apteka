@@ -1,3 +1,0 @@
-class Seo::PageSetting
-  SETTABLE_TYPES: Array[String]
-end

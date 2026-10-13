@@ -35,7 +35,8 @@ module Catalog::Sluggable
 
   def redirect_previous_slug
     previous, current = saved_change_to_slug
-    seo_redirects.where(slug: [ previous, current ]).delete_all
+    # destroy_all, not delete_all: the cache drops the redirect of a slug the record takes back.
+    seo_redirects.where(slug: [ previous, current ]).destroy_all
     seo_redirects.create!(slug: previous)
   end
 end
