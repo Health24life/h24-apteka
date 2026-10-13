@@ -12,10 +12,6 @@ Sidekiq.configure_server do |config|
   # Jobs enqueued from inside other jobs need the client middleware on the server as well.
   config.client_middleware { |chain| chain.add SidekiqUniqueJobs::Middleware::Client }
   SidekiqUniqueJobs::Server.configure(config)
-  # The SEO jobs are built in code, as their cron expressions come from the environment.
-  config.on(:startup) do
-    Sidekiq::Cron::Job.load_from_hash!(Seo::Schedule.jobs, source: Seo::Schedule::SOURCE)
-  end
   Sidekiq::Status.configure_server_middleware(config, expiration: status_expiration)
   Sidekiq::Status.configure_client_middleware(config, expiration: status_expiration)
 end
