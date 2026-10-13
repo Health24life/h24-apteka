@@ -1,34 +1,4 @@
 uk:
-  catalog:
-    instruction_sections:
-      sklad: Склад
-      likarska-forma: Лікарська форма
-      farmakoterapevtychna-hrupa: Фармакотерапевтична група
-      pokazannia: Показання
-      protypokazannia: Протипоказання
-      vzaiemodiia-z-inshymy-likarskymy-zasobamy: Взаємодія з іншими лікарськими засобами
-      sposib-zastosuvannia-ta-dozy: Спосіб застосування та дози
-      pobichni-reaktsii: Побічні реакції
-      peredozuvannia: Передозування
-      umovy-zberihannia: Умови зберігання
-      termin-prydatnosti: Термін придатності
-      katehoriia-vidpusku: Категорія відпуску
-  orders:
-    partner_statuses:
-      created: Створено
-      processed_by_pharmacy: Оброблено в аптеці
-      canceled: Скасовано
-  errors:
-    messages:
-      delivery_not_supported: "недоступна: провайдер не підтримує доставку"
-      invalid_week_working_hours: має містити сім значень — по одному на кожен день тижня — або бути порожнім
-      repeated: повторюється
-      not_served_by_provider: немає в каталозі провайдера замовлення
-      hidden: приховано адміністратором
-      disabled: вимкнено
-      not_a_catalog_locale: "зберігається лише мовами каталогу, а не «%{language}»"
-  closure_tree:
-    loop_error: не може бути власним нащадком
   activerecord:
     errors:
       models:
