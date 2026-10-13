@@ -1,0 +1,4 @@
+uk:
+  errors:
+    messages:
+      delivery_not_supported: 'недоступна: провайдер не підтримує доставку'

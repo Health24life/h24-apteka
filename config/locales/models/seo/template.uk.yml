@@ -1,0 +1,5 @@
+uk:
+  errors:
+    messages:
+      unknown_placeholders: 'містить невідомі підстановки: %{placeholders}'
+      general_template_required: загальний шаблон типу сторінки не можна видалити

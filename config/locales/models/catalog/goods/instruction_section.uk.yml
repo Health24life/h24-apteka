@@ -13,9 +13,3 @@ uk:
       umovy-zberihannia: Умови зберігання
       termin-prydatnosti: Термін придатності
       katehoriia-vidpusku: Категорія відпуску
-  errors:
-    messages:
-      invalid_week_working_hours: має містити сім значень — по одному на кожен день тижня — або бути порожнім
-      not_a_catalog_locale: "зберігається лише мовами каталогу, а не «%{language}»"
-  closure_tree:
-    loop_error: не може бути власним нащадком

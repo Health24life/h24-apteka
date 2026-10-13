@@ -1,7 +1,4 @@
 en:
   errors:
     messages:
-      repeated: is repeated
       not_served_by_provider: is not in the catalog of the provider of the order
-      hidden: is hidden by an administrator
-      disabled: is disabled

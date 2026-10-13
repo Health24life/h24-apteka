@@ -1,0 +1,5 @@
+en:
+  errors:
+    messages:
+      unknown_placeholders: 'has unknown placeholders: %{placeholders}'
+      general_template_required: the general template of a page type cannot be removed

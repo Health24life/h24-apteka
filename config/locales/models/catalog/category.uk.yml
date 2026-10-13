@@ -1,0 +1,4 @@
+uk:
+  # closure_tree reports a loop in any tree it keeps: the categories and the ATC classes.
+  closure_tree:
+    loop_error: не може бути власним нащадком
