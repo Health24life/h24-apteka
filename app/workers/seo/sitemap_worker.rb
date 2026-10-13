@@ -4,5 +4,5 @@
 class Seo::SitemapWorker < ApplicationWorker
   sidekiq_options lock: :until_and_while_executing, on_conflict: { client: :log, server: :reschedule }
 
-  def perform = Seo::Sitemaps::Generate.call
+  def perform = Seo::Sitemaps::Refresh.call
 end

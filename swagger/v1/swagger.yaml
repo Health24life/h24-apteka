@@ -54,37 +54,6 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/error"
-  "/sitemap.xml":
-    get:
-      summary: The sitemap index of the section
-      tags:
-      - Sitemap
-      description: Served from the root of the API host, outside /api/v1; the front
-        proxies its own /sitemap.xml here. The parts it lists are on the front host.
-      responses:
-        '200':
-          description: the index of the last generated sitemap
-        '404':
-          description: no sitemap generated yet
-  "/sitemap-{part}.xml":
-    parameters:
-    - name: part
-      in: path
-      required: true
-      schema:
-        type: string
-        pattern: "^[a-z0-9-]+$"
-      example: goods-1
-      description: Kind of pages and the number of the part
-    get:
-      summary: A part of the sitemap
-      tags:
-      - Sitemap
-      responses:
-        '200':
-          description: the URLs of the part
-        '404':
-          description: a part the sitemap does not have
 components:
   schemas:
     error:

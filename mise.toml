@@ -41,8 +41,15 @@ SEO_FILTER_PARAMS = ""
 SEO_FORBIDDEN_WORDS = ""
 SEO_REDIRECT_TTL_MONTHS = "3"
 SEO_REDIRECT_CLEANUP_CRON = "40 4 * * *"
-# Directory of the generated sitemap: a volume both Sidekiq and the web pods see.
-SEO_SITEMAP_DIR = "tmp/sitemaps"
+# Where the sitemap goes: `file` writes it to SEO_SITEMAP_DIR/sitemaps/ (a volume mounted as public/ is served at
+# /sitemaps/), `s3` uploads it to an S3-compatible bucket such as MinIO under the `sitemaps/` prefix.
+SEO_SITEMAP_STORAGE = "file"
+SEO_SITEMAP_DIR = "public"
+SEO_SITEMAP_S3_BUCKET = ""
+SEO_SITEMAP_S3_ENDPOINT = ""
+SEO_SITEMAP_S3_REGION = "us-east-1"
+SEO_SITEMAP_S3_ACCESS_KEY_ID = ""
+SEO_SITEMAP_S3_SECRET_ACCESS_KEY = ""
 SEO_SITEMAP_CRON = "0 5 * * *"
 
 [tasks.server]

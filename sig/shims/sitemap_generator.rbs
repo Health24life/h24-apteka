@@ -1,0 +1,17 @@
+# sitemap_generator ships no signatures. Only what own code calls is described.
+module SitemapGenerator
+  class FileAdapter
+    def initialize: () -> void
+  end
+
+  class AwsSdkAdapter
+    def initialize: (String bucket, **untyped options) -> void
+  end
+
+  class LinkSet
+    def initialize: (**untyped options) -> void
+    def create: () { (LinkSet sitemap) -> void } -> LinkSet
+    def group: (**untyped options) { (LinkSet group) -> void } -> LinkSet
+    def add: (String path, **untyped options) -> void
+  end
+end

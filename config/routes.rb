@@ -26,10 +26,6 @@ Rails.application.routes.draw do
     end
   end
 
-  get 'sitemap.xml', to: 'seo/sitemaps#show', format: false, as: :sitemap
-  get 'sitemap-:part.xml', to: 'seo/sitemaps#show', format: false, constraints: { part: /[a-z0-9-]+/ },
-                           as: :sitemap_part
-
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get 'up' => 'rails/health#show', as: :rails_health_check
