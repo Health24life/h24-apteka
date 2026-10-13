@@ -1,6 +1,7 @@
 uk:
   seo:
-    breadcrumbs:
-      home: Головна
-      cart: Кошик
-      order: Замовлення
+    pages:
+      breadcrumbs:
+        home: Головна
+        cart: Кошик
+        order: Замовлення

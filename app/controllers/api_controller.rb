@@ -17,6 +17,7 @@ class ApiController < ActionController::API
 
   # Every error answers with a stable machine code and a message in Ukrainian.
   def render_error(code, status:)
-    render json: { error: { code: code.to_s, message: I18n.t(code, scope: 'api.errors', locale: :uk) } }, status:
+    message = I18n.t(code, scope: 'api_controller.errors', locale: :uk)
+    render json: { error: { code: code.to_s, message: } }, status:
   end
 end

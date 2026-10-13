@@ -21,7 +21,7 @@ RSpec.describe Catalog::Instructions::Sections do
 
   it 'fixes each code as the transliteration of its Ukrainian heading' do
     described_class::CODES.each do |code|
-      heading = I18n.t(code, scope: 'catalog.instruction_sections', locale: :uk)
+      heading = I18n.t(code, scope: 'catalog.goods.instruction_sections', locale: :uk)
 
       expect(Catalog::Slugs::Generator.call(heading, scope: nothing_taken)).to eq(code)
     end
@@ -29,7 +29,7 @@ RSpec.describe Catalog::Instructions::Sections do
 
   it 'has a heading for every code in every interface language' do
     missing = described_class::CODES.product(I18n.available_locales).reject do |code, locale|
-      I18n.exists?("catalog.instruction_sections.#{code}", locale, fallback: false)
+      I18n.exists?("catalog.goods.instruction_sections.#{code}", locale, fallback: false)
     end
 
     expect(missing).to eq([])
@@ -37,7 +37,7 @@ RSpec.describe Catalog::Instructions::Sections do
 
   it 'recognises the Ukrainian heading of every section' do
     described_class::CODES.each do |code|
-      heading = I18n.t(code, scope: 'catalog.instruction_sections', locale: :uk)
+      heading = I18n.t(code, scope: 'catalog.goods.instruction_sections', locale: :uk)
 
       expect(described_class.code_for(heading)).to eq(code)
     end

@@ -44,7 +44,7 @@ RSpec.describe NeutralWordingValidator do
 
   it 'follows the words of the locale' do
     allow(I18n).to receive(:t).and_call_original
-    allow(I18n).to receive(:t).with('seo.forbidden_words', locale: :uk).and_return(%w[дешево])
+    allow(I18n).to receive(:t).with('neutral_wording_validator.forbidden_words', locale: :uk).and_return(%w[дешево])
 
     expect(valid?('Дешево і швидко')).to be(false)
   end

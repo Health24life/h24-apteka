@@ -1,4 +1,6 @@
 uk:
-  errors:
-    messages:
-      delivery_not_supported: 'недоступна: провайдер не підтримує доставку'
+  activerecord:
+    errors:
+      models:
+        order/delivery:
+          delivery_not_supported: 'недоступна: провайдер не підтримує доставку'

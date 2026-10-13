@@ -35,5 +35,5 @@ class Seo::Pages::Breadcrumbs
 
   def of(record) = Crumb.new(name: record.name_uk.to_s, path: @paths.record(record).to_s)
 
-  def crumb(key, path) = Crumb.new(name: I18n.t(key, scope: 'seo.breadcrumbs', locale: :uk), path:)
+  def crumb(key, path) = Crumb.new(name: I18n.t(key, scope: 'seo.pages.breadcrumbs', locale: :uk), path:)
 end

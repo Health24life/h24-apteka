@@ -2,7 +2,7 @@
 
 # The twelve instruction sections a product card can navigate to. A code is the KMU-55 transliteration of the
 # Ukrainian heading and doubles as the anchor, so it is fixed here as a literal: published links depend on it.
-# Headings shown to people live in the locale files under catalog.instruction_sections.
+# Headings shown to people live in the locale files under catalog.goods.instruction_sections.
 module Catalog::Instructions::Sections
   class Section < Data.define(:code, :synonyms); end
 

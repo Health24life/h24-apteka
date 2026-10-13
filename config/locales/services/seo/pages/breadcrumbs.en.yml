@@ -1,6 +1,7 @@
 en:
   seo:
-    breadcrumbs:
-      home: Home
-      cart: Cart
-      order: Order
+    pages:
+      breadcrumbs:
+        home: Home
+        cart: Cart
+        order: Order

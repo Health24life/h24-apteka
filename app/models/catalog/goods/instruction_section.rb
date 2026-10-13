@@ -13,7 +13,7 @@ class Catalog::Goods::InstructionSection < ApplicationRecord
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 1 },
                        uniqueness: { scope: :goods_id }
 
-  def title = I18n.t(code, scope: 'catalog.instruction_sections')
+  def title = I18n.t(code, scope: 'catalog.goods.instruction_sections')
 end
 
 # == Schema Information

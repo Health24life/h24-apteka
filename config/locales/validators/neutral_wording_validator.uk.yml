@@ -2,7 +2,7 @@ uk:
   errors:
     messages:
       not_neutral: 'містить недопустимі для ліків формулювання: %{words}'
-  seo:
+  neutral_wording_validator:
     # Every form of "buy" and "price" a meta tag of a medicine must not use (advertising law); a word that only starts
     # the same, like «цінний», is fine. The lawyer extends the list here.
     forbidden_words:

@@ -30,7 +30,7 @@ RSpec.describe Seo::Templates::Defaults do
 
   it 'has wording for every page type in the locale' do
     missing = Seo::Template.page_types.values.product(Seo::Template::TEXTS).reject do |page_type, text|
-      I18n.exists?(:"seo.default_templates.#{page_type}.#{text}", :uk)
+      I18n.exists?(:"seo.templates.defaults.#{page_type}.#{text}", :uk)
     end
 
     expect(missing).to be_empty
