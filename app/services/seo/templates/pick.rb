@@ -15,14 +15,22 @@ class Seo::Templates::Pick
   def self.branch(scope, category)
     return scope.where(category_id: nil) unless category
 
-    hierarchy = Arel.sql(ActiveRecord::Base.sanitize_sql_array([ <<~SQL.squish, category.id ]))
+    scope.joins(ancestry_of(category)).where(general_or_in_branch).order(narrowest_first)
+  end
+
+  # Joins each template of a category to the ancestry of the page's category, so a template of an ancestor gets the
+  # distance to it and a template of another branch gets nothing.
+  def self.ancestry_of(category)
+    Arel.sql(ActiveRecord::Base.sanitize_sql_array([ <<~SQL.squish, category.id ]))
       LEFT JOIN catalog_category_hierarchies hierarchy
         ON hierarchy.ancestor_id = seo_templates.category_id AND hierarchy.descendant_id = ?
     SQL
-    scope.joins(hierarchy)
-         .where('seo_templates.category_id IS NULL OR hierarchy.ancestor_id IS NOT NULL')
-         .order(Arel.sql('hierarchy.generations ASC NULLS LAST, seo_templates.is_recipe ASC NULLS LAST'))
   end
 
-  private_class_method :branch
+  def self.general_or_in_branch = 'seo_templates.category_id IS NULL OR hierarchy.ancestor_id IS NOT NULL'
+
+  # The nearest category first, then a template for the prescription kind before one that does not narrow it down.
+  def self.narrowest_first = Arel.sql('hierarchy.generations ASC NULLS LAST, seo_templates.is_recipe ASC NULLS LAST')
+
+  private_class_method :branch, :ancestry_of, :general_or_in_branch, :narrowest_first
 end

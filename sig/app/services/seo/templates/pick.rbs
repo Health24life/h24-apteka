@@ -7,4 +7,7 @@ class Seo::Templates::Pick
   private
 
   def self.branch: (Seo::Template::ActiveRecord_Relation scope, Catalog::Category? category) -> Seo::Template::ActiveRecord_Relation
+  def self.ancestry_of: (Catalog::Category category) -> Arel::Nodes::SqlLiteral
+  def self.general_or_in_branch: () -> String
+  def self.narrowest_first: () -> Arel::Nodes::SqlLiteral
 end
