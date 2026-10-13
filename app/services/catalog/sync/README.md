@@ -36,7 +36,7 @@ sidekiq-cron ──► StartWorker(kind) ──► Starter ──► RunTracker.
 
 ### 1. Старт прогону
 
-1. `sidekiq-cron` за розкладом (`Pharmapoint::Schedule`) ставить `StartWorker(kind)`. Замок `until_executed` не дає
+1. `sidekiq-cron` за розкладом (`config/schedule.yml`) ставить `StartWorker(kind)`. Замок `until_executed` не дає
    поставити другий старт того самого виду, доки перший не виконався.
 2. `Starter.call(kind)` викликає `RunTracker.start`:
    - прогони цього виду в статусі `running`, старші за `stale_run_after`, закриваються як `failed` (воркер, що впав, не
@@ -199,15 +199,16 @@ Provider::RequestLog.where(sync_run_id: SyncRun.last.id)            # усі з�
 
 В адмінці (меню «Синхронізація» → «Прогони синхронізації») є список прогонів і дотягувань, картка прогону зі збоями й
 посиланням на його звернення, а також кнопки ручного запуску. Кнопка є лише для виду, увімкненого в розкладі
-(`Pharmapoint::Schedule.sync_enabled?`); запуск іде через `Catalog::Sync::ManualStart` синхронно, тож адмінка одразу каже,
+(`Catalog::Sync::Cron.enabled?`); запуск іде через `Catalog::Sync::ManualStart` синхронно, тож адмінка одразу каже,
 чи прогін поставлено в чергу, чи вид уже виконується. Ознаку «прихований» групам товарів, SKU й аптекам задає оператор
 на їхніх картках у меню «Каталог» (`Catalog::Visibility::Changer`, причина — коментар на картці).
 
 ## Розклад
 
-Складає `Pharmapoint::Schedule` з env-змінних `SYNC_CRON_*` і `LOG_CLEANUP_CRON` й завантажує на старті Sidekiq
-(`config/initializers/sidekiq.rb`). Порожній cron вимикає задачу; прогін груп товарів вимкнений, доки з партнером не
-погоджено повний імпорт.
+Задачі описано в `config/schedule.yml`; `sidekiq-cron` рендерить його через ERB і завантажує на старті Sidekiq. Cron
+кожного виду береться з env-змінної `SYNC_CRON_*` (змінна й типове значення — у `Catalog::Sync::Cron`), cron чистки
+журналу — з `LOG_CLEANUP_CRON`. Задачі з порожнім cron у файлі немає, і `sidekiq-cron` прибирає її з Redis; вимкнений вид
+не можна запустити й вручну. Прогін груп товарів вимкнений, доки з партнером не погоджено повний імпорт.
 
 ## Припущення, які ще не підтверджені
 

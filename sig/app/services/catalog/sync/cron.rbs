@@ -1,0 +1,6 @@
+module Catalog::Sync::Cron
+  KINDS: Hash[String, [ String, String ]]
+
+  def self.of: (String kind, ?Pharmapoint::Config::_Env env) -> String?
+  def self.enabled?: (String kind, ?Pharmapoint::Config::_Env env) -> bool
+end
