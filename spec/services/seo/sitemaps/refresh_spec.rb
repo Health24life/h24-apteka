@@ -103,6 +103,10 @@ RSpec.describe Seo::Sitemaps::Refresh do
   describe 'the date of change' do
     let!(:goods) { stocked('nurofen') }
 
+    def choose_primary(group, category)
+      Catalog::PrimaryCategory::Changer.call(group:, category_id: category.id, admin: create(:admin_user))
+    end
+
     it 'stays when a sync wrote nothing new' do
       travel_to(1.day.ago) { refresh }
       before_sync = lastmod_of('nurofen')
@@ -126,6 +130,16 @@ RSpec.describe Seo::Sitemaps::Refresh do
     it 'follows a change of the texts set by hand' do
       changed_at = 1.hour.from_now.change(usec: 0)
       travel_to(changed_at) { create(:seo_override, target: goods, title_uk: 'Нурофен: інструкція') }
+
+      refresh
+
+      expect(Time.zone.parse(lastmod_of('nurofen'))).to eq(changed_at)
+    end
+
+    it 'follows an editor choosing another primary category of the group' do
+      other = create(:catalog_goods_group_category, goods_group: goods.goods_group).category
+      changed_at = 1.hour.from_now.change(usec: 0)
+      travel_to(changed_at) { choose_primary(goods.goods_group, other) }
 
       refresh
 

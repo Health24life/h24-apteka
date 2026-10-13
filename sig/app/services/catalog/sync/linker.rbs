@@ -25,6 +25,8 @@ class Catalog::Sync::Linker
   # Records of different models under one key space; the generic methods give each lookup its type back.
   @records: Hash[[String, String], untyped]
 
+  attr_reader provider: Provider
+
   def initialize: (Provider provider, ?now: ActiveSupport::TimeWithZone) -> void
   def sync: [R < ActiveRecord::Base] (_Model[R] model, String | Integer external_id, Catalog::Sync::attributes attributes) ?{ (R record) -> void } -> R
   def find: [R < ActiveRecord::Base] (_Model[R] model, String | Integer external_id) -> R?

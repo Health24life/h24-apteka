@@ -11,6 +11,8 @@ class Catalog::Sync::Savers::GoodsGroup
   def guard: [T] (Pharmapoint::GoodsGroup item) { () -> T } -> T?
   def entry: (Pharmapoint::GoodsGroup item) -> Catalog::Sync::BulkSave::Entry
   def save_categories: (Catalog::Goods::Group group, Array[Pharmapoint::GroupCategory] categories) -> void
+  def link_categories: (Catalog::Goods::Group group, Array[Integer] ids) -> void
+  def record_dropped_primary: (Catalog::Goods::Group group, Catalog::Category dropped) -> void
   def producer: (Pharmapoint::Producer? record) -> Catalog::Producer?
   def goods_name: (Pharmapoint::GoodsName? record) -> Catalog::Goods::Name?
   def atc_class: (Pharmapoint::AtcClass? record) -> Catalog::AtcClass?

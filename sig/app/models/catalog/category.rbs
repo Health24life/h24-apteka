@@ -10,4 +10,5 @@ class Catalog::Category
 
   def name_uk: () -> String?
   def shown_goods?: () -> bool
+  def branch_name: () -> String
 end
