@@ -1,1 +1,4 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# The API and admin host: no page here is for search results. The section's pages and their robots.txt live on the
+# front's host, which also proxies the sitemap from here.
+User-agent: *
+Disallow: /

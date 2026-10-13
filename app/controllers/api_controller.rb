@@ -2,13 +2,9 @@
 
 # Base of the public API the front calls. A request without a token is served as a guest; a token that is there but
 # expired or invalid is refused, so a client never silently drops to guest. The token is read from the Authorization
-# header only: the API takes no cookies. Search engines are told not to index any answer.
-class Api::V1::BaseController < ActionController::API
+# header only: the API takes no cookies.
+class ApiController < ActionController::API
   include H24Auth::SessionContext
-
-  ROBOTS = 'noindex, follow'
-
-  after_action { response.set_header('X-Robots-Tag', ROBOTS) }
 
   private
 

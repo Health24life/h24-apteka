@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::V1::Seo::PagesController < Api::V1::BaseController
+class Api::V1::Seo::PagesController < ApiController
   PATH_LIMIT = 2048
 
   def show

@@ -45,6 +45,10 @@ module H24Apteka
 
     config.active_job.queue_adapter = :sidekiq
 
+    # Nothing this host serves is for search results: the public pages live on the front's host. robots.txt closes the
+    # host to crawling; this header keeps out of the index an address a crawler reached anyway.
+    config.action_dispatch.default_headers['X-Robots-Tag'] = 'noindex, follow'
+
     config.generators do |g|
       g.orm :active_record
       g.test_framework :rspec

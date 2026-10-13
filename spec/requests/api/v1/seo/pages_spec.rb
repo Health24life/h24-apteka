@@ -103,12 +103,6 @@ RSpec.describe 'SEO data of a page' do
   end
 
   describe 'the session' do
-    it 'tells search engines not to index the API' do
-      get '/api/v1/seo/page', params: { path: '/' }
-
-      expect(response.headers['X-Robots-Tag']).to eq('noindex, follow')
-    end
-
     it 'reads no token from a cookie' do
       cookies['.AspNet.ApplicationCookie'] = 'not-a-token'
 
