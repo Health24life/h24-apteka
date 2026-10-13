@@ -21,7 +21,18 @@ RSpec.describe Seo::Templates::Defaults do
     expect(described_class.call).to eq([])
   end
 
-  it 'writes texts that pass the checks of a template' do
-    expect(described_class::TEXTS.keys).to match_array(Seo::Template.page_types.values)
+  it 'takes the wording from the Ukrainian locale', :aggregate_failures do
+    described_class.call
+
+    expect(Seo::Template.find_by(page_type: 'goods').title_uk).to eq('{name} {dosage} — інструкція із застосування')
+    expect(Seo::Template.find_by(page_type: 'cart').h1_uk).to eq('Кошик')
+  end
+
+  it 'has wording for every page type in the locale' do
+    missing = Seo::Template.page_types.values.product(Seo::Template::TEXTS).reject do |page_type, text|
+      I18n.exists?(:"seo.default_templates.#{page_type}.#{text}", :uk)
+    end
+
+    expect(missing).to be_empty
   end
 end
