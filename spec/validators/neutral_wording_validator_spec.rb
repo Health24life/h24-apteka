@@ -42,8 +42,9 @@ RSpec.describe NeutralWordingValidator do
     expect(text.errors).to be_added(:title, :not_neutral, words: 'купити, ціною')
   end
 
-  it 'follows the words from the settings' do
-    allow(Seo::Config).to receive(:current).and_return(Seo::Config.new(forbidden_words: %w[дешево]))
+  it 'follows the words of the locale' do
+    allow(I18n).to receive(:t).and_call_original
+    allow(I18n).to receive(:t).with('seo.forbidden_words', locale: :uk).and_return(%w[дешево])
 
     expect(valid?('Дешево і швидко')).to be(false)
   end

@@ -7,16 +7,15 @@ RSpec.describe Seo::Config do
 
   it 'falls back to the defaults when the environment says nothing', :aggregate_failures do
     expect(config).to have_attributes(front_base_url: nil, filter_params: [], sitemap_dir: nil, sitemap_storage: 'file',
-                                      forbidden_words: described_class::FORBIDDEN_WORDS, redirect_ttl: 3.months)
+                                      redirect_ttl: 3.months)
   end
 
   it 'reads every setting from the environment', :aggregate_failures do
     env = { 'APTEKA_FRONT_BASE_URL' => 'https://apteka.h24.ua/', 'SEO_FILTER_PARAMS' => ' Form, brand ,,',
-            'SEO_FORBIDDEN_WORDS' => 'Дешево', 'SEO_REDIRECT_TTL_MONTHS' => '6', 'SEO_SITEMAP_DIR' => '/data/sitemaps' }
+            'SEO_REDIRECT_TTL_MONTHS' => '6', 'SEO_SITEMAP_DIR' => '/data/sitemaps' }
 
     expect(config(env)).to have_attributes(front_base_url: 'https://apteka.h24.ua', filter_params: %w[form brand],
-                                           forbidden_words: [ 'дешево' ], redirect_ttl: 6.months,
-                                           sitemap_dir: '/data/sitemaps')
+                                           redirect_ttl: 6.months, sitemap_dir: '/data/sitemaps')
   end
 
   it 'reads the bucket of the sitemap from the environment' do

@@ -37,8 +37,6 @@ PHARMAPOINT_LOG_RETENTION_OTHER_DAYS = "7"
 APTEKA_FRONT_BASE_URL = "http://localhost:3000"
 # Query parameters of a category page that filter the list (comma-separated); such a page is not indexed.
 SEO_FILTER_PARAMS = ""
-# Words a meta tag template must not contain (comma-separated); empty keeps the built-in list.
-SEO_FORBIDDEN_WORDS = ""
 SEO_REDIRECT_TTL_MONTHS = "3"
 SEO_REDIRECT_CLEANUP_CRON = "40 4 * * *"
 # Where the sitemap goes: `file` writes it to SEO_SITEMAP_DIR/sitemaps/ (a volume mounted as public/ is served at

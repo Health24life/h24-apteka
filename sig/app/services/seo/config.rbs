@@ -17,13 +17,11 @@ class Seo::Config
 
   SITEMAP_STORAGES: Array[String]
 
-  FORBIDDEN_WORDS: Array[String]
 
   @current: Seo::Config?
 
   @front_base_url: String?
   @filter_params: Array[String]
-  @forbidden_words: Array[String]
   @redirect_ttl: ActiveSupport::Duration
   @sitemap_storage: String
   @sitemap_dir: String?
@@ -31,7 +29,6 @@ class Seo::Config
 
   attr_reader front_base_url: String?
   attr_reader filter_params: Array[String]
-  attr_reader forbidden_words: Array[String]
   attr_reader redirect_ttl: ActiveSupport::Duration
   attr_reader sitemap_storage: String
   attr_reader sitemap_dir: String?
@@ -44,7 +41,7 @@ class Seo::Config
   def self.sitemap: (Pharmapoint::Config::_Env env) -> { sitemap_storage: String, sitemap_dir: String?, sitemap_s3: S3 }
   def self.s3: (Pharmapoint::Config::_Env env) -> S3
 
-  def initialize: (?front_base_url: String?, ?filter_params: Array[String], ?forbidden_words: Array[String],
+  def initialize: (?front_base_url: String?, ?filter_params: Array[String],
                    ?redirect_ttl: ActiveSupport::Duration, ?sitemap_storage: String, ?sitemap_dir: String?,
                    ?sitemap_s3: S3?) -> void
   def front_base_url!: () -> String

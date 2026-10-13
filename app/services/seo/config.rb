@@ -9,14 +9,7 @@ class Seo::Config
 
   SITEMAP_STORAGES = %w[file s3].freeze
 
-  # Every form of "buy" and "price" a merchant would write; a word that only starts the same, like «цінний», is fine.
-  FORBIDDEN_WORDS = %w[
-    купити купіть купуйте купи купую куплю купувати купівля купівлі купівлю купівлею
-    ціна ціни ціні ціну ціною цін цінам цінами цінах
-  ].freeze
-
-  attr_reader :front_base_url, :filter_params, :forbidden_words, :redirect_ttl, :sitemap_storage, :sitemap_dir,
-              :sitemap_s3
+  attr_reader :front_base_url, :filter_params, :redirect_ttl, :sitemap_storage, :sitemap_dir, :sitemap_s3
 
   def self.current = @current ||= from_env
 
@@ -26,7 +19,6 @@ class Seo::Config
     new(
       front_base_url: env.fetch('APTEKA_FRONT_BASE_URL', nil).presence&.delete_suffix('/'),
       filter_params: list(env.fetch('SEO_FILTER_PARAMS', nil)),
-      forbidden_words: list(env.fetch('SEO_FORBIDDEN_WORDS', nil)).presence || FORBIDDEN_WORDS,
       redirect_ttl: Integer(env.fetch('SEO_REDIRECT_TTL_MONTHS', 3)).months,
       **sitemap(env)
     )
@@ -50,11 +42,10 @@ class Seo::Config
   private_class_method :sitemap, :s3
 
   # rubocop:disable-next Metrics/ParameterLists -- a settings object takes every setting as a keyword.
-  def initialize(front_base_url: nil, filter_params: [], forbidden_words: FORBIDDEN_WORDS, redirect_ttl: 3.months,
-                 sitemap_storage: 'file', sitemap_dir: nil, sitemap_s3: nil)
+  def initialize(front_base_url: nil, filter_params: [], redirect_ttl: 3.months, sitemap_storage: 'file',
+                 sitemap_dir: nil, sitemap_s3: nil)
     @front_base_url = front_base_url
     @filter_params = filter_params
-    @forbidden_words = forbidden_words
     @redirect_ttl = redirect_ttl
     @sitemap_storage = sitemap_storage
     @sitemap_dir = sitemap_dir
