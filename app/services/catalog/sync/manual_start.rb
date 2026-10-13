@@ -4,7 +4,7 @@
 # never a second run of a kind that is running.
 class Catalog::Sync::ManualStart
   def self.call(kind, env: ENV)
-    return :disabled unless Pharmapoint::Schedule.sync_enabled?(kind, env)
+    return :disabled unless Catalog::Sync::Cron.enabled?(kind, env)
 
     Catalog::Sync::Starter.call(kind) ? :started : :already_running
   end

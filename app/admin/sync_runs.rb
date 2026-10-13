@@ -67,7 +67,7 @@ ActiveAdmin.register SyncRun do
   action_item :start, only: :index do
     buttons = SyncRun.kinds.keys.map do |kind|
       label = t('admin.sync_runs.start', kind: t("admin.sync_runs.kinds.#{kind}"))
-      if Pharmapoint::Schedule.sync_enabled?(kind)
+      if Catalog::Sync::Cron.enabled?(kind)
         button_to label, start_admin_sync_runs_path(kind:), class: 'action-item-button', form: { class: 'inline' }
       else
         tag.span label, class: 'action-item-button opacity-50 cursor-not-allowed', aria: { disabled: true },
