@@ -1,5 +1,9 @@
 uk:
   seo:
+    breadcrumbs:
+      home: Головна
+      cart: Кошик
+      order: Замовлення
     # Every form of "buy" and "price" a meta tag of a medicine must not use (advertising law); a word that only starts
     # the same, like «цінний», is fine. The lawyer extends the list here.
     forbidden_words:
@@ -45,3 +49,8 @@ uk:
         title: Замовлення — Аптека Health24
         description: Бронювання товарів в аптеці.
         h1: Замовлення
+  errors:
+    messages:
+      not_neutral: "містить недопустимі для ліків формулювання: %{words}"
+      unknown_placeholders: "містить невідомі підстановки: %{placeholders}"
+      general_template_required: "загальний шаблон типу сторінки не можна видалити"
