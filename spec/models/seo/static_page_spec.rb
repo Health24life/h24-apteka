@@ -37,6 +37,10 @@ RSpec.describe Seo::StaticPage do
     expect(page.errors.details[:slug]).to include(error: :reserved)
   end
 
+  it 'refuses the slug of the route of the filters' do
+    expect(build(:seo_static_page, slug: 'dobirka')).not_to be_valid
+  end
+
   it 'gives a name that transliterates to a route of the section another slug' do
     expect(create(:seo_static_page, name_uk: 'Tovar').slug).to eq('tovar-2')
   end

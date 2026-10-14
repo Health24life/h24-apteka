@@ -17,6 +17,7 @@ class Seo::Pages::Resolve
       case record
       when Catalog::Goods then :goods
       when Catalog::Category then :category
+      when Seo::Filter then :filter
       else record.home? ? :home : :static
       end
     end
@@ -39,12 +40,13 @@ class Seo::Pages::Resolve
     %r{\A/\z} => :home,
     %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:category)}/([^/]+)\z}i => :category,
     %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:goods)}/([^/]+)\z}i => :goods,
+    %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:filter)}/([^/]+)\z}i => :filter,
     %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:cart)}\z}i => :cart,
     %r{\A/#{Seo::Pages::Path::SEGMENTS.fetch(:order)}/([^/]+)\z}i => :order,
     # Last: a single segment that no route above takes is the slug of a static page.
     %r{\A/([^/]+)\z}i => :static
   }.freeze
-  MODELS = { category: Catalog::Category, goods: Catalog::Goods, static: Seo::StaticPage }.freeze
+  MODELS = { category: Catalog::Category, goods: Catalog::Goods, filter: Seo::Filter, static: Seo::StaticPage }.freeze
 
   def self.call(path, config: Seo::Config.current) = new(path, config).call
 
@@ -137,7 +139,7 @@ class Seo::Pages::Resolve
       return 410 if record.withdrawn_with_group?
 
       404 unless record.shown?
-    when Seo::StaticPage then 404 unless record.home? || record.published?
+    when Seo::StaticPage, Seo::Filter then record.hidden_status
     end
   end
 

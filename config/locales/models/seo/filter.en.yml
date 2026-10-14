@@ -1,0 +1,8 @@
+en:
+  activerecord:
+    errors:
+      models:
+        seo/filter:
+          attributes:
+            published:
+              removed: a removed filter cannot be published

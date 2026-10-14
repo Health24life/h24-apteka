@@ -8,7 +8,7 @@ class Seo::Override < ApplicationRecord
   include Seo::PageHistory
 
   # The records that have a page of their own. A new kind of page is added here; the database does not list them.
-  TARGET_TYPES = %w[Catalog::Goods Catalog::Category Seo::StaticPage].freeze
+  TARGET_TYPES = %w[Catalog::Goods Catalog::Category Seo::StaticPage Seo::Filter].freeze
   TEXTS = %i[title description h1].freeze
 
   # `auto` follows the rules of the page; `index` and `noindex` force the answer.

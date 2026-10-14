@@ -1,0 +1,21 @@
+class Seo::Filter
+  include Seo::PageHistory
+  extend Seo::PageHistory::ClassMethods
+  include Translatable
+  extend Translatable::ClassMethods
+  extend Mobility
+  include Catalog::Sluggable
+
+  PARAMS: Hash[String, singleton(ApplicationRecord)]
+
+  def name: () -> String?
+  def name_uk: () -> String?
+
+  def removed?: () -> bool
+  def hidden_status: () -> Integer?
+  def remove!: () -> void
+
+  private
+
+  def removed_is_unpublished: () -> void
+end

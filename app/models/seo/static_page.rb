@@ -34,6 +34,9 @@ class Seo::StaticPage < ApplicationRecord
 
   def own_slug? = !home?
 
+  # The state of its page while it is off the section, or nil while it is on: the home page always is.
+  def hidden_status = (404 unless home? || published?)
+
   private
 
   def reserved_slugs = Seo::Pages::Path::SEGMENTS.values

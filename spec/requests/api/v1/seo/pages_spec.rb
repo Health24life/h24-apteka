@@ -16,7 +16,8 @@ RSpec.describe 'SEO data of a page' do
       description 'Built from the Health24 database only: the partner is never asked, and the answer is the same ' \
                   'for a guest and a signed-in user. The state of the page is in `status`; the HTTP status is 200 ' \
                   'for any path that could be read. A single segment that no other route takes is the address of a ' \
-                  'static page, whose text comes in `content`.'
+                  'static page, whose text comes in `content`. `/dobirka/<slug>` is the page of an SEO filter, a ' \
+                  'named selection of goods: 404 until it is published, 410 once it is removed.'
       produces 'application/json'
       parameter name: :path, in: :query, required: true, schema: { type: :string, maxLength: 2048 },
                 example: '/katalog/liky?page=2', description: 'Path of the front page as in the browser, with its query'
@@ -54,6 +55,39 @@ RSpec.describe 'SEO data of a page' do
           expect(response.parsed_body).to include(
             'status' => 200, 'h1' => 'Умови сервісу', 'content' => '<p>Бронювання без передоплати.</p>'
           )
+        end
+      end
+
+      response '200', 'a published filter' do
+        schema '$ref' => '#/components/schemas/seo_page'
+        let(:path) { '/dobirka/vitaminy-dlia-ditei' }
+
+        let(:breadcrumbs) do
+          [ { 'name' => 'Головна', 'path' => '/' }, { 'name' => 'Вітаміни', 'path' => '/katalog/vitaminy' },
+            { 'name' => 'Вітаміни для дітей', 'path' => '/dobirka/vitaminy-dlia-ditei' } ]
+        end
+
+        before do
+          create(:seo_filter, :published, name_uk: 'Вітаміни для дітей',
+                                          category: create(:catalog_category, name_uk: 'Вітаміни', slug: 'vitaminy'))
+        end
+
+        run_test! do
+          expect(response.parsed_body).to include(
+            'status' => 200, 'title' => 'Вітаміни для дітей — добірка Аптеки Health24', 'h1' => 'Вітаміни для дітей',
+            'robots' => 'index, follow', 'breadcrumbs' => breadcrumbs, 'content' => nil
+          )
+        end
+      end
+
+      response '200', 'a removed filter' do
+        schema '$ref' => '#/components/schemas/seo_page'
+        let(:path) { '/dobirka/dlia-skhudnennia' }
+
+        before { create(:seo_filter, :published, slug: 'dlia-skhudnennia').remove! }
+
+        run_test! do
+          expect(response.parsed_body).to include('status' => 410, 'robots' => 'noindex, nofollow', 'title' => nil)
         end
       end
 

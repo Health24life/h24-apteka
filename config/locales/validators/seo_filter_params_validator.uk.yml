@@ -1,0 +1,7 @@
+uk:
+  errors:
+    messages:
+      not_an_object: має бути набором параметрів
+      unknown_param: 'містять невідомий параметр %{param}'
+      invalid_param_values: 'параметра %{param} мають бути непорожнім переліком ідентифікаторів без повторів'
+      missing_param_values: 'параметра %{param} посилаються на записи, яких немає в каталозі'

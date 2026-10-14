@@ -23,6 +23,7 @@ RSpec.describe Seo::Pages::Resolve do
     it 'finds no page for a path outside the scheme', :aggregate_failures do
       expect(resolve('/apteky/kyiv').status).to eq(404)
       expect(resolve('/katalog').status).to eq(404)
+      expect(resolve('/dobirka').status).to eq(404)
       expect(resolve('/tovar/nurofen/instruktsiia').status).to eq(404)
     end
 
@@ -224,6 +225,43 @@ RSpec.describe Seo::Pages::Resolve do
     end
   end
 
+  describe 'a filter page' do
+    let(:filter) { create(:seo_filter, :published, name_uk: 'Вітаміни для дітей') }
+
+    it 'is found by its slug once it is published' do
+      expect(resolve("/dobirka/#{filter.slug}"))
+        .to have_attributes(status: 200, page: have_attributes(type: :filter, record: filter))
+    end
+
+    it 'is not found while it is not published' do
+      expect(resolve("/dobirka/#{create(:seo_filter).slug}")).to have_attributes(status: 404, location: nil)
+    end
+
+    it 'is not found by a slug no filter has' do
+      expect(resolve('/dobirka/nema-takoi').status).to eq(404)
+    end
+
+    it 'is gone once the filter is removed' do
+      filter.remove!
+
+      expect(resolve("/dobirka/#{filter.slug}").status).to eq(410)
+    end
+
+    it 'redirects its old slug to the current one' do
+      filter.update!(slug: 'vitaminy-ditiam')
+
+      expect(resolve('/dobirka/vitaminy-dlia-ditei')).to moved_to('/dobirka/vitaminy-ditiam')
+    end
+
+    it 'moves an address in another form to the normal one and ignores the query', :aggregate_failures do
+      filter
+
+      expect(resolve('/Dobirka/Vitaminy-Dlia-Ditei/')).to moved_to('/dobirka/vitaminy-dlia-ditei')
+      expect(resolve('/dobirka/vitaminy-dlia-ditei?form=tabletky&page=2'))
+        .to have_attributes(status: 200, location: nil, page: have_attributes(filters: {}, page_number: nil))
+    end
+  end
+
   describe 'a redirect an editor set' do
     def redirect(page_type, slug, to) = create(:seo_redirect, manual: true, page_type:, slug:, redirectable: to)
 
@@ -279,6 +317,21 @@ RSpec.describe Seo::Pages::Resolve do
 
       expect(resolve('/katalog/stara?page=2&form=tabletky')).to moved_to('/katalog/zneboliuvalni?form=tabletky&page=2')
       expect(resolve('/katalog/tovarna?page=2')).to moved_to('/tovar/nurofen')
+    end
+
+    it 'leads from the slug of a removed filter' do
+      create(:seo_filter, :published, slug: 'dlia-skhudnennia').remove!
+      redirect('filter', 'dlia-skhudnennia', category)
+
+      expect(resolve('/dobirka/dlia-skhudnennia')).to moved_to('/katalog/zneboliuvalni')
+    end
+
+    it 'stops leading to a filter that is no longer published' do
+      filter = create(:seo_filter, :published)
+      redirect('goods', 'staryi', filter)
+      filter.update!(published: false)
+
+      expect(resolve('/tovar/staryi').status).to eq(404)
     end
 
     it 'leaves an automatic redirect leading to its record wherever that is' do

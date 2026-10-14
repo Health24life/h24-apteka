@@ -17,6 +17,6 @@ class Seo::Pages::Breadcrumbs
 
   def records: (Seo::Pages::Resolve::record? record) -> Array[Crumb]
   def branch: (Catalog::Category? category) -> Array[Crumb]
-  def of: (Catalog::Goods | Catalog::Category | Seo::StaticPage record) -> Crumb
+  def of: (Seo::Pages::Resolve::record record) -> Crumb
   def crumb: (Symbol key, String path) -> Crumb
 end

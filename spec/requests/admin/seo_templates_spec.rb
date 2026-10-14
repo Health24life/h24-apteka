@@ -109,6 +109,14 @@ RSpec.describe 'Admin SEO templates' do
     end
   end
 
+  it 'offers the page type of filters and describes its placeholders', :aggregate_failures do
+    get new_admin_seo_template_path
+    expect(response.body).to include('<option value="filter">Добірка</option>')
+
+    get edit_admin_seo_template_path(Seo::Template.find_by(page_type: 'filter'))
+    expect(response.body).to include('{name}</code> — назва добірки', '{category}</code> — категорія')
+  end
+
   describe 'the preview of a page without records' do
     let(:cart) { Seo::Template.find_by(page_type: 'cart') }
     let(:long_title) { "Кошик #{'дуже ' * 20}довгий" }

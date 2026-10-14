@@ -3,7 +3,7 @@
 # Builds the paths of the front's pages. The front's routes must match these segments: the backend recognises a page,
 # builds breadcrumbs, redirects and the sitemap by them. Changing one after publication needs redirects of its own.
 class Seo::Pages::Path
-  SEGMENTS = { category: 'katalog', goods: 'tovar', cart: 'cart', order: 'order' }.freeze
+  SEGMENTS = { category: 'katalog', goods: 'tovar', filter: 'dobirka', cart: 'cart', order: 'order' }.freeze
 
   def initialize(config = Seo::Config.current)
     @config = config
@@ -19,12 +19,15 @@ class Seo::Pages::Path
 
   def goods(slug) = "#{prefix}/#{SEGMENTS.fetch(:goods)}/#{slug}"
 
+  def filter(slug) = "#{prefix}/#{SEGMENTS.fetch(:filter)}/#{slug}"
+
   def static(slug) = "#{prefix}/#{slug}"
 
   def record(record)
     case record
     when Catalog::Goods then goods(record.slug)
     when Catalog::Category then category(record.slug)
+    when Seo::Filter then filter(record.slug)
     when Seo::StaticPage then record.home? ? home : static(record.slug)
     end
   end

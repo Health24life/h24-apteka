@@ -17,9 +17,12 @@ class Seo::Pages::Meta
         h1: by_hand(override, :h1) || generated.h1, seo_text: override&.seo_text.presence)
   end
 
-  # What the template gives a page, as if nothing were set by hand.
+  # What the template gives a page, as if nothing were set by hand. A filter takes its own name for a text its template
+  # leaves empty, so its page always has a heading.
   def self.generated(page)
-    title, description, h1 = generate(template_for(page), values_for(page.record), page.page_number.to_i)
+    values = values_for(page.record)
+    texts = generate(template_for(page), values, page.page_number.to_i)
+    title, description, h1 = page.record.is_a?(Seo::Filter) ? named(texts, values['name'].to_s) : texts
     new(title:, description:, h1:, seo_text: nil)
   end
 
@@ -46,19 +49,29 @@ class Seo::Pages::Meta
 
   def self.values_for(record)
     case record
-    when Catalog::Goods
-      { 'name' => record.name_uk, 'inn' => record.mnn, 'producer' => record.goods_group.producer&.name,
-        'form' => record.form&.name_uk.presence || record.release_form, 'dosage' => record.dosage }
+    when Catalog::Goods then goods_values(record)
     when Catalog::Category, Seo::StaticPage then { 'name' => record.name_uk }
+    when Seo::Filter then { 'name' => record.name_uk, 'category' => record.category&.name_uk }
     else {}
     end
+  end
+
+  def self.goods_values(goods)
+    { 'name' => goods.name_uk, 'inn' => goods.mnn, 'producer' => goods.goods_group.producer&.name,
+      'form' => goods.form&.name_uk.presence || goods.release_form, 'dosage' => goods.dosage }
+  end
+
+  def self.named(texts, name)
+    title, description, h1 = texts
+    [ title.presence || Seo::Templates::Truncate.call(name, TITLE_LIMIT),
+      description.presence || Seo::Templates::Truncate.call(name, DESCRIPTION_LIMIT), h1.presence || name ]
   end
 
   def self.limited(text, values, limit, suffix)
     Seo::Templates::Truncate.call(Seo::Templates::Render.call(text, values), limit - suffix.length) + suffix
   end
 
-  private_class_method :by_hand, :generate, :limited
+  private_class_method :by_hand, :generate, :goods_values, :named, :limited
 
   def initialize(title:, description:, h1:, seo_text:)
     @title = title

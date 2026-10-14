@@ -1,0 +1,7 @@
+en:
+  errors:
+    messages:
+      not_an_object: must be a set of parameters
+      unknown_param: 'have an unknown parameter %{param}'
+      invalid_param_values: 'of the parameter %{param} must be a non-empty list of ids without repeats'
+      missing_param_values: 'of the parameter %{param} point at records that are not in the catalog'
