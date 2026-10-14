@@ -1,0 +1,24 @@
+# What the concern asks of the model's class: the list of attributes it keeps.
+interface _SanitizedHtmlAttributes
+  def sanitized_html_attributes: () -> Array[Symbol]
+  def sanitized_html_attributes=: (Array[Symbol] value) -> Array[Symbol]
+end
+
+module Seo::SanitizedHtml : ActiveRecord::Base
+  extend ActiveSupport::Concern
+
+  @html_sanitized: bool
+
+  def self.included: (?Module? base) { () [self: singleton(ActiveRecord::Base)] -> void } -> void
+
+  def sanitized_html_attributes: () -> Array[Symbol]
+  def html_sanitized?: () -> bool
+
+  private
+
+  def sanitize_html: () -> void
+
+  module ClassMethods : _SanitizedHtmlAttributes
+    def sanitized_html: (*Symbol attributes) -> void
+  end
+end

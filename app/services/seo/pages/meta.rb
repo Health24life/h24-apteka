@@ -41,7 +41,7 @@ class Seo::Pages::Meta
     when Catalog::Goods
       { 'name' => record.name_uk, 'inn' => record.mnn, 'producer' => record.goods_group.producer&.name,
         'form' => record.form&.name_uk.presence || record.release_form, 'dosage' => record.dosage }
-    when Catalog::Category then { 'name' => record.name_uk }
+    when Catalog::Category, Seo::StaticPage then { 'name' => record.name_uk }
     else {}
     end
   end
@@ -50,7 +50,7 @@ class Seo::Pages::Meta
     Seo::Templates::Truncate.call(Seo::Templates::Render.call(text, values), limit - suffix.length) + suffix
   end
 
-  private_class_method :by_hand, :generate, :template_for, :values_for, :limited
+  private_class_method :by_hand, :generate, :template_for, :limited
 
   def initialize(title:, description:, h1:, seo_text:)
     @title = title

@@ -7,6 +7,9 @@
    lives under app/assets/tailwind/ which is excluded from Propshaft, so it is never served raw. */
 @import "./tom-select.min.css";
 
+/* Trix editor styles for the `as: :rich_text` inputs (app/javascript/admin/rich_text.js). */
+@import "./trix.css";
+
 /* Dark-theme overrides for Tom Select. The vendored tom-select.min.css is the light theme (white
    control + dropdown), which clashes with ActiveAdmin's dark mode. ActiveAdmin toggles dark mode via
    `html.dark`, so everything here is scoped under `.dark` — light mode keeps the stock styling.
@@ -86,4 +89,59 @@
    width override, so data columns keep their natural widths. */
 .data-table-resource-actions {
   justify-content: flex-end;
+}
+
+/* Trix inside the admin forms: the text buttons for h2/h3, the hint under the link field, and the dark theme. */
+trix-toolbar .trix-button--text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0 0.6em;
+}
+trix-toolbar .trix-dialog__hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+trix-editor.trix-content {
+  min-height: 12rem;
+  background: #fff;
+}
+trix-editor.trix-content h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+trix-editor.trix-content h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+/* Tailwind resets list markers; the text shows them as the front will. */
+.trix-content ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+.trix-content ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.trix-content a {
+  text-decoration: underline;
+}
+.dark trix-editor.trix-content {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.dark trix-toolbar .trix-button-group {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.dark trix-toolbar .trix-button {
+  background: #1f2937;
+  color: #fff;
+}
+.dark trix-toolbar .trix-button--icon::before {
+  filter: invert(1);
+}
+.dark trix-toolbar .trix-dialog {
+  background: #1f2937;
+  color: #fff;
 }

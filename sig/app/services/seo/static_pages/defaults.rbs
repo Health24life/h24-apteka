@@ -1,0 +1,3 @@
+class Seo::StaticPages::Defaults
+  def self.call: () -> bool
+end

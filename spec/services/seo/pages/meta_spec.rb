@@ -59,4 +59,28 @@ RSpec.describe Seo::Pages::Meta do
 
     expect([ meta.title, meta.description, meta.h1, meta.seo_text ].compact.join(' ')).not_to match(/ціна|грн|наявн/i)
   end
+
+  describe 'a static page' do
+    let(:static_page) { create(:seo_static_page, :published, name_uk: 'Умови сервісу') }
+
+    before do
+      create(:seo_template, page_type: 'static', title: '{name} — Аптека Health24', description: '{name}: правила',
+                            h1: '{name}')
+    end
+
+    it 'fills the static page template with the name of the page', :aggregate_failures do
+      meta = described_class.call(page(static_page, type: :static))
+
+      expect(meta.title).to eq('Умови сервісу — Аптека Health24')
+      expect(meta.h1).to eq('Умови сервісу')
+    end
+
+    it 'takes the meta tags of the home page set by hand' do
+      create(:seo_template, page_type: 'home', title: 'Аптека', description: 'Аптека', h1: 'Аптека')
+      home = create(:seo_static_page, :home)
+      create(:seo_override, target: home, title_uk: 'Аптека Health24 — бронювання ліків')
+
+      expect(described_class.call(page(home, type: :home)).title).to eq('Аптека Health24 — бронювання ліків')
+    end
+  end
 end

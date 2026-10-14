@@ -36,4 +36,19 @@ RSpec.describe Seo::Pages::Describe do
 
     expect(a_request(:any, /pharmapoint/)).not_to have_been_made
   end
+
+  it 'gives the text of a static page', :aggregate_failures do
+    create(:seo_static_page, :published, name_uk: 'Умови сервісу', content_uk: '<p>Бронювання без передоплати.</p>')
+
+    expect(described_class.call('/umovy-servisu'))
+      .to have_attributes(status: 200, content: '<p>Бронювання без передоплати.</p>', h1: 'Умови сервісу')
+  end
+
+  it 'gives no text to the other pages', :aggregate_failures do
+    create(:catalog_goods, slug: 'nurofen')
+    create(:seo_static_page, :home)
+
+    expect(described_class.call('/tovar/nurofen').content).to be_nil
+    expect(described_class.call('/').content).to be_nil
+  end
 end

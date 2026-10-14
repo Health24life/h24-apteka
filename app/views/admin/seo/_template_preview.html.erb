@@ -1,0 +1,14 @@
+<dl class="seo-preview">
+  <% { title: preview.title, description: preview.description, h1: preview.h1 }.each do |field, text| %>
+    <dt><%= Seo::Template.human_attribute_name(field) %></dt>
+    <dd>
+      <div><%= text.value %></div>
+      <% if text.limit %>
+        <p class="inline-hints"><%= t("admin.seo_templates.length", length: text.length, limit: text.limit) %></p>
+      <% end %>
+      <% if text.cut? %>
+        <p class="inline-errors"><%= t("admin.seo_templates.cut", limit: text.limit) %> <%= text.value %></p>
+      <% end %>
+    </dd>
+  <% end %>
+</dl>

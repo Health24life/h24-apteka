@@ -1,0 +1,31 @@
+class Seo::Redirects::Manual
+  type field = :source | :target
+  type target = Catalog::Goods | Catalog::Category | Seo::StaticPage
+
+  SOURCE_TYPES: Array[Symbol]
+  TARGET_MODELS: Array[singleton(Catalog::Goods) | singleton(Catalog::Category) | singleton(Seo::StaticPage)]
+
+  class Result < Data
+    attr_reader redirect: Seo::Redirect?
+    attr_reader errors: Hash[Symbol, Symbol]
+
+    def self.new: (redirect: Seo::Redirect?, errors: Hash[Symbol, Symbol]) -> instance
+    def ok?: () -> bool
+  end
+
+  @config: Seo::Config
+
+  def self.call: (source: String?, target: String?, ?redirect: Seo::Redirect?, ?save: bool, ?config: Seo::Config) -> Result
+
+  def initialize: (Seo::Config config) -> void
+  def call: (source: String?, target: String?, redirect: Seo::Redirect?, save: bool) -> Result
+
+  private
+
+  def from: (String? source, Hash[Symbol, Symbol] errors) -> Seo::Redirect?
+  def source_error: (Seo::Pages::Resolve::Result result) -> Symbol?
+  def target_record: (String? target, Hash[Symbol, Symbol] errors) -> untyped
+  def ending: (String path) -> Seo::Pages::Resolve::Result
+  def refuse: (Hash[Symbol, Symbol] errors, Symbol field, Symbol reason) -> nil
+  def store: (Seo::Redirect redirect) -> Result
+end

@@ -1,0 +1,13 @@
+panel t('admin.seo_history.title') do
+  versions = (local_assigns[:versions] || record.page_versions).newest_first.includes(:author).limit(50)
+  if versions.empty?
+    para t('admin.seo_history.none')
+  else
+    table_for versions do
+      column(t('admin.seo_history.at')) { |version| l(version.created_at, format: :long) }
+      column(t('admin.seo_history.author')) { |version| seo_version_author(version) }
+      column(t('admin.seo_history.object')) { |version| seo_version_object(version) }
+      column(t('admin.seo_history.changes')) { |version| render 'admin/seo_changes', version: }
+    end
+  end
+end

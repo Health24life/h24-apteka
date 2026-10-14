@@ -7,10 +7,12 @@ RSpec.describe Seo::Redirects::Cache do
 
   def ttl(slug) = described_class.redis.ttl(described_class.key('goods', slug))
 
+  def lead_to_goods = have_attributes(type: 'Catalog::Goods', id: goods.id, manual: false)
+
   it 'holds an old slug as soon as the change is committed' do
     goods.update!(slug: 'nurofen-forte')
 
-    expect(described_class.target('goods', 'nurofen')).to eq([ 'Catalog::Goods', goods.id ])
+    expect(described_class.target('goods', 'nurofen')).to lead_to_goods
   end
 
   it 'keeps a redirect for the rest of its period' do
@@ -33,7 +35,7 @@ RSpec.describe Seo::Redirects::Cache do
     goods.update!(slug: 'nurofen')
 
     expect(described_class.target('goods', 'nurofen')).to be_nil
-    expect(described_class.target('goods', 'nurofen-forte')).to eq([ 'Catalog::Goods', goods.id ])
+    expect(described_class.target('goods', 'nurofen-forte')).to lead_to_goods
   end
 
   it 'keeps the kinds of pages apart' do
@@ -46,7 +48,8 @@ RSpec.describe Seo::Redirects::Cache do
     category = create(:catalog_category)
     create(:seo_redirect, page_type: 'goods', slug: 'staryi', redirectable: category)
 
-    expect(described_class.target('goods', 'staryi')).to eq([ 'Catalog::Category', category.id ])
+    expect(described_class.target('goods', 'staryi'))
+      .to have_attributes(type: 'Catalog::Category', id: category.id, manual: false)
   end
 
   it 'refills itself from the table', :aggregate_failures do
@@ -55,15 +58,15 @@ RSpec.describe Seo::Redirects::Cache do
     described_class.clear
 
     expect(described_class.rebuild).to eq(1)
-    expect(described_class.target('goods', 'nurofen')).to eq([ 'Catalog::Goods', goods.id ])
+    expect(described_class.target('goods', 'nurofen')).to lead_to_goods
   end
 
   it 'finds a redirect Redis lost in the table and caches it again', :aggregate_failures do
     goods.update!(slug: 'nurofen-forte')
     described_class.clear
 
-    expect(described_class.target('goods', 'nurofen')).to eq([ 'Catalog::Goods', goods.id ])
-    expect(described_class.redis.get(described_class.key('goods', 'nurofen'))).to eq("Catalog::Goods:#{goods.id}")
+    expect(described_class.target('goods', 'nurofen')).to lead_to_goods
+    expect(described_class.redis.get(described_class.key('goods', 'nurofen'))).to eq("Catalog::Goods:#{goods.id}:0")
   end
 
   describe 'while Redis is unreachable' do
@@ -74,7 +77,7 @@ RSpec.describe Seo::Redirects::Cache do
 
     it 'saves a slug change and answers from the table', :aggregate_failures do
       expect { goods.update!(slug: 'nurofen-forte') }.not_to raise_error
-      expect(described_class.target('goods', 'nurofen')).to eq([ 'Catalog::Goods', goods.id ])
+      expect(described_class.target('goods', 'nurofen')).to lead_to_goods
       expect(Rails.error).to have_received(:report).with(an_instance_of(Redis::CannotConnectError), handled: true)
                                                    .at_least(:once)
     end
@@ -86,5 +89,20 @@ RSpec.describe Seo::Redirects::Cache do
     goods.destroy!
 
     expect(described_class.redis.get(described_class.key('goods', 'nurofen'))).to be_nil
+  end
+
+  it 'tells a redirect an editor set by hand', :aggregate_failures do
+    category = create(:catalog_category)
+    create(:seo_redirect, page_type: 'goods', slug: 'ruchna', redirectable: category, manual: true)
+
+    expect(described_class.redis.get(described_class.key('goods', 'ruchna')))
+      .to eq("Catalog::Category:#{category.id}:1")
+    expect(described_class.target('goods', 'ruchna')).to have_attributes(manual: true)
+  end
+
+  it 'reads a value written before the flag as an automatic redirect' do
+    described_class.redis.set(described_class.key('goods', 'stare'), 'Catalog::Goods:42')
+
+    expect(described_class.target('goods', 'stare')).to have_attributes(type: 'Catalog::Goods', id: 42, manual: false)
   end
 end

@@ -31,7 +31,7 @@ RSpec.configure do |config|
           },
           seo_page: {
             type: :object,
-            required: %w[status location title description h1 robots breadcrumbs seo_text],
+            required: %w[status location title description h1 robots breadcrumbs seo_text content],
             properties: {
               status: { type: :integer, enum: [ 200, 301, 404, 410 ], description: 'State of the page' },
               location: { type: :string, nullable: true, description: 'Path to redirect to, for 301 only' },
@@ -47,7 +47,9 @@ RSpec.configure do |config|
                   properties: { name: { type: :string }, path: { type: :string } }
                 }
               },
-              seo_text: { type: :string, nullable: true }
+              seo_text: { type: :string, nullable: true },
+              content: { type: :string, nullable: true,
+                         description: 'Text of a static page as HTML of the allowed tags; empty for other pages' }
             }
           }
         },

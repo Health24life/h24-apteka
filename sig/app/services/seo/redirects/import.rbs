@@ -1,0 +1,37 @@
+class Seo::Redirects::Import
+  type error = :unreadable | :columns | :empty | :too_many | :conflict
+
+  LIMIT: Integer
+  BOM: String
+  FIRST_LINE: Integer
+
+  class Result < Data
+    attr_reader created: Integer
+    attr_reader error: error?
+    attr_reader rows: Hash[Integer, Hash[Symbol, Symbol]]
+
+    def self.new: (created: Integer, error: error?, rows: Hash[Integer, Hash[Symbol, Symbol]]) -> instance
+    def ok?: () -> bool
+  end
+
+  @author: AdminUser?
+  @config: Seo::Config
+
+  def self.call: (String? content, ?author: AdminUser?, ?config: Seo::Config) -> Result
+
+  def initialize: (AdminUser? author, Seo::Config config) -> void
+  def call: (String? content) -> Result
+
+  private
+
+  def parse: (String? content) -> [ Array[String?], Array[CSV::Row] ]?
+  def check: (Array[CSV::Row] lines) -> [ Array[Seo::Redirect], Hash[Integer, Hash[Symbol, Symbol]] ]
+  def add_row: (CSV::Row row, Integer line, rows: Hash[Integer, Hash[Symbol, Symbol]], seen: Hash[String, Integer],
+               redirects: Array[Seo::Redirect]) -> void
+  def mark_duplicate: (Hash[Integer, Hash[Symbol, Symbol]] rows, Hash[String, Integer] seen, Integer line,
+                       Seo::Redirect redirect) -> void
+  def write: (Array[Seo::Redirect] redirects) -> Result
+  def redirect_row: (Seo::Redirect redirect, ActiveSupport::TimeWithZone now) -> Hash[Symbol, untyped]
+  def version_row: (Seo::Redirect redirect, ActiveSupport::TimeWithZone now) -> Hash[Symbol, untyped]
+  def failure: (error error) -> Result
+end

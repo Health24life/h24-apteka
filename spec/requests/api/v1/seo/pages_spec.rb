@@ -11,11 +11,12 @@ RSpec.describe 'SEO data of a page' do
   end
 
   path '/api/v1/seo/page' do
-    get 'Status, redirect, meta tags, robots and breadcrumbs of a page of the front' do
+    get 'Status, redirect, meta tags, robots, breadcrumbs and the text of a static page of the front' do
       tags 'SEO'
       description 'Built from the Health24 database only: the partner is never asked, and the answer is the same ' \
                   'for a guest and a signed-in user. The state of the page is in `status`; the HTTP status is 200 ' \
-                  'for any path that could be read.'
+                  'for any path that could be read. A single segment that no other route takes is the address of a ' \
+                  'static page, whose text comes in `content`.'
       produces 'application/json'
       parameter name: :path, in: :query, required: true, schema: { type: :string, maxLength: 2048 },
                 example: '/katalog/liky?page=2', description: 'Path of the front page as in the browser, with its query'
@@ -34,8 +35,40 @@ RSpec.describe 'SEO data of a page' do
         run_test! do
           expect(response.parsed_body).to include(
             'status' => 200, 'location' => nil, 'title' => 'Нурофен 200 мг — інструкція із застосування',
-            'h1' => 'Нурофен 200 мг', 'robots' => 'index, follow', 'seo_text' => nil, 'breadcrumbs' => breadcrumbs
+            'h1' => 'Нурофен 200 мг', 'robots' => 'index, follow', 'seo_text' => nil, 'breadcrumbs' => breadcrumbs,
+            'content' => nil
           )
+        end
+      end
+
+      response '200', 'a static page with its text' do
+        schema '$ref' => '#/components/schemas/seo_page'
+        let(:path) { '/umovy-servisu' }
+
+        before do
+          create(:seo_static_page, :published, name_uk: 'Умови сервісу',
+                                               content_uk: '<p>Бронювання без передоплати.</p>')
+        end
+
+        run_test! do
+          expect(response.parsed_body).to include(
+            'status' => 200, 'h1' => 'Умови сервісу', 'content' => '<p>Бронювання без передоплати.</p>'
+          )
+        end
+      end
+
+      response '200', 'a withdrawn product an editor leads to a category' do
+        schema '$ref' => '#/components/schemas/seo_page'
+        let(:path) { '/tovar/nurofen-stare' }
+
+        before do
+          create(:catalog_goods, slug: 'nurofen-stare', withdrawn: true)
+          create(:seo_redirect, manual: true, page_type: 'goods', slug: 'nurofen-stare',
+                                redirectable: create(:catalog_category, slug: 'zneboliuvalni'))
+        end
+
+        run_test! do
+          expect(response.parsed_body).to include('status' => 301, 'location' => '/katalog/zneboliuvalni')
         end
       end
 

@@ -19,10 +19,13 @@ class Seo::Pages::Path
 
   def goods(slug) = "#{prefix}/#{SEGMENTS.fetch(:goods)}/#{slug}"
 
+  def static(slug) = "#{prefix}/#{slug}"
+
   def record(record)
     case record
     when Catalog::Goods then goods(record.slug)
     when Catalog::Category then category(record.slug)
+    when Seo::StaticPage then record.home? ? home : static(record.slug)
     end
   end
 

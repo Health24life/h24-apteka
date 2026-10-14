@@ -4,9 +4,11 @@
 # template's. It belongs to the record, not to its slug, so a new slug keeps it.
 class Seo::Override < ApplicationRecord
   include Translatable
+  include Seo::SanitizedHtml
+  include Seo::PageHistory
 
   # The records that have a page of their own. A new kind of page is added here; the database does not list them.
-  TARGET_TYPES = %w[Catalog::Goods Catalog::Category].freeze
+  TARGET_TYPES = %w[Catalog::Goods Catalog::Category Seo::StaticPage].freeze
   TEXTS = %i[title description h1].freeze
 
   # `auto` follows the rules of the page; `index` and `noindex` force the answer.
@@ -15,6 +17,9 @@ class Seo::Override < ApplicationRecord
   # Short texts live in jsonb columns of the row, the long SEO text in a translations table.
   translatable(*TEXTS)
   translatable :seo_text, backend: :table
+  sanitized_html :seo_text
+  page_history owner: ->(override) { override.target }
+  translations_history owner: ->(translation) { translation.translated_model&.target }
 
   belongs_to :target, polymorphic: true, inverse_of: :seo_override
 

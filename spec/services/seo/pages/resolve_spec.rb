@@ -182,4 +182,115 @@ RSpec.describe Seo::Pages::Resolve do
       expect(resolve("/tovar/#{create(:catalog_goods, hidden: true, withdrawn: true).slug}").status).to eq(410)
     end
   end
+
+  describe 'a static page' do
+    let(:page) { create(:seo_static_page, :published, name_uk: 'Умови сервісу') }
+
+    it 'is found by its slug once it is published', :aggregate_failures do
+      expect(resolve("/#{page.slug}"))
+        .to have_attributes(status: 200, page: have_attributes(type: :static, record: page))
+      expect(page.slug).to eq('umovy-servisu')
+    end
+
+    it 'is not found while it is not published' do
+      expect(resolve("/#{create(:seo_static_page).slug}").status).to eq(404)
+    end
+
+    it 'is not found by a slug no page has' do
+      expect(resolve('/nema-takoi').status).to eq(404)
+    end
+
+    it 'moves an address in another form to the normal one', :aggregate_failures do
+      page
+
+      expect(resolve('/Umovy-Servisu')).to moved_to('/umovy-servisu')
+      expect(resolve('/umovy-servisu/')).to moved_to('/umovy-servisu')
+    end
+
+    it 'redirects its old slug to the current one' do
+      page.update!(slug: 'umovy')
+
+      expect(resolve('/umovy-servisu')).to moved_to('/umovy')
+    end
+
+    it 'ignores the parameters of a query' do
+      expect(resolve("/#{page.slug}?page=2&utm_source=fb")).to have_attributes(status: 200, location: nil)
+    end
+
+    it 'gives the home page its row when there is one', :aggregate_failures do
+      home = create(:seo_static_page, :home)
+
+      expect(resolve('/').page).to have_attributes(type: :home, record: home)
+    end
+  end
+
+  describe 'a redirect an editor set' do
+    def redirect(page_type, slug, to) = create(:seo_redirect, manual: true, page_type:, slug:, redirectable: to)
+
+    it 'leads a withdrawn product to a category' do
+      redirect('goods', create(:catalog_goods, withdrawn: true, slug: 'nurofen-stare').slug, category)
+
+      expect(resolve('/tovar/nurofen-stare')).to moved_to('/katalog/zneboliuvalni')
+    end
+
+    it 'leads a hidden product away as well' do
+      redirect('goods', create(:catalog_goods, hidden: true, slug: 'pryhovanyi').slug, category)
+
+      expect(resolve('/tovar/pryhovanyi')).to moved_to('/katalog/zneboliuvalni')
+    end
+
+    it 'follows the slug its target has now' do
+      redirect('goods', 'staryi', goods)
+      goods.update!(slug: 'nurofen-forte')
+
+      expect(resolve('/tovar/staryi')).to moved_to('/tovar/nurofen-forte')
+    end
+
+    it 'gives way to the product once it is shown again' do
+      withdrawn = create(:catalog_goods, withdrawn: true, slug: 'nurofen-stare')
+      redirect('goods', withdrawn.slug, category)
+      withdrawn.update!(withdrawn: false)
+
+      expect(resolve('/tovar/nurofen-stare').status).to eq(200)
+    end
+
+    it 'stops leading to a target that left the storefront' do
+      redirect('goods', 'staryi', create(:catalog_goods, withdrawn: true))
+
+      expect(resolve('/tovar/staryi').status).to eq(404)
+    end
+
+    it 'leads to the home page' do
+      redirect('category', 'akcii', create(:seo_static_page, :home))
+
+      expect(resolve('/katalog/akcii')).to moved_to('/')
+    end
+
+    it 'leads from the slug of a removed static page' do
+      create(:seo_static_page, :published, slug: 'akcii').destroy!
+      redirect('static', 'akcii', category)
+
+      expect(resolve('/akcii')).to moved_to('/katalog/zneboliuvalni')
+    end
+
+    it 'carries the page and the filters only from a category to a category', :aggregate_failures do
+      redirect('category', 'stara', category)
+      redirect('category', 'tovarna', goods)
+
+      expect(resolve('/katalog/stara?page=2&form=tabletky')).to moved_to('/katalog/zneboliuvalni?form=tabletky&page=2')
+      expect(resolve('/katalog/tovarna?page=2')).to moved_to('/tovar/nurofen')
+    end
+
+    it 'leaves an automatic redirect leading to its record wherever that is' do
+      goods.update!(slug: 'nurofen-forte')
+      goods.update!(withdrawn: true)
+
+      expect(resolve('/tovar/nurofen')).to moved_to('/tovar/nurofen-forte')
+    end
+  end
+
+  it 'tells what a page that is not there would be', :aggregate_failures do
+    expect(resolve('/tovar/nema-takoho').page).to have_attributes(type: :goods, record: nil)
+    expect(resolve("/tovar/#{create(:catalog_goods, withdrawn: true).slug}").page.type).to eq(:goods)
+  end
 end

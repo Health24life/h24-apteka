@@ -1,0 +1,218 @@
+uk:
+  admin:
+    seo_history:
+      title: Історія змін
+      none: Змін ще не було.
+      at: Коли
+      author: Хто
+      object: Що
+      page: Сторінка
+      changes: Зміни
+      system: система
+      empty_value: порожньо
+      booleans:
+        "true": так
+        "false": ні
+      events:
+        create: створено
+        update: змінено
+        destroy: видалено
+    seo_override:
+      title: SEO сторінки
+      edit: Змінити SEO
+      form_title: "SEO сторінки «%{name}»"
+      current: Що зараз віддає SEO-ендпоінт
+      by_hand: Задано вручну
+      empty_hint: Порожнє поле бере текст із шаблону.
+      saved: SEO-налаштування збережено.
+      title_too_long: "Title має %{length} символів, більше за %{limit}: ендпоінт віддасть його без обрізання."
+      description_too_long: "Description має %{length} символів, більше за %{limit}: ендпоінт віддасть його без обрізання."
+      sanitized: Із SEO-тексту прибрано теги, яких не показує фронт.
+      robots:
+        auto: автоматично
+        index: індексувати
+        noindex: не індексувати
+    slug:
+      change: Змінити адресу
+      form_title: "Адреса сторінки «%{name}»"
+      current: Поточна адреса
+      new: Нова адреса
+      check: Перевірити
+      save: Зберегти адресу
+      warning: "Зі старої адреси %{old} буде переадресація на нову."
+      changed: Адресу змінено, зі старої діє переадресація.
+      unchanged: Адреса та сама — нічого не змінено.
+    seo_templates:
+      placeholders: "Підстановки для цього типу сторінки: %{list}"
+      no_placeholders: Підстановок для цього типу сторінки немає.
+      preview: Переглянути
+      preview_record: Запис для перегляду
+      preview_record_hint: Обирайте серед записів, до яких шаблон застосовний; після зміни гілки чи рецептурності натисніть «Переглянути».
+      preview_title: Попередній перегляд
+      length: "%{length} символів, ліміт %{limit}"
+      cut: "Довше за %{limit} символів — у видачі текст буде обрізано так:"
+      saved_cut: "На записі для перегляду %{fields} довші за ліміт і будуть обрізані."
+      not_applicable: Обраний запис не підпадає під цей шаблон.
+      general_kept: Загальний шаблон типу сторінки не можна видалити.
+      general: загальний
+      recipe:
+        any: будь-які
+        "true": рецептурні
+        "false": безрецептурні
+      page_types:
+        home: Головна
+        category: Категорія
+        goods: Товар
+        cart: Кошик
+        order: Замовлення
+        static: Статична сторінка
+    static_pages:
+      content: Вміст
+      as_front: Вміст так, як його отримає фронт
+      sanitized: Із вмісту прибрано теги, яких не показує фронт, зокрема картинки.
+      home: Головна — вміст малює фронт, тут задаються лише мета-теги.
+      front_url: Адреса на фронті
+      slug_hint: Порожня — буде згенерована з назви.
+    seo_redirects:
+      kind: Вид
+      kinds:
+        manual: ручна
+        auto: автоматична
+      source: Стара адреса
+      target: Веде на
+      target_url: Поточна адреса цілі
+      expires_at: Буде видалено
+      inactive: не діє
+      active: діє
+      state: Стан
+      source_hint: Шлях чи повна адреса сторінки товару, категорії чи статичної сторінки, якої зараз немає (404 чи 410).
+      target_hint: Шлях чи повна адреса сторінки SKU, категорії чи статичної сторінки, що зараз відкривається.
+      created: Переадресацію створено.
+      updated: Переадресацію ведено на іншу сторінку.
+      new_title: Нова переадресація
+      edit_title: Інша ціль переадресації
+      import: Завантажити CSV
+      import_title: Завантаження переадресацій з CSV
+      import_hint: >-
+        Файл UTF-8 з рядком заголовків і двома колонками: стара адреса й нова адреса, через кому чи крапку з комою.
+        Не більше 1 000 рядків. Якщо хоч один рядок помилковий, не створюється жодна переадресація.
+      file: Файл
+      upload: Завантажити
+      imported: "Створено переадресацій: %{count}."
+      import_failed: Жодної переадресації не створено. Виправте рядки й завантажте файл ще раз.
+      line: Рядок
+      reason: Причина
+      file_errors:
+        unreadable: Файл не вдалося прочитати як CSV у кодуванні UTF-8.
+        columns: У файлі мають бути дві колонки — стара адреса й нова адреса.
+        empty: У файлі немає жодного рядка з адресами.
+        too_many: У файлі більше за 1 000 рядків — розділіть його на кілька.
+        conflict: Поки файл перевірявся, з однієї зі старих адрес уже створили переадресацію. Завантажте файл ще раз.
+      errors:
+        source:
+          blank: Вкажіть стару адресу.
+          invalid: Стара адреса — не адреса сторінки.
+          other_host: Стара адреса має бути адресою розділу.
+          not_a_page: Стара адреса не є адресою сторінки товару, категорії чи статичної сторінки.
+          page_there: За старою адресою є сторінка — переадресація з неї не потрібна.
+          redirected: З цієї адреси вже діє переадресація.
+          duplicate: Ця стара адреса трапляється у файлі ще раз.
+        target:
+          blank: Вкажіть нову адресу.
+          invalid: Нова адреса — не адреса сторінки.
+          other_host: Допустимі лише адреси розділу.
+          not_a_page: Нова адреса не є адресою SKU, категорії чи статичної сторінки.
+          unavailable: Сторінка цілі недоступна.
+  activerecord:
+    models:
+      seo_template:
+        one: Шаблон мета-тегів
+        other: Шаблони мета-тегів
+      category:
+        one: Категорія
+        other: Категорії
+      static_page:
+        one: Статична сторінка
+        other: Статичні сторінки
+      seo_redirect:
+        one: Переадресація
+        other: Переадресації
+      seo_history:
+        one: Зміна SEO
+        other: Історія змін SEO
+      seo/template:
+        one: Шаблон мета-тегів
+        other: Шаблони мета-тегів
+      seo/override:
+        one: Ручне налаштування
+        other: Ручні налаштування
+      seo/override/translation:
+        one: SEO-текст
+        other: SEO-тексти
+      seo/static_page:
+        one: Статична сторінка
+        other: Статичні сторінки
+      seo/static_page/translation:
+        one: Вміст сторінки
+        other: Вміст сторінок
+      seo/redirect:
+        one: Переадресація
+        other: Переадресації
+      catalog/category:
+        one: Категорія
+        other: Категорії
+      catalog/goods:
+        one: SKU
+        other: SKU
+    attributes:
+      seo/template:
+        page_type: Тип сторінки
+        category: Гілка каталогу
+        is_recipe: Рецептурність
+        title: Title
+        description: Description
+        h1: H1
+        title_uk: Title
+        description_uk: Description
+        h1_uk: H1
+        updated_at: Оновлено
+      seo/override:
+        title: Title
+        description: Description
+        h1: H1
+        title_uk: Title
+        description_uk: Description
+        h1_uk: H1
+        robots: Індексація
+        seo_text: SEO-текст
+        seo_text_uk: SEO-текст
+      seo/override/translation:
+        seo_text: SEO-текст
+      seo/static_page:
+        name: Назва
+        name_uk: Назва
+        slug: Адреса
+        published: Опубліковано
+        content: Вміст
+        content_uk: Вміст
+        updated_at: Оновлено
+      seo/static_page/translation:
+        content: Вміст
+      seo/redirect:
+        page_type: Тип сторінки
+        slug: Стара адреса
+        manual: Ручна
+        redirectable: Ціль
+        created_at: Створено
+      seo/version:
+        author: Хто
+        item_type: Що
+        event: Дія
+        created_at: Коли
+      catalog/category:
+        name: Назва
+        name_cont: Назва
+        slug: Адреса
+        slug_cont: Адреса
+        parent: Батьківська категорія
+        branch: Гілка

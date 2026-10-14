@@ -1,0 +1,18 @@
+class Seo::Pages::Address
+  type error = :blank | :invalid | :other_host
+
+  class Result < Data
+    attr_reader path: String?
+    attr_reader error: error?
+
+    def self.new: (path: String?, error: error?) -> instance
+    def ok?: () -> bool
+  end
+
+  def self.call: (String? input, ?config: Seo::Config) -> Result
+
+  private
+
+  def self.error_of: (URI::Generic uri, String text, Seo::Config config) -> error?
+  def self.failure: (error error) -> Result
+end

@@ -1,0 +1,14 @@
+# paper_trail ships no signatures; declare only what the app touches.
+module PaperTrail
+  class Version < ActiveRecord::Base
+  end
+
+  module VersionConcern
+  end
+
+  def self.request: [T] (?controller_info: Hash[Symbol, untyped]) { () -> T } -> T
+end
+
+class ActiveRecord::Base
+  def self.has_paper_trail: (**untyped options) -> void
+end

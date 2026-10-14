@@ -44,4 +44,12 @@ RSpec.describe Seo::Pages::Breadcrumbs do
     expect(trail(page(:cart)).last).to eq(name: 'Кошик', path: '/cart')
     expect(trail(page(:order, order_number: '1024')).last).to eq(name: 'Замовлення', path: '/order/1024')
   end
+
+  it 'leads a static page straight from the home page' do
+    static_page = create(:seo_static_page, name_uk: 'Як це працює', slug: 'yak-tse-pratsiuie')
+
+    expect(trail(page(:static, record: static_page))).to eq(
+      [ { name: 'Головна', path: '/' }, { name: 'Як це працює', path: '/yak-tse-pratsiuie' } ]
+    )
+  end
 end

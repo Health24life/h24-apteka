@@ -62,4 +62,12 @@ RSpec.describe Seo::Pages::Robots do
         .to eq('noindex, follow')
     end
   end
+
+  it 'indexes a static page unless an operator closed it', :aggregate_failures do
+    static_page = create(:seo_static_page, :published)
+    expect(described_class.call(page(:static, record: static_page))).to eq('index, follow')
+
+    create(:seo_override, target: static_page, robots: 'noindex')
+    expect(described_class.call(page(:static, record: static_page.reload))).to eq('noindex, follow')
+  end
 end

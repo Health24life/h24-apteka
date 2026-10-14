@@ -13,6 +13,14 @@ class Seo::Sitemaps::Entries
 
   def self.goods(&) = each(Catalog::Goods.shown.where.not(id: forced('Catalog::Goods', 'noindex')), goods_changed_at, &)
 
+  def self.static_pages(&)
+    indexed = Seo::StaticPage.pages.published.where.not(id: forced('Seo::StaticPage', 'noindex'))
+    each(indexed, static_page_changed_at, &)
+  end
+
+  # The home page is listed unless an operator took it out of the index.
+  def self.home? = !Seo::StaticPage.exists?(key: Seo::StaticPage::HOME, id: forced('Seo::StaticPage', 'noindex'))
+
   # The ids of the records whose override forces the given robots.
   def self.forced(type, robots) = Seo::Override.where(target_type: type, robots:).select(:target_id)
 
@@ -38,6 +46,14 @@ class Seo::Sitemaps::Entries
     SQL
   end
 
+  def self.static_page_changed_at
+    <<~SQL.squish
+      GREATEST(seo_static_pages.updated_at,
+        (SELECT MAX(updated_at) FROM seo_static_page_translations WHERE seo_static_page_id = seo_static_pages.id),
+        (#{override_changed_at('Seo::StaticPage', 'seo_static_pages')}))
+    SQL
+  end
+
   # The texts set by hand: the row with the short ones and the translations with the SEO text.
   def self.override_changed_at(type, table)
     <<~SQL.squish
@@ -47,5 +63,6 @@ class Seo::Sitemaps::Entries
     SQL
   end
 
-  private_class_method :forced, :each, :category_changed_at, :goods_changed_at, :override_changed_at
+  private_class_method :forced, :each, :category_changed_at, :goods_changed_at, :static_page_changed_at,
+                       :override_changed_at
 end

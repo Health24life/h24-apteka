@@ -1,4 +1,6 @@
 class Seo::Template
+  include Seo::PageHistory
+  extend Seo::PageHistory::ClassMethods
   include Translatable
   extend Translatable::ClassMethods
   extend Mobility

@@ -1,0 +1,35 @@
+<div class="main-content-container">
+  <% if result %>
+    <div class="flash flash_error"><%= result.error ? t(result.error, scope: "admin.seo_redirects.file_errors") : t("admin.seo_redirects.import_failed") %></div>
+    <% if result.rows.any? %>
+      <table class="data-table">
+        <thead><tr><th><%= t("admin.seo_redirects.line") %></th><th><%= t("admin.seo_redirects.reason") %></th></tr></thead>
+        <tbody>
+          <% result.rows.sort.each do |line, errors| %>
+            <tr>
+              <td><%= line %></td>
+              <td><%= errors.map { |field, code| t(code, scope: [:admin, :seo_redirects, :errors, field]) }.join(" ") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  <% end %>
+  <%= form_with url: request.path, method: :post, multipart: true, class: "formtastic" do %>
+    <fieldset class="inputs">
+      <ol>
+        <li class="file input required">
+          <%= label_tag :file, t("admin.seo_redirects.file"), class: "label" %>
+          <%= file_field_tag :file, accept: ".csv,text/csv", required: true %>
+          <p class="inline-hints"><%= t("admin.seo_redirects.import_hint") %></p>
+        </li>
+      </ol>
+    </fieldset>
+    <fieldset class="actions">
+      <ol>
+        <li class="action input_action"><%= submit_tag t("admin.seo_redirects.upload") %></li>
+        <li class="cancel"><%= link_to t("active_admin.cancel"), collection_path %></li>
+      </ol>
+    </fieldset>
+  <% end %>
+</div>

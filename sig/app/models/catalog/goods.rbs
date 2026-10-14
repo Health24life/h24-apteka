@@ -1,4 +1,6 @@
 class Catalog::Goods
+  include Seo::PageHistory
+  extend Seo::PageHistory::ClassMethods
   include Catalog::ProviderLinked
   extend Catalog::ProviderLinked::ClassMethods
 

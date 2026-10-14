@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_12_120200) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_14_120300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -452,11 +452,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_120200) do
     t.string "redirectable_type", null: false
     t.bigint "redirectable_id", null: false
     t.datetime "created_at", null: false
+    t.boolean "manual", default: false, null: false
     t.index ["page_type", "slug"], name: "index_seo_redirects_on_page_type_and_slug", unique: true
     t.index ["redirectable_type", "redirectable_id"], name: "index_seo_redirects_on_redirectable_type_and_redirectable_id"
-    t.check_constraint "page_type::text = ANY (ARRAY['goods'::character varying, 'category'::character varying]::text[])", name: "seo_redirects_page_type_check"
-    t.check_constraint "redirectable_type::text = ANY (ARRAY['Catalog::Goods'::character varying, 'Catalog::Category'::character varying]::text[])", name: "seo_redirects_type_check"
+    t.check_constraint "page_type::text = ANY (ARRAY['goods'::character varying, 'category'::character varying, 'static'::character varying]::text[])", name: "seo_redirects_page_type_check"
+    t.check_constraint "redirectable_type::text = ANY (ARRAY['Catalog::Goods'::character varying, 'Catalog::Category'::character varying, 'Seo::StaticPage'::character varying]::text[])", name: "seo_redirects_type_check"
     t.check_constraint "slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100", name: "seo_redirects_slug_check"
+  end
+
+  create_table "seo_static_page_translations", force: :cascade do |t|
+    t.bigint "seo_static_page_id", null: false
+    t.string "locale", null: false
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["seo_static_page_id", "locale"], name: "index_seo_static_page_translations_uniqueness", unique: true
+  end
+
+  create_table "seo_static_pages", force: :cascade do |t|
+    t.string "key"
+    t.jsonb "name", default: {}, null: false
+    t.string "slug"
+    t.boolean "published", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_seo_static_pages_on_key", unique: true
+    t.index ["slug"], name: "index_seo_static_pages_on_slug", unique: true
+    t.check_constraint "key::text = 'home'::text AND slug IS NULL OR key IS NULL AND slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100", name: "seo_static_pages_slug_check"
   end
 
   create_table "seo_templates", force: :cascade do |t|
@@ -472,7 +494,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_120200) do
     t.index ["page_type", "category_id", "is_recipe"], name: "index_seo_templates_uniqueness", unique: true, nulls_not_distinct: true
     t.check_constraint "category_id IS NULL OR (page_type::text = ANY (ARRAY['category'::character varying, 'goods'::character varying]::text[]))", name: "seo_templates_category_check"
     t.check_constraint "is_recipe IS NULL OR page_type::text = 'goods'::text", name: "seo_templates_recipe_check"
-    t.check_constraint "page_type::text = ANY (ARRAY['home'::character varying, 'category'::character varying, 'goods'::character varying, 'cart'::character varying, 'order'::character varying]::text[])", name: "seo_templates_page_type_check"
+    t.check_constraint "page_type::text = ANY (ARRAY['home'::character varying, 'category'::character varying, 'goods'::character varying, 'cart'::character varying, 'order'::character varying, 'static'::character varying]::text[])", name: "seo_templates_page_type_check"
+  end
+
+  create_table "seo_versions", force: :cascade do |t|
+    t.string "item_type", null: false
+    t.bigint "item_id", null: false
+    t.string "event", null: false
+    t.string "whodunnit"
+    t.jsonb "object"
+    t.jsonb "object_changes"
+    t.string "owner_type"
+    t.bigint "owner_id"
+    t.string "author_type"
+    t.bigint "author_id"
+    t.datetime "created_at", null: false
+    t.index ["author_type", "author_id"], name: "index_seo_versions_on_author_type_and_author_id"
+    t.index ["created_at"], name: "index_seo_versions_on_created_at"
+    t.index ["item_type", "item_id"], name: "index_seo_versions_on_item_type_and_item_id"
+    t.index ["owner_type", "owner_id", "created_at"], name: "index_seo_versions_on_owner_type_and_owner_id_and_created_at"
   end
 
   create_table "sync_run_failures", force: :cascade do |t|
@@ -540,8 +580,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_120200) do
   add_foreign_key "provider_links", "providers"
   add_foreign_key "provider_request_logs", "providers"
   add_foreign_key "provider_request_logs", "sync_runs", on_delete: :nullify
+  add_foreign_key "seo_override_translations", "seo_overrides", on_delete: :cascade
+  add_foreign_key "seo_static_page_translations", "seo_static_pages", on_delete: :cascade
+  add_foreign_key "seo_templates", "catalog_categories", column: "category_id"
   add_foreign_key "sync_run_failures", "sync_runs", on_delete: :cascade
   add_foreign_key "sync_runs", "providers"
-  add_foreign_key "seo_override_translations", "seo_overrides", on_delete: :cascade
-  add_foreign_key "seo_templates", "catalog_categories", column: "category_id"
 end

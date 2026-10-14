@@ -4,8 +4,12 @@ class Catalog::Category < ApplicationRecord
   include Catalog::ProviderLinked
   include Translatable
   include Catalog::Sluggable
+  include Seo::PageHistory
 
   translatable :name
+  # Only an explicit change of the slug is an SEO change; the import creates and renames categories without history.
+  page_history only: %i[slug], on: %i[update]
+  history_owner
 
   # Save callbacks keep the hierarchy table, so a write past them (insert_all, upsert_all, update_all on parent_id)
   # has to be followed by rebuild!.
@@ -32,6 +36,11 @@ class Catalog::Category < ApplicationRecord
       )
     SQL
   }
+
+  # The name is a jsonb of languages, so the admin filters by its Ukrainian value through this scope.
+  scope :name_cont, ->(text) { where("catalog_categories.name->>'uk' ILIKE ?", "%#{sanitize_sql_like(text.to_s)}%") }
+
+  def self.ransackable_scopes(_auth_object = nil) = %i[name_cont]
 
   def shown_goods? = self.class.with_shown_goods.exists?(id)
 

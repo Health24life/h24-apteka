@@ -1,0 +1,5 @@
+ul do
+  seo_version_changes(version).each do |label, before, after|
+    li { text_node "#{label}: #{before} → #{after}" }
+  end
+end

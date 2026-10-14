@@ -1,0 +1,19 @@
+panel t('admin.seo_override.title') do
+  described = seo_described(record)
+  override = record.seo_override
+  attributes_table_for override || Seo::Override.new do
+    row(t('admin.seo_override.current')) do
+      described ? "#{described.status} · #{described.robots}" : '—'
+    end
+    row(Seo::Override.human_attribute_name(:title)) { described&.title }
+    row(Seo::Override.human_attribute_name(:description)) { described&.description }
+    row(Seo::Override.human_attribute_name(:h1)) { described&.h1 }
+    row(t('admin.seo_override.by_hand')) do
+      override ? [ override.title_uk, override.description_uk, override.h1_uk ].compact_blank.join(' · ') : '—'
+    end
+    row(Seo::Override.human_attribute_name(:robots)) do
+      t(override&.robots || 'auto', scope: 'admin.seo_override.robots')
+    end
+    row(Seo::Override.human_attribute_name(:seo_text)) { override&.seo_text_uk.to_s.html_safe } # rubocop:disable Rails/OutputSafety
+  end
+end

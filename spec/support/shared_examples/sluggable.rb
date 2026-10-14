@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'a sluggable catalog record' do |factory|
+  def manual_redirect(record, slug)
+    create(:seo_redirect, manual: true, page_type: Seo::Redirect.page_type_for(record.class), slug:,
+                          redirectable: create(:catalog_category))
+  end
+
   it 'generates the slug from the Ukrainian name on creation' do
     expect(create(factory, name_uk: 'Знеболювальні').slug).to eq('zneboliuvalni')
   end
@@ -52,7 +57,7 @@ RSpec.shared_examples 'a sluggable catalog record' do |factory|
     record = create(factory)
 
     expect(record.update(slug: 'nurofen')).to be(false)
-    expect(record.errors.details[:slug]).to include(error: :taken)
+    expect(record.errors.details[:slug]).to include(error: :held)
   end
 
   it 'refuses a slug of its kind of page that redirects to a record of another kind', :aggregate_failures do
@@ -61,7 +66,25 @@ RSpec.shared_examples 'a sluggable catalog record' do |factory|
     create(:seo_redirect, page_type: Seo::Redirect.page_type_for(record.class), slug: 'staryi', redirectable: other)
 
     expect(record.update(slug: 'staryi')).to be(false)
-    expect(record.errors.details[:slug]).to include(error: :taken)
+    expect(record.errors.details[:slug]).to include(error: :held)
+  end
+
+  it 'refuses a slug an editor leads elsewhere', :aggregate_failures do
+    record = create(factory)
+    manual_redirect(record, 'ruchna')
+
+    expect(record.update(slug: 'ruchna')).to be(false)
+    expect(record.errors.details[:slug]).to include(error: :held)
+  end
+
+  it 'keeps the redirect an editor set from its old slug when the slug changes' do
+    record = create(factory, slug: 'stara')
+    manual_redirect(record, 'stara')
+
+    record.update!(slug: 'nova')
+
+    expect(Seo::Redirect.where(slug: 'stara').pluck(:redirectable_type, :manual))
+      .to eq([ [ 'Catalog::Category', true ] ])
   end
 
   it 'refuses such a slug given on creation' do

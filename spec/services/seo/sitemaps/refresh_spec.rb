@@ -59,6 +59,38 @@ RSpec.describe Seo::Sitemaps::Refresh do
     end
   end
 
+  describe 'the static pages' do
+    def lastmod_of_static(slug) = read('categories.xml.gz')[%r{/#{slug}</loc>\s*<lastmod>([^<]+)</lastmod>}, 1]
+
+    it 'lists the published ones after the home page and leaves out the rest', :aggregate_failures do
+      create(:seo_static_page, :published, slug: 'umovy-servisu')
+      create(:seo_static_page, slug: 'chernetka')
+      create(:seo_override, target: create(:seo_static_page, :published, slug: 'zakryta'), robots: 'noindex')
+
+      refresh
+
+      expect(locs('categories.xml.gz')).to eq([ 'https://apteka.h24.ua/', 'https://apteka.h24.ua/umovy-servisu' ])
+    end
+
+    it 'dates a static page by the change of its text' do
+      page = travel_to(Time.zone.local(2026, 10, 1, 12)) { create(:seo_static_page, :published, slug: 'umovy-servisu') }
+      travel_to(Time.zone.local(2026, 10, 5, 12)) { page.update!(content_uk: '<p>Нові умови</p>') }
+
+      refresh
+
+      expect(lastmod_of_static('umovy-servisu')).to start_with('2026-10-05')
+    end
+
+    it 'leaves out the home page an operator took out of the index' do
+      create(:seo_static_page, :published, slug: 'umovy-servisu')
+      create(:seo_override, target: create(:seo_static_page, :home), robots: 'noindex')
+
+      refresh
+
+      expect(locs('categories.xml.gz')).to eq([ 'https://apteka.h24.ua/umovy-servisu' ])
+    end
+  end
+
   describe 'an override of robots' do
     it 'leaves out a product an operator took out of the index' do
       create(:seo_override, target: stocked('nurofen'), robots: 'noindex')

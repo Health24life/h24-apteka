@@ -1,0 +1,15 @@
+uk:
+  errors:
+    # The messages the admin shows when a form is refused; Rails ships them in English only.
+    messages:
+      blank: не може бути порожнім
+      taken: уже зайнято
+      invalid: має неправильний формат
+      inclusion: має недопустиме значення
+      too_long: задовге (не більше %{count} символів)
+    attributes:
+      slug:
+        taken: уже має інша сторінка
+        held: закріплена за іншою сторінкою переадресацією
+        reserved: зарезервована адресою розділу
+        invalid: "має містити лише малі латинські літери, цифри й дефіси між ними"

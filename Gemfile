@@ -86,6 +86,9 @@ gem 'activerecord-import', '~> 2.3'
 # Serializes the API responses.
 gem 'blueprinter', '~> 1.1'
 
+# History of the SEO data and static pages: who changed what and when.
+gem 'paper_trail', '~> 17.0'
+
 # Writes the sitemap; S3 storage of it needs the AWS SDK, loaded only when that storage is chosen.
 gem 'aws-sdk-s3', '~> 1.121', require: false
 gem 'sitemap_generator', '~> 7.1'

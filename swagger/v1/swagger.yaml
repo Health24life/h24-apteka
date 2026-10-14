@@ -6,14 +6,15 @@ info:
 paths:
   "/api/v1/seo/page":
     get:
-      summary: Status, redirect, meta tags, robots and breadcrumbs of a page of the
-        front
+      summary: Status, redirect, meta tags, robots, breadcrumbs and the text of a
+        static page of the front
       tags:
       - SEO
       description: 'Built from the Health24 database only: the partner is never asked,
         and the answer is the same for a guest and a signed-in user. The state of
         the page is in `status`; the HTTP status is 200 for any path that could be
-        read.'
+        read. A single segment that no other route takes is the address of a static
+        page, whose text comes in `content`.'
       parameters:
       - name: path
         in: query
@@ -84,6 +85,7 @@ components:
       - robots
       - breadcrumbs
       - seo_text
+      - content
       properties:
         status:
           type: integer
@@ -125,6 +127,11 @@ components:
         seo_text:
           type: string
           nullable: true
+        content:
+          type: string
+          nullable: true
+          description: Text of a static page as HTML of the allowed tags; empty for
+            other pages
   parameters:
     header_lang:
       name: Accept-Language
