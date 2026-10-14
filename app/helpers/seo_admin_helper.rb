@@ -23,6 +23,11 @@ module SeoAdminHelper
     path && paths.url(path)
   end
 
+  def seo_front_link(record)
+    url = seo_front_url(record) or return
+    link_to url, url, target: '_blank', rel: 'noopener'
+  end
+
   # The old address of a redirect on the front.
   def seo_redirect_source(redirect)
     paths = Seo::Pages::Path.new

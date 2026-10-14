@@ -35,9 +35,7 @@ ActiveAdmin.register Catalog::Category, as: 'Category' do
       row(:name, &:name_uk)
       row(Catalog::Category.human_attribute_name(:branch), &:branch_name)
       row :parent
-      row(:slug) do |category|
-        link_to seo_front_url(category), seo_front_url(category), target: '_blank', rel: 'noopener'
-      end
+      row(:slug) { |category| seo_front_link(category) }
       row :created_at
       row :updated_at
     end

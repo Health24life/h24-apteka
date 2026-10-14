@@ -18,7 +18,7 @@ ActiveAdmin.register Seo::StaticPage, as: 'StaticPage' do
   index do
     id_column
     column(:name) { |page| link_to page.name_uk, resource_path(page) }
-    column(t('admin.static_pages.front_url')) { |page| seo_front_url(page) }
+    column(t('admin.static_pages.front_url')) { |page| seo_front_link(page) }
     column :published
     column :updated_at
     actions
@@ -28,7 +28,7 @@ ActiveAdmin.register Seo::StaticPage, as: 'StaticPage' do
     attributes_table do
       row :id
       row(:name, &:name_uk)
-      row(t('admin.static_pages.front_url')) { |page| seo_front_url(page) }
+      row(t('admin.static_pages.front_url')) { |page| seo_front_link(page) }
       row :published unless resource.home?
       row :updated_at
     end

@@ -18,7 +18,7 @@ ActiveAdmin.register Seo::Redirect, as: 'SeoRedirect' do
       link_to seo_redirect_source(redirect), resource_path(redirect)
     end
     column(t('admin.seo_redirects.target')) { |redirect| seo_redirect_target(redirect) }
-    column(t('admin.seo_redirects.target_url')) { |redirect| seo_front_url(redirect.redirectable) }
+    column(t('admin.seo_redirects.target_url')) { |redirect| seo_front_link(redirect.redirectable) }
     column :created_at
     column(t('admin.seo_redirects.expires_at')) { |redirect| l(seo_redirect_expires_at(redirect), format: :long) }
     column(t('admin.seo_redirects.state')) do |redirect|
@@ -34,7 +34,7 @@ ActiveAdmin.register Seo::Redirect, as: 'SeoRedirect' do
       row(t('admin.seo_redirects.kind')) { |redirect| seo_redirect_kind(redirect) }
       row(t('admin.seo_redirects.source')) { |redirect| seo_redirect_source(redirect) }
       row(t('admin.seo_redirects.target')) { |redirect| seo_redirect_target(redirect) }
-      row(t('admin.seo_redirects.target_url')) { |redirect| seo_front_url(redirect.redirectable) }
+      row(t('admin.seo_redirects.target_url')) { |redirect| seo_front_link(redirect.redirectable) }
       row :created_at
       row(t('admin.seo_redirects.expires_at')) { |redirect| l(seo_redirect_expires_at(redirect), format: :long) }
       row(t('admin.seo_redirects.state')) do |redirect|

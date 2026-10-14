@@ -155,6 +155,15 @@ RSpec.describe 'Admin SEO of pages' do
       expect(flash[:warning]).to include('картинки')
     end
 
+    it 'links the card of a page to its address on the front' do
+      page = create_page
+      url = Seo::Pages::Path.new.url('/umovy-servisu')
+
+      get admin_static_page_path(page)
+
+      expect(response.body).to include(%(<a target="_blank" rel="noopener" href="#{url}">#{url}</a>))
+    end
+
     it 'refuses a slug a route of the section takes' do
       expect { create_page(slug: 'katalog') }.not_to change(Seo::StaticPage, :count)
     end
