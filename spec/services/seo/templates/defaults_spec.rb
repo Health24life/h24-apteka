@@ -15,6 +15,15 @@ RSpec.describe Seo::Templates::Defaults do
     expect(own.reload.title).to eq('Свій шаблон {name}')
   end
 
+  it 'adds the filter template to a database that has the rest', :aggregate_failures do
+    described_class.call
+    Seo::Template.find_by(page_type: 'filter').delete
+
+    expect(described_class.call).to eq([ 'filter' ])
+    expect(Seo::Template.find_by(page_type: 'filter')).to have_attributes(title_uk: '{name} — добірка Аптеки Health24',
+                                                                          h1_uk: '{name}')
+  end
+
   it 'adds nothing the second time' do
     described_class.call
 

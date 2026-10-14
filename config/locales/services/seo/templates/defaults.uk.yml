@@ -23,6 +23,10 @@ uk:
           title: Замовлення — Аптека Health24
           description: Бронювання товарів в аптеці.
           h1: Замовлення
+        filter:
+          title: "{name} — добірка Аптеки Health24"
+          description: "{name}: добірка товарів для здоровʼя з інструкціями із застосування."
+          h1: "{name}"
         static:
           title: "{name} — Аптека Health24"
           description: "{name}: як працює бронювання ліків в аптеках Health24."

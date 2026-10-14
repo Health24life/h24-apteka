@@ -22,6 +22,7 @@ class Seo::StaticPage
 
   def home?: () -> bool
   def own_slug?: () -> bool
+  def hidden_status: () -> Integer?
 
   private
 

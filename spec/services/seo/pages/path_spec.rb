@@ -15,6 +15,10 @@ RSpec.describe Seo::Pages::Path do
     expect(paths.record(build(:catalog_goods, slug: 'nurofen'))).to eq('/tovar/nurofen')
   end
 
+  it 'builds the path of a filter' do
+    expect(paths.record(build(:seo_filter, slug: 'vitaminy-dlia-ditei'))).to eq('/dobirka/vitaminy-dlia-ditei')
+  end
+
   it 'adds the query in the given order' do
     expect(paths.with_query('/katalog/liky', { 'page' => '2', 'form' => 'tabletky' }))
       .to eq('/katalog/liky?page=2&form=tabletky')

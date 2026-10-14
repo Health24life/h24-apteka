@@ -4,14 +4,17 @@ class Seo::Sitemaps::Entries
   def self.categories: () { (String slug, ActiveSupport::TimeWithZone? changed_at) -> void } -> void
   def self.goods: () { (String slug, ActiveSupport::TimeWithZone? changed_at) -> void } -> void
   def self.static_pages: () { (String slug, ActiveSupport::TimeWithZone? changed_at) -> void } -> void
+  def self.filters: () { (String slug, ActiveSupport::TimeWithZone? changed_at) -> void } -> void
   def self.home?: () -> bool
 
   private
 
+  def self.unclosed_filters: () -> Seo::Filter::ActiveRecord_Relation
   def self.forced: (String type, String robots) -> Seo::Override::ActiveRecord_Relation
   def self.each: (ActiveRecord::Relation scope, String changed_at) { (String slug, ActiveSupport::TimeWithZone? changed_at) -> void } -> void
   def self.category_changed_at: () -> String
   def self.goods_changed_at: () -> String
   def self.static_page_changed_at: () -> String
+  def self.filter_changed_at: () -> String
   def self.override_changed_at: (String type, String table) -> String
 end

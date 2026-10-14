@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# A redirect an editor sets by hand: from the old address of a product, a category or a static page that has no page
-# now (404 or 410) to a page of the section that is there. The target is kept as its record, so a later change of its
-# slug leaves no chain; an address that itself redirects leads to where it ends. `save: false` only checks.
+# A redirect an editor sets by hand: from the old address of a product, a category, a filter or a static page that has
+# no page now (404 or 410) to a page of the section that is there. The target is kept as its record, so a later change
+# of its slug leaves no chain; an address that itself redirects leads to where it ends. `save: false` only checks.
 class Seo::Redirects::Manual
-  SOURCE_TYPES = %i[goods category static].freeze
-  TARGET_MODELS = [ Catalog::Goods, Catalog::Category, Seo::StaticPage ].freeze
+  SOURCE_TYPES = %i[goods category filter static].freeze
+  TARGET_MODELS = [ Catalog::Goods, Catalog::Category, Seo::Filter, Seo::StaticPage ].freeze
 
   class Result < Data.define(:redirect, :errors)
     def ok? = errors.empty?

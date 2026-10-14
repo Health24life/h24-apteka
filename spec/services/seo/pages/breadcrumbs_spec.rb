@@ -23,6 +23,30 @@ RSpec.describe Seo::Pages::Breadcrumbs do
     )
   end
 
+  it 'leads a filter through its category and that category\'s ancestors' do
+    filter = create(:seo_filter, name_uk: 'Від болю для дітей', slug: 'vid-boliu-dlia-ditei', category: painkillers)
+
+    expect(trail(page(:filter, record: filter)).pluck(:path)).to eq(
+      [ '/', '/katalog/liky', '/katalog/zneboliuvalni', '/dobirka/vid-boliu-dlia-ditei' ]
+    )
+  end
+
+  it 'names a filter in its trail by the filter\'s name' do
+    filter = create(:seo_filter, name_uk: 'Від болю для дітей', category: painkillers)
+
+    expect(trail(page(:filter, record: filter)).last).to eq(
+      { name: 'Від болю для дітей', path: '/dobirka/vid-boliu-dlia-ditei' }
+    )
+  end
+
+  it 'leads a filter without a category straight from the home page' do
+    filter = create(:seo_filter, name_uk: 'Від застуди без рецепта')
+
+    expect(trail(page(:filter, record: filter))).to eq(
+      [ { name: 'Головна', path: '/' }, { name: 'Від застуди без рецепта', path: '/dobirka/vid-zastudy-bez-retsepta' } ]
+    )
+  end
+
   it 'leads a product of a group without a main category straight from the home page' do
     create(:catalog_goods_group_category, goods_group: group, category: painkillers)
 

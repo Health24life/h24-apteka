@@ -1,6 +1,6 @@
 class Seo::Pages::Resolve
-  type page_type = :home | :category | :goods | :cart | :order | :static
-  type record = Catalog::Goods | Catalog::Category | Seo::StaticPage
+  type page_type = :home | :category | :goods | :filter | :cart | :order | :static
+  type record = Catalog::Goods | Catalog::Category | Seo::Filter | Seo::StaticPage
 
   class Page < Data
     attr_reader type: Seo::Pages::Resolve::page_type
@@ -34,7 +34,8 @@ class Seo::Pages::Resolve
   end
 
   ROUTES: Hash[Regexp, page_type]
-  MODELS: Hash[page_type, singleton(Catalog::Goods) | singleton(Catalog::Category) | singleton(Seo::StaticPage)]
+  MODELS: Hash[page_type, singleton(Catalog::Goods) | singleton(Catalog::Category) | singleton(Seo::Filter) |
+                          singleton(Seo::StaticPage)]
 
   @query: String?
   @config: Seo::Config

@@ -1,9 +1,10 @@
 class Seo::Redirects::Manual
   type field = :source | :target
-  type target = Catalog::Goods | Catalog::Category | Seo::StaticPage
+  type target = Catalog::Goods | Catalog::Category | Seo::Filter | Seo::StaticPage
 
   SOURCE_TYPES: Array[Symbol]
-  TARGET_MODELS: Array[singleton(Catalog::Goods) | singleton(Catalog::Category) | singleton(Seo::StaticPage)]
+  TARGET_MODELS: Array[singleton(Catalog::Goods) | singleton(Catalog::Category) | singleton(Seo::Filter) |
+                       singleton(Seo::StaticPage)]
 
   class Result < Data
     attr_reader redirect: Seo::Redirect?

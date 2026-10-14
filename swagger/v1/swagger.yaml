@@ -4,6 +4,81 @@ info:
   title: Health24 Apteka API
   version: v1
 paths:
+  "/api/v1/filters":
+    get:
+      summary: The published filters of a category, or of the home page of the section
+      tags:
+      - SEO filters
+      description: For the block of selections on the page of a category; without
+        `category_id`, on the home page of the section. Published filters that are
+        not removed only, in the order the editor set. Built from the Health24 database
+        only, the same for a guest and a signed-in user.
+      parameters:
+      - name: category_id
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+        description: Category whose filters are listed; without it, the filters of
+          the home page
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: string
+        description: Bearer token of a signed-in user; without it the request is served
+          as a guest
+      responses:
+        '200':
+          description: no filters for a category that is not there
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/seo_filter_list"
+        '422':
+          description: a category id that is not a positive integer
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+  "/api/v1/filters/{id}":
+    get:
+      summary: A published filter by its current address, with the badges of its parameters
+      tags:
+      - SEO filters
+      description: 'The page of a filter at `/dobirka/<slug>`. `params` are kept as
+        the catalog search takes them; `applied_params` name them and their values
+        for the badges of the page. The goods of the filter come with the catalog
+        search. An old address answers 404: the SEO endpoint redirects it first.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        example: vitaminy-dlia-ditei
+        description: Current address (slug) of the filter
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: string
+        description: Bearer token of a signed-in user; without it the request is served
+          as a guest
+      responses:
+        '200':
+          description: the same answer for a signed-in user
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/seo_filter"
+        '404':
+          description: an address no filter has
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
   "/api/v1/seo/page":
     get:
       summary: Status, redirect, meta tags, robots, breadcrumbs and the text of a
@@ -14,7 +89,10 @@ paths:
         and the answer is the same for a guest and a signed-in user. The state of
         the page is in `status`; the HTTP status is 200 for any path that could be
         read. A single segment that no other route takes is the address of a static
-        page, whose text comes in `content`.'
+        page, whose text comes in `content`. `/dobirka/<slug>` is the page of an SEO
+        filter, a named selection of goods: 404 until it is published, 410 once it
+        is removed, and `noindex, follow` while nothing on the storefront matches
+        it.'
       parameters:
       - name: path
         in: query
@@ -132,6 +210,129 @@ components:
           nullable: true
           description: Text of a static page as HTML of the allowed tags; empty for
             other pages
+    seo_filter_item:
+      type: object
+      required:
+      - id
+      - name
+      - slug
+      - path
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: Вітаміни для дітей
+        slug:
+          type: string
+          example: vitaminy-dlia-ditei
+        path:
+          type: string
+          example: "/dobirka/vitaminy-dlia-ditei"
+          description: Path of the filter page
+    seo_filter_list:
+      type: object
+      required:
+      - filters
+      properties:
+        filters:
+          type: array
+          items:
+            "$ref": "#/components/schemas/seo_filter_item"
+    seo_filter:
+      type: object
+      required:
+      - id
+      - name
+      - slug
+      - path
+      - category
+      - sort_order
+      - recipe_scope
+      - params
+      - applied_params
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        path:
+          type: string
+        category:
+          type: object
+          nullable: true
+          required:
+          - id
+          - name
+          - path
+          description: Category the filter is shown in; empty for a filter of the
+            home page of the section
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            path:
+              type: string
+        sort_order:
+          type: string
+          enum:
+          - name
+          - newest
+          description: Order of the goods
+        recipe_scope:
+          type: string
+          enum:
+          - otc
+          - rx
+          - any
+          description: Goods without a prescription only, with one only, or all
+        params:
+          type: object
+          description: 'Parameters of the catalog search as kept: each key with a
+            list of ids'
+          additionalProperties:
+            type: array
+            items:
+              type: integer
+          example:
+            category_id:
+            - 12
+            form_id:
+            - 7
+            - 8
+        applied_params:
+          type: array
+          description: 'Badges of the page: each parameter with its Ukrainian name
+            and the names of its values'
+          items:
+            type: object
+            required:
+            - key
+            - name
+            - values
+            properties:
+              key:
+                type: string
+                example: form_id
+              name:
+                type: string
+                example: Форма випуску
+              values:
+                type: array
+                items:
+                  type: object
+                  required:
+                  - id
+                  - name
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                      example: Капсули
   parameters:
     header_lang:
       name: Accept-Language

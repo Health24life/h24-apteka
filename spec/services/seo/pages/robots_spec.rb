@@ -70,4 +70,29 @@ RSpec.describe Seo::Pages::Robots do
     create(:seo_override, target: static_page, robots: 'noindex')
     expect(described_class.call(page(:static, record: static_page.reload))).to eq('noindex, follow')
   end
+
+  describe 'a filter' do
+    let(:filter) { create(:seo_filter, :stocked) }
+
+    it 'is indexed once published with goods to show' do
+      expect(described_class.call(page(:filter, record: filter))).to eq('index, follow')
+    end
+
+    it 'only leads on when nothing on the storefront matches it' do
+      expect(described_class.call(page(:filter, record: create(:seo_filter, :published)))).to eq('noindex, follow')
+    end
+
+    it 'is indexed without goods when an operator says so' do
+      empty = create(:seo_filter, :published)
+      create(:seo_override, target: empty, robots: 'index')
+
+      expect(described_class.call(page(:filter, record: empty))).to eq('index, follow')
+    end
+
+    it 'is kept out of the index when an operator says so' do
+      create(:seo_override, target: filter, robots: 'noindex')
+
+      expect(described_class.call(page(:filter, record: filter))).to eq('noindex, follow')
+    end
+  end
 end

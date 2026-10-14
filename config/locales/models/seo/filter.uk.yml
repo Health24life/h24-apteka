@@ -1,0 +1,8 @@
+uk:
+  activerecord:
+    errors:
+      models:
+        seo/filter:
+          attributes:
+            published:
+              removed: видалену добірку не можна опублікувати

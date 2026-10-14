@@ -9,6 +9,7 @@ class Seo::Pages::Path
   def order: (String number) -> String
   def category: (String? slug) -> String
   def goods: (String? slug) -> String
+  def filter: (String? slug) -> String
   def static: (String? slug) -> String
   def record: (ActiveRecord::Base? record) -> String?
   def with_query: (String path, Hash[String, String] params) -> String

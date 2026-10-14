@@ -7,8 +7,11 @@ class Seo::Redirect < ApplicationRecord
   include Seo::PageHistory
 
   # The kind of page whose slugs a record with a slug takes.
-  PAGE_TYPES = { 'Catalog::Goods' => 'goods', 'Catalog::Category' => 'category', 'Seo::StaticPage' => 'static' }.freeze
-  REDIRECTABLE_TYPES = %w[Catalog::Goods Catalog::Category Seo::StaticPage].freeze
+  PAGE_TYPES = {
+    'Catalog::Goods' => 'goods', 'Catalog::Category' => 'category', 'Seo::StaticPage' => 'static',
+    'Seo::Filter' => 'filter'
+  }.freeze
+  REDIRECTABLE_TYPES = %w[Catalog::Goods Catalog::Category Seo::StaticPage Seo::Filter].freeze
 
   belongs_to :redirectable, polymorphic: true, inverse_of: :seo_redirects
   # The cleanup removes expired redirects with delete_all, so they leave no history.
@@ -55,7 +58,7 @@ end
 #
 # Check Constraints
 #
-#  seo_redirects_page_type_check  (page_type::text = ANY (ARRAY['goods'::character varying, 'category'::character varying, 'static'::character varying]::text[]))
+#  seo_redirects_page_type_check  (page_type::text = ANY (ARRAY['goods'::character varying, 'category'::character varying, 'static'::character varying, 'filter'::character varying]::text[]))
 #  seo_redirects_slug_check       (slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100)
-#  seo_redirects_type_check       (redirectable_type::text = ANY (ARRAY['Catalog::Goods'::character varying, 'Catalog::Category'::character varying, 'Seo::StaticPage'::character varying]::text[]))
+#  seo_redirects_type_check       (redirectable_type::text = ANY (ARRAY['Catalog::Goods'::character varying, 'Catalog::Category'::character varying, 'Seo::StaticPage'::character varying, 'Seo::Filter'::character varying]::text[]))
 #

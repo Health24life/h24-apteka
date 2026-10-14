@@ -1,0 +1,23 @@
+class Seo::Filters::AppliedParams
+  class Value < Data
+    attr_reader id: Integer
+    attr_reader name: String
+
+    def self.new: (id: Integer, name: String) -> instance
+  end
+
+  class Param < Data
+    attr_reader key: String
+    attr_reader name: String
+    attr_reader values: Array[Value]
+
+    def self.new: (key: String, name: String, values: Array[Value]) -> instance
+    def to_h: () -> { key: String, name: String, values: Array[Hash[Symbol, untyped]] }
+  end
+
+  def self.call: (Seo::Filter filter) -> Array[Param]
+
+  private
+
+  def self.names_of: (singleton(ApplicationRecord) model, Array[Integer] ids) -> Hash[Integer, String]
+end

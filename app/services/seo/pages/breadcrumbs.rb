@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # The trail from the home page to a page, each step with its name and the current path of its page. A product goes
-# through the main category of its group and that category's ancestors.
+# through the main category of its group and that category's ancestors, a filter through its own category.
 class Seo::Pages::Breadcrumbs
   class Crumb < Data.define(:name, :path); end
 
@@ -27,6 +27,7 @@ class Seo::Pages::Breadcrumbs
     case record
     when Catalog::Category then branch(record)
     when Catalog::Goods then [ *branch(record.goods_group.primary_category), of(record) ]
+    when Seo::Filter then [ *branch(record.category), of(record) ]
     when Seo::StaticPage then [ of(record) ]
     else []
     end

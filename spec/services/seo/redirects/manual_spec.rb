@@ -64,6 +64,22 @@ RSpec.describe Seo::Redirects::Manual do
     expect(manual('/akcii', '/').redirect).to have_attributes(page_type: 'static', slug: 'akcii', redirectable: home)
   end
 
+  it 'leads from the address of a removed filter to a category', :aggregate_failures do
+    create(:seo_filter, :published, slug: 'dlia-skhudnennia').remove!
+
+    expect(manual('/dobirka/dlia-skhudnennia', '/katalog/zneboliuvalni').redirect)
+      .to have_attributes(page_type: 'filter', slug: 'dlia-skhudnennia', redirectable: category)
+    expect(Seo::Pages::Resolve.call('/dobirka/dlia-skhudnennia', config:).location).to eq('/katalog/zneboliuvalni')
+  end
+
+  it 'leads to a published filter but not to one that is not', :aggregate_failures do
+    published = create(:seo_filter, :published, slug: 'vitaminy-dlia-ditei')
+    create(:seo_filter, slug: 'dlia-imunitetu')
+
+    expect(manual('/tovar/nema', '/dobirka/vitaminy-dlia-ditei').redirect.redirectable).to eq(published)
+    expect(manual('/tovar/nema-2', '/dobirka/dlia-imunitetu').errors).to eq(target: :unavailable)
+  end
+
   it 'leads a redirect to another page and keeps its period', :aggregate_failures do
     redirect = manual('/tovar/nema', '/katalog/zneboliuvalni').redirect
     other = create(:catalog_category, slug: 'inshi')

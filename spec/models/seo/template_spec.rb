@@ -122,6 +122,6 @@ end
 # Check Constraints
 #
 #  seo_templates_category_check   (category_id IS NULL OR (page_type::text = ANY (ARRAY['category'::character varying, 'goods'::character varying]::text[])))
-#  seo_templates_page_type_check  (page_type::text = ANY (ARRAY['home'::character varying, 'category'::character varying, 'goods'::character varying, 'cart'::character varying, 'order'::character varying, 'static'::character varying]::text[]))
+#  seo_templates_page_type_check  (page_type::text = ANY (ARRAY['home'::character varying, 'category'::character varying, 'goods'::character varying, 'cart'::character varying, 'order'::character varying, 'static'::character varying, 'filter'::character varying]::text[]))
 #  seo_templates_recipe_check     (is_recipe IS NULL OR page_type::text = 'goods'::text)
 #

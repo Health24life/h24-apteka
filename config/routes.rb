@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get 'seo/page', to: 'seo/pages#show'
+      resources :filters, only: %i[index show]
     end
   end
 

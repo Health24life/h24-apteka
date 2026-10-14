@@ -1,0 +1,9 @@
+class SeoFilterParamsValidator < ActiveModel::EachValidator
+  # The value is the jsonb an editor sent: its shape is what the validator checks.
+  def validate_each: (ActiveModel::Validations record, Symbol attribute, untyped value) -> void
+
+  private
+
+  def error_of: (String param, untyped ids) -> Symbol?
+  def ids?: (untyped ids) -> bool
+end
