@@ -72,6 +72,13 @@ RSpec.describe 'Admin SEO templates' do
       expect(response.body).to include('Нурофен 200 мг — інструкція')
     end
 
+    it 'asks for a record instead of showing the placeholders empty', :aggregate_failures do
+      post admin_seo_templates_path, params: template_params.merge(preview: 'Переглянути')
+
+      expect(response.body).to include('Оберіть запис для перегляду')
+      expect(response.body).not_to include('символів, ліміт')
+    end
+
     it 'shows a title that search engines would see cut' do
       post admin_seo_templates_path, params: preview_params("{name} #{'дуже ' * 20}довгий", stocked)
 

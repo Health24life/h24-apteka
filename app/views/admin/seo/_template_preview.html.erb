@@ -1,14 +1,20 @@
-<dl class="seo-preview">
+<div class="seo-preview grid gap-3">
   <% { title: preview.title, description: preview.description, h1: preview.h1 }.each do |field, text| %>
-    <dt><%= Seo::Template.human_attribute_name(field) %></dt>
-    <dd>
-      <div><%= text.value %></div>
-      <% if text.limit %>
-        <p class="inline-hints"><%= t("admin.seo_templates.length", length: text.length, limit: text.limit) %></p>
-      <% end %>
+    <div class="rounded-md border p-3 <%= text.cut? ? "border-red-300 dark:border-red-500/50" : "border-gray-200 dark:border-white/10" %>">
+      <div class="flex items-baseline justify-between gap-3 text-xs">
+        <span class="font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <%= Seo::Template.human_attribute_name(field) %>
+        </span>
+        <% if text.limit %>
+          <span class="<%= text.cut? ? "font-semibold text-red-600 dark:text-red-400" : "text-gray-500 dark:text-gray-400" %>">
+            <%= t("admin.seo_templates.length", length: text.length, limit: text.limit) %>
+          </span>
+        <% end %>
+      </div>
       <% if text.cut? %>
-        <p class="inline-errors"><%= t("admin.seo_templates.cut", limit: text.limit) %> <%= text.value %></p>
+        <p class="mt-1 text-xs text-red-600 dark:text-red-400"><%= t("admin.seo_templates.cut", limit: text.limit) %></p>
       <% end %>
-    </dd>
+      <p class="mt-2 text-sm break-words text-gray-900 dark:text-white"><%= text.value %></p>
+    </div>
   <% end %>
-</dl>
+</div>

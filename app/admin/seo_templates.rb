@@ -68,7 +68,7 @@ ActiveAdmin.register Seo::Template, as: 'SeoTemplate' do
         if model
           branch = { category_id: template.category_id, is_recipe: template.is_recipe }
           f.semantic_fields_for :preview, Struct.new(:record_id).new(seo_preview_record&.id) do |preview|
-            preview.input :record_id, as: :tom_select, label: t('admin.seo_templates.preview_record'),
+            preview.input :record_id, as: :tom_select, label: t('admin.seo_templates.preview_record'), required: false,
                                       hint: t('admin.seo_templates.preview_record_hint'),
                                       ajax: { resource: model, collection_name: :preview, params: branch }
           end
@@ -111,11 +111,16 @@ ActiveAdmin.register Seo::Template, as: 'SeoTemplate' do
 
     private
 
+    # Without a record the placeholders of a record page would come out empty, so its preview waits for one.
     def preview_template(template, view)
       template.validate
       @seo_preview_record = chosen_record(template)
-      @seo_preview = Seo::Templates::Preview.call(template:, record: @seo_preview_record)
-      flash.now[:error] = t('admin.seo_templates.not_applicable') if @seo_not_applicable
+      if @seo_preview_record || !Seo::Templates::Preview::MODELS.key?(template.page_type.to_s)
+        @seo_preview = Seo::Templates::Preview.call(template:, record: @seo_preview_record)
+      end
+      unless @seo_preview
+        flash.now[:error] = t(@seo_not_applicable ? 'not_applicable' : 'choose_record', scope: 'admin.seo_templates')
+      end
       render view
     end
 
