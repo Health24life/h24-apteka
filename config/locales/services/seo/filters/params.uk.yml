@@ -1,0 +1,13 @@
+uk:
+  seo:
+    filters:
+      # The names of the search parameters on the badges of a filter's page.
+      params:
+        category_id: Категорія
+        form_id: Форма випуску
+        producer_id: Виробник
+        adult_restriction_id: Дорослим
+        child_restriction_id: Дітям
+        diabetic_restriction_id: Діабетикам
+        driver_restriction_id: Водіям
+        pregnant_and_lactating_restriction_id: Вагітним і тим, хто годує груддю

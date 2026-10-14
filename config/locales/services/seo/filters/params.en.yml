@@ -1,0 +1,12 @@
+en:
+  seo:
+    filters:
+      params:
+        category_id: Category
+        form_id: Dosage form
+        producer_id: Producer
+        adult_restriction_id: Adults
+        child_restriction_id: Children
+        diabetic_restriction_id: Diabetics
+        driver_restriction_id: Drivers
+        pregnant_and_lactating_restriction_id: Pregnant and breastfeeding

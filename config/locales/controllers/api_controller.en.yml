@@ -3,3 +3,5 @@ en:
     errors:
       unauthorized: The session is invalid or has expired. Sign in again.
       invalid_path: The path parameter must be a page path that starts with "/" and is at most 2048 characters long.
+      invalid_category_id: The category_id parameter must be a positive integer.
+      filter_not_found: The filter was not found.
