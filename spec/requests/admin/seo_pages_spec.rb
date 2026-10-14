@@ -32,6 +32,20 @@ RSpec.describe 'Admin SEO of pages' do
       expect(seo_of('/katalog/zneboliuvalni').description).to include('Знеболювальні: лікарські засоби')
     end
 
+    it 'fills the empty fields of the form with the texts of the template' do
+      get seo_admin_sku_path(goods)
+
+      expect(response.body).to include('value="Нурофен — інструкція із застосування"')
+    end
+
+    it 'keeps a text saved as the template gives it following the template', :aggregate_failures do
+      set_seo(seo_admin_sku_path(goods), title_uk: 'Нурофен — інструкція із застосування ', h1_uk: 'Нурофен для дітей')
+      Seo::Template.find_by(page_type: 'goods').update!(title: '{name} — склад і застосування')
+
+      expect(goods.reload.seo_override).to have_attributes(title_uk: nil, h1_uk: 'Нурофен для дітей')
+      expect(seo_of('/tovar/nurofen').title).to eq('Нурофен — склад і застосування')
+    end
+
     it 'sets the meta tags of the home page' do
       Seo::StaticPages::Defaults.call
       set_seo(seo_admin_static_page_path(Seo::StaticPage.home), title_uk: 'Аптека Health24 — бронювання ліків')

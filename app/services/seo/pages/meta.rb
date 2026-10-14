@@ -11,9 +11,16 @@ class Seo::Pages::Meta
 
   def self.call(page)
     override = page.record&.seo_override
+    generated = generated(page)
+    new(title: by_hand(override, :title) || generated.title,
+        description: by_hand(override, :description) || generated.description,
+        h1: by_hand(override, :h1) || generated.h1, seo_text: override&.seo_text.presence)
+  end
+
+  # What the template gives a page, as if nothing were set by hand.
+  def self.generated(page)
     title, description, h1 = generate(template_for(page), values_for(page.record), page.page_number.to_i)
-    new(title: by_hand(override, :title) || title, description: by_hand(override, :description) || description,
-        h1: by_hand(override, :h1) || h1, seo_text: override&.seo_text.presence)
+    new(title:, description:, h1:, seo_text: nil)
   end
 
   # A field an operator filled in; an empty one leaves the template's.

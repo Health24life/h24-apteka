@@ -7,7 +7,22 @@
 # has a new slug, gets one redirect straight to the final path. A page that is not there still tells what it would be,
 # so the admin can check where an editor's redirect may start.
 class Seo::Pages::Resolve
-  class Page < Data.define(:type, :record, :order_number, :page_number, :filters); end
+  class Page < Data.define(:type, :record, :order_number, :page_number, :filters)
+    # The first page of a record, whether or not the storefront shows it now.
+    def self.of(record)
+      new(type: type_of(record), record:, order_number: nil, page_number: nil, filters: {})
+    end
+
+    def self.type_of(record)
+      case record
+      when Catalog::Goods then :goods
+      when Catalog::Category then :category
+      else record.home? ? :home : :static
+      end
+    end
+
+    private_class_method :type_of
+  end
 
   class Result < Data.define(:status, :page, :location)
     def self.found(page) = new(status: 200, page:, location: nil)

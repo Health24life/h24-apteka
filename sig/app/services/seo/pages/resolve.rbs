@@ -13,6 +13,12 @@ class Seo::Pages::Resolve
                    page_number: Integer?, filters: Hash[String, String]) -> instance
     def with: (?type: Seo::Pages::Resolve::page_type, ?record: Seo::Pages::Resolve::record?, ?order_number: String?,
                ?page_number: Integer?, ?filters: Hash[String, String]) -> Page
+
+    def self.of: (Seo::Pages::Resolve::record record) -> instance
+
+    private
+
+    def self.type_of: (Seo::Pages::Resolve::record record) -> Seo::Pages::Resolve::page_type
   end
 
   class Result < Data
