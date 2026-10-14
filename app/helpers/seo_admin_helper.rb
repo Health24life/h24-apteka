@@ -70,6 +70,17 @@ module SeoAdminHelper
     path ? link_to(seo_record_name(redirect.redirectable), path) : '—'
   end
 
+  # A link to the template the page of a record takes its texts from, or nil while there is none.
+  def seo_template_link(record)
+    template = Seo::Pages::Meta.template_for(Seo::Pages::Resolve::Page.of(record))
+    parts = [ seo_page_type_label(template.page_type) ]
+    parts << seo_branch_label(template) if template.for_category? || template.for_goods?
+    parts << seo_recipe_label(template.is_recipe) if template.for_goods?
+    link_to parts.join(' · '), admin_seo_template_path(template)
+  rescue Seo::Templates::Pick::Missing
+    nil
+  end
+
   # What the SEO endpoint answers for the page of a record now, or nil while its page type has no general template yet
   # (before the one-time task that adds them ran), so a card still opens.
   def seo_described(record)

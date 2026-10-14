@@ -6,6 +6,7 @@ panel t('admin.seo_override.title') do
       described ? "#{described.status} · #{described.robots}" : '—'
     end
     row(t('admin.seo_override.api_request')) { seo_api_link(record) }
+    row(t('admin.seo_override.template')) { seo_template_link(record) }
     # Each text with where it comes from: set by hand or given by the template.
     %i[title description h1].each do |field|
       row(Seo::Override.human_attribute_name(field)) do

@@ -34,6 +34,14 @@ RSpec.describe 'Admin SEO of pages' do
       expect(seo_of('/katalog/zneboliuvalni').description).to include('Знеболювальні: лікарські засоби')
     end
 
+    it 'links the card to the template the page takes its texts from' do
+      template = Seo::Template.find_by(page_type: 'goods', category_id: nil, is_recipe: nil)
+
+      get admin_sku_path(goods)
+
+      expect(response.body).to include(%(href="#{admin_seo_template_path(template)}">Товар · загальний · будь-які</a>))
+    end
+
     it 'fills the empty fields of the form with the texts of the template' do
       get seo_admin_sku_path(goods)
 

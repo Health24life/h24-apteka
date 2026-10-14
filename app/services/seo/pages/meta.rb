@@ -33,6 +33,7 @@ class Seo::Pages::Meta
       Seo::Templates::Render.call(template.h1.to_s, values) ]
   end
 
+  # The narrowest template that fits a page.
   def self.template_for(page)
     case (record = page.record)
     when Catalog::Goods
@@ -57,7 +58,7 @@ class Seo::Pages::Meta
     Seo::Templates::Truncate.call(Seo::Templates::Render.call(text, values), limit - suffix.length) + suffix
   end
 
-  private_class_method :by_hand, :generate, :template_for, :limited
+  private_class_method :by_hand, :generate, :limited
 
   def initialize(title:, description:, h1:, seo_text:)
     @title = title
