@@ -99,6 +99,7 @@ end
 #  attrs         :jsonb            not null
 #  linkable_type :string           not null
 #  synced_at     :datetime         not null
+#  withdrawn_at  :datetime
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  external_id   :string           not null

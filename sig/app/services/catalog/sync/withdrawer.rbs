@@ -13,5 +13,7 @@ class Catalog::Sync::Withdrawer
   private
 
   def withdraw: (model model) -> void
+  def unseen: (model model) -> Provider::Link::ActiveRecord_Relation
+  def live: (model model) -> Provider::Link::ActiveRecord_Relation
   def failed_ids: (model model) -> SyncRun::Failure::ActiveRecord_Associations_CollectionProxy
 end

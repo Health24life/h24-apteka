@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_14_120300) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_14_120400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -376,6 +376,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_120300) do
     t.datetime "synced_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "withdrawn_at"
     t.index ["linkable_type", "linkable_id"], name: "index_provider_links_on_linkable"
     t.index ["provider_id", "linkable_type", "external_id"], name: "index_provider_links_on_provider_external_id", unique: true
     t.index ["provider_id", "linkable_type", "linkable_id"], name: "index_provider_links_on_provider_linkable", unique: true
