@@ -1,0 +1,8 @@
+class Catalog::PrimaryCategory::History
+  def self.record: (group: Catalog::Goods::Group, from: Catalog::Category?, to: Catalog::Category?, author: AdminUser | Provider) -> void
+
+  private
+
+  def self.body: (Catalog::Category? from, Catalog::Category? to) -> String
+  def self.kind: (Catalog::Category? from, Catalog::Category? to) -> String
+end

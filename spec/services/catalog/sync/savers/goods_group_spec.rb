@@ -80,8 +80,13 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
 
     def save_with(*categories) = save_one(item.with(categories:))
 
-    it 'is the first of the list for a new group' do
-      expect(primary_of(save_with(first, second))).to eq('Знеболювальні')
+    def history_of(group) = ActiveAdmin::Comment.where(resource: group)
+
+    it 'is the first of the list for a new group, with nothing in the history', :aggregate_failures do
+      group = save_with(first, second)
+
+      expect(primary_of(group)).to eq('Знеболювальні')
+      expect(history_of(group)).to be_empty
     end
 
     it 'stays when the provider lists the same categories in another order' do
@@ -90,22 +95,53 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
       expect(primary_of(save_with(second, first))).to eq('Знеболювальні')
     end
 
-    it 'stays when it was chosen by hand, whatever the order of the list' do
+    it 'stays when an editor chose it, whatever the order, adding nothing to the history', :aggregate_failures do
       group = save_with(first, second)
-      group.goods_group_categories.update_all(is_primary: false) # rubocop:disable Rails/SkipsModelValidations
-      group.goods_group_categories.where(category: Catalog::Category.find_linked(provider, '7002'))
-           .update_all(is_primary: true) # rubocop:disable Rails/SkipsModelValidations
+      Catalog::PrimaryCategory::Changer.call(group:, category_id: Catalog::Category.find_linked(provider, '7002').id,
+                                             admin: create(:admin_user))
 
       expect(primary_of(save_with(first, second))).to eq('Протизапальні')
+      expect(history_of(group).count).to eq(1)
     end
 
-    it 'goes to the first of the rest when the provider drops it', :aggregate_failures do
-      save_with(first, second, third)
+    it 'leaves the history and the date of the group alone when the same data comes again', :aggregate_failures do
+      group = save_with(first, second)
+      group.update_columns(updated_at: 1.day.ago) # rubocop:disable Rails/SkipsModelValidations
 
-      group = save_with(third, second)
+      expect { save_with(first, second) }.not_to(change { group.reload.updated_at })
+      expect(history_of(group)).to be_empty
+    end
 
-      expect(group.reload.categories.map(&:name_uk)).to contain_exactly('Протизапальні', 'Від головного болю')
-      expect(primary_of(group)).to eq('Від головного болю')
+    context 'when the provider drops it' do
+      before do
+        group = save_with(first, second, third)
+        group.update_columns(updated_at: 1.day.ago) # rubocop:disable Rails/SkipsModelValidations
+      end
+
+      it 'goes to the first of the rest', :aggregate_failures do
+        group = save_with(third, second)
+
+        expect(group.reload.categories.map(&:name_uk)).to contain_exactly('Протизапальні', 'Від головного болю')
+        expect(primary_of(group)).to eq('Від головного болю')
+      end
+
+      it 'is recorded in the history by the provider and moves the date of the group', :aggregate_failures do
+        group = save_with(third, second)
+
+        expect(history_of(group).sole).to have_attributes(
+          author: provider, body: 'Головну категорію змінено: «Знеболювальні» → «Від головного болю»'
+        )
+        expect(group.reload.updated_at).to be > 1.hour.ago
+      end
+
+      it 'leaves no primary one when no category is left, and says so in the history', :aggregate_failures do
+        group = save_with
+
+        expect(group.reload.goods_group_categories).to be_empty
+        expect(history_of(group).sole.body).to eq(
+          'Головну категорію «Знеболювальні» прибрано: інших категорій у групи не лишилось'
+        )
+      end
     end
   end
 

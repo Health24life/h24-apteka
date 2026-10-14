@@ -59,17 +59,31 @@ class Catalog::Sync::Savers::GoodsGroup
     @linker.sync(Catalog::AtcClass, record.external_id, { atc_code: record.atc_code, name_uk: record.name, parent: })
   end
 
-  # The primary category is set once, to the first of the provider's list, and kept while the group stays in it: the
-  # breadcrumbs and the SEO template of the card follow it, and an editor may have chosen it by hand.
+  # The primary category is set once, to the first of the provider's list, and only for a group without one: the
+  # breadcrumbs and the SEO template of the card follow it, and an editor may have chosen it by hand. The mark never
+  # comes off a category that stays in the list, so a choice an editor makes while the import runs is not written over.
   def save_categories(group, categories)
     ids = categories.map { ensure_category(it).id }.uniq
-    links = group.goods_group_categories
-    links.where.not(category_id: ids).delete_all
-    return if ids.empty?
+    gone = group.goods_group_categories.where.not(category_id: ids)
+    dropped = gone.find_by(is_primary: true)&.category
+    gone.delete_all
+    link_categories(group, ids) if ids.any?
+    record_dropped_primary(group, dropped) if dropped
+  end
 
-    primary_id = links.where(is_primary: true).pick(:category_id) || ids.first
-    rows = ids.map { { goods_group_id: group.id, category_id: it, is_primary: it == primary_id } }
-    Catalog::Goods::Group::Category.upsert_all(rows, unique_by: %i[goods_group_id category_id]) # rubocop:disable Rails/SkipsModelValidations
+  def link_categories(group, ids)
+    rows = ids.map { { goods_group_id: group.id, category_id: it } }
+    Catalog::Goods::Group::Category.insert_all(rows, unique_by: %i[goods_group_id category_id]) # rubocop:disable Rails/SkipsModelValidations
+    primary = Catalog::Goods::Group::Category.where(goods_group_id: group.id, is_primary: true)
+    Catalog::Goods::Group::Category.where(goods_group_id: group.id, category_id: ids.first)
+                                   .where.not(goods_group_id: primary.select(:goods_group_id))
+                                   .update_all(is_primary: true, updated_at: Time.current) # rubocop:disable Rails/SkipsModelValidations
+  end
+
+  def record_dropped_primary(group, dropped)
+    group.touch # rubocop:disable Rails/SkipsModelValidations
+    primary = group.goods_group_categories.find_by(is_primary: true)&.category
+    Catalog::PrimaryCategory::History.record(group:, from: dropped, to: primary, author: @linker.provider)
   end
 
   # A category the tree import has not brought yet is built from the path the group carries, root down.

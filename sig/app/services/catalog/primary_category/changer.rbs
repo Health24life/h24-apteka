@@ -1,0 +1,9 @@
+class Catalog::PrimaryCategory::Changer
+  type result = :changed | :unchanged | :not_in_group | :conflict
+
+  def self.call: (group: Catalog::Goods::Group, category_id: Integer | String, admin: AdminUser) -> result
+
+  private
+
+  def self.mark: (Catalog::Goods::Group::Category link) -> bool
+end

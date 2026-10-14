@@ -34,6 +34,8 @@ class Catalog::Category < ApplicationRecord
   }
 
   def shown_goods? = self.class.with_shown_goods.exists?(id)
+
+  def branch_name = self_and_ancestors.to_a.reverse.map(&:name_uk).join(' › ')
 end
 
 # == Schema Information

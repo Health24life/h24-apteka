@@ -30,12 +30,31 @@ ActiveAdmin.register Catalog::Goods::Group, as: 'GoodsGroup' do
       row :producer
       row :goods_name
       row(:atc_class) { |group| group.atc_class && [ group.atc_class.code, group.atc_class.name ].compact.join(' — ') }
-      row(:categories) { |group| group.categories.map(&:name).join(', ') }
       row :included_to_offers
       row :withdrawn
       row :hidden
       row :created_at
       row :updated_at
+    end
+
+    panel Catalog::Goods::Group.human_attribute_name(:categories) do
+      links = resource.goods_group_categories.includes(:category).sort_by { it.category.branch_name }
+      if links.empty?
+        para t('admin.primary_category.none')
+      else
+        table_for links do
+          column(t('admin.primary_category.branch')) { |link| link.category.branch_name }
+          column(t('admin.primary_category.primary')) do |link|
+            if link.is_primary
+              status_tag t('admin.primary_category.primary'), class: 'yes'
+            else
+              button_to t('admin.primary_category.make_primary'), url_for(action: :primary_category),
+                        method: :put, params: { category_id: link.category_id }, class: 'action-item-button',
+                        data: { confirm: t('admin.primary_category.confirm', branch: link.category.branch_name) }
+            end
+          end
+        end
+      end
     end
 
     panel t('activerecord.models.sku.other') do
@@ -57,6 +76,13 @@ ActiveAdmin.register Catalog::Goods::Group, as: 'GoodsGroup' do
 
   member_action :visibility, method: %i[get put] do
     change_visibility
+  end
+
+  member_action :primary_category, method: :put do
+    result = Catalog::PrimaryCategory::Changer.call(group: resource, category_id: params.require(:category_id),
+                                                    admin: current_admin_user)
+    kind = %i[changed unchanged].include?(result) ? :notice : :alert
+    redirect_to resource_path(resource), kind => t("admin.primary_category.#{result}")
   end
 
   controller do

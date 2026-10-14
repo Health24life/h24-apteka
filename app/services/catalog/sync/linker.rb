@@ -4,6 +4,8 @@
 # repeatable: the same external id always leads to the same record, and its time is when the record was last seen.
 # A linker lives for one step, so the records it has looked up are kept for the step and not asked for again.
 class Catalog::Sync::Linker
+  attr_reader :provider
+
   def initialize(provider, now: Time.current)
     @provider = provider
     @now = now
