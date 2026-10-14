@@ -30,7 +30,7 @@ RSpec.describe 'Admin SEO templates' do
 
   it 'lets any admin see the templates and change one', :aggregate_failures do
     get admin_seo_templates_path
-    expect(response.body).to include('{name} {dosage} — інструкція із застосування')
+    expect(response.body).to include('{name} — інструкція із застосування')
 
     patch admin_seo_template_path(general), params: { seo_template: { title_uk: '{name} — інструкція' } }
     expect(general.reload.title_uk).to eq('{name} — інструкція')

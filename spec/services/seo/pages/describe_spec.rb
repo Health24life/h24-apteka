@@ -6,7 +6,7 @@ RSpec.describe Seo::Pages::Describe do
   before { Seo::Templates::Defaults.call }
 
   it 'describes a page that is there', :aggregate_failures do
-    create(:catalog_goods, name_uk: 'Нурофен', slug: 'nurofen', dosage: '200 мг')
+    create(:catalog_goods, name_uk: 'Нурофен 200 мг', slug: 'nurofen', dosage: '200 мг')
     described = described_class.call('/tovar/nurofen')
 
     expect(described).to have_attributes(status: 200, location: nil, robots: 'index, follow', seo_text: nil,

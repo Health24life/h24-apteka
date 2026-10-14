@@ -30,8 +30,8 @@ module DevSamples::Seo
     Catalog::Category.where(parent_id: nil).or(Catalog::Category.where.not(parent_id: nil)).order(:id)
                      .each_slice(3).to_a[part].to_a.each do |category|
       template('category', category, nil, '{name} — каталог Аптеки Health24')
-      template('goods', category, nil, "{name} {dosage} — #{category.name_uk.downcase}, інструкція")
-      template('goods', category, true, '{name} {dosage} — рецептурний препарат, інструкція') if part.zero?
+      template('goods', category, nil, "{name} — #{category.name_uk.downcase}, інструкція")
+      template('goods', category, true, '{name} — рецептурний препарат, інструкція') if part.zero?
     end
   end
 

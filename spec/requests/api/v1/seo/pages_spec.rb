@@ -34,8 +34,8 @@ RSpec.describe 'SEO data of a page' do
 
         run_test! do
           expect(response.parsed_body).to include(
-            'status' => 200, 'location' => nil, 'title' => 'Нурофен 200 мг — інструкція із застосування',
-            'h1' => 'Нурофен 200 мг', 'robots' => 'index, follow', 'seo_text' => nil, 'breadcrumbs' => breadcrumbs,
+            'status' => 200, 'location' => nil, 'title' => 'Нурофен — інструкція із застосування',
+            'h1' => 'Нурофен', 'robots' => 'index, follow', 'seo_text' => nil, 'breadcrumbs' => breadcrumbs,
             'content' => nil
           )
         end

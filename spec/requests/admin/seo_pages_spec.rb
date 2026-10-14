@@ -62,7 +62,7 @@ RSpec.describe 'Admin SEO of pages' do
     it 'shows the current answer of the endpoint and the editor on the card', :aggregate_failures do
       get admin_sku_path(goods)
 
-      expect(response.body).to include('Нурофен 200 мг — інструкція із застосування')
+      expect(response.body).to include('Нурофен — інструкція із застосування')
       get seo_admin_sku_path(goods)
       expect(response.body).to include('<trix-editor')
     end
