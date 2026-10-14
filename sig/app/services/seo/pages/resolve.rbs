@@ -14,7 +14,7 @@ class Seo::Pages::Resolve
     def with: (?type: Seo::Pages::Resolve::page_type, ?record: Seo::Pages::Resolve::record?, ?order_number: String?,
                ?page_number: Integer?, ?filters: Hash[String, String]) -> Page
 
-    def self.of: (Seo::Pages::Resolve::record record) -> instance
+    def self.of: (Seo::Pages::Resolve::record record) -> Page
 
     private
 
