@@ -26,6 +26,14 @@ RSpec.describe 'Admin SEO of pages' do
       expect(response.body.scan(/>(вручну|з шаблону)</).flatten).to eq([ 'вручну', 'з шаблону', 'з шаблону' ])
     end
 
+    it 'shows a translated field once in the history of the page' do
+      set_seo(seo_admin_category_path(category), description_uk: 'Свій опис')
+
+      get admin_category_path(category)
+
+      expect(response.body.scan('Description: порожньо → Свій опис').size).to eq(1)
+    end
+
     it 'gives a category its template back once a field is emptied', :aggregate_failures do
       create(:seo_override, target: category, description_uk: 'Свій опис')
 
