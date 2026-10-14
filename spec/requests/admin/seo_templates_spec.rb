@@ -18,7 +18,8 @@ RSpec.describe 'Admin SEO templates' do
   end
 
   def preview_params(title, record)
-    template_params(title_uk: title).merge(preview: '1').deep_merge(seo_template: { preview: { record_id: record.id } })
+    template_params(title_uk: title).merge(preview: 'Переглянути')
+                                    .deep_merge(seo_template: { preview: { record_id: record.id } })
   end
 
   def stocked(**goods)
@@ -57,6 +58,12 @@ RSpec.describe 'Admin SEO templates' do
   end
 
   describe 'the preview' do
+    it 'offers a preview button named for what it does' do
+      get edit_admin_seo_template_path(general)
+
+      expect(response.body).to include('name="preview" value="Переглянути"')
+    end
+
     it 'shows the texts on the chosen SKU without saving the template', :aggregate_failures do
       goods = stocked(name_uk: 'Нурофен', dosage: '200 мг')
 

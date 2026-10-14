@@ -76,7 +76,7 @@ ActiveAdmin.register Seo::Template, as: 'SeoTemplate' do
 
     f.actions do
       f.action :submit
-      f.action :submit, label: t('admin.seo_templates.preview'), button_html: { name: 'preview', value: '1' }
+      f.action :submit, label: t('admin.seo_templates.preview'), button_html: { name: 'preview' }
       f.cancel_link
     end
   end
