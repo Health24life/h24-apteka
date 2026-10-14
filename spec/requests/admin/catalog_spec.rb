@@ -94,7 +94,8 @@ RSpec.describe 'Admin catalog' do
 
       get admin_drugstores_path
 
-      expect(response.body).to include('title="Pharmapoint передав аптеку лише у списку', 'title="Аптеку зняв партнер',
+      expect(response.body).to include('title="Pharmapoint передав аптеку лише у списку',
+                                       'title="Для аптек позначка не використовується',
                                        'title="Аптеку приховав адміністратор')
     end
 
