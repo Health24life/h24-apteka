@@ -141,6 +141,30 @@ RSpec.describe 'Admin SEO of pages' do
       expect(response.body).to include('Знеболювальні', 'zneboliuvalni')
     end
 
+    describe 'the goods groups of a branch' do
+      let(:child) { create(:catalog_category, name_uk: 'Для дітей', parent: category) }
+
+      before do
+        nurofen = create(:catalog_goods_group, name_uk: 'Нурофен')
+        create(:catalog_goods_group_category, category: child, goods_group: nurofen, is_primary: true)
+        create(:catalog_goods_group_category, goods_group: create(:catalog_goods_group, name_uk: 'Валеріана'))
+      end
+
+      it 'lists them on the card of the parent with their subcategory', :aggregate_failures do
+        get admin_category_path(category)
+
+        expect(response.body).to include('Групи товарів гілки (1)', 'Нурофен', 'Для дітей')
+        expect(response.body).not_to include('Валеріана')
+      end
+
+      it 'filters the list of goods groups by the branch', :aggregate_failures do
+        get admin_goods_groups_path, params: { q: { in_branch: category.id } }
+
+        expect(response.body).to include('Нурофен')
+        expect(response.body).not_to include('Валеріана')
+      end
+    end
+
     it 'has no way to change the tree' do
       category
 

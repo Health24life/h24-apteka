@@ -17,6 +17,12 @@ uk:
       changed: Зміну збережено.
       unchanged: Запис уже в цьому стані — нічого не змінено.
       reason_required: Вкажіть причину, щоб приховати запис.
+    categories:
+      children: Підкатегорії
+      goods_groups: "Групи товарів гілки (%{count})"
+      no_goods_groups: Провайдер не поклав у цю категорію й її підкатегорії жодної групи товарів.
+      all_goods_groups: Усі групи гілки
+      branch_filter: Гілка каталогу
     primary_category:
       none: Провайдер не задав групі жодної категорії.
       branch: Гілка

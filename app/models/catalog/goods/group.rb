@@ -26,7 +26,18 @@ class Catalog::Goods::Group < ApplicationRecord
     joins(:translations).where('catalog_goods_group_translations.name ILIKE ?', "%#{sanitize_sql_like(text.to_s)}%")
   }
 
-  def self.ransackable_scopes(_auth_object = nil) = %i[name_cont]
+  # Groups the provider put anywhere in the branch of a category, whether it is their primary one or not.
+  scope :in_branch, lambda { |category_id|
+    where(<<~SQL.squish, category_id)
+      catalog_goods_groups.id IN (
+        SELECT link.goods_group_id FROM catalog_goods_group_categories link
+        JOIN catalog_category_hierarchies hierarchy ON hierarchy.descendant_id = link.category_id
+        WHERE hierarchy.ancestor_id = ?
+      )
+    SQL
+  }
+
+  def self.ransackable_scopes(_auth_object = nil) = %i[name_cont in_branch]
 end
 
 # == Schema Information
