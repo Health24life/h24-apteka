@@ -55,7 +55,7 @@ ActiveAdmin.register Seo::Template, as: 'SeoTemplate' do
         f.input :is_recipe, as: :select, include_blank: seo_recipe_label(nil),
                             collection: [ true, false ].map { [ seo_recipe_label(it), it ] }
       end
-      para seo_placeholders_hint(template), class: 'inline-hints'
+      render 'admin/seo/placeholders', placeholders: seo_placeholders(template)
       f.input :title_uk
       f.input :description_uk, as: :text, input_html: { rows: 3 }
       f.input :h1_uk

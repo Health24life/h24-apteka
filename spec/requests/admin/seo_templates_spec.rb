@@ -36,6 +36,13 @@ RSpec.describe 'Admin SEO templates' do
     expect(general.reload.title_uk).to eq('{name} — інструкція')
   end
 
+  it 'describes each placeholder of the page type on the form', :aggregate_failures do
+    get edit_admin_seo_template_path(general)
+
+    expect(response.body).to include('{dosage}</code> — дозування', '{inn}</code> — МНН')
+    expect(response.body).not_to include('назва категорії')
+  end
+
   it 'creates a template narrowed to a branch and to prescription goods' do
     post admin_seo_templates_path, params: template_params(category_id: painkillers.id, is_recipe: 'true')
 

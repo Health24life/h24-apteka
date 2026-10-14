@@ -85,11 +85,11 @@ module SeoAdminHelper
 
   def seo_recipe_label(is_recipe) = t(is_recipe.nil? ? 'any' : is_recipe.to_s, scope: 'admin.seo_templates.recipe')
 
-  def seo_placeholders_hint(template)
-    placeholders = template.placeholders.map { "{#{it}}" }
-    return t('admin.seo_templates.no_placeholders') if placeholders.empty?
-
-    t('admin.seo_templates.placeholders', list: placeholders.join(', '))
+  # Each placeholder of the template's page type with what it gives on a page.
+  def seo_placeholders(template)
+    template.placeholders.map do |name|
+      [ "{#{name}}", t(name, scope: [ :admin, :seo_templates, :placeholder_names, template.page_type ]) ]
+    end
   end
 
   def seo_record_name(record)
