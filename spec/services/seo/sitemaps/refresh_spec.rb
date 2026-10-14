@@ -99,22 +99,30 @@ RSpec.describe Seo::Sitemaps::Refresh do
     context 'with filters in every state' do
       before do
         stocked('nurofen')
-        create(:seo_filter, :published, slug: 'vitaminy-dlia-ditei')
+        create(:seo_filter, :stocked, slug: 'vitaminy-dlia-ditei')
+        create(:seo_filter, :published, slug: 'porozhnia')
         create(:seo_filter, slug: 'dlia-skhudnennia')
-        create(:seo_filter, :published, slug: 'vid-zastudy').remove!
-        create(:seo_override, target: create(:seo_filter, :published, slug: 'zakryta'), robots: 'noindex')
+        create(:seo_filter, :stocked, slug: 'vid-zastudy').remove!
+        create(:seo_override, target: create(:seo_filter, :stocked, slug: 'zakryta'), robots: 'noindex')
       end
 
-      it 'lists the published ones after the categories and leaves out the rest' do
+      it 'lists the published ones with goods after the categories and leaves out the rest' do
         refresh
 
         expect(paths_of('categories.xml.gz')).to eq([ '/', '/katalog/zneboliuvalni', '/dobirka/vitaminy-dlia-ditei' ])
       end
     end
 
+    it 'lists a filter without goods that an operator opened' do
+      create(:seo_override, target: create(:seo_filter, :published, slug: 'porozhnia'), robots: 'index')
+      refresh
+
+      expect(paths_of('categories.xml.gz')).to include('/dobirka/porozhnia')
+    end
+
     it 'dates a filter by the change of its parameters' do
-      filter = travel_to(Time.zone.local(2026, 10, 1, 12)) { create(:seo_filter, :published, slug: 'vitaminy') }
-      params = filter.params.merge('form_id' => [ create(:catalog_goods_form).id ])
+      filter = travel_to(Time.zone.local(2026, 10, 1, 12)) { create(:seo_filter, :stocked, slug: 'vitaminy') }
+      params = { 'form_id' => [ *filter.params['form_id'], create(:catalog_goods_form).id ] }
       travel_to(Time.zone.local(2026, 10, 5, 12)) { filter.update!(params:) }
       refresh
 
@@ -122,8 +130,8 @@ RSpec.describe Seo::Sitemaps::Refresh do
     end
 
     it 'keeps the date of a filter when a sync brings goods under it' do
-      travel_to(Time.zone.local(2026, 10, 1, 12)) { create(:seo_filter, :published, slug: 'vitaminy') }
-      travel_to(Time.zone.local(2026, 10, 5, 12)) { stocked('nurofen') }
+      filter = travel_to(Time.zone.local(2026, 10, 1, 12)) { create(:seo_filter, :published, slug: 'vitaminy') }
+      travel_to(Time.zone.local(2026, 10, 5, 12)) { create(:catalog_goods, form_id: filter.params['form_id'].first) }
 
       refresh
 
@@ -131,7 +139,7 @@ RSpec.describe Seo::Sitemaps::Refresh do
     end
 
     it 'follows a change of the texts set by hand' do
-      filter = travel_to(Time.zone.local(2026, 10, 1, 12)) { create(:seo_filter, :published, slug: 'vitaminy') }
+      filter = travel_to(Time.zone.local(2026, 10, 1, 12)) { create(:seo_filter, :stocked, slug: 'vitaminy') }
       travel_to(Time.zone.local(2026, 10, 7, 12)) { create(:seo_override, target: filter, h1_uk: 'Вітаміни') }
 
       refresh

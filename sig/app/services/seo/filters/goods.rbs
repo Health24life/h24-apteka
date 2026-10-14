@@ -1,0 +1,10 @@
+class Seo::Filters::Goods
+  def self.call: (Seo::Filter filter) -> Catalog::Goods::ActiveRecord_Relation
+  def self.any?: (Seo::Filter filter) -> bool
+
+  private
+
+  def self.narrowed: (Catalog::Goods::ActiveRecord_Relation scope, String key, Array[Integer] ids) -> Catalog::Goods::ActiveRecord_Relation
+  def self.in_branches: (Array[Integer] category_ids) -> Catalog::Goods::Group::Category::ActiveRecord_Relation
+  def self.prescribed: (Catalog::Goods::ActiveRecord_Relation scope, String recipe_scope) -> Catalog::Goods::ActiveRecord_Relation
+end

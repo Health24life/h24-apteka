@@ -18,9 +18,20 @@ class Seo::Sitemaps::Entries
     each(indexed, static_page_changed_at, &)
   end
 
-  # A filter is dated by its own changes only: goods a sync brings under its parameters leave the date as it is.
-  def self.filters(&)
-    each(Seo::Filter.listed.where.not(id: forced('Seo::Filter', 'noindex')), filter_changed_at, &)
+  # A filter is dated by its own changes only: goods a sync brings under its parameters leave the date as it is. One
+  # with nothing on the storefront is left out unless an operator opened it, as a category is. Filters are few, so each
+  # is checked on its own.
+  def self.filters
+    opened = forced('Seo::Filter', 'index').pluck(:target_id).to_set
+    unclosed_filters.each do |filter|
+      yield filter.slug.to_s, filter[:changed_at] if opened.include?(filter.id) || Seo::Filters::Goods.any?(filter)
+    end
+  end
+
+  # The published filters an operator did not close, each with the moment it last changed.
+  def self.unclosed_filters
+    Seo::Filter.listed.where.not(id: forced('Seo::Filter', 'noindex')).reorder(:id)
+               .select(:id, :slug, :params, :recipe_scope, Arel.sql("#{filter_changed_at} AS changed_at"))
   end
 
   # The home page is listed unless an operator took it out of the index.
@@ -72,6 +83,6 @@ class Seo::Sitemaps::Entries
     SQL
   end
 
-  private_class_method :forced, :each, :category_changed_at, :goods_changed_at, :static_page_changed_at,
-                       :filter_changed_at, :override_changed_at
+  private_class_method :unclosed_filters, :forced, :each, :category_changed_at, :goods_changed_at,
+                       :static_page_changed_at, :filter_changed_at, :override_changed_at
 end

@@ -8,6 +8,9 @@ class Seo::Pages::Robots
 
   private
 
+  def self.category: (Seo::Pages::Resolve::Page page) -> String
+  def self.listing: (bool stocked) -> String
   def self.forced: (Seo::Pages::Resolve::Page page) -> String?
   def self.category_shown?: (Seo::Pages::Resolve::record? category) -> bool
+  def self.filter_stocked?: (Seo::Pages::Resolve::record? filter) -> bool
 end

@@ -91,7 +91,8 @@ paths:
         read. A single segment that no other route takes is the address of a static
         page, whose text comes in `content`. `/dobirka/<slug>` is the page of an SEO
         filter, a named selection of goods: 404 until it is published, 410 once it
-        is removed.'
+        is removed, and `noindex, follow` while nothing on the storefront matches
+        it.'
       parameters:
       - name: path
         in: query

@@ -8,6 +8,13 @@ FactoryBot.define do
       published { true }
       params { { 'form_id' => [ create(:catalog_goods_form).id ] } }
     end
+
+    # Published, with a SKU on the storefront that its parameters select.
+    trait :stocked do
+      published
+
+      after(:create) { |filter| create(:catalog_goods, form_id: filter.params.fetch('form_id').first) }
+    end
   end
 end
 
