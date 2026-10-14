@@ -15,7 +15,8 @@ ActiveAdmin.register Catalog::Drugstore, as: 'Drugstore' do
 
   filter :name
   filter :drugstore_legal_entity_code
-  filter :brand, as: :tom_select
+  # Brands are a short dictionary without an admin of their own to search, so the filter lists them all.
+  filter :brand, as: :tom_select, ajax: false
   filter :incomplete
   filter :withdrawn
   filter :hidden

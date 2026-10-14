@@ -80,6 +80,15 @@ RSpec.describe 'Admin catalog' do
       expect(response.body).not_to include(goods.name)
     end
 
+    it 'lists the brands in the filter of drugstores', :aggregate_failures do
+      create(:catalog_drugstore_brand, name: 'Подорожник')
+
+      get admin_drugstores_path
+
+      expect(response.body).to include('>Подорожник</option>')
+      expect(response.body).not_to include('No admin found')
+    end
+
     it 'filters drugstores by the legal entity code', :aggregate_failures do
       other = create(:catalog_drugstore, name: 'Інша аптека', drugstore_legal_entity_code: '12345678')
       drugstore
