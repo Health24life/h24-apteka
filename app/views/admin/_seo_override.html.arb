@@ -6,11 +6,13 @@ panel t('admin.seo_override.title') do
       described ? "#{described.status} · #{described.robots}" : '—'
     end
     row(t('admin.seo_override.api_request')) { seo_api_link(record) }
-    row(Seo::Override.human_attribute_name(:title)) { described&.title }
-    row(Seo::Override.human_attribute_name(:description)) { described&.description }
-    row(Seo::Override.human_attribute_name(:h1)) { described&.h1 }
-    row(t('admin.seo_override.by_hand')) do
-      override ? [ override.title_uk, override.description_uk, override.h1_uk ].compact_blank.join(' · ') : '—'
+    # Each text with where it comes from: set by hand or given by the template.
+    %i[title description h1].each do |field|
+      row(Seo::Override.human_attribute_name(field)) do
+        by_hand = override&.public_send(:"#{field}_uk").present?
+        span described&.public_send(field), class: 'me-2'
+        status_tag(by_hand ? 'yes' : 'no', label: t(by_hand ? 'by_hand' : 'from_template', scope: 'admin.seo_override'))
+      end
     end
     row(Seo::Override.human_attribute_name(:robots)) do
       t(override&.robots || 'auto', scope: 'admin.seo_override.robots')

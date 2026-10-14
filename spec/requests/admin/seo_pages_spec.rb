@@ -22,6 +22,8 @@ RSpec.describe 'Admin SEO of pages' do
 
       expect(response).to redirect_to(admin_sku_path(goods))
       expect(seo_of('/tovar/nurofen').title).to eq('Нурофен 200 мг: інструкція')
+      get admin_sku_path(goods)
+      expect(response.body.scan(/>(вручну|з шаблону)</).flatten).to eq([ 'вручну', 'з шаблону', 'з шаблону' ])
     end
 
     it 'gives a category its template back once a field is emptied', :aggregate_failures do
