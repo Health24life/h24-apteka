@@ -1,0 +1,23 @@
+class Seo::Texts::Sanitize
+  TAGS: Array[String]
+  ATTRIBUTES: Array[String]
+  PRUNED: Array[String]
+  LINK: Regexp
+
+  class Result < Data
+    attr_reader html: String?
+    attr_reader changed: bool
+
+    def self.new: (html: String?, changed: bool) -> instance
+  end
+
+  self.@sanitizer: Rails::HTML5::SafeListSanitizer?
+
+  def self.call: (String? html) -> Result
+
+  private
+
+  def self.pruned: (String html) -> String
+  def self.with_safe_links: (String html) -> String
+  def self.sanitizer: () -> Rails::HTML5::SafeListSanitizer
+end

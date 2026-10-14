@@ -1,0 +1,18 @@
+<div class="main-content-container">
+  <%= semantic_form_for override, as: :seo_override, url: request.path, method: :put do |f| %>
+    <%= f.semantic_errors(*f.object.errors.attribute_names) %>
+    <%= f.inputs do %>
+      <p class="inline-hints"><%= t("admin.seo_override.template_hint") %></p>
+      <%= f.input :title_uk %>
+      <%= f.input :description_uk, as: :text, input_html: { rows: 3 } %>
+      <%= f.input :h1_uk %>
+      <%= f.input :robots, as: :select, include_blank: false,
+                           collection: Seo::Override.robots.keys.map { [t(it, scope: "admin.seo_override.robots"), it] } %>
+      <%= f.input :seo_text_uk, as: :rich_text %>
+    <% end %>
+    <%= f.actions do %>
+      <%= f.action :submit, label: t("active_admin.save", default: "Зберегти") %>
+      <li class="cancel"><%= link_to t("active_admin.cancel"), resource_path(resource) %></li>
+    <% end %>
+  <% end %>
+</div>

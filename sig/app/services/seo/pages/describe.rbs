@@ -7,6 +7,7 @@ class Seo::Pages::Describe
   attr_reader robots: String?
   attr_reader breadcrumbs: Array[Seo::Pages::Breadcrumbs::Crumb]
   attr_reader seo_text: String?
+  attr_reader content: String?
 
   @status: Integer
   @location: String?
@@ -16,15 +17,18 @@ class Seo::Pages::Describe
   @robots: String?
   @breadcrumbs: Array[Seo::Pages::Breadcrumbs::Crumb]
   @seo_text: String?
+  @content: String?
 
   def self.call: (String path) -> Seo::Pages::Describe
 
   private
 
+  def self.content_of: (Seo::Pages::Resolve::record? record) -> String?
   def self.elsewhere: (Seo::Pages::Resolve::Result result) -> Seo::Pages::Describe
 
   public
 
   def initialize: (status: Integer, location: String?, title: String?, description: String?, h1: String?,
-                   robots: String?, breadcrumbs: Array[Seo::Pages::Breadcrumbs::Crumb], seo_text: String?) -> void
+                   robots: String?, breadcrumbs: Array[Seo::Pages::Breadcrumbs::Crumb], seo_text: String?,
+                   content: String?) -> void
 end

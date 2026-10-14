@@ -1,0 +1,6 @@
+uk:
+  activerecord:
+    errors:
+      models:
+        seo/static_page:
+          home_required: головну сторінку не можна видалити

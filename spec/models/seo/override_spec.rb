@@ -14,6 +14,10 @@ RSpec.describe Seo::Override do
     expect(build(:seo_override, target: first.target)).not_to be_valid
   end
 
+  it 'sets a static page by hand' do
+    expect(build(:seo_override, target: build(:seo_static_page))).to be_valid
+  end
+
   it 'refuses a record that has no page of its own' do
     expect(build(:seo_override, target_type: 'Catalog::Goods::Group')).not_to be_valid
   end
@@ -32,6 +36,17 @@ RSpec.describe Seo::Override do
 
   it 'refuses wording about the price in the SEO text' do
     expect(build(:seo_override, seo_text_uk: 'Найнижча ціна в місті')).not_to be_valid
+  end
+
+  it 'cleans the SEO text of what the front does not show before saving', :aggregate_failures do
+    override = create(:seo_override, seo_text_uk: '<p>Знеболювальні <span>засоби</span></p><script>1</script>')
+
+    expect(override.reload.seo_text_uk).to eq('<p>Знеболювальні засоби</p>')
+    expect(override).to be_html_sanitized
+  end
+
+  it 'leaves a clean SEO text as it is' do
+    expect(create(:seo_override, seo_text_uk: '<p>Текст</p>')).not_to be_html_sanitized
   end
 
   it 'goes away with its record, the SEO text included', :aggregate_failures do

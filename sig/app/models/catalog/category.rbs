@@ -1,4 +1,6 @@
 class Catalog::Category
+  include Seo::PageHistory
+  extend Seo::PageHistory::ClassMethods
   include Catalog::ProviderLinked
   extend Catalog::ProviderLinked::ClassMethods
 
@@ -7,6 +9,8 @@ class Catalog::Category
   extend Translatable::ClassMethods
   extend Mobility
   include Catalog::Sluggable
+
+  def self.ransackable_scopes: (?untyped auth_object) -> Array[Symbol]
 
   def name_uk: () -> String?
   def shown_goods?: () -> bool

@@ -24,7 +24,7 @@ RSpec.describe Seo::Templates::Defaults do
   it 'takes the wording from the Ukrainian locale', :aggregate_failures do
     described_class.call
 
-    expect(Seo::Template.find_by(page_type: 'goods').title_uk).to eq('{name} {dosage} — інструкція із застосування')
+    expect(Seo::Template.find_by(page_type: 'goods').title_uk).to eq('{name} — інструкція із застосування')
     expect(Seo::Template.find_by(page_type: 'cart').h1_uk).to eq('Кошик')
   end
 

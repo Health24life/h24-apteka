@@ -1,4 +1,7 @@
 class Seo::Redirect
+  include Seo::PageHistory
+  extend Seo::PageHistory::ClassMethods
+
   interface _PolymorphicNamed
     def polymorphic_name: () -> String
   end

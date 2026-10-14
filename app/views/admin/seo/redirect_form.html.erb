@@ -1,0 +1,27 @@
+<div class="main-content-container">
+  <%= form_with url: params[:id] ? resource_path(resource) : collection_path, method: params[:id] ? :put : :post,
+                class: "formtastic" do %>
+    <fieldset class="inputs">
+      <ol>
+        <li class="string input required <%= 'error' if errors[:source] %>">
+          <%= label_tag :source, t("admin.seo_redirects.source"), class: "label" %>
+          <%= text_field_tag :source, source, required: true, disabled: params[:id].present? %>
+          <% if errors[:source] %><p class="inline-errors"><%= t(errors[:source], scope: "admin.seo_redirects.errors.source") %></p><% end %>
+          <p class="inline-hints"><%= t("admin.seo_redirects.source_hint") %></p>
+        </li>
+        <li class="string input required <%= 'error' if errors[:target] %>">
+          <%= label_tag :target, t("admin.seo_redirects.target"), class: "label" %>
+          <%= text_field_tag :target, target, required: true %>
+          <% if errors[:target] %><p class="inline-errors"><%= t(errors[:target], scope: "admin.seo_redirects.errors.target") %></p><% end %>
+          <p class="inline-hints"><%= t("admin.seo_redirects.target_hint") %></p>
+        </li>
+      </ol>
+    </fieldset>
+    <fieldset class="actions">
+      <ol>
+        <li class="action input_action"><%= submit_tag t("active_admin.save", default: "Зберегти") %></li>
+        <li class="cancel"><%= link_to t("active_admin.cancel"), collection_path %></li>
+      </ol>
+    </fieldset>
+  <% end %>
+</div>

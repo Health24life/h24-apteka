@@ -7,6 +7,9 @@
    lives under app/assets/tailwind/ which is excluded from Propshaft, so it is never served raw. */
 @import "./tom-select.min.css";
 
+/* Trix editor styles for the `as: :rich_text` inputs (app/javascript/admin/rich_text.js). */
+@import "./trix.css";
+
 /* Dark-theme overrides for Tom Select. The vendored tom-select.min.css is the light theme (white
    control + dropdown), which clashes with ActiveAdmin's dark mode. ActiveAdmin toggles dark mode via
    `html.dark`, so everything here is scoped under `.dark` — light mode keeps the stock styling.
@@ -86,4 +89,137 @@
    width override, so data columns keep their natural widths. */
 .data-table-resource-actions {
   justify-content: flex-end;
+}
+
+/* Trix inside the admin forms, drawn like the other inputs of the admin: groups of buttons with one thin border and
+   rounded corners, the active and hovered buttons tinted, the text field with the input's border and focus ring, and
+   the dark theme. The vendored trix.css keeps its own look; only these rules change it. */
+trix-toolbar .trix-button-row {
+  gap: 0.5rem;
+}
+trix-toolbar .trix-button-group {
+  margin-bottom: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  overflow: hidden;
+}
+trix-toolbar .trix-button-group:not(:first-child) {
+  margin-left: 0;
+}
+trix-toolbar .trix-button {
+  height: 2rem;
+  border-bottom: none;
+  color: #374151;
+}
+trix-toolbar .trix-button:not(:first-child) {
+  border-left: 1px solid #d1d5db;
+}
+trix-toolbar .trix-button--icon {
+  width: 2.25rem;
+  height: 2rem;
+  max-width: none;
+}
+trix-toolbar .trix-button--icon::before {
+  top: 0.4rem;
+  bottom: 0.4rem;
+}
+trix-toolbar .trix-button--text {
+  min-width: 2.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0 0.6em;
+}
+trix-toolbar .trix-button:not(:disabled):hover {
+  background: #f3f4f6;
+}
+trix-toolbar .trix-button.trix-active {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+trix-toolbar .trix-dialog__hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+trix-editor.trix-content {
+  min-height: 12rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.875rem;
+}
+trix-editor.trix-content:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+.trix-content h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+.trix-content h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+.trix-content blockquote {
+  margin: 0.5rem 0;
+  padding-left: 0.75rem;
+  border-left: 3px solid #d1d5db;
+  color: #4b5563;
+}
+/* Tailwind resets list markers; the text shows them as the front will. */
+.trix-content ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+.trix-content ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.trix-content a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+.dark trix-editor.trix-content {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.dark trix-editor.trix-content:focus {
+  border-color: #3b82f6;
+}
+.dark .trix-content blockquote {
+  border-left-color: rgba(255, 255, 255, 0.2);
+  color: #d1d5db;
+}
+.dark .trix-content a {
+  color: #60a5fa;
+}
+.dark trix-toolbar .trix-button-group,
+.dark trix-toolbar .trix-button:not(:first-child) {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.dark trix-toolbar .trix-button {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e5e7eb;
+}
+.dark trix-toolbar .trix-button:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.dark trix-toolbar .trix-button.trix-active {
+  background: rgba(59, 130, 246, 0.35);
+  color: #fff;
+}
+.dark trix-toolbar .trix-button:disabled {
+  color: rgba(255, 255, 255, 0.25);
+}
+.dark trix-toolbar .trix-button--icon::before {
+  filter: invert(1);
+}
+.dark trix-toolbar .trix-dialog {
+  background: #1f2937;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }

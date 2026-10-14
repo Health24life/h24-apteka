@@ -1,0 +1,37 @@
+<div class="main-content-container">
+  <%= form_with url: request.path, method: :put, class: "formtastic" do %>
+    <% if result && result.errors.any? %>
+      <ul class="errors"><% result.errors.each do |error| %><li><%= error %></li><% end %></ul>
+    <% end %>
+    <fieldset class="inputs">
+      <ol>
+        <li class="string input">
+          <span class="label"><%= t("admin.slug.current") %></span>
+          <span><%= seo_front_link(resource) %></span>
+        </li>
+        <li class="string input required">
+          <%= label_tag :slug, t("admin.slug.new"), class: "label" %>
+          <%= text_field_tag :slug, slug, required: true, maxlength: Catalog::Sluggable::MAX_LENGTH %>
+        </li>
+        <% if url %>
+          <li class="string input">
+            <span class="label"><%= t("admin.slug.new") %></span>
+            <strong><%= url %></strong>
+            <p class="inline-hints"><%= t("admin.slug.warning", old: seo_front_url(resource)) %></p>
+          </li>
+        <% end %>
+      </ol>
+    </fieldset>
+    <fieldset class="actions">
+      <ol>
+        <% if url %>
+          <%= hidden_field_tag :confirmed, 1 %>
+          <li class="action input_action"><%= submit_tag t("admin.slug.save") %></li>
+        <% else %>
+          <li class="action input_action"><%= submit_tag t("admin.slug.check") %></li>
+        <% end %>
+        <li class="cancel"><%= link_to t("active_admin.cancel"), resource_path(resource) %></li>
+      </ol>
+    </fieldset>
+  <% end %>
+</div>

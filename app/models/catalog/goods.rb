@@ -4,11 +4,15 @@ class Catalog::Goods < ApplicationRecord
   include Catalog::ProviderLinked
   include Translatable
   include Catalog::Sluggable
+  include Seo::PageHistory
 
   RESTRICTIONS = %i[adult_restriction child_restriction diabetic_restriction driver_restriction
                     pregnant_and_lactating_restriction].freeze
 
   translatable :name, :instruction_html, backend: :table
+  # Only an explicit change of the slug is an SEO change; the import creates and updates SKUs without history.
+  page_history only: %i[slug], on: %i[update]
+  history_owner
 
   belongs_to :goods_group, class_name: 'Catalog::Goods::Group', inverse_of: :goods
   belongs_to :form, class_name: 'Catalog::Goods::Form', optional: true, inverse_of: :goods

@@ -1,0 +1,13 @@
+<div class="inline-hints">
+  <% if placeholders.empty? %>
+    <p><%= t("admin.seo_templates.no_placeholders") %></p>
+  <% else %>
+    <p><%= t("admin.seo_templates.placeholders") %></p>
+    <ul class="my-1 list-disc pl-5">
+      <% placeholders.each do |code, meaning| %>
+        <li><code class="font-mono"><%= code %></code> — <%= meaning %></li>
+      <% end %>
+    </ul>
+    <p><%= t("admin.seo_templates.placeholders_empty") %></p>
+  <% end %>
+</div>

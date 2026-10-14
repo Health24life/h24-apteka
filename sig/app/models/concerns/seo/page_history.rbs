@@ -1,0 +1,16 @@
+# What the concern asks of the model's class: PaperTrail and an association to the versions.
+interface _PageHistoryHost
+  def has_paper_trail: (**untyped options) -> void
+  def has_many: (Symbol name, ?untyped scope, **untyped options) -> untyped
+  def const_get: (Symbol name) -> untyped
+end
+
+module Seo::PageHistory
+  extend ActiveSupport::Concern
+
+  module ClassMethods : _PageHistoryHost
+    def page_history: (?owner: ^(untyped record) -> untyped, ?on: Array[Symbol], **untyped options) -> void
+    def translations_history: (owner: ^(untyped translation) -> untyped) -> void
+    def history_owner: () -> void
+  end
+end

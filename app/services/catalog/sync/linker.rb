@@ -48,7 +48,7 @@ class Catalog::Sync::Linker
     record.assign_attributes(attributes)
     links = record.provider_links
     link = links.find { it.provider_id == @provider.id } || links.build(provider: @provider)
-    link.assign_attributes(external_id: external_id.to_s, synced_at: @now)
+    link.assign_attributes(external_id: external_id.to_s, synced_at: @now, withdrawn_at: nil)
     @records[key(model, external_id)] = record
   end
 
@@ -65,6 +65,7 @@ class Catalog::Sync::Linker
                                                 external_id: external_id.to_s)
     link.linkable = record
     link.synced_at = @now
+    link.withdrawn_at = nil
     link.save!
   end
 

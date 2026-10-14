@@ -27,6 +27,7 @@ class Seo::Pages::Breadcrumbs
     case record
     when Catalog::Category then branch(record)
     when Catalog::Goods then [ *branch(record.goods_group.primary_category), of(record) ]
+    when Seo::StaticPage then [ of(record) ]
     else []
     end
   end

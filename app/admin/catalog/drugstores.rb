@@ -15,7 +15,8 @@ ActiveAdmin.register Catalog::Drugstore, as: 'Drugstore' do
 
   filter :name
   filter :drugstore_legal_entity_code
-  filter :brand, as: :tom_select
+  # Brands are a short dictionary without an admin of their own to search, so the filter lists them all.
+  filter :brand, as: :tom_select, ajax: false
   filter :incomplete
   filter :withdrawn
   filter :hidden
@@ -28,9 +29,9 @@ ActiveAdmin.register Catalog::Drugstore, as: 'Drugstore' do
     column :brand
     column(:address) { |drugstore| drugstore.address&.address }
     column :drugstore_legal_entity_code
-    column :incomplete
-    column :withdrawn
-    column :hidden
+    %i[incomplete withdrawn hidden].each do |flag|
+      column(column_hint(Catalog::Drugstore.human_attribute_name(flag), t(flag, scope: 'admin.drugstores.hints')), flag)
+    end
     actions
   end
 
@@ -52,9 +53,9 @@ ActiveAdmin.register Catalog::Drugstore, as: 'Drugstore' do
       row :mobile_phone
       row :email
       row :work_with_reimbursement
-      row :incomplete
-      row :withdrawn
-      row :hidden
+      %i[incomplete withdrawn hidden].each do |flag|
+        row(column_hint(Catalog::Drugstore.human_attribute_name(flag), t(flag, scope: 'admin.drugstores.hints')), &flag)
+      end
       row :created_at
       row :updated_at
     end

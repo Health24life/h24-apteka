@@ -1,0 +1,36 @@
+class Seo::StaticPage
+  include Seo::PageHistory
+  extend Seo::PageHistory::ClassMethods
+  include Translatable
+  extend Translatable::ClassMethods
+  extend Mobility
+  include Catalog::Sluggable
+  include Seo::SanitizedHtml
+  extend Seo::SanitizedHtml::ClassMethods
+
+  def self.sanitized_html_attributes: () -> Array[Symbol]
+  def self.sanitized_html_attributes=: (Array[Symbol] value) -> Array[Symbol]
+
+  HOME: String
+
+  def name: () -> String?
+  def name_uk: () -> String?
+  def content: () -> String?
+  def content_uk: () -> String?
+
+  def self.home: () -> Seo::StaticPage?
+
+  def home?: () -> bool
+  def own_slug?: () -> bool
+
+  private
+
+  def reserved_slugs: () -> Array[String]
+  def keep_home: () -> void
+end
+
+# The translation row Mobility keeps the long text in; its changes show on the page.
+class Seo::StaticPage::Translation
+  include Seo::PageHistory
+  extend Seo::PageHistory::ClassMethods
+end

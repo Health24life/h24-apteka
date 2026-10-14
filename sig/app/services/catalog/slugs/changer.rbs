@@ -1,0 +1,19 @@
+class Catalog::Slugs::Changer
+  type record = Catalog::Goods | Catalog::Category | Seo::StaticPage
+  type status = :unchanged | :valid | :invalid | :changed
+
+  class Result < Data
+    attr_reader status: status
+    attr_reader errors: Array[String]
+
+    def self.new: (status: status, errors: Array[String]) -> instance
+    def ok?: () -> bool
+  end
+
+  def self.check: (record: record, slug: String?) -> Result
+  def self.call: (record: record, slug: String?) -> Result
+
+  private
+
+  def self.invalid: (record record) -> Result
+end

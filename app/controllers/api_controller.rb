@@ -8,6 +8,9 @@ class ApiController < ActionController::API
 
   private
 
+  # PaperTrail would otherwise resolve the session of every request just to name the author of a version.
+  def user_for_paper_trail = nil
+
   def h24_require_session
     reason = current_session_error
     render_error(:unauthorized, status: :unauthorized) if reason && reason != :absent

@@ -9,6 +9,14 @@ ActiveAdmin.register Catalog::Goods, as: 'Sku' do
 
   includes :translations, goods_group: :translations
 
+  # The SKUs a template of the given branch and prescription kind applies to, for its preview.
+  searchable_select_options(
+    name: :preview,
+    scope: ->(params) { Seo::Templates::Preview.options('goods', params) },
+    display_text: ->(goods) { goods.name_uk },
+    filter: ->(term, scope) { scope.name_cont(term) }
+  )
+
   filter :name_cont, as: :string, label: proc { Catalog::Goods.human_attribute_name(:name) }
   filter :morion_code
   filter :withdrawn
@@ -59,8 +67,26 @@ ActiveAdmin.register Catalog::Goods, as: 'Sku' do
       end
     end
 
+    render 'admin/seo_override', record: resource
     render 'admin/provider_links', record: resource
+    render 'admin/seo_history', record: resource
     active_admin_comments_for resource
+  end
+
+  action_item :seo, only: :show do
+    link_to t('admin.seo_override.edit'), url_for(action: :seo), class: 'action-item-button'
+  end
+
+  action_item :slug, only: :show do
+    link_to t('admin.slug.change'), url_for(action: :slug), class: 'action-item-button'
+  end
+
+  member_action :seo, method: %i[get put] do
+    change_seo_override
+  end
+
+  member_action :slug, method: %i[get put] do
+    change_slug
   end
 
   action_item :visibility, only: :show do
@@ -74,5 +100,7 @@ ActiveAdmin.register Catalog::Goods, as: 'Sku' do
 
   controller do
     include CatalogVisibilityActions
+    include SeoOverrideActions
+    include SlugChangeActions
   end
 end

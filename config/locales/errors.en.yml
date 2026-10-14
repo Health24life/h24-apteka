@@ -1,0 +1,7 @@
+en:
+  errors:
+    attributes:
+      slug:
+        held: is held by another page through a redirect
+        reserved: is taken by a route of the section
+        invalid: may hold only lowercase Latin letters, digits and hyphens between them

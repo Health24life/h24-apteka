@@ -12,9 +12,9 @@ uk:
           description: "{name}: лікарські засоби та товари для здоровʼя з інструкціями із застосування."
           h1: "{name}"
         goods:
-          title: "{name} {dosage} — інструкція із застосування"
-          description: "{name} {dosage} ({inn}), {producer}: склад, показання, протипоказання та спосіб застосування."
-          h1: "{name} {dosage}"
+          title: "{name} — інструкція із застосування"
+          description: "{name} ({inn}), {producer}: склад, показання, протипоказання та спосіб застосування."
+          h1: "{name}"
         cart:
           title: Кошик — Аптека Health24
           description: Товари, обрані для бронювання в аптеці.
@@ -23,3 +23,7 @@ uk:
           title: Замовлення — Аптека Health24
           description: Бронювання товарів в аптеці.
           h1: Замовлення
+        static:
+          title: "{name} — Аптека Health24"
+          description: "{name}: як працює бронювання ліків в аптеках Health24."
+          h1: "{name}"

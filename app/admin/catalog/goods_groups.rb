@@ -10,6 +10,8 @@ ActiveAdmin.register Catalog::Goods::Group, as: 'GoodsGroup' do
   includes :producer, :translations
 
   filter :name_cont, as: :string, label: proc { Catalog::Goods::Group.human_attribute_name(:name) }
+  filter :in_branch, as: :tom_select, label: proc { I18n.t('admin.categories.branch_filter') },
+                     ajax: { resource: Catalog::Category }
   filter :withdrawn
   filter :hidden
   filter :created_at

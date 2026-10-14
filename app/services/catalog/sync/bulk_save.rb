@@ -54,7 +54,8 @@ class Catalog::Sync::BulkSave
   # Only the columns that changed are written over a record that is there: the rest (hidden, a link to the core, a
   # brand's picture) belong to others and may have changed since the batch was read.
   def import(model, records)
-    children = { provider_links: %i[linkable_id synced_at], translations: translated_columns(model, records) }
+    children = { provider_links: %i[linkable_id synced_at withdrawn_at],
+                 translations: translated_columns(model, records) }
     model.transaction(requires_new: true) do
       model.import(records, validate: false, recursive: true, on_duplicate_key_update: changed_columns(records),
                             recursive_on_duplicate_key_update: children.compact)
@@ -99,7 +100,7 @@ class Catalog::Sync::BulkSave
     links = records.map { @linker.link_of(it) }
     return if links.empty?
 
-    moved = { synced_at: links.first.synced_at, updated_at: Time.current }
+    moved = { synced_at: links.first.synced_at, withdrawn_at: nil, updated_at: Time.current }
     Provider::Link.where(id: links.map(&:id)).update_all(moved) # rubocop:disable Rails/SkipsModelValidations
   end
 

@@ -1,0 +1,3 @@
+class Seo::Version
+  include PaperTrail::VersionConcern
+end

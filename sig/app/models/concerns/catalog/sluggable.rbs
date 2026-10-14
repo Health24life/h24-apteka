@@ -1,7 +1,7 @@
 # What the concern asks of the model it is included in: a slug column and a Ukrainian name.
 interface _Sluggable
   def slug: () -> String?
-  def slug=: (String value) -> String
+  def slug=: (String value) -> void
   def name_uk: () -> String?
   def saved_change_to_slug: () -> Array[String?]?
 end
@@ -15,8 +15,12 @@ module Catalog::Sluggable : ActiveRecord::Base, _Sluggable
   def self.included: (?Module? base) { () [self: singleton(ActiveRecord::Base)] -> void } -> void
 
   def seo_redirects: () -> Seo::Redirect::ActiveRecord_Associations_CollectionProxy
+  def own_slug?: () -> bool
 
   private
+
+  def reserved_slugs: () -> Array[String]
+  def slug_is_not_reserved: () -> void
 
   def assign_slug: () -> void
   def slug_is_not_redirected_elsewhere: () -> void

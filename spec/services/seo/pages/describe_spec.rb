@@ -6,7 +6,7 @@ RSpec.describe Seo::Pages::Describe do
   before { Seo::Templates::Defaults.call }
 
   it 'describes a page that is there', :aggregate_failures do
-    create(:catalog_goods, name_uk: 'Нурофен', slug: 'nurofen', dosage: '200 мг')
+    create(:catalog_goods, name_uk: 'Нурофен 200 мг', slug: 'nurofen', dosage: '200 мг')
     described = described_class.call('/tovar/nurofen')
 
     expect(described).to have_attributes(status: 200, location: nil, robots: 'index, follow', seo_text: nil,
@@ -35,5 +35,20 @@ RSpec.describe Seo::Pages::Describe do
     described_class.call('/tovar/nurofen')
 
     expect(a_request(:any, /pharmapoint/)).not_to have_been_made
+  end
+
+  it 'gives the text of a static page', :aggregate_failures do
+    create(:seo_static_page, :published, name_uk: 'Умови сервісу', content_uk: '<p>Бронювання без передоплати.</p>')
+
+    expect(described_class.call('/umovy-servisu'))
+      .to have_attributes(status: 200, content: '<p>Бронювання без передоплати.</p>', h1: 'Умови сервісу')
+  end
+
+  it 'gives no text to the other pages', :aggregate_failures do
+    create(:catalog_goods, slug: 'nurofen')
+    create(:seo_static_page, :home)
+
+    expect(described_class.call('/tovar/nurofen').content).to be_nil
+    expect(described_class.call('/').content).to be_nil
   end
 end

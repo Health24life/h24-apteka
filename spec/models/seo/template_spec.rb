@@ -53,6 +53,12 @@ RSpec.describe Seo::Template do
       .not_to be_valid
   end
 
+  it 'fills a static page template with the name of the page only', :aggregate_failures do
+    expect(build(:seo_template, page_type: 'static', title: '{name}', description: '{name}', h1: '{name}')).to be_valid
+    expect(build(:seo_template, page_type: 'static', title: '{name} {dosage}', description: '{name}', h1: '{name}'))
+      .not_to be_valid
+  end
+
   it 'refuses a placeholder the page type does not know', :aggregate_failures do
     category_template = build(:seo_template, page_type: 'category', title: '{name} {dosage}')
 
@@ -116,6 +122,6 @@ end
 # Check Constraints
 #
 #  seo_templates_category_check   (category_id IS NULL OR (page_type::text = ANY (ARRAY['category'::character varying, 'goods'::character varying]::text[])))
-#  seo_templates_page_type_check  (page_type::text = ANY (ARRAY['home'::character varying, 'category'::character varying, 'goods'::character varying, 'cart'::character varying, 'order'::character varying]::text[]))
+#  seo_templates_page_type_check  (page_type::text = ANY (ARRAY['home'::character varying, 'category'::character varying, 'goods'::character varying, 'cart'::character varying, 'order'::character varying, 'static'::character varying]::text[]))
 #  seo_templates_recipe_check     (is_recipe IS NULL OR page_type::text = 'goods'::text)
 #

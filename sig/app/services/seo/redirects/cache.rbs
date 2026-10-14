@@ -1,17 +1,28 @@
 class Seo::Redirects::Cache
   PREFIX: String
+  VALUE: Regexp
+
+  class Target < Data
+    attr_reader type: String
+    attr_reader id: Integer
+    attr_reader manual: bool
+
+    def self.new: (type: String, id: Integer, manual: bool) -> instance
+    def self.of: (Seo::Redirect redirect) -> Target
+  end
 
   self.@redis: Redis?
 
   def self.redis: () -> Redis
   def self.write: (Seo::Redirect redirect, ?config: Seo::Config) -> void
   def self.delete: (Seo::Redirect redirect) -> void
-  def self.target: (String page_type, String slug) -> [ String, Integer ]?
+  def self.target: (String page_type, String slug) -> Target?
   def self.rebuild: () -> Integer
   def self.clear: () -> void
   def self.key: (String page_type, String slug) -> String
 
   private
 
+  def self.value: (Seo::Redirect redirect) -> String
   def self.reporting: [T] () { () -> T } -> T?
 end

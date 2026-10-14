@@ -195,6 +195,31 @@ RSpec.describe Catalog::Sync::StepWorker do
 
       expect(group.reload).to have_attributes(withdrawn: true)
       expect(Catalog::Goods.find_linked(provider, '2001001').withdrawn).to be(true)
+      expect(group.provider_links.sole.withdrawn_at).to be_present
+    end
+
+    describe 'when another provider sends the same group' do
+      let(:other) { create(:provider) }
+
+      before do
+        create(:provider_link, provider: other, linkable: group, external_id: 'other-group')
+        drop_second_group
+      end
+
+      it 'keeps the group on the shelf and withdraws only the link that was dropped', :aggregate_failures do
+        sync('goods_groups')
+
+        expect(group.reload.withdrawn).to be(false)
+        expect(group.provider_links.find_by(provider:).withdrawn_at).to be_present
+      end
+
+      it 'withdraws the group once the other provider is disabled' do
+        other.update!(active: false)
+
+        sync('goods_groups')
+
+        expect(group.reload.withdrawn).to be(true)
+      end
     end
 
     describe 'when the group shows up again' do
@@ -205,8 +230,9 @@ RSpec.describe Catalog::Sync::StepWorker do
         sync('goods_groups')
       end
 
-      it 'brings the group back' do
+      it 'brings the group back with its link', :aggregate_failures do
         expect(group.reload.withdrawn).to be(false)
+        expect(group.provider_links.sole.withdrawn_at).to be_nil
       end
 
       it 'brings its SKU back' do

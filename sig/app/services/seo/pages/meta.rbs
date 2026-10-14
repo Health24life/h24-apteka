@@ -14,10 +14,14 @@ class Seo::Pages::Meta
 
   def self.call: (Seo::Pages::Resolve::Page page) -> Seo::Pages::Meta
 
-  private
+  def self.generated: (Seo::Pages::Resolve::Page page) -> Seo::Pages::Meta
 
   def self.template_for: (Seo::Pages::Resolve::Page page) -> Seo::Template
+
   def self.values_for: (Seo::Pages::Resolve::record? record) -> Hash[String, String?]
+
+  private
+
   def self.by_hand: (Seo::Override? override, Symbol field) -> String?
   def self.generate: (Seo::Template template, Hash[String, String?] values, Integer page_number) -> [ String, String, String ]
   def self.limited: (String text, Hash[String, String?] values, Integer limit, String suffix) -> String

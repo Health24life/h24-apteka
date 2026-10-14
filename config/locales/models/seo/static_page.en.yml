@@ -1,0 +1,6 @@
+en:
+  activerecord:
+    errors:
+      models:
+        seo/static_page:
+          home_required: the home page cannot be removed

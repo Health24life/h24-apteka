@@ -4,15 +4,19 @@
 # branch of the catalog and, for a product, to prescription goods; the narrowest one that fits a page applies.
 class Seo::Template < ApplicationRecord
   include Translatable
+  include Seo::PageHistory
 
   PLACEHOLDER = /\{([^{}]*)\}/
-  PLACEHOLDERS = { 'goods' => %w[name inn producer form dosage], 'category' => %w[name] }.freeze
+  PLACEHOLDERS = { 'goods' => %w[name inn producer form dosage], 'category' => %w[name], 'static' => %w[name] }.freeze
   TEXTS = %i[title description h1].freeze
 
-  enum :page_type, { home: 'home', category: 'category', goods: 'goods', cart: 'cart', order: 'order' },
+  enum :page_type,
+       { home: 'home', category: 'category', goods: 'goods', cart: 'cart', order: 'order', static: 'static' },
        validate: true, prefix: :for
 
   translatable(*TEXTS)
+  page_history
+  history_owner
 
   belongs_to :category, class_name: 'Catalog::Category', optional: true, inverse_of: :seo_templates
 
@@ -77,6 +81,6 @@ end
 # Check Constraints
 #
 #  seo_templates_category_check   (category_id IS NULL OR (page_type::text = ANY (ARRAY['category'::character varying, 'goods'::character varying]::text[])))
-#  seo_templates_page_type_check  (page_type::text = ANY (ARRAY['home'::character varying, 'category'::character varying, 'goods'::character varying, 'cart'::character varying, 'order'::character varying]::text[]))
+#  seo_templates_page_type_check  (page_type::text = ANY (ARRAY['home'::character varying, 'category'::character varying, 'goods'::character varying, 'cart'::character varying, 'order'::character varying, 'static'::character varying]::text[]))
 #  seo_templates_recipe_check     (is_recipe IS NULL OR page_type::text = 'goods'::text)
 #
