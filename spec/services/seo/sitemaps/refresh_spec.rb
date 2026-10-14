@@ -91,6 +91,55 @@ RSpec.describe Seo::Sitemaps::Refresh do
     end
   end
 
+  describe 'the filters' do
+    def lastmod_of_filter(slug) = read('categories.xml.gz')[%r{/dobirka/#{slug}</loc>\s*<lastmod>([^<]+)</lastmod>}, 1]
+
+    def paths_of(name) = locs(name).map { it.delete_prefix('https://apteka.h24.ua') }
+
+    context 'with filters in every state' do
+      before do
+        stocked('nurofen')
+        create(:seo_filter, :published, slug: 'vitaminy-dlia-ditei')
+        create(:seo_filter, slug: 'dlia-skhudnennia')
+        create(:seo_filter, :published, slug: 'vid-zastudy').remove!
+        create(:seo_override, target: create(:seo_filter, :published, slug: 'zakryta'), robots: 'noindex')
+      end
+
+      it 'lists the published ones after the categories and leaves out the rest' do
+        refresh
+
+        expect(paths_of('categories.xml.gz')).to eq([ '/', '/katalog/zneboliuvalni', '/dobirka/vitaminy-dlia-ditei' ])
+      end
+    end
+
+    it 'dates a filter by the change of its parameters' do
+      filter = travel_to(Time.zone.local(2026, 10, 1, 12)) { create(:seo_filter, :published, slug: 'vitaminy') }
+      params = filter.params.merge('form_id' => [ create(:catalog_goods_form).id ])
+      travel_to(Time.zone.local(2026, 10, 5, 12)) { filter.update!(params:) }
+      refresh
+
+      expect(lastmod_of_filter('vitaminy')).to start_with('2026-10-05')
+    end
+
+    it 'keeps the date of a filter when a sync brings goods under it' do
+      travel_to(Time.zone.local(2026, 10, 1, 12)) { create(:seo_filter, :published, slug: 'vitaminy') }
+      travel_to(Time.zone.local(2026, 10, 5, 12)) { stocked('nurofen') }
+
+      refresh
+
+      expect(lastmod_of_filter('vitaminy')).to start_with('2026-10-01')
+    end
+
+    it 'follows a change of the texts set by hand' do
+      filter = travel_to(Time.zone.local(2026, 10, 1, 12)) { create(:seo_filter, :published, slug: 'vitaminy') }
+      travel_to(Time.zone.local(2026, 10, 7, 12)) { create(:seo_override, target: filter, h1_uk: 'Вітаміни') }
+
+      refresh
+
+      expect(lastmod_of_filter('vitaminy')).to start_with('2026-10-07')
+    end
+  end
+
   describe 'an override of robots' do
     it 'leaves out a product an operator took out of the index' do
       create(:seo_override, target: stocked('nurofen'), robots: 'noindex')

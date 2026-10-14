@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 # Writes the sitemap of the section with sitemap_generator: an index and gzipped parts of categories and products,
-# the home page and the static pages first. The front proxies the index and the parts from the storage at its own
-# host, as the protocol allows only URLs of the sitemap's host. Files are written in place, so a run that breaks off
-# may leave old and new parts side by side until the next one; parts the new index no longer lists are removed after
-# it.
+# the home page and the static pages first and the filters after the categories. The front proxies the index and the
+# parts from the storage at its own host, as the protocol allows only URLs of the sitemap's host. Files are written in
+# place, so a run that breaks off may leave old and new parts side by side until the next one; parts the new index no
+# longer lists are removed after it.
 class Seo::Sitemaps::Refresh
   INDEX = 'sitemap.xml.gz'
 
@@ -39,14 +39,17 @@ class Seo::Sitemaps::Refresh
   end
 
   def fill(sitemap)
-    sitemap.group(filename: :categories) do |group|
-      group.add(@paths.home, **NO_DEFAULTS) if Seo::Sitemaps::Entries.home?
-      Seo::Sitemaps::Entries.static_pages { |slug, at| group.add(@paths.static(slug), **NO_DEFAULTS, lastmod: at) }
-      Seo::Sitemaps::Entries.categories { |slug, at| group.add(@paths.category(slug), **NO_DEFAULTS, lastmod: at) }
-    end
+    sitemap.group(filename: :categories) { fill_categories(it) }
     sitemap.group(filename: :goods) do |group|
       Seo::Sitemaps::Entries.goods { |slug, at| group.add(@paths.goods(slug), **NO_DEFAULTS, lastmod: at) }
     end
+  end
+
+  def fill_categories(group)
+    group.add(@paths.home, **NO_DEFAULTS) if Seo::Sitemaps::Entries.home?
+    Seo::Sitemaps::Entries.static_pages { |slug, at| group.add(@paths.static(slug), **NO_DEFAULTS, lastmod: at) }
+    Seo::Sitemaps::Entries.categories { |slug, at| group.add(@paths.category(slug), **NO_DEFAULTS, lastmod: at) }
+    Seo::Sitemaps::Entries.filters { |slug, at| group.add(@paths.filter(slug), **NO_DEFAULTS, lastmod: at) }
   end
 
   def listed_parts

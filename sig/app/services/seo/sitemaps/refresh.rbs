@@ -14,5 +14,6 @@ class Seo::Sitemaps::Refresh
 
   def sitemap: () -> SitemapGenerator::LinkSet
   def fill: (SitemapGenerator::LinkSet sitemap) -> void
+  def fill_categories: (SitemapGenerator::LinkSet group) -> void
   def listed_parts: () -> Array[String]
 end
