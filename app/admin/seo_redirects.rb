@@ -32,9 +32,11 @@ ActiveAdmin.register Seo::Redirect, as: 'SeoRedirect' do
   show do
     attributes_table do
       row(t('admin.seo_redirects.kind')) { |redirect| seo_redirect_kind(redirect) }
-      row(t('admin.seo_redirects.source')) { |redirect| seo_redirect_source(redirect) }
+      row(t('admin.seo_redirects.source')) { |redirect| seo_front_path_link(seo_redirect_source(redirect)) }
+      row(t('admin.seo_redirects.source_api')) { |redirect| seo_api_path_link(seo_redirect_source(redirect)) }
       row(t('admin.seo_redirects.target')) { |redirect| seo_redirect_target(redirect) }
       row(t('admin.seo_redirects.target_url')) { |redirect| seo_front_link(redirect.redirectable) }
+      row(t('admin.seo_redirects.target_api')) { |redirect| seo_api_link(redirect.redirectable) }
       row :created_at
       row(t('admin.seo_redirects.expires_at')) { |redirect| l(seo_redirect_expires_at(redirect), format: :long) }
       row(t('admin.seo_redirects.state')) do |redirect|

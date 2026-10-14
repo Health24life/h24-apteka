@@ -22,6 +22,7 @@ uk:
       edit: Змінити SEO
       form_title: "SEO сторінки «%{name}»"
       current: Що зараз віддає SEO-ендпоінт
+      api_request: Запит до SEO-ендпоінту
       by_hand: Задано вручну
       empty_hint: Порожнє поле бере текст із шаблону.
       saved: SEO-налаштування збережено.
@@ -83,6 +84,8 @@ uk:
       source: Стара адреса
       target: Веде на
       target_url: Поточна адреса цілі
+      source_api: Запит до SEO-ендпоінту за старою адресою
+      target_api: Запит до SEO-ендпоінту за адресою цілі
       expires_at: Буде видалено
       inactive: не діє
       active: діє

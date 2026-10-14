@@ -24,7 +24,23 @@ module SeoAdminHelper
   end
 
   def seo_front_link(record)
-    url = seo_front_url(record) or return
+    path = Seo::Pages::Path.new.record(record) or return
+    seo_front_path_link(path)
+  end
+
+  def seo_front_path_link(path)
+    url = Seo::Pages::Path.new.url(path)
+    link_to url, url, target: '_blank', rel: 'noopener'
+  end
+
+  def seo_api_link(record)
+    path = Seo::Pages::Path.new.record(record) or return
+    seo_api_path_link(path)
+  end
+
+  # The request the front makes for a page. The API answers on the admin's host.
+  def seo_api_path_link(path)
+    url = "#{api_v1_seo_page_path}?path=#{path}"
     link_to url, url, target: '_blank', rel: 'noopener'
   end
 

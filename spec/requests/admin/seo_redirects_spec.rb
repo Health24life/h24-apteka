@@ -27,6 +27,16 @@ RSpec.describe 'Admin SEO redirects' do
       expect(location_of('/tovar/nurofen-stare')).to eq('/katalog/zneboliuvalni')
     end
 
+    it 'links both addresses on the front and in the SEO endpoint on its card' do
+      redirect = create(:catalog_goods, slug: 'nurofen').tap { it.update!(slug: 'nurofen-forte') }.seo_redirects.sole
+
+      get admin_seo_redirect_path(redirect)
+
+      expect(response.body).to include("href=\"#{front}/tovar/nurofen\"", "href=\"#{front}/tovar/nurofen-forte\"",
+                                       'href="/api/v1/seo/page?path=/tovar/nurofen"',
+                                       'href="/api/v1/seo/page?path=/tovar/nurofen-forte"')
+    end
+
     it 'refuses an old address that has a page' do
       post admin_seo_redirects_path, params: { source: "/tovar/#{create(:catalog_goods).slug}", target: '/' }
 
