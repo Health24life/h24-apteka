@@ -61,14 +61,17 @@ ActiveAdmin.register Seo::Template, as: 'SeoTemplate' do
       f.input :h1_uk
     end
 
+    # Fixed pages have no records to choose: their preview shows the texts as they are, with their length.
     model = Seo::Templates::Preview::MODELS[template.page_type.to_s]
-    if model
+    if model || seo_preview
       f.inputs t('admin.seo_templates.preview_title') do
-        branch = { category_id: template.category_id, is_recipe: template.is_recipe }
-        f.semantic_fields_for :preview, Struct.new(:record_id).new(seo_preview_record&.id) do |preview|
-          preview.input :record_id, as: :tom_select, label: t('admin.seo_templates.preview_record'),
-                                    hint: t('admin.seo_templates.preview_record_hint'),
-                                    ajax: { resource: model, collection_name: :preview, params: branch }
+        if model
+          branch = { category_id: template.category_id, is_recipe: template.is_recipe }
+          f.semantic_fields_for :preview, Struct.new(:record_id).new(seo_preview_record&.id) do |preview|
+            preview.input :record_id, as: :tom_select, label: t('admin.seo_templates.preview_record'),
+                                      hint: t('admin.seo_templates.preview_record_hint'),
+                                      ajax: { resource: model, collection_name: :preview, params: branch }
+          end
         end
         render 'admin/seo/template_preview', preview: seo_preview if seo_preview
       end
@@ -116,14 +119,19 @@ ActiveAdmin.register Seo::Template, as: 'SeoTemplate' do
       render view
     end
 
-    # Saved: says which texts the record chosen for the preview would see cut.
+    # Saved: says which texts the record chosen for the preview, or a fixed page, would see cut.
     def saved(template)
       record = chosen_record(template)
-      preview = record && Seo::Templates::Preview.call(template:, record:)
-      cut = preview ? %i[title description].select { preview.public_send(it).cut? } : []
-      fields = cut.map { Seo::Template.human_attribute_name(it) }.join(', ')
-      flash[:warning] = t('admin.seo_templates.saved_cut', fields:) if cut.any?
+      fixed = !Seo::Templates::Preview::MODELS.key?(template.page_type.to_s)
+      fields = cut_fields(Seo::Templates::Preview.call(template:, record:)) if record || fixed
+      key = fixed ? 'saved_cut_page' : 'saved_cut'
+      flash[:warning] = t(key, scope: 'admin.seo_templates', fields:) if fields.present?
       redirect_to resource_path(template)
+    end
+
+    def cut_fields(preview)
+      cut = %i[title description].select { preview.public_send(it).cut? }
+      cut.map { Seo::Template.human_attribute_name(it) }.join(', ')
     end
 
     def chosen_record(template)

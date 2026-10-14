@@ -95,6 +95,25 @@ RSpec.describe 'Admin SEO templates' do
     end
   end
 
+  describe 'the preview of a page without records' do
+    let(:cart) { Seo::Template.find_by(page_type: 'cart') }
+    let(:long_title) { "Кошик #{'дуже ' * 20}довгий" }
+
+    it 'shows the texts as they are, with their length, without a record to choose', :aggregate_failures do
+      patch admin_seo_template_path(cart), params: { preview: 'Переглянути', seo_template: { title_uk: long_title } }
+
+      expect(response.body).to include('буде обрізано', "#{long_title.length} символів, ліміт 70")
+      expect(response.body).not_to include('Запис для перегляду')
+      expect(cart.reload.title_uk).not_to eq(long_title)
+    end
+
+    it 'warns after saving a text that would be cut' do
+      patch admin_seo_template_path(cart), params: { seo_template: { title_uk: long_title } }
+
+      expect(flash[:warning]).to eq('Title довші за ліміт і будуть обрізані.')
+    end
+  end
+
   describe 'removal' do
     it 'keeps the general template of a page type, asked directly too', :aggregate_failures do
       delete admin_seo_template_path(general)
