@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'the workers of the partner integration' do # rubocop:disable RSpec/DescribeClass
   workers = [ Catalog::Sync::StartWorker, Catalog::Sync::StepWorker, Catalog::Sync::PullWorker,
-              Pharmapoint::LogCleanupWorker ]
+              Pharmapoint::LogCleanupWorker, Seo::SitemapWorker, Seo::RedirectCleanupWorker ]
 
   workers.each do |worker|
     describe worker do
@@ -49,6 +49,29 @@ RSpec.describe 'the workers of the partner integration' do # rubocop:disable RSp
   end
 
   describe Pharmapoint::LogCleanupWorker do
+    it 'is queued once while a cleanup waits' do
+      results = with_unique_jobs { Array.new(2) { described_class.perform_async } }
+
+      expect(results.compact.size).to eq(1)
+    end
+  end
+
+  describe Seo::SitemapWorker do
+    it 'gives up at once on a missing setting and retries anything else', :aggregate_failures do
+      retry_in = described_class.sidekiq_retry_in_block
+
+      expect(retry_in.call(1, Seo::Config::MissingSetting.new('SEO_SITEMAP_DIR is not set'), {})).to eq(:kill)
+      expect(retry_in.call(1, Redis::CannotConnectError.new, {})).to be_nil
+    end
+
+    it 'lets one generation wait behind the running one and merges the rest into it' do
+      results = with_unique_jobs { Array.new(3) { described_class.perform_async } }
+
+      expect(results.compact.size).to eq(1)
+    end
+  end
+
+  describe Seo::RedirectCleanupWorker do
     it 'is queued once while a cleanup waits' do
       results = with_unique_jobs { Array.new(2) { described_class.perform_async } }
 

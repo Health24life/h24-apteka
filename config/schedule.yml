@@ -40,3 +40,14 @@ provider_request_log_cleanup:
   class: 'Pharmapoint::LogCleanupWorker'
   queue: default
 <% end %>
+
+# The sitemap is also queued after each full sync of the catalog; this run is the daily safety net.
+seo_sitemap:
+  cron: '<%= ENV.fetch('SEO_SITEMAP_CRON', '0 5 * * *') %>'
+  class: 'Seo::SitemapWorker'
+  queue: default
+
+seo_redirect_cleanup:
+  cron: '<%= ENV.fetch('SEO_REDIRECT_CLEANUP_CRON', '40 4 * * *') %>'
+  class: 'Seo::RedirectCleanupWorker'
+  queue: default

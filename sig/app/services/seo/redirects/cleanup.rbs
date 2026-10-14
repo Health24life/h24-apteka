@@ -1,0 +1,3 @@
+class Seo::Redirects::Cleanup
+  def self.call: () -> Integer
+end

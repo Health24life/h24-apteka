@@ -1,0 +1,4 @@
+en:
+  errors:
+    messages:
+      not_served_by_provider: is not in the catalog of the provider of the order

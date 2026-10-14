@@ -9,4 +9,5 @@ class Catalog::Category
   include Catalog::Sluggable
 
   def name_uk: () -> String?
+  def shown_goods?: () -> bool
 end

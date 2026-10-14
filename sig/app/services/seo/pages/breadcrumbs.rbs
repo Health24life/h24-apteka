@@ -1,0 +1,22 @@
+class Seo::Pages::Breadcrumbs
+  class Crumb < Data
+    attr_reader name: String
+    attr_reader path: String
+
+    def self.new: (name: String, path: String) -> instance
+  end
+
+  @paths: Seo::Pages::Path
+
+  def self.call: (Seo::Pages::Resolve::Page page, ?paths: Seo::Pages::Path) -> Array[Crumb]
+
+  def initialize: (Seo::Pages::Path paths) -> void
+  def call: (Seo::Pages::Resolve::Page page) -> Array[Crumb]
+
+  private
+
+  def records: (Seo::Pages::Resolve::record? record) -> Array[Crumb]
+  def branch: (Catalog::Category? category) -> Array[Crumb]
+  def of: (Catalog::Goods | Catalog::Category record) -> Crumb
+  def crumb: (Symbol key, String path) -> Crumb
+end

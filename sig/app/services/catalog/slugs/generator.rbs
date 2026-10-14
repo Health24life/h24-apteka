@@ -1,6 +1,7 @@
 class Catalog::Slugs::Generator
   interface _SlugScope
     def where: (Hash[Symbol, Array[String]] conditions) -> _SlugRelation
+    def polymorphic_name: () -> String
   end
 
   interface _SlugRelation
@@ -22,6 +23,7 @@ class Catalog::Slugs::Generator
 
   private
 
+  def redirected: (Array[String] candidates) -> Array[String]
   def transliterate: (String? text) -> String
   def with_suffix: (String base, String suffix) -> String
 end

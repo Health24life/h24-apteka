@@ -36,6 +36,8 @@ module H24Apteka
     # in config/environments, which are processed later.
     #
     config.time_zone = 'Europe/Kyiv'
+    # The translations of a class sit at its path under config/locales, as models/sync_run.uk.yml.
+    config.i18n.load_path += Rails.root.glob('config/locales/*/**/*.yml')
     config.i18n.available_locales = %i[uk en]
     config.i18n.default_locale = :uk
     config.i18n.fallbacks = { uk: %i[en], en: %i[uk] }
@@ -44,6 +46,10 @@ module H24Apteka
     config.x.catalog_locales = %i[uk]
 
     config.active_job.queue_adapter = :sidekiq
+
+    # Nothing this host serves is for search results: the public pages live on the front's host. robots.txt closes the
+    # host to crawling; this header keeps out of the index an address a crawler reached anyway.
+    config.action_dispatch.default_headers['X-Robots-Tag'] = 'noindex, follow'
 
     config.generators do |g|
       g.orm :active_record

@@ -1,0 +1,15 @@
+class Seo::Redirect
+  interface _PolymorphicNamed
+    def polymorphic_name: () -> String
+  end
+
+  PAGE_TYPES: Hash[String, String]
+  REDIRECTABLE_TYPES: Array[String]
+
+  def self.page_type_for: (_PolymorphicNamed record_class) -> String
+
+  private
+
+  def cache: () -> void
+  def uncache: () -> void
+end

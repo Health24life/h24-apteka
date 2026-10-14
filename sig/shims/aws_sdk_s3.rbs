@@ -1,0 +1,20 @@
+# aws-sdk-s3 is loaded only for the S3 storage of the sitemap (`require: false`), so the collection does not fetch its
+# signatures. Only what own code calls is described.
+module Aws
+  module S3
+    class Client
+      class Object
+        def key: () -> String
+      end
+
+      class ListObjectsOutput
+        def contents: () -> Array[Object]
+        def each_page: () -> Enumerator[ListObjectsOutput, void]
+      end
+
+      def initialize: (**untyped options) -> void
+      def list_objects_v2: (bucket: String, prefix: String) -> ListObjectsOutput
+      def delete_objects: (bucket: String, delete: { objects: Array[{ key: String }] }) -> void
+    end
+  end
+end

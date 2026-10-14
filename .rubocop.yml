@@ -26,3 +26,37 @@ Layout/LineLength:
 # the methods of a class body, but see neither a `Data.define` block nor its constant as that class.
 Style/DataInheritance:
   Enabled: false
+
+# The rswag DSL of the request specs: `path`, an HTTP verb and `response` open example groups, `run_test!` is an example.
+RSpec:
+  Language:
+    ExampleGroups:
+      Regular:
+        - path
+        - get
+        - post
+        - put
+        - patch
+        - delete
+        - response
+    Examples:
+      Regular:
+        - run_test!
+
+# An rswag spec nests describe, path, the HTTP verb and response by design.
+RSpec/NestedGroups:
+  Exclude:
+    - 'spec/requests/**/*'
+
+# rswag names a `let` after the header it fills.
+RSpec/VariableName:
+  AllowedPatterns:
+    - '\AAuthorization\z'
+
+# `h1` is the name of the page heading the SEO data carries, not a lazy abbreviation.
+Naming/MethodParameterName:
+  inherit_mode:
+    merge:
+      - AllowedNames
+  AllowedNames:
+    - h1

@@ -151,6 +151,22 @@ RSpec.describe Catalog::Goods do
       expect(goods.reload.instruction_source_html).to eq(source)
     end
   end
+
+  describe '.shown' do
+    let!(:shown) { create(:catalog_goods) }
+
+    before do
+      %i[hidden withdrawn].each do |flag|
+        create(:catalog_goods, flag => true)
+        create(:catalog_goods, goods_group: create(:catalog_goods_group, flag => true))
+      end
+    end
+
+    it 'keeps an SKU only while neither it nor its group is hidden or withdrawn', :aggregate_failures do
+      expect(described_class.shown).to contain_exactly(shown)
+      expect(described_class.all.map(&:shown?)).to eq(described_class.all.map { it == shown })
+    end
+  end
 end
 
 # == Schema Information

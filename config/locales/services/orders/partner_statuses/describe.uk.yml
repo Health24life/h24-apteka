@@ -1,0 +1,6 @@
+uk:
+  orders:
+    partner_statuses:
+      created: Створено
+      processed_by_pharmacy: Оброблено в аптеці
+      canceled: Скасовано

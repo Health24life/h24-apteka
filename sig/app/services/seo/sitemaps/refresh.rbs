@@ -1,0 +1,18 @@
+class Seo::Sitemaps::Refresh
+  INDEX: String
+  NO_DEFAULTS: Hash[Symbol, nil]
+
+  @paths: Seo::Pages::Path
+  @storage: Seo::Sitemaps::Storage::_Storage
+
+  def self.call: (?config: Seo::Config) -> Array[String]
+
+  def initialize: (Seo::Config config) -> void
+  def call: () -> Array[String]
+
+  private
+
+  def sitemap: () -> SitemapGenerator::LinkSet
+  def fill: (SitemapGenerator::LinkSet sitemap) -> void
+  def listed_parts: () -> Array[String]
+end

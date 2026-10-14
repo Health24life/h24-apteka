@@ -1,0 +1,13 @@
+class Seo::Override
+  include Translatable
+  extend Translatable::ClassMethods
+  extend Mobility
+
+  TARGET_TYPES: Array[String]
+  TEXTS: Array[Symbol]
+
+  def title: () -> String?
+  def description: () -> String?
+  def h1: () -> String?
+  def seo_text: () -> String?
+end

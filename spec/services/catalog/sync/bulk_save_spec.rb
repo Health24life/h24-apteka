@@ -59,6 +59,23 @@ RSpec.describe Catalog::Sync::BulkSave do
     expect(QueryLog.inserts_into(statements, 'catalog_goods')).to eq(1)
   end
 
+  it 'keeps a slug changed by hand when the record comes again', :aggregate_failures do
+    bulk.call(Catalog::Goods, [ goods('1', 'Аспірин') ]).fetch('1').update!(slug: 'aspiryn-forte')
+
+    next_step.call(Catalog::Goods, [ goods('1', 'Аспірин C') ])
+
+    expect(Catalog::Goods.sole.slug).to eq('aspiryn-forte')
+    expect(Seo::Redirect.sole.slug).to eq('aspiryn')
+  end
+
+  it 'gives a new record a suffix instead of a slug that still redirects to another one' do
+    bulk.call(Catalog::Goods, [ goods('1', 'Аспірин') ]).fetch('1').update!(slug: 'aspiryn-forte')
+
+    saved = next_step.call(Catalog::Goods, [ goods('2', 'Аспірин') ])
+
+    expect(saved.fetch('2').slug).to eq('aspiryn-2')
+  end
+
   it 'logs a record that fails validation and saves the rest', :aggregate_failures do
     saved = bulk.call(Catalog::Goods, [ goods('1', nil), goods('2', 'Цитрамон') ])
 

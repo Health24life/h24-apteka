@@ -84,6 +84,32 @@ RSpec.describe Catalog::Category do
 
     expect { link.linkable.destroy }.to raise_error(ActiveRecord::DeleteRestrictionError)
   end
+
+  describe '.with_shown_goods' do
+    let(:root) { create(:catalog_category) }
+    let(:leaf) { create(:catalog_category, parent: root) }
+
+    def put_in(category, **goods)
+      group = create(:catalog_goods_group)
+      create(:catalog_goods_group_category, goods_group: group, category:)
+      create(:catalog_goods, goods_group: group, **goods)
+    end
+
+    it 'counts the SKUs of the whole branch', :aggregate_failures do
+      put_in(leaf)
+
+      expect(described_class.with_shown_goods).to contain_exactly(root, leaf)
+      expect(root.shown_goods?).to be(true)
+    end
+
+    it 'leaves out a branch whose SKUs are all hidden or withdrawn', :aggregate_failures do
+      put_in(leaf, hidden: true)
+      put_in(leaf, withdrawn: true)
+
+      expect(described_class.with_shown_goods).to be_empty
+      expect(root.shown_goods?).to be(false)
+    end
+  end
 end
 
 # == Schema Information

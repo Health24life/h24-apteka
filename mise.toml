@@ -33,6 +33,22 @@ PHARMAPOINT_LOG_RETENTION_BOOKING_DAYS = "14"
 PHARMAPOINT_LOG_RETENTION_SEARCH_DAYS = "1"
 PHARMAPOINT_LOG_RETENTION_REFRESH_DAYS = "7"
 PHARMAPOINT_LOG_RETENTION_OTHER_DAYS = "7"
+# SEO data of the section. The front base URL is the scheme, host and path prefix of the section on the front.
+APTEKA_FRONT_BASE_URL = "http://localhost:3000"
+# Query parameters of a category page that filter the list (comma-separated); such a page is not indexed.
+SEO_FILTER_PARAMS = ""
+SEO_REDIRECT_TTL_MONTHS = "3"
+SEO_REDIRECT_CLEANUP_CRON = "40 4 * * *"
+# Where the sitemap goes: `file` writes it to SEO_SITEMAP_DIR/sitemaps/ (a volume mounted as public/ is served at
+# /sitemaps/), `s3` uploads it to an S3-compatible bucket such as MinIO under the `sitemaps/` prefix.
+SEO_SITEMAP_STORAGE = "file"
+SEO_SITEMAP_DIR = "public"
+SEO_SITEMAP_S3_BUCKET = ""
+SEO_SITEMAP_S3_ENDPOINT = ""
+SEO_SITEMAP_S3_REGION = "us-east-1"
+SEO_SITEMAP_S3_ACCESS_KEY_ID = ""
+SEO_SITEMAP_S3_SECRET_ACCESS_KEY = ""
+SEO_SITEMAP_CRON = "0 5 * * *"
 
 [tasks.server]
 run = "bundle exec rails s"

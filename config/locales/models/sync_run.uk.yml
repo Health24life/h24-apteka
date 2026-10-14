@@ -1,0 +1,8 @@
+uk:
+  activerecord:
+    errors:
+      models:
+        sync_run:
+          attributes:
+            finished_at:
+              before_start: не може бути раніше за початок

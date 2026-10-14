@@ -3,8 +3,128 @@ openapi: 3.0.1
 info:
   title: Health24 Apteka API
   version: v1
-paths: {}
+paths:
+  "/api/v1/seo/page":
+    get:
+      summary: Status, redirect, meta tags, robots and breadcrumbs of a page of the
+        front
+      tags:
+      - SEO
+      description: 'Built from the Health24 database only: the partner is never asked,
+        and the answer is the same for a guest and a signed-in user. The state of
+        the page is in `status`; the HTTP status is 200 for any path that could be
+        read.'
+      parameters:
+      - name: path
+        in: query
+        required: true
+        schema:
+          type: string
+          maxLength: 2048
+        example: "/katalog/liky?page=2"
+        description: Path of the front page as in the browser, with its query
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: string
+        description: Bearer token of a signed-in user; without it the request is served
+          as a guest
+      responses:
+        '200':
+          description: the same answer for a signed-in user
+          headers:
+            X-Robots-Tag:
+              schema:
+                type: string
+              description: 'Always `noindex, follow`: no API is indexed'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/seo_page"
+        '422':
+          description: a path that is not a page path
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '401':
+          description: an expired or invalid token
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
 components:
+  schemas:
+    error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          - message
+          properties:
+            code:
+              type: string
+              description: Stable machine code
+            message:
+              type: string
+              description: Message in Ukrainian
+    seo_page:
+      type: object
+      required:
+      - status
+      - location
+      - title
+      - description
+      - h1
+      - robots
+      - breadcrumbs
+      - seo_text
+      properties:
+        status:
+          type: integer
+          enum:
+          - 200
+          - 301
+          - 404
+          - 410
+          description: State of the page
+        location:
+          type: string
+          nullable: true
+          description: Path to redirect to, for 301 only
+        title:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        h1:
+          type: string
+          nullable: true
+        robots:
+          type: string
+          nullable: true
+          example: index, follow
+        breadcrumbs:
+          type: array
+          items:
+            type: object
+            required:
+            - name
+            - path
+            properties:
+              name:
+                type: string
+              path:
+                type: string
+        seo_text:
+          type: string
+          nullable: true
   parameters:
     header_lang:
       name: Accept-Language
@@ -12,6 +132,7 @@ components:
       schema:
         type: string
         enum:
+        - uk
         - en
     auth_token:
       name: Authorization

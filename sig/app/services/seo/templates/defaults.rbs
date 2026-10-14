@@ -1,0 +1,3 @@
+class Seo::Templates::Defaults
+  def self.call: () -> Array[String]
+end

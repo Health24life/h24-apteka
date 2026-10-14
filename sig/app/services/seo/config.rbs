@@ -1,0 +1,52 @@
+class Seo::Config
+  class MissingSetting < StandardError
+  end
+
+  class S3 < Data
+    attr_reader bucket: String?
+    attr_reader endpoint: String?
+    attr_reader region: String
+    attr_reader access_key_id: String?
+    attr_reader secret_access_key: String?
+
+    def self.new: (bucket: String?, endpoint: String?, region: String, access_key_id: String?,
+                   secret_access_key: String?) -> instance
+    def with: (?bucket: String?, ?endpoint: String?, ?region: String, ?access_key_id: String?,
+               ?secret_access_key: String?) -> S3
+  end
+
+  SITEMAP_STORAGES: Array[String]
+
+
+  @current: Seo::Config?
+
+  @front_base_url: String?
+  @filter_params: Array[String]
+  @redirect_ttl: ActiveSupport::Duration
+  @sitemap_storage: String
+  @sitemap_dir: String?
+  @sitemap_s3: S3?
+
+  attr_reader front_base_url: String?
+  attr_reader filter_params: Array[String]
+  attr_reader redirect_ttl: ActiveSupport::Duration
+  attr_reader sitemap_storage: String
+  attr_reader sitemap_dir: String?
+  attr_reader sitemap_s3: S3?
+
+  def self.current: () -> Seo::Config
+  def self.reset!: () -> nil
+  def self.from_env: (?Pharmapoint::Config::_Env env) -> Seo::Config
+  def self.list: (String? value) -> Array[String]
+  def self.sitemap: (Pharmapoint::Config::_Env env) -> { sitemap_storage: String, sitemap_dir: String?, sitemap_s3: S3 }
+  def self.s3: (Pharmapoint::Config::_Env env) -> S3
+
+  def initialize: (?front_base_url: String?, ?filter_params: Array[String],
+                   ?redirect_ttl: ActiveSupport::Duration, ?sitemap_storage: String, ?sitemap_dir: String?,
+                   ?sitemap_s3: S3?) -> void
+  def front_base_url!: () -> String
+  def sitemap_dir!: () -> String
+  def sitemap_s3!: () -> S3
+  def sitemap_storage!: () -> String
+  def front_path_prefix: () -> String
+end

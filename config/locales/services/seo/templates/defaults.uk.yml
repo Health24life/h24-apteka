@@ -1,0 +1,25 @@
+uk:
+  seo:
+    templates:
+      # The general template of each page type until the product owner and the lawyer agree on the wording.
+      defaults:
+        home:
+          title: Аптека Health24 — пошук ліків і бронювання в аптеках
+          description: Знайдіть лікарські засоби, перегляньте інструкції та забронюйте їх в аптеці поруч без передоплати.
+          h1: Аптека Health24
+        category:
+          title: "{name} — каталог Аптеки Health24"
+          description: "{name}: лікарські засоби та товари для здоровʼя з інструкціями із застосування."
+          h1: "{name}"
+        goods:
+          title: "{name} {dosage} — інструкція із застосування"
+          description: "{name} {dosage} ({inn}), {producer}: склад, показання, протипоказання та спосіб застосування."
+          h1: "{name} {dosage}"
+        cart:
+          title: Кошик — Аптека Health24
+          description: Товари, обрані для бронювання в аптеці.
+          h1: Кошик
+        order:
+          title: Замовлення — Аптека Health24
+          description: Бронювання товарів в аптеці.
+          h1: Замовлення

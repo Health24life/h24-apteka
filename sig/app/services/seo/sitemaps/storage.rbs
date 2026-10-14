@@ -1,0 +1,42 @@
+module Seo::Sitemaps::Storage
+  # What the generator needs of a storage: a local directory to write to, an adapter that puts the files in place,
+  # and a way to remove the files a new run no longer lists.
+  interface _Storage
+    def public_path: () -> String
+    def adapter: () -> (SitemapGenerator::FileAdapter | SitemapGenerator::AwsSdkAdapter)
+    def prune: (Array[String] keep) -> void
+    def cleanup: () -> void
+  end
+
+  PREFIX: String
+
+  def self.for: (Seo::Config config) -> _Storage
+end
+
+class Seo::Sitemaps::Storage::Files
+  @root: Pathname
+
+  def initialize: (Seo::Config config) -> void
+  def public_path: () -> String
+  def adapter: () -> SitemapGenerator::FileAdapter
+  def prune: (Array[String] keep) -> void
+  def cleanup: () -> nil
+end
+
+class Seo::Sitemaps::Storage::Bucket
+  @s3: Seo::Config::S3
+  @bucket: String
+  @staging: String
+  @client: Aws::S3::Client?
+
+  def initialize: (Seo::Config::S3 settings) -> void
+  def public_path: () -> String
+  def adapter: () -> SitemapGenerator::AwsSdkAdapter
+  def prune: (Array[String] keep) -> void
+  def cleanup: () -> void
+
+  private
+
+  def client_options: () -> Hash[Symbol, String | bool | nil]
+  def client: () -> Aws::S3::Client
+end

@@ -1,0 +1,4 @@
+en:
+  errors:
+    messages:
+      not_neutral: 'has wording not allowed for medicines: %{words}'

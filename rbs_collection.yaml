@@ -11,3 +11,5 @@ gems:
   # Its collection signatures answer `import` with void; own code reads the result, so a shim in sig/shims replaces them.
   - name: activerecord-import
     ignore: true
+  # The sitemap index is read back from its gzip file.
+  - name: zlib

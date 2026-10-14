@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe 'the schedule of recurring jobs' do # rubocop:disable RSpec/DescribeClass
-  let(:cron_variables) { Catalog::Sync::Cron::KINDS.values.map(&:first) << 'LOG_CLEANUP_CRON' }
+  let(:cron_variables) do
+    Catalog::Sync::Cron::KINDS.values.map(&:first) + %w[LOG_CLEANUP_CRON SEO_SITEMAP_CRON SEO_REDIRECT_CLEANUP_CRON]
+  end
 
   # Renders the file as sidekiq-cron does, with the cron variables unset unless given, so their defaults apply.
   def jobs(env = {})
@@ -11,9 +13,19 @@ RSpec.describe 'the schedule of recurring jobs' do # rubocop:disable RSpec/Descr
     Sidekiq::Cron::Support.load_yaml(ERB.new(Rails.root.join('config/schedule.yml').read).result) || {}
   end
 
-  it 'schedules the dictionaries, the categories, the drugstores and the log cleanup by default' do
+  it 'schedules the dictionaries, the categories, the drugstores, the log cleanup and the SEO jobs by default' do
     expect(jobs.keys).to contain_exactly('catalog_sync_dictionaries', 'catalog_sync_categories',
-                                         'catalog_sync_drugstores', 'provider_request_log_cleanup')
+                                         'catalog_sync_drugstores', 'provider_request_log_cleanup',
+                                         'seo_sitemap', 'seo_redirect_cleanup')
+  end
+
+  it 'runs the sitemap and the redirect cleanup every day by default' do
+    expect(jobs).to include('seo_sitemap' => include('cron' => '0 5 * * *', 'class' => 'Seo::SitemapWorker'),
+                            'seo_redirect_cleanup' => include('cron' => '40 4 * * *'))
+  end
+
+  it 'takes the periodicity of the SEO jobs from the environment' do
+    expect(jobs('SEO_SITEMAP_CRON' => '30 6 * * *')['seo_sitemap']).to include('cron' => '30 6 * * *')
   end
 
   it 'passes the kind of data to the worker that starts a run' do

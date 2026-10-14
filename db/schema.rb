@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_07_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_12_120200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -424,6 +424,57 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_07_120000) do
     t.check_constraint "kind::text = ANY (ARRAY['external'::character varying::text, 'own'::character varying::text])", name: "providers_kind_check"
   end
 
+  create_table "seo_override_translations", force: :cascade do |t|
+    t.bigint "seo_override_id", null: false
+    t.string "locale", null: false
+    t.text "seo_text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["seo_override_id", "locale"], name: "index_seo_override_translations_uniqueness", unique: true
+  end
+
+  create_table "seo_overrides", force: :cascade do |t|
+    t.string "target_type", null: false
+    t.bigint "target_id", null: false
+    t.jsonb "title", default: {}, null: false
+    t.jsonb "description", default: {}, null: false
+    t.jsonb "h1", default: {}, null: false
+    t.string "robots", default: "auto", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["target_type", "target_id"], name: "index_seo_overrides_on_target", unique: true
+    t.check_constraint "robots::text = ANY (ARRAY['auto'::character varying, 'index'::character varying, 'noindex'::character varying]::text[])", name: "seo_overrides_robots_check"
+  end
+
+  create_table "seo_redirects", force: :cascade do |t|
+    t.string "page_type", null: false
+    t.string "slug", null: false
+    t.string "redirectable_type", null: false
+    t.bigint "redirectable_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["page_type", "slug"], name: "index_seo_redirects_on_page_type_and_slug", unique: true
+    t.index ["redirectable_type", "redirectable_id"], name: "index_seo_redirects_on_redirectable_type_and_redirectable_id"
+    t.check_constraint "page_type::text = ANY (ARRAY['goods'::character varying, 'category'::character varying]::text[])", name: "seo_redirects_page_type_check"
+    t.check_constraint "redirectable_type::text = ANY (ARRAY['Catalog::Goods'::character varying, 'Catalog::Category'::character varying]::text[])", name: "seo_redirects_type_check"
+    t.check_constraint "slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text AND length(slug::text) <= 100", name: "seo_redirects_slug_check"
+  end
+
+  create_table "seo_templates", force: :cascade do |t|
+    t.string "page_type", null: false
+    t.bigint "category_id"
+    t.boolean "is_recipe"
+    t.jsonb "title", default: {}, null: false
+    t.jsonb "description", default: {}, null: false
+    t.jsonb "h1", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_seo_templates_on_category_id"
+    t.index ["page_type", "category_id", "is_recipe"], name: "index_seo_templates_uniqueness", unique: true, nulls_not_distinct: true
+    t.check_constraint "category_id IS NULL OR (page_type::text = ANY (ARRAY['category'::character varying, 'goods'::character varying]::text[]))", name: "seo_templates_category_check"
+    t.check_constraint "is_recipe IS NULL OR page_type::text = 'goods'::text", name: "seo_templates_recipe_check"
+    t.check_constraint "page_type::text = ANY (ARRAY['home'::character varying, 'category'::character varying, 'goods'::character varying, 'cart'::character varying, 'order'::character varying]::text[])", name: "seo_templates_page_type_check"
+  end
+
   create_table "sync_run_failures", force: :cascade do |t|
     t.bigint "sync_run_id", null: false
     t.string "entity_type", null: false
@@ -491,4 +542,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_07_120000) do
   add_foreign_key "provider_request_logs", "sync_runs", on_delete: :nullify
   add_foreign_key "sync_run_failures", "sync_runs", on_delete: :cascade
   add_foreign_key "sync_runs", "providers"
+  add_foreign_key "seo_override_translations", "seo_overrides", on_delete: :cascade
+  add_foreign_key "seo_templates", "catalog_categories", column: "category_id"
 end

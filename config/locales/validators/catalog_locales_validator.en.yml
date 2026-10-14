@@ -1,0 +1,4 @@
+en:
+  errors:
+    messages:
+      not_a_catalog_locale: is stored in the catalog languages only, not in "%{language}"

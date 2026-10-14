@@ -13,6 +13,8 @@ class Catalog::Goods
   RESTRICTIONS: Array[Symbol]
 
   def name_uk: () -> String?
+  def shown?: () -> bool
+  def withdrawn_with_group?: () -> bool
 
   private
 

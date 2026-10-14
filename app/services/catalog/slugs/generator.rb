@@ -9,7 +9,8 @@ class Catalog::Slugs::Generator
   NON_KMU_LETTERS = 'ʼ‘`´ЫыЭэЁёЪъ'
   KMU_LETTERS = '’’’’ИиЕеЕе’’'
 
-  # `reserved` holds the slugs a batch has handed out but not saved yet, which the scope cannot see.
+  # `reserved` holds the slugs a batch has handed out but not saved yet, which the scope cannot see. An old slug of the
+  # scope's kind of page is taken as well, even past its period, until the cleanup removes the redirect.
   def self.call(text, scope:, reserved: Set.new) = new(scope, reserved:).call(text)
 
   def initialize(scope, reserved: Set.new)
@@ -22,7 +23,7 @@ class Catalog::Slugs::Generator
     first = 1
     loop do
       candidates = (first...(first + BATCH)).map { it == 1 ? base : with_suffix(base, "-#{it}") }
-      taken = @scope.where(slug: candidates).pluck(:slug)
+      taken = @scope.where(slug: candidates).pluck(:slug) + redirected(candidates)
       free = candidates.find { taken.exclude?(it) && @reserved.exclude?(it) }
       return free if free
 
@@ -31,6 +32,12 @@ class Catalog::Slugs::Generator
   end
 
   private
+
+  # Records without pages of their own have no old slugs.
+  def redirected(candidates)
+    page_type = Seo::Redirect::PAGE_TYPES[@scope.polymorphic_name] or return []
+    Seo::Redirect.where(page_type:, slug: candidates).pluck(:slug)
+  end
 
   def transliterate(text)
     kmu_text = text.to_s.tr(NON_KMU_LETTERS, KMU_LETTERS)
