@@ -19,8 +19,11 @@ RSpec.describe Pharmapoint::Logging::Masker do
 
   describe '#body' do
     it 'hides the phone of a client at any depth and leaves the rest as it is' do
-      body = { 'customer_phone_number' => '380501112233', 'total' => 5,
-               'goods' => [ { 'id' => 1, 'customer_phone_number' => '1' } ] }
+      body = {
+        'customer_phone_number' => '380501112233',
+        'total' => 5,
+        'goods' => [ { 'id' => 1, 'customer_phone_number' => '1' } ]
+      }
 
       expect(masker.body(body)).to eq(
         'customer_phone_number' => '[masked]',

@@ -49,11 +49,10 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Shared across Puma workers and hosts; a separate Redis DB from Sidekiq's SIDEKIQ_REDIS_URL.
-  config.cache_store = :redis_cache_store, {
-    url: ENV.fetch('REDIS_URL'),
-    namespace: 'h24_apteka_cache',
-    reconnect_attempts: 1
-  }
+  config.cache_store = [
+    :redis_cache_store,
+    { url: ENV.fetch('REDIS_URL'), namespace: 'h24_apteka_cache', reconnect_attempts: 1 }
+  ]
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   # config.active_job.queue_adapter = :resque

@@ -12,8 +12,15 @@ class Pharmapoint::Client
   ERROR_BODY_LIMIT = 500
 
   # rubocop:disable-next Metrics/ParameterLists -- who asks, why and which attempt it is are the log's context.
-  def initialize(provider:, config: Pharmapoint::Config.current, purpose: :refresh, user_id: nil, sync_run: nil,
-                 attempt: 1, rate_limiter: Pharmapoint::RateLimiter.new(config:))
+  def initialize(
+    provider:,
+    config: Pharmapoint::Config.current,
+    purpose: :refresh,
+    user_id: nil,
+    sync_run: nil,
+    attempt: 1,
+    rate_limiter: Pharmapoint::RateLimiter.new(config:)
+  )
     @config = config
     @rate_limiter = rate_limiter
     @masker = Pharmapoint::Logging::Masker.new(config:)
@@ -95,8 +102,11 @@ class Pharmapoint::Client
     api_key, domain_name = @config.credentials!
     Faraday.new(
       url: @config.base_url,
-      headers: { 'API-Key' => api_key, 'Domain-Name' => domain_name,
-                 'Accept' => 'application/json' },
+      headers: {
+        'API-Key' => api_key,
+        'Domain-Name' => domain_name,
+        'Accept' => 'application/json'
+      },
       request: { open_timeout: @config.open_timeout, timeout: @config.read_timeout }
     ) do |faraday|
       faraday.use Pharmapoint::Logging::Middleware, logger: @logger

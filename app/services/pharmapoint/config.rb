@@ -59,10 +59,20 @@ class Pharmapoint::Config < Data.define(
 
   # Every setting has a default, so a caller names only what differs.
   # rubocop:disable-next Metrics/ParameterLists -- a settings object takes every setting as a keyword.
-  def initialize(base_url: DEFAULT_BASE_URL, api_key: nil, domain_name: nil, rate_limit_per_minute: 60,
-                 rate_limit_window: 60, open_timeout: 5, read_timeout: 30, goods_groups_per_page: 50,
-                 search_points: [], stale_run_after: 6.hours, stale_record_after: 1.day,
-                 retention_days: RETENTION_DAYS)
+  def initialize(
+    base_url: DEFAULT_BASE_URL,
+    api_key: nil,
+    domain_name: nil,
+    rate_limit_per_minute: 60,
+    rate_limit_window: 60,
+    open_timeout: 5,
+    read_timeout: 30,
+    goods_groups_per_page: 50,
+    search_points: [],
+    stale_run_after: 6.hours,
+    stale_record_after: 1.day,
+    retention_days: RETENTION_DAYS
+  )
     super
   end
 

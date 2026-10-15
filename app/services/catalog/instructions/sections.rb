@@ -17,9 +17,11 @@ module Catalog::Instructions::Sections
     Section.new(code: 'protypokazannia', synonyms: [ 'протипоказання' ]),
     Section.new(
       code: 'vzaiemodiia-z-inshymy-likarskymy-zasobamy',
-      synonyms: [ 'взаємодія з іншими лікарськими засобами',
-                  'взаємодія з іншими лікарськими засобами та інші види взаємодій',
-                  'взаємодія з іншими лікарськими засобами та інші форми взаємодій' ]
+      synonyms: [
+        'взаємодія з іншими лікарськими засобами',
+        'взаємодія з іншими лікарськими засобами та інші види взаємодій',
+        'взаємодія з іншими лікарськими засобами та інші форми взаємодій'
+      ]
     ),
     Section.new(
       code: 'sposib-zastosuvannia-ta-dozy',

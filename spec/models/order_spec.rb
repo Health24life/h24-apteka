@@ -33,9 +33,11 @@ RSpec.describe Order do
 
   describe 'binding to a pharmacy and a provider' do
     let(:refused) do
-      [ build(:order, serve_drugstore: false),
+      [
+        build(:order, serve_drugstore: false),
         build(:order, drugstore: create(:catalog_drugstore, hidden: true)),
-        build(:order, provider: create(:provider, active: false)) ]
+        build(:order, provider: create(:provider, active: false))
+      ]
     end
 
     it 'refuses a pharmacy the provider does not serve', :aggregate_failures do
@@ -363,8 +365,12 @@ RSpec.describe Order do
 
   describe 'refusals of a sent order' do
     it 'are worded in the locale files', :aggregate_failures do
-      refused = [ build(:order, :submitted, customer_phone_number: '1'), build(:order, :submitted, own_number: ''),
-                  build(:order, :submitted, customer_email: 'a@'), build(:order, :submitted, delivery: nil) ]
+      refused = [
+        build(:order, :submitted, customer_phone_number: '1'),
+        build(:order, :submitted, own_number: ''),
+        build(:order, :submitted, customer_email: 'a@'),
+        build(:order, :submitted, delivery: nil)
+      ]
       messages = refused.flat_map { |record| record.tap(&:validate).errors.full_messages }
 
       expect(messages).not_to be_empty
@@ -376,10 +382,21 @@ RSpec.describe Order do
     let(:saved) { create(:order) }
     let(:now) { Time.current }
     let(:row) do
-      { drugstore_id: saved.drugstore_id, provider_id: saved.provider_id, state: 'submitted',
-        token: SecureRandom.hex(12), share_token: SecureRandom.hex(12), created_at: now, updated_at: now,
-        personal_data_consent_at: now, own_number: 'H24-0000000001', customer_first_name: 'Anna',
-        customer_phone_number: '380501234567', provider_drugstore_external_id: '42', provider_order_number: 'PP1' }
+      {
+        drugstore_id: saved.drugstore_id,
+        provider_id: saved.provider_id,
+        state: 'submitted',
+        token: SecureRandom.hex(12),
+        share_token: SecureRandom.hex(12),
+        created_at: now,
+        updated_at: now,
+        personal_data_consent_at: now,
+        own_number: 'H24-0000000001',
+        customer_first_name: 'Anna',
+        customer_phone_number: '380501234567',
+        provider_drugstore_external_id: '42',
+        provider_order_number: 'PP1'
+      }
     end
 
     def store_row(attributes)
@@ -432,8 +449,15 @@ RSpec.describe Order do
     let(:saved) { create(:order) }
     let(:now) { Time.current }
     let(:row) do
-      { drugstore_id: saved.drugstore_id, provider_id: saved.provider_id, state: 'cart', token: SecureRandom.hex(12),
-        share_token: SecureRandom.hex(12), created_at: now, updated_at: now }
+      {
+        drugstore_id: saved.drugstore_id,
+        provider_id: saved.provider_id,
+        state: 'cart',
+        token: SecureRandom.hex(12),
+        share_token: SecureRandom.hex(12),
+        created_at: now,
+        updated_at: now
+      }
     end
 
     def store_row(attributes)
@@ -441,9 +465,14 @@ RSpec.describe Order do
     end
 
     def sent_data(state)
-      { personal_data_consent_at: now, own_number: "H24-#{state}", customer_first_name: 'Anna',
-        customer_phone_number: '380501234567', provider_drugstore_external_id: '42',
-        provider_order_number: "PP-#{state}" }
+      {
+        personal_data_consent_at: now,
+        own_number: "H24-#{state}",
+        customer_first_name: 'Anna',
+        customer_phone_number: '380501234567',
+        provider_drugstore_external_id: '42',
+        provider_order_number: "PP-#{state}"
+      }
     end
 
     it 'refuses a repeated secret token' do
@@ -504,8 +533,16 @@ RSpec.describe Order do
     end
 
     it 'keeps the guest tokens and the personal data out of filters and sorting', :aggregate_failures do
-      hidden = %w[token share_token customer_first_name customer_last_name customer_middle_name customer_phone_number
-                  customer_email provider_payload]
+      hidden = %w[
+        token
+        share_token
+        customer_first_name
+        customer_last_name
+        customer_middle_name
+        customer_phone_number
+        customer_email
+        provider_payload
+      ]
 
       expect(described_class.ransackable_attributes & hidden).to be_empty
       expect(described_class.ransortable_attributes & hidden).to be_empty

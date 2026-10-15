@@ -38,8 +38,10 @@ RSpec.describe Catalog::Sync::TopList do
 
     expect(result).to have_attributes(enqueued: 2, failed: 2)
     expect(result.messages).to eq(
-      [ 'line 2: empty line, skipped',
-        "line 3: 'paracetamol' is not a goods group id, skipped" ]
+      [
+        'line 2: empty line, skipped',
+        "line 3: 'paracetamol' is not a goods group id, skipped"
+      ]
     )
   end
 

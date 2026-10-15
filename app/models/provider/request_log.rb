@@ -8,8 +8,13 @@ class Provider::RequestLog < ApplicationRecord
 
   enum :category, { booking: 'booking', search: 'search', refresh: 'refresh', other: 'other' }, validate: true
   enum :outcome,
-       { success: 'success', http_error: 'http_error', timeout: 'timeout',
-         connection_error: 'connection_error', invalid_response: 'invalid_response' },
+       {
+         success: 'success',
+         http_error: 'http_error',
+         timeout: 'timeout',
+         connection_error: 'connection_error',
+         invalid_response: 'invalid_response'
+       },
        validate: true
 
   belongs_to :provider, inverse_of: :request_logs

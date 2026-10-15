@@ -26,7 +26,9 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
 
   before do
     {
-      Catalog::Goods::Form => '223', Catalog::Goods::Measure => '1', Catalog::Goods::PriceGroup => '2',
+      Catalog::Goods::Form => '223',
+      Catalog::Goods::Measure => '1',
+      Catalog::Goods::PriceGroup => '2',
       Catalog::Goods::TemperatureMode => '3'
     }.each { |model, id| linker.sync(model, id, name_uk: 'x') }
     %w[1 3].each { linker.sync(Catalog::Goods::Restriction, it, name_uk: 'x') }
@@ -218,8 +220,12 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
   def group_without_optionals = items.last
 
   def update_stamps
-    [ Catalog::Goods::Group, Catalog::Goods, Catalog::Goods::InstructionSection,
+    [
+      Catalog::Goods::Group,
+      Catalog::Goods,
+      Catalog::Goods::InstructionSection,
       Catalog::Goods::Group.reflect_on_association(:translations).klass,
-      Catalog::Goods.reflect_on_association(:translations).klass ].to_h { [ it.name, it.order(:id).pluck(:updated_at) ] }
+      Catalog::Goods.reflect_on_association(:translations).klass
+    ].to_h { [ it.name, it.order(:id).pluck(:updated_at) ] }
   end
 end

@@ -5,8 +5,13 @@ class Catalog::Goods < ApplicationRecord
   include Translatable
   include Catalog::Sluggable
 
-  RESTRICTIONS = %i[adult_restriction child_restriction diabetic_restriction driver_restriction
-                    pregnant_and_lactating_restriction].freeze
+  RESTRICTIONS = %i[
+    adult_restriction
+    child_restriction
+    diabetic_restriction
+    driver_restriction
+    pregnant_and_lactating_restriction
+  ].freeze
 
   translatable :name, :instruction_html, backend: :table
 

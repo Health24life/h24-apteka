@@ -30,8 +30,10 @@ RSpec.describe Catalog::Sync::Pull do
 
     it 'is queued once whoever asks', :aggregate_failures do
       results = with_unique_jobs do
-        [ described_class.enqueue(:goods_group, group_id, user_id: 1),
-          described_class.enqueue(:goods_group, group_id, user_id: 2) ]
+        [
+          described_class.enqueue(:goods_group, group_id, user_id: 1),
+          described_class.enqueue(:goods_group, group_id, user_id: 2)
+        ]
       end
 
       expect(results).to eq(%i[enqueued queued_already])

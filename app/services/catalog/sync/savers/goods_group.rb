@@ -28,9 +28,14 @@ class Catalog::Sync::Savers::GoodsGroup
   def guard(item, &) = @tracker.guard(Catalog::Goods::Group.name, item.external_id, item, &)
 
   def entry(item)
-    attributes = { name_uk: item.name, included_to_offers: item.included_to_offers, withdrawn: false,
-                   producer: producer(item.producer), goods_name: goods_name(item.goods_name),
-                   atc_class: atc_class(item.atc_class) }
+    attributes = {
+      name_uk: item.name,
+      included_to_offers: item.included_to_offers,
+      withdrawn: false,
+      producer: producer(item.producer),
+      goods_name: goods_name(item.goods_name),
+      atc_class: atc_class(item.atc_class)
+    }
     Catalog::Sync::BulkSave::Entry.new(external_id: item.external_id, attributes:, payload: item)
   end
 
@@ -77,14 +82,8 @@ class Catalog::Sync::Savers::GoodsGroup
 
   # A category the tree import has not brought yet is built from the path the group carries, root down.
   def ensure_category(category)
-    nodes = if category.path.empty?
-  [ Pharmapoint::PathNode.new(
-    external_id: category.external_id,
-    name: category.name
-  ) ]
-    else
-  category.path
-    end
+    lone_node = Pharmapoint::PathNode.new(external_id: category.external_id, name: category.name)
+    nodes = category.path.presence || [ lone_node ]
     # @type var parent: Catalog::Category?
     parent = nil
     nodes.first(nodes.size - 1).each { |node| parent = ensure_category_node(node, parent) }

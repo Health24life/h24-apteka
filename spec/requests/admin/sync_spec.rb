@@ -19,8 +19,13 @@ RSpec.describe 'Admin sync journal' do
   end
 
   def order_body
-    { 'customer_first_name' => 'Олена', 'customer_phone_number' => '380501234567', 'customer_email' => 'olena@mail.ua',
-      'drugstore_id' => 34_494, 'delivery' => { 'delivery_type_code' => 'PickUp', 'street' => 'Братиславська' } }
+    {
+      'customer_first_name' => 'Олена',
+      'customer_phone_number' => '380501234567',
+      'customer_email' => 'olena@mail.ua',
+      'drugstore_id' => 34_494,
+      'delivery' => { 'delivery_type_code' => 'PickUp', 'street' => 'Братиславська' }
+    }
   end
 
   before { sign_in admin }

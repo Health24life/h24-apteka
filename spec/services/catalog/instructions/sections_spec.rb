@@ -11,9 +11,20 @@ RSpec.describe Catalog::Instructions::Sections do
   end
 
   it 'lists the twelve sections in the order of the list' do
-    expected = %w[sklad likarska-forma farmakoterapevtychna-hrupa pokazannia protypokazannia
-                  vzaiemodiia-z-inshymy-likarskymy-zasobamy sposib-zastosuvannia-ta-dozy pobichni-reaktsii
-                  peredozuvannia umovy-zberihannia termin-prydatnosti katehoriia-vidpusku]
+    expected = %w[
+      sklad
+      likarska-forma
+      farmakoterapevtychna-hrupa
+      pokazannia
+      protypokazannia
+      vzaiemodiia-z-inshymy-likarskymy-zasobamy
+      sposib-zastosuvannia-ta-dozy
+      pobichni-reaktsii
+      peredozuvannia
+      umovy-zberihannia
+      termin-prydatnosti
+      katehoriia-vidpusku
+    ]
 
     expect(described_class::CODES).to eq(expected)
   end

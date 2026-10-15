@@ -5,8 +5,15 @@ class Order::Delivery < ApplicationRecord
   self.table_name = 'order_deliveries'
 
   enum :delivery_type_code,
-       { pick_up: 'pick_up', ukr_post: 'ukr_post', nova_poshta: 'nova_poshta',
-         meest_express: 'meest_express', justin: 'justin', uklon: 'uklon', ipost: 'ipost' },
+       {
+         pick_up: 'pick_up',
+         ukr_post: 'ukr_post',
+         nova_poshta: 'nova_poshta',
+         meest_express: 'meest_express',
+         justin: 'justin',
+         uklon: 'uklon',
+         ipost: 'ipost'
+       },
        validate: true,
        default: 'pick_up'
 

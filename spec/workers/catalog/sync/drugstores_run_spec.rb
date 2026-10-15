@@ -6,8 +6,10 @@ RSpec.describe 'a run over the drugstore directory' do # rubocop:disable RSpec/D
   let!(:provider) { create(:provider, code: 'pharmapoint') }
   let(:run) { SyncRun.where(kind: 'drugstores').excluding_pulls.last }
   let(:points) do
-    [ Pharmapoint::Config::Point.new(latitude: 50.45, longitude: 30.52, radius: 1000),
-      Pharmapoint::Config::Point.new(latitude: 49.99, longitude: 36.23, radius: 1000) ]
+    [
+      Pharmapoint::Config::Point.new(latitude: 50.45, longitude: 30.52, radius: 1000),
+      Pharmapoint::Config::Point.new(latitude: 49.99, longitude: 36.23, radius: 1000)
+    ]
   end
   let(:any_point) { hash_including({}) }
 

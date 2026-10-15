@@ -44,13 +44,9 @@ module ActiveAdminTailwind
   end
 
   def compile(*extra)
-    command = [
-      Tailwindcss::Ruby.executable.to_s,
-      '-i', Rails.root.join('app/assets/tailwind/active_admin.css').to_s,
-      '-o', Rails.root.join('app/assets/builds/active_admin.css').to_s,
-      *extra
-    ]
-    system(*command, exception: true)
+    input = Rails.root.join('app/assets/tailwind/active_admin.css').to_s
+    output = Rails.root.join('app/assets/builds/active_admin.css').to_s
+    system(Tailwindcss::Ruby.executable.to_s, '-i', input, '-o', output, *extra, exception: true)
   end
 end
 

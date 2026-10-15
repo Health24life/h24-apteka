@@ -14,8 +14,14 @@ RSpec.describe Catalog::Instructions::Parser do
 
     it 'finds the known sections in document order' do
       expect(result.sections.map(&:code)).to eq(
-        %w[sklad likarska-forma farmakoterapevtychna-hrupa pokazannia
-           sposib-zastosuvannia-ta-dozy termin-prydatnosti]
+        %w[
+          sklad
+          likarska-forma
+          farmakoterapevtychna-hrupa
+          pokazannia
+          sposib-zastosuvannia-ta-dozy
+          termin-prydatnosti
+        ]
       )
     end
 

@@ -38,9 +38,31 @@ Layout/FirstMethodArgumentLineBreak:
 Layout/MultilineMethodArgumentLineBreaks:
   Enabled: true
 
-# A call split one argument per line is still one statement, so the length metrics count it as one line.
+# The same one-per-line rule for hash keys, array elements and method parameters.
+Layout/FirstHashElementLineBreak:
+  Enabled: true
+
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: true
+
+Layout/FirstArrayElementLineBreak:
+  Enabled: true
+
+Layout/MultilineArrayLineBreaks:
+  Enabled: true
+
+Layout/FirstMethodParameterLineBreak:
+  Enabled: true
+
+Layout/MultilineMethodParameterLineBreaks:
+  Enabled: true
+
+Rails/PluckId:
+  Enabled: true
+
+# A call, hash or array split one item per line is still one statement, so the length metrics count it as one line.
 Metrics/MethodLength:
-  CountAsOne: ['method_call']
+  CountAsOne: ['method_call', 'hash', 'array']
 
 RSpec/ExampleLength:
-  CountAsOne: ['method_call']
+  CountAsOne: ['method_call', 'hash', 'array']

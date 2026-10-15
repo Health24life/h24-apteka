@@ -5,9 +5,13 @@ require 'rails_helper'
 RSpec.describe Pharmapoint::Config do
   describe '.from_env' do
     let(:env) do
-      { 'PHARMAPOINT_BASE_URL' => 'https://p.test/api', 'PHARMAPOINT_API_KEY' => 'k',
-        'PHARMAPOINT_DOMAIN_NAME' => 'h24.test', 'PHARMAPOINT_RATE_LIMIT_PER_MINUTE' => '30',
-        'PHARMAPOINT_DRUGSTORE_SEARCH_POINTS' => '[{"latitude": 50.4, "longitude": 30.5, "radius": 20000}]' }
+      {
+        'PHARMAPOINT_BASE_URL' => 'https://p.test/api',
+        'PHARMAPOINT_API_KEY' => 'k',
+        'PHARMAPOINT_DOMAIN_NAME' => 'h24.test',
+        'PHARMAPOINT_RATE_LIMIT_PER_MINUTE' => '30',
+        'PHARMAPOINT_DRUGSTORE_SEARCH_POINTS' => '[{"latitude": 50.4, "longitude": 30.5, "radius": 20000}]'
+      }
     end
 
     it 'reads the connection settings and the search points from the environment', :aggregate_failures do
@@ -15,11 +19,13 @@ RSpec.describe Pharmapoint::Config do
 
       expect(config).to have_attributes(base_url: 'https://p.test/api', api_key: 'k', rate_limit_per_minute: 30)
       expect(config.search_points).to eq(
-        [ described_class::Point.new(
-          latitude: 50.4,
-          longitude: 30.5,
-          radius: 20_000
-        ) ]
+        [
+          described_class::Point.new(
+            latitude: 50.4,
+            longitude: 30.5,
+            radius: 20_000
+          )
+        ]
       )
     end
 

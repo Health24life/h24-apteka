@@ -5,10 +5,18 @@ require 'rails_helper'
 RSpec.describe Pharmapoint::Logging::DisplayMasker do
   let(:order_part) do
     {
-      'ext_drugstore_id' => '5aea4747-43ec-11ed-84af-ecf4bbd48b9a', 'drugstore_id' => 34_494,
-      'goods' => [ { 'goods_id' => 1_990_718, 'ext_goods_id' => '8b470a26-43ec-11ed-84af-ecf4bbd48b9a', 'quantity' => 1,
-                     'price' => '12.5' } ],
-      'online_drugstore_order_number' => 'H24-0000000009', 'total' => '265.99'
+      'ext_drugstore_id' => '5aea4747-43ec-11ed-84af-ecf4bbd48b9a',
+      'drugstore_id' => 34_494,
+      'goods' => [
+        {
+          'goods_id' => 1_990_718,
+          'ext_goods_id' => '8b470a26-43ec-11ed-84af-ecf4bbd48b9a',
+          'quantity' => 1,
+          'price' => '12.5'
+        }
+      ],
+      'online_drugstore_order_number' => 'H24-0000000009',
+      'total' => '265.99'
     }
   end
   let(:pick_up_order) do
@@ -18,8 +26,15 @@ RSpec.describe Pharmapoint::Logging::DisplayMasker do
       'customer_phone_number' => '380777777777',
       'customer_email' => 'olena@mail.ua',
       'comment' => 'Подзвоніть за годину',
-      'delivery' => { 'delivery_type_code' => 'PickUp', 'ettn' => nil, 'postcode' => '12345', 'city' => 'Київ',
-                      'street' => 'Братиславська', 'house_number' => '11', 'apartment_number' => '145' },
+      'delivery' => {
+        'delivery_type_code' => 'PickUp',
+        'ettn' => nil,
+        'postcode' => '12345',
+        'city' => 'Київ',
+        'street' => 'Братиславська',
+        'house_number' => '11',
+        'apartment_number' => '145'
+      },
       'payment' => { 'payment_method_code' => 'cash_in_store' }
     )
   end
@@ -30,22 +45,50 @@ RSpec.describe Pharmapoint::Logging::DisplayMasker do
       'customer_phone_number' => '[masked]',
       'customer_email' => '[masked]',
       'comment' => '[masked]',
-      'delivery' => { 'delivery_type_code' => 'PickUp', 'ettn' => nil, 'postcode' => '[masked]', 'city' => '[masked]',
-                      'street' => '[masked]', 'house_number' => '[masked]', 'apartment_number' => '[masked]' },
+      'delivery' => {
+        'delivery_type_code' => 'PickUp',
+        'ettn' => nil,
+        'postcode' => '[masked]',
+        'city' => '[masked]',
+        'street' => '[masked]',
+        'house_number' => '[masked]',
+        'apartment_number' => '[masked]'
+      },
       'payment' => { 'payment_method_code' => '[masked]' }
     )
   end
   let(:recipe_order) do
-    { 'recipe_number' => '0000-4942-TE9P-EXAA', 'repayment_code' => '1234', 'drugstore_id' => 38_049,
-      'goods_id' => 1_826_972, 'customer_middle_name' => 'Петрівна', 'total' => 0,
-      'delivery' => { 'delivery_type_code' => 'ukr_post', 'city' => 'м.Запоріжжя' } }
+    {
+      'recipe_number' => '0000-4942-TE9P-EXAA',
+      'repayment_code' => '1234',
+      'drugstore_id' => 38_049,
+      'goods_id' => 1_826_972,
+      'customer_middle_name' => 'Петрівна',
+      'total' => 0,
+      'delivery' => { 'delivery_type_code' => 'ukr_post', 'city' => 'м.Запоріжжя' }
+    }
   end
   let(:catalog_page) do
-    { 'data' => [ { 'id' => '122c4abff4ae26d0068e7b4cfce236a6', 'barcode' => '4820000000000', 'name' => 'Аспірин',
-                    'producer' => { 'name' => 'Bayer', 'country' => 'Німеччина' } } ],
-      'drugstore' => { 'city' => 'Київ', 'street' => 'Хрещатик', 'edrpou' => '38001234', 'tax_number' => '3800123456',
-                       'ext_id' => '5aea4747-43ec-11ed-84af-ecf4bbd48b9a' },
-      'morion' => '380123', 'order_number' => '50-04-16-44', 'created_at' => '2026-04-16 11:46:21' }
+    {
+      'data' => [
+        {
+          'id' => '122c4abff4ae26d0068e7b4cfce236a6',
+          'barcode' => '4820000000000',
+          'name' => 'Аспірин',
+          'producer' => { 'name' => 'Bayer', 'country' => 'Німеччина' }
+        }
+      ],
+      'drugstore' => {
+        'city' => 'Київ',
+        'street' => 'Хрещатик',
+        'edrpou' => '38001234',
+        'tax_number' => '3800123456',
+        'ext_id' => '5aea4747-43ec-11ed-84af-ecf4bbd48b9a'
+      },
+      'morion' => '380123',
+      'order_number' => '50-04-16-44',
+      'created_at' => '2026-04-16 11:46:21'
+    }
   end
 
   describe '.body' do
@@ -66,10 +109,18 @@ RSpec.describe Pharmapoint::Logging::DisplayMasker do
     end
 
     it 'hides the client and the prescription in the answer to an order, however deep they stand' do
-      answer = { 'data' => { 'order_number' => '2E-2H-X4-K5', 'customer_first_name' => 'Олена',
-                             'recipe' => { 'number' => '0000-AMP5-H1KM-MEAM', 'reimbursement_total' => 0 } } }
-      masked = { 'order_number' => '2E-2H-X4-K5', 'customer_first_name' => '[masked]',
-                 'recipe' => { 'number' => '[masked]', 'reimbursement_total' => 0 } }
+      answer = {
+        'data' => {
+          'order_number' => '2E-2H-X4-K5',
+          'customer_first_name' => 'Олена',
+          'recipe' => { 'number' => '0000-AMP5-H1KM-MEAM', 'reimbursement_total' => 0 }
+        }
+      }
+      masked = {
+        'order_number' => '2E-2H-X4-K5',
+        'customer_first_name' => '[masked]',
+        'recipe' => { 'number' => '[masked]', 'reimbursement_total' => 0 }
+      }
 
       expect(described_class.body(answer)).to eq('data' => masked)
     end

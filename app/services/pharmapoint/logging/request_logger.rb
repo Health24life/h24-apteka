@@ -51,10 +51,18 @@ class Pharmapoint::Logging::RequestLogger
 
   # Secrets are masked here, before anything is written.
   def attributes_of(entry)
-    { http_method: entry.http_method, path: entry.path, query: @masker.body(entry.query),
-      request_headers: @masker.headers(entry.request_headers), request_body: @masker.body(entry.request_body),
-      response_headers: @masker.headers(entry.response_headers), response_body: @masker.body(entry.response_body),
-      response_status: entry.response_status, outcome: entry.outcome, error_class: entry.error_class,
-      duration_ms: entry.duration_ms }
+    {
+      http_method: entry.http_method,
+      path: entry.path,
+      query: @masker.body(entry.query),
+      request_headers: @masker.headers(entry.request_headers),
+      request_body: @masker.body(entry.request_body),
+      response_headers: @masker.headers(entry.response_headers),
+      response_body: @masker.body(entry.response_body),
+      response_status: entry.response_status,
+      outcome: entry.outcome,
+      error_class: entry.error_class,
+      duration_ms: entry.duration_ms
+    }
   end
 end

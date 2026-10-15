@@ -3,8 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe 'the workers of the partner integration' do # rubocop:disable RSpec/DescribeClass
-  workers = [ Catalog::Sync::StartWorker, Catalog::Sync::StepWorker, Catalog::Sync::PullWorker,
-              Pharmapoint::LogCleanupWorker ]
+  workers = [
+    Catalog::Sync::StartWorker,
+    Catalog::Sync::StepWorker,
+    Catalog::Sync::PullWorker,
+    Pharmapoint::LogCleanupWorker
+  ]
 
   workers.each do |worker|
     describe worker do
