@@ -1,0 +1,34 @@
+<div class="main-content-container">
+  <%= form_with url: url_for(action: :remove), method: :put, class: "formtastic" do %>
+    <fieldset class="inputs">
+      <ol>
+        <li class="radio input">
+          <fieldset class="choices">
+            <legend class="label"><label><%= t("admin.seo_filters.remove_outcome") %></label></legend>
+            <ol class="choices-group">
+              <li class="choice">
+                <label><%= radio_button_tag :outcome, "gone", target.nil? %> <%= t("admin.seo_filters.remove_gone") %></label>
+              </li>
+              <li class="choice">
+                <label><%= radio_button_tag :outcome, "redirect", !target.nil? %> <%= t("admin.seo_filters.remove_redirect") %></label>
+              </li>
+            </ol>
+          </fieldset>
+        </li>
+        <li class="string input <%= 'error' if errors[:target] %>">
+          <%= label_tag :target, t("admin.seo_redirects.target"), class: "label" %>
+          <%= text_field_tag :target, target %>
+          <% if errors[:target] %><p class="inline-errors"><%= t(errors[:target], scope: "admin.seo_redirects.errors.target") %></p><% end %>
+          <% if errors[:source] %><p class="inline-errors"><%= t(errors[:source], scope: "admin.seo_redirects.errors.source") %></p><% end %>
+          <p class="inline-hints"><%= t("admin.seo_filters.remove_target_hint") %></p>
+        </li>
+      </ol>
+    </fieldset>
+    <fieldset class="actions">
+      <ol>
+        <li class="action input_action"><%= submit_tag t("admin.seo_filters.remove") %></li>
+        <li class="cancel"><%= link_to t("active_admin.cancel"), resource_path(resource) %></li>
+      </ol>
+    </fieldset>
+  <% end %>
+</div>

@@ -14,6 +14,7 @@ class Seo::Filter
   def removed?: () -> bool
   def hidden_status: () -> Integer?
   def remove!: () -> void
+  def restore!: () -> void
 
   private
 

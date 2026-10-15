@@ -16,6 +16,15 @@ class Seo::Redirects::Manual
     new(config).call(source:, target:, redirect:, save:)
   end
 
+  # Why a redirect could not lead to the target, or nil when it could: for a page that still has its address, so its
+  # target is checked before the page goes.
+  def self.target_error(target, config: Seo::Config.current)
+    # @type var errors: Hash[Symbol, Symbol]
+    errors = {}
+    new(config).send(:target_record, target, errors)
+    errors[:target]
+  end
+
   def initialize(config)
     @config = config
   end

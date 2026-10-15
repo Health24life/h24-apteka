@@ -1,0 +1,9 @@
+class Seo::Filters::Remove
+  Result: singleton(Seo::Redirects::Manual::Result)
+
+  def self.call: (filter: Seo::Filter, ?target: String?, ?config: Seo::Config) -> Seo::Redirects::Manual::Result
+
+  private
+
+  def self.redirect: (Seo::Filter filter, String target, Seo::Config config) -> Seo::Redirects::Manual::Result
+end

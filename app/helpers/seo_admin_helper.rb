@@ -7,6 +7,7 @@ module SeoAdminHelper
     when Catalog::Goods then admin_sku_path(record)
     when Catalog::Category then admin_category_path(record)
     when Seo::StaticPage then admin_static_page_path(record)
+    when Seo::Filter then admin_seo_filter_path(record)
     when Seo::Template then admin_seo_template_path(record)
     when Seo::Redirect then admin_seo_redirect_path(record)
     end
@@ -45,6 +46,7 @@ module SeoAdminHelper
     case redirect.page_type
     when 'goods' then paths.goods(redirect.slug)
     when 'category' then paths.category(redirect.slug)
+    when 'filter' then paths.filter(redirect.slug)
     else paths.static(redirect.slug)
     end
   end

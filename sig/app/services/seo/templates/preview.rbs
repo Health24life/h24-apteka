@@ -1,5 +1,5 @@
 class Seo::Templates::Preview
-  type record = Catalog::Goods | Catalog::Category | Seo::StaticPage
+  type record = Catalog::Goods | Catalog::Category | Seo::StaticPage | Seo::Filter
 
   class Text < Data
     attr_reader value: String
@@ -19,11 +19,13 @@ class Seo::Templates::Preview
     def cut?: () -> bool
   end
 
-  MODELS: Hash[String, singleton(Catalog::Goods) | singleton(Catalog::Category) | singleton(Seo::StaticPage)]
+  MODELS: Hash[String, singleton(Catalog::Goods) | singleton(Catalog::Category) | singleton(Seo::StaticPage) |
+                       singleton(Seo::Filter)]
 
   def self.call: (template: Seo::Template, record: record?) -> Result
   type records = Catalog::Goods::ActiveRecord_Relation | Catalog::Category::ActiveRecord_Relation
                | Catalog::Category::ActiveRecord_Associations_CollectionProxy | Seo::StaticPage::ActiveRecord_Relation
+               | Seo::Filter::ActiveRecord_Relation
 
   def self.records: (Seo::Template template) -> records
   def self.options: (String page_type, untyped params) -> records

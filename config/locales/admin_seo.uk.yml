@@ -146,6 +146,45 @@ uk:
           other_host: Допустимі лише адреси розділу.
           not_a_page: Нова адреса не є адресою SKU, категорії, добірки чи статичної сторінки.
           unavailable: Сторінка цілі недоступна.
+    seo_filters:
+      state: Стан
+      states:
+        draft: чернетка
+        published: опубліковано
+        removed: видалено
+      empty: без товарів
+      params: Параметри відбору
+      category_hint: Категорія, на сторінці якої добірка показується в блоці «Добірки»; порожня — головна розділу.
+      position_hint: Чим менше число, тим вище добірка серед добірок категорії.
+      sort_orders:
+        name: за назвою
+        newest: нові першими
+      recipe_scopes:
+        otc: лише безрецептурні
+        rx: лише рецептурні
+        any: будь-які
+      preview: Переглянути склад
+      goods_now: Склад зараз
+      goods_count: "Товарів, що зараз підпадають під добірку: %{count}."
+      goods_first: "Нижче — перші %{count} за назвою."
+      no_goods: Опублікована добірка без товарів закрита від індексації й не потрапляє в sitemap.
+      publish: Опублікувати
+      unpublish: Зняти з публікації
+      published: Добірку опубліковано.
+      published_empty: Під добірку зараз не підпадає жоден товар — її сторінка закрита від індексації й не потрапляє в sitemap.
+      unpublished: Добірку знято з публікації.
+      remove: Видалити
+      remove_title: "Видалення добірки «%{name}»"
+      remove_outcome: Що віддає адреса добірки після видалення
+      remove_gone: 410 — сторінки більше немає
+      remove_redirect: Переадресацію на іншу сторінку розділу
+      remove_target_hint: Шлях чи повна адреса SKU, категорії, статичної сторінки чи іншої добірки, що зараз відкривається.
+      removed: Добірку видалено.
+      restore: Відновити
+      restore_confirm: Добірка повернеться чернеткою, а ручна переадресація з її адреси буде знята.
+      restored: Добірку відновлено чернеткою.
+      removed_locked: Видалену добірку не можна змінити — спершу відновіть її.
+      not_removed: Добірка не видалена — відновлювати нічого.
   activerecord:
     models:
       seo_template:
@@ -160,6 +199,9 @@ uk:
       seo_redirect:
         one: Переадресація
         other: Переадресації
+      seo_filter:
+        one: Добірка
+        other: Добірки
       seo_history:
         one: Зміна SEO
         other: Історія змін SEO
@@ -181,6 +223,9 @@ uk:
       seo/redirect:
         one: Переадресація
         other: Переадресації
+      seo/filter:
+        one: Добірка
+        other: Добірки
       catalog/category:
         one: Категорія
         other: Категорії
@@ -227,6 +272,18 @@ uk:
         manual: Ручна
         redirectable: Ціль
         created_at: Створено
+      seo/filter:
+        name: Назва
+        name_uk: Назва
+        slug: Адреса
+        category: Категорія
+        position: Порядок
+        sort_order: Порядок товарів
+        recipe_scope: Рецептурність
+        params: Параметри відбору
+        published: Опубліковано
+        removed_at: Видалено
+        updated_at: Оновлено
       seo/version:
         author: Хто
         item_type: Що

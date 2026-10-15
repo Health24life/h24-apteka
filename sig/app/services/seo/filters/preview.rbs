@@ -1,0 +1,9 @@
+class Seo::Filters::Preview < Data
+  LIMIT: Integer
+
+  attr_reader count: Integer
+  attr_reader goods: Array[Catalog::Goods]
+
+  def self.new: (count: Integer, goods: Array[Catalog::Goods]) -> instance
+  def self.call: (Seo::Filter filter) -> Seo::Filters::Preview
+end
