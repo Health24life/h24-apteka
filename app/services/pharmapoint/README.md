@@ -48,7 +48,7 @@ client.drugstore('38628')           # => запис однієї аптеки
 | `PHARMAPOINT_DOMAIN_NAME` | `h24.ua` | Заголовок `Domain-Name` |
 | `PHARMAPOINT_RATE_LIMIT_PER_MINUTE` | `60` | Власна межа запитів на хвилину на весь сервіс |
 | `PHARMAPOINT_GOODS_GROUPS_PER_PAGE` | `50` | Розмір сторінки груп товарів |
-| `PHARMAPOINT_DRUGSTORE_SEARCH_POINTS` | один пункт у Києві | JSON-масив `{latitude, longitude, radius}`: навколо цих точок збирається довідник аптек |
+| `PHARMAPOINT_DRUGSTORE_SEARCH_POINTS` | один пункт у Києві | JSON-масив об'єктів `{"latitude": градуси, "longitude": градуси, "radius": метри}`: навколо цих точок збирається довідник аптек. Читає `Catalog::Sync::Config`; формат і приклад — у [README синхронізації](../catalog/sync/README.md) |
 | `PHARMAPOINT_LOG_RETENTION_<КАТЕГОРІЯ>_DAYS` | бронювання 14, пошук 1, оновлення даних 7, інші 7 | Строк зберігання журналу по категоріях |
 | `SYNC_CRON_DICTIONARIES`, `SYNC_CRON_CATEGORIES`, `SYNC_CRON_GOODS_GROUPS`, `SYNC_CRON_DRUGSTORES` | див. `schedule.rb` | Cron кожного прогону; **порожнє значення вимикає задачу**. Прогін груп товарів за замовчуванням вимкнений |
 | `LOG_CLEANUP_CRON` | `0 4 * * *` | Коли чистити журнал |

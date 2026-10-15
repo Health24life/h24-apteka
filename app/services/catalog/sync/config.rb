@@ -9,7 +9,9 @@ class Catalog::Sync::Config
   SECONDS = ->(value) { Integer(value).seconds }
   DAYS = ->(value) { Integer(value).days }
 
-  # The environment gives the points as a JSON array of {latitude, longitude, radius}.
+  # The environment gives the points as a JSON array of objects with all three keys: latitude and longitude in decimal
+  # degrees, radius in whole metres, e.g. [{"latitude": 50.4501, "longitude": 30.5234, "radius": 50000}]. A missing key
+  # or a value that is not a number fails at boot rather than dropping the point.
   def self.parse_points(value)
     list = value.is_a?(String) ? JSON.parse(value.presence || '[]') : value
     list.map do |point|
