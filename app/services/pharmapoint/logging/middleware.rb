@@ -31,13 +31,23 @@ class Pharmapoint::Logging::Middleware < Faraday::Middleware
   end
 
   def request_part(env)
-    { http_method: env.method.to_s.upcase, path: env.url.path.to_s, query: query_of(env),
-      request_headers: env.request_headers, request_body: json_value(env.request_body) }
+    {
+      http_method: env.method.to_s.upcase,
+      path: env.url.path.to_s,
+      query: query_of(env),
+      request_headers: env.request_headers,
+      request_body: json_value(env.request_body)
+    }
   end
 
   def response_part(result)
-    { response_status: result.status, response_headers: result.headers, response_body: result.body,
-      outcome: result.outcome, error_class: result.error_class }
+    {
+      response_status: result.status,
+      response_headers: result.headers,
+      response_body: result.body,
+      outcome: result.outcome,
+      error_class: result.error_class
+    }
   end
 
   def query_of(env) = Faraday::Utils.parse_nested_query(env.url.query) || {}
@@ -53,8 +63,13 @@ class Pharmapoint::Logging::Middleware < Faraday::Middleware
   def answered(env)
     status = env.status.to_i
     unless status.positive?
-      return Result.new(status: nil, headers: {}, body: nil, outcome: 'connection_error',
-                        error_class: nil)
+      return Result.new(
+        status: nil,
+        headers: {},
+        body: nil,
+        outcome: 'connection_error',
+        error_class: nil
+      )
     end
 
     body = json_value(env.body)

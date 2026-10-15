@@ -31,9 +31,13 @@ class Pharmapoint::Readers::GoodsGroups
 
   def build_group(external_id, record)
     Pharmapoint::GoodsGroup.new(
-      external_id:, name: name(record), included_to_offers: affirmative_at?(record, 'included_to_offers'),
-      producer: producer(record['goods_producer']), goods_name: goods_name(record['goods_name']),
-      atc_class: atc_class(record), categories: categories(record),
+      external_id:,
+      name: name(record),
+      included_to_offers: affirmative_at?(record, 'included_to_offers'),
+      producer: producer(record['goods_producer']),
+      goods_name: goods_name(record['goods_name']),
+      atc_class: atc_class(record),
+      categories: categories(record),
       goods: list_at(record, 'release_forms').filter_map { Pharmapoint::Readers::Goods.call(it) }
     )
   end
@@ -43,8 +47,12 @@ class Pharmapoint::Readers::GoodsGroups
     external_id = id_at(record, 'id')
     return unless external_id
 
-    Pharmapoint::Producer.new(external_id:, name: text_at(record, 'name'), country: text_at(record, 'country'),
-                              country_code: text_at(record, 'country_code')&.upcase)
+    Pharmapoint::Producer.new(
+      external_id:,
+      name: text_at(record, 'name'),
+      country: text_at(record, 'country'),
+      country_code: text_at(record, 'country_code')&.upcase
+    )
   end
 
   def goods_name(value)
@@ -58,8 +66,12 @@ class Pharmapoint::Readers::GoodsGroups
     entry = atc_entry(record['goods_atc_class'])
     return unless entry
 
-    Pharmapoint::AtcClass.new(external_id: entry.external_id, atc_code: entry.atc_code, name: entry.name,
-                              ancestors: list_at(record, 'goods_atc_class_tree').filter_map { atc_entry(it) })
+    Pharmapoint::AtcClass.new(
+      external_id: entry.external_id,
+      atc_code: entry.atc_code,
+      name: entry.name,
+      ancestors: list_at(record, 'goods_atc_class_tree').filter_map { atc_entry(it) }
+    )
   end
 
   def atc_entry(value)
@@ -67,8 +79,11 @@ class Pharmapoint::Readers::GoodsGroups
     external_id = id_at(record, 'id')
     return unless external_id
 
-      Pharmapoint::AtcEntry.new(external_id:, atc_code: text_at(record, 'atc_code'),
-                                name: text_at(record, 'name'))
+      Pharmapoint::AtcEntry.new(
+        external_id:,
+        atc_code: text_at(record, 'atc_code'),
+        name: text_at(record, 'name')
+      )
   end
 
   # The paths run from the root to the leaf; a category's `tree_id` is the index of its path.
@@ -82,8 +97,11 @@ class Pharmapoint::Readers::GoodsGroups
     external_id = id_at(record, 'id')
     return unless external_id
 
-    Pharmapoint::GroupCategory.new(external_id:, name: name(record),
-                                   path: category_path(paths, int_at(record, 'tree_id')))
+    Pharmapoint::GroupCategory.new(
+      external_id:,
+      name: name(record),
+      path: category_path(paths, int_at(record, 'tree_id'))
+    )
   end
 
   def category_path(paths, index)

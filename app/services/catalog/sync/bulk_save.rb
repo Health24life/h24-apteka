@@ -56,8 +56,13 @@ class Catalog::Sync::BulkSave
   def import(model, records)
     children = { provider_links: %i[linkable_id synced_at], translations: translated_columns(model, records) }
     model.transaction(requires_new: true) do
-      model.import(records, validate: false, recursive: true, on_duplicate_key_update: changed_columns(records),
-                            recursive_on_duplicate_key_update: children.compact)
+      model.import(
+        records,
+        validate: false,
+        recursive: true,
+        on_duplicate_key_update: changed_columns(records),
+        recursive_on_duplicate_key_update: children.compact
+      )
     end
   end
 

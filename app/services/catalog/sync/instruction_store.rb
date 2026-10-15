@@ -21,7 +21,12 @@ class Catalog::Sync::InstructionStore
   private
 
   def create_section(goods, section)
-    goods.instruction_sections.create!(position: section.position, code: section.code, anchor: section.anchor,
-                                       source_title: section.source_title, body_html_uk: section.body_html)
+    goods.instruction_sections.create!(
+      position: section.position,
+      code: section.code,
+      anchor: section.anchor,
+      source_title: section.source_title,
+      body_html_uk: section.body_html
+    )
   end
 end

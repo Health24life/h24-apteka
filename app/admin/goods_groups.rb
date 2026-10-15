@@ -52,7 +52,8 @@ ActiveAdmin.register Catalog::Goods::Group, as: 'GoodsGroup' do
 
   action_item :visibility, only: :show do
     link_to t(resource.hidden ? 'admin.visibility.show' : 'admin.visibility.hide'),
-            url_for(action: :visibility), class: 'action-item-button'
+            url_for(action: :visibility),
+            class: 'action-item-button'
   end
 
   member_action :visibility, method: %i[get put] do

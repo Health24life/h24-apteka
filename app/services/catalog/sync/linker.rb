@@ -59,8 +59,11 @@ class Catalog::Sync::Linker
   def forget(model) = @records.delete_if { |(name, _), _| name == model.name }
 
   def link!(record, external_id)
-    link = Provider::Link.find_or_initialize_by(provider: @provider, linkable_type: record.class.name,
-                                                external_id: external_id.to_s)
+    link = Provider::Link.find_or_initialize_by(
+      provider: @provider,
+      linkable_type: record.class.name,
+      external_id: external_id.to_s
+    )
     link.linkable = record
     link.synced_at = @now
     link.save!
@@ -76,8 +79,10 @@ class Catalog::Sync::Linker
   end
 
   def linked(model, external_ids)
-    model.includes(*preloaded_associations(model))
-         .where(provider_links: { provider_id: @provider.id, external_id: external_ids }).to_a
+    model
+      .includes(*preloaded_associations(model))
+      .where(provider_links: { provider_id: @provider.id, external_id: external_ids })
+      .to_a
   end
 
   def key(model, external_id) = [ model.name, external_id.to_s ]

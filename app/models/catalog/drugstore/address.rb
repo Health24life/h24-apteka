@@ -3,10 +3,14 @@
 class Catalog::Drugstore::Address < ApplicationRecord
   belongs_to :drugstore, class_name: 'Catalog::Drugstore', inverse_of: :address
   belongs_to :core_region, class_name: 'H24Core::Classification::Address::Region', optional: true, inverse_of: false
-  belongs_to :core_settlement, class_name: 'H24Core::Classification::Address::Settlement', optional: true,
-                               inverse_of: false
-  belongs_to :core_city_district, class_name: 'H24Core::Classification::Address::CityDistrict', optional: true,
-                                  inverse_of: false
+  belongs_to :core_settlement,
+             class_name: 'H24Core::Classification::Address::Settlement',
+             optional: true,
+             inverse_of: false
+  belongs_to :core_city_district,
+             class_name: 'H24Core::Classification::Address::CityDistrict',
+             optional: true,
+             inverse_of: false
   # core_metro_station_id has no association: the core has no metro stations table yet.
 
   validates :drugstore_id, uniqueness: true

@@ -5,8 +5,10 @@ class H24Core::Classification::Address::CityDistrict < H24Core::ApplicationRecor
 
   self.table_name = 'city_districts'
 
-  belongs_to :settlement, class_name: 'H24Core::Classification::Address::Settlement', optional: true,
-                          inverse_of: :city_districts
+  belongs_to :settlement,
+             class_name: 'H24Core::Classification::Address::Settlement',
+             optional: true,
+             inverse_of: :city_districts
 
   hstore_translated :title, :title_translations
 end

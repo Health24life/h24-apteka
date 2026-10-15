@@ -13,13 +13,22 @@ RSpec.describe Pharmapoint::Readers::GoodsGroups do
   end
 
   it 'reads the group with its name and the id of the partner' do
-    expect(group).to have_attributes(external_id: 'a060d7776d3d256af22378e018bea336',
-                                     name: 'Спазмалгон табл. №50(10х5)', included_to_offers: false)
+    expect(group).to have_attributes(
+      external_id: 'a060d7776d3d256af22378e018bea336',
+      name: 'Спазмалгон табл. №50(10х5)',
+      included_to_offers: false
+    )
   end
 
   it 'reads the producer with the country code in capitals' do
-    expect(group.producer).to eq(Pharmapoint::Producer.new(external_id: '48424', name: 'Balkanpharma',
-                                                           country: 'Болгария', country_code: 'BG'))
+    expect(group.producer).to eq(
+      Pharmapoint::Producer.new(
+        external_id: '48424',
+        name: 'Balkanpharma',
+        country: 'Болгария',
+        country_code: 'BG'
+      )
+    )
   end
 
   it 'reads the trade name' do
@@ -48,13 +57,25 @@ RSpec.describe Pharmapoint::Readers::GoodsGroups do
   end
 
   it 'reads the packing of a release form' do
-    expect(goods.pack).to eq(Pharmapoint::Pack.new(unit_name: 'plate', quantity_in_pack: 50, quantity_unit_in_pack: 5,
-                                                   quantity_in_unit: 10))
+    expect(goods.pack).to eq(
+      Pharmapoint::Pack.new(
+        unit_name: 'plate',
+        quantity_in_pack: 50,
+        quantity_unit_in_pack: 5,
+        quantity_in_unit: 10
+      )
+    )
   end
 
   it 'reads the references to dictionaries as ids of the partner', :aggregate_failures do
-    expect(goods.references).to have_attributes(form: '223', measure: '1', price_group: '2', temperature_mode: '3',
-                                                adult_restriction: '1', child_restriction: '3')
+    expect(goods.references).to have_attributes(
+      form: '223',
+      measure: '1',
+      price_group: '2',
+      temperature_mode: '3',
+      adult_restriction: '1',
+      child_restriction: '3'
+    )
     expect(goods.references.driver_restriction).to be_nil
   end
 

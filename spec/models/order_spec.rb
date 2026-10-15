@@ -33,9 +33,11 @@ RSpec.describe Order do
 
   describe 'binding to a pharmacy and a provider' do
     let(:refused) do
-      [ build(:order, serve_drugstore: false),
+      [
+        build(:order, serve_drugstore: false),
         build(:order, drugstore: create(:catalog_drugstore, hidden: true)),
-        build(:order, provider: create(:provider, active: false)) ]
+        build(:order, provider: create(:provider, active: false))
+      ]
     end
 
     it 'refuses a pharmacy the provider does not serve', :aggregate_failures do
@@ -166,9 +168,16 @@ RSpec.describe Order do
 
   # Fills a cart with what a sent order must have, as the checkout would before the state changes.
   def send_out(cart, **overrides)
-    cart.assign_attributes(state: 'submitted', personal_data_consent_at: Time.current, customer_first_name: 'Anna',
-                           customer_phone_number: '380501234567', own_number: 'H24-0000000009',
-                           provider_drugstore_external_id: '42', provider_order_number: 'PP9', **overrides)
+    cart.assign_attributes(
+      state: 'submitted',
+      personal_data_consent_at: Time.current,
+      customer_first_name: 'Anna',
+      customer_phone_number: '380501234567',
+      own_number: 'H24-0000000009',
+      provider_drugstore_external_id: '42',
+      provider_order_number: 'PP9',
+      **overrides
+    )
     cart.build_delivery(delivery_type_code: 'pick_up')
     cart.build_payment(payment_type_code: 'cash_in_store')
   end
@@ -285,8 +294,13 @@ RSpec.describe Order do
 
     it 'refuses the number of the provider that another order of this provider has', :aggregate_failures do
       first = create(:order, :submitted)
-      second = build(:order, :submitted, provider: first.provider, drugstore: first.drugstore,
-                                         provider_order_number: first.provider_order_number)
+      second = build(
+        :order,
+        :submitted,
+        provider: first.provider,
+        drugstore: first.drugstore,
+        provider_order_number: first.provider_order_number
+      )
 
       expect(second).not_to be_valid
       expect(second.errors).to be_of_kind(:provider_order_number, :taken)
@@ -335,8 +349,14 @@ RSpec.describe Order do
 
   describe 'status of the provider' do
     it 'is stored as sent, without checks', :aggregate_failures do
-      sent = create(:order, :submitted, status_name: 'awaiting_courier', status_comment: 'Wait', cancel_reason: nil,
-                                        progress: { step: 3, completed: false, label: 'Courier' })
+      sent = create(
+        :order,
+        :submitted,
+        status_name: 'awaiting_courier',
+        status_comment: 'Wait',
+        cancel_reason: nil,
+        progress: { step: 3, completed: false, label: 'Courier' }
+      )
 
       expect(sent.reload).to have_attributes(status_name: 'awaiting_courier', status_comment: 'Wait')
       expect(sent.progress).to eq('step' => 3, 'completed' => false, 'label' => 'Courier')
@@ -345,8 +365,12 @@ RSpec.describe Order do
 
   describe 'refusals of a sent order' do
     it 'are worded in the locale files', :aggregate_failures do
-      refused = [ build(:order, :submitted, customer_phone_number: '1'), build(:order, :submitted, own_number: ''),
-                  build(:order, :submitted, customer_email: 'a@'), build(:order, :submitted, delivery: nil) ]
+      refused = [
+        build(:order, :submitted, customer_phone_number: '1'),
+        build(:order, :submitted, own_number: ''),
+        build(:order, :submitted, customer_email: 'a@'),
+        build(:order, :submitted, delivery: nil)
+      ]
       messages = refused.flat_map { |record| record.tap(&:validate).errors.full_messages }
 
       expect(messages).not_to be_empty
@@ -358,10 +382,21 @@ RSpec.describe Order do
     let(:saved) { create(:order) }
     let(:now) { Time.current }
     let(:row) do
-      { drugstore_id: saved.drugstore_id, provider_id: saved.provider_id, state: 'submitted',
-        token: SecureRandom.hex(12), share_token: SecureRandom.hex(12), created_at: now, updated_at: now,
-        personal_data_consent_at: now, own_number: 'H24-0000000001', customer_first_name: 'Anna',
-        customer_phone_number: '380501234567', provider_drugstore_external_id: '42', provider_order_number: 'PP1' }
+      {
+        drugstore_id: saved.drugstore_id,
+        provider_id: saved.provider_id,
+        state: 'submitted',
+        token: SecureRandom.hex(12),
+        share_token: SecureRandom.hex(12),
+        created_at: now,
+        updated_at: now,
+        personal_data_consent_at: now,
+        own_number: 'H24-0000000001',
+        customer_first_name: 'Anna',
+        customer_phone_number: '380501234567',
+        provider_drugstore_external_id: '42',
+        provider_order_number: 'PP1'
+      }
     end
 
     def store_row(attributes)
@@ -414,8 +449,15 @@ RSpec.describe Order do
     let(:saved) { create(:order) }
     let(:now) { Time.current }
     let(:row) do
-      { drugstore_id: saved.drugstore_id, provider_id: saved.provider_id, state: 'cart', token: SecureRandom.hex(12),
-        share_token: SecureRandom.hex(12), created_at: now, updated_at: now }
+      {
+        drugstore_id: saved.drugstore_id,
+        provider_id: saved.provider_id,
+        state: 'cart',
+        token: SecureRandom.hex(12),
+        share_token: SecureRandom.hex(12),
+        created_at: now,
+        updated_at: now
+      }
     end
 
     def store_row(attributes)
@@ -423,9 +465,14 @@ RSpec.describe Order do
     end
 
     def sent_data(state)
-      { personal_data_consent_at: now, own_number: "H24-#{state}", customer_first_name: 'Anna',
-        customer_phone_number: '380501234567', provider_drugstore_external_id: '42',
-        provider_order_number: "PP-#{state}" }
+      {
+        personal_data_consent_at: now,
+        own_number: "H24-#{state}",
+        customer_first_name: 'Anna',
+        customer_phone_number: '380501234567',
+        provider_drugstore_external_id: '42',
+        provider_order_number: "PP-#{state}"
+      }
     end
 
     it 'refuses a repeated secret token' do
@@ -486,8 +533,16 @@ RSpec.describe Order do
     end
 
     it 'keeps the guest tokens and the personal data out of filters and sorting', :aggregate_failures do
-      hidden = %w[token share_token customer_first_name customer_last_name customer_middle_name customer_phone_number
-                  customer_email provider_payload]
+      hidden = %w[
+        token
+        share_token
+        customer_first_name
+        customer_last_name
+        customer_middle_name
+        customer_phone_number
+        customer_email
+        provider_payload
+      ]
 
       expect(described_class.ransackable_attributes & hidden).to be_empty
       expect(described_class.ransortable_attributes & hidden).to be_empty

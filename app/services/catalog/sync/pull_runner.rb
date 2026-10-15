@@ -27,8 +27,13 @@ class Catalog::Sync::PullRunner
   private
 
   def fetch_and_save(provider, tracker)
-    client = Pharmapoint::Client.new(provider:, purpose: :refresh, user_id: @user_id, sync_run: tracker.run,
-                                     attempt: SidekiqMiddleware::JobAttempt.current)
+    client = Pharmapoint::Client.new(
+      provider:,
+      purpose: :refresh,
+      user_id: @user_id,
+      sync_run: tracker.run,
+      attempt: SidekiqMiddleware::JobAttempt.current
+    )
     linker = Catalog::Sync::Linker.new(provider)
     if @type == :goods_group
       pull_goods_group(client, linker, tracker)

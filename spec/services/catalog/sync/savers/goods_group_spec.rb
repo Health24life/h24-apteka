@@ -9,8 +9,11 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
   let(:linker) { Catalog::Sync::Linker.new(provider) }
   let(:tracker) { Catalog::Sync::RunTracker.start(provider:, kind: 'goods_groups') }
   let(:items) do
-    Pharmapoint::Readers::GoodsGroups.page(JSON.parse(pharmapoint_fixture('goods_group_search')), page: 1,
-                                                                                                  per_page: 2).items
+    Pharmapoint::Readers::GoodsGroups.page(
+      JSON.parse(pharmapoint_fixture('goods_group_search')),
+      page: 1,
+      per_page: 2
+    ).items
   end
 
   def item = items.first
@@ -23,7 +26,9 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
 
   before do
     {
-      Catalog::Goods::Form => '223', Catalog::Goods::Measure => '1', Catalog::Goods::PriceGroup => '2',
+      Catalog::Goods::Form => '223',
+      Catalog::Goods::Measure => '1',
+      Catalog::Goods::PriceGroup => '2',
       Catalog::Goods::TemperatureMode => '3'
     }.each { |model, id| linker.sync(model, id, name_uk: 'x') }
     %w[1 3].each { linker.sync(Catalog::Goods::Restriction, it, name_uk: 'x') }
@@ -93,8 +98,8 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
     it 'stays when it was chosen by hand, whatever the order of the list' do
       group = save_with(first, second)
       group.goods_group_categories.update_all(is_primary: false) # rubocop:disable Rails/SkipsModelValidations
-      group.goods_group_categories.where(category: Catalog::Category.find_linked(provider, '7002'))
-           .update_all(is_primary: true) # rubocop:disable Rails/SkipsModelValidations
+      chosen = Catalog::Category.find_linked(provider, '7002')
+      group.goods_group_categories.where(category: chosen).update_all(is_primary: true) # rubocop:disable Rails/SkipsModelValidations
 
       expect(primary_of(save_with(first, second))).to eq('Протизапальні')
     end
@@ -130,8 +135,10 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
 
     expect(save_one(item.with(producer: unnamed))).to be_nil
     expect(Catalog::Goods::Group.count).to eq(0)
-    expect(tracker.run.failures.sole).to have_attributes(entity_type: 'Catalog::Goods::Group',
-                                                         error_class: 'ActiveRecord::RecordInvalid')
+    expect(tracker.run.failures.sole).to have_attributes(
+      entity_type: 'Catalog::Goods::Group',
+      error_class: 'ActiveRecord::RecordInvalid'
+    )
   end
 
   it 'leaves the update time of the groups, SKU, their translations and instruction sections alone on the same data',
@@ -168,8 +175,8 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
 
   it 'does not count a SKU whose instruction could not be stored', :aggregate_failures do
     allow(Catalog::Sync::InstructionStore).to receive(:call).and_call_original
-    allow(Catalog::Sync::InstructionStore).to receive(:call).with(have_attributes(morion_code: '470684'), anything)
-                                                            .and_raise(ArgumentError, 'broken')
+    broken = have_attributes(morion_code: '470684')
+    allow(Catalog::Sync::InstructionStore).to receive(:call).with(broken, anything).and_raise(ArgumentError, 'broken')
 
     saver.call(items)
 
@@ -191,8 +198,10 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
     before { save_one(broken) }
 
     it 'logs that SKU' do
-      expect(tracker.run.failures.sole).to have_attributes(error_class: 'Catalog::Sync::MissingReference',
-                                                           external_id: '1795034')
+      expect(tracker.run.failures.sole).to have_attributes(
+        error_class: 'Catalog::Sync::MissingReference',
+        external_id: '1795034'
+      )
     end
 
     it 'saves the other SKU' do
@@ -211,8 +220,12 @@ RSpec.describe Catalog::Sync::Savers::GoodsGroup do
   def group_without_optionals = items.last
 
   def update_stamps
-    [ Catalog::Goods::Group, Catalog::Goods, Catalog::Goods::InstructionSection,
+    [
+      Catalog::Goods::Group,
+      Catalog::Goods,
+      Catalog::Goods::InstructionSection,
       Catalog::Goods::Group.reflect_on_association(:translations).klass,
-      Catalog::Goods.reflect_on_association(:translations).klass ].to_h { [ it.name, it.order(:id).pluck(:updated_at) ] }
+      Catalog::Goods.reflect_on_association(:translations).klass
+    ].to_h { [ it.name, it.order(:id).pluck(:updated_at) ] }
   end
 end

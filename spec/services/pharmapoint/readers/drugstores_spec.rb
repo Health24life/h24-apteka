@@ -6,20 +6,32 @@ RSpec.describe Pharmapoint::Readers::Drugstores do
   let(:list) { described_class.list(JSON.parse(pharmapoint_fixture('drugstores'))) }
 
   it 'reads the legal entity and whether the drugstore works with reimbursement', :aggregate_failures do
-    expect(list.first).to have_attributes(external_id: '38628', legal_entity_code: '42517597',
-                                          work_with_reimbursement: true)
+    expect(list.first).to have_attributes(
+      external_id: '38628',
+      legal_entity_code: '42517597',
+      work_with_reimbursement: true
+    )
     expect(list.first.legal_entity_name).to include('Подорожник Харків')
   end
 
   it 'reads the address with the coordinates, spaces squeezed' do
-    expect(list.first.location).to have_attributes(address: 'м. Харків, вул. Чернишевська, 1', city: 'Харків',
-                                                   state: 'Харківська обл.', latitude: 49.995691,
-                                                   longitude: 36.2359392)
+    expect(list.first.location).to have_attributes(
+      address: 'м. Харків, вул. Чернишевська, 1',
+      city: 'Харків',
+      state: 'Харківська обл.',
+      latitude: 49.995691,
+      longitude: 36.2359392
+    )
   end
 
   it 'reads the brand' do
-    expect(list.first.brand).to eq(Pharmapoint::Brand.new(external_id: '57', name: 'Подорожник',
-                                                          image_path: 'drugstore_brand_photo/57/p.png'))
+    expect(list.first.brand).to eq(
+      Pharmapoint::Brand.new(
+        external_id: '57',
+        name: 'Подорожник',
+        image_path: 'drugstore_brand_photo/57/p.png'
+      )
+    )
   end
 
   it 'keeps the seven entries of the week schedule' do
@@ -45,8 +57,12 @@ RSpec.describe Pharmapoint::Readers::Drugstores do
   it 'unpacks a single drugstore that arrives as an array of one and marks it complete' do
     one = described_class.one(JSON.parse(pharmapoint_fixture('drugstore')))
 
-    expect(one).to have_attributes(external_id: '38628', outer_id: '2369', name: 'Аптека №2369, "Подорожник"',
-                                   complete: true)
+    expect(one).to have_attributes(
+      external_id: '38628',
+      outer_id: '2369',
+      name: 'Аптека №2369, "Подорожник"',
+      complete: true
+    )
   end
 
   it 'refuses an answer without data' do

@@ -12,8 +12,13 @@ RSpec.describe Catalog::Instructions::ParsedInstruction do
   end
 
   it 'counts as parsed when it has sections' do
-    section = described_class::Section.new(position: 1, code: 'sklad', anchor: 'sklad', source_title: 'Склад',
-                                           body_html: '<p>Вода.</p>')
+    section = described_class::Section.new(
+      position: 1,
+      code: 'sklad',
+      anchor: 'sklad',
+      source_title: 'Склад',
+      body_html: '<p>Вода.</p>'
+    )
 
     expect(described_class.new(sections: [ section ], fallback_html: nil)).to be_parsed
   end

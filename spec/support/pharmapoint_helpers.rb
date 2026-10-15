@@ -35,8 +35,11 @@ module PharmapointHelpers
   end
 
   def pharmapoint_answer(fixture, body: nil, status: 200, headers: {})
-    { status:, body: body || pharmapoint_fixture(fixture),
-      headers: { 'Content-Type' => 'application/json' }.merge(headers) }
+    {
+      status:,
+      body: body || pharmapoint_fixture(fixture),
+      headers: { 'Content-Type' => 'application/json' }.merge(headers)
+    }
   end
 
   # The limiter's counters and the locks of the on-demand fetch live in Redis, which outlives an example.

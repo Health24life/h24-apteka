@@ -35,8 +35,9 @@ ActiveAdmin.register AdminUser do
       f.input :password
       f.input :password_confirmation
       own_record = f.object == current_admin_user
-      f.input :is_active, input_html: { disabled: own_record },
-                          hint: own_record ? 'You cannot deactivate your own account.' : nil
+      f.input :is_active,
+              input_html: { disabled: own_record },
+              hint: own_record ? 'You cannot deactivate your own account.' : nil
     end
     f.actions
   end

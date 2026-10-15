@@ -6,9 +6,18 @@ RSpec.describe 'Admin orders' do
   let(:admin) { create(:admin_user) }
   let(:drugstore) { create(:catalog_drugstore, name: 'Аптека на Хрещатику') }
   let(:sent) do
-    create(:order, :submitted, drugstore:, customer_first_name: 'Іван', customer_last_name: 'Коваленко',
-                               customer_middle_name: 'Петрович', customer_phone_number: '380501234567',
-                               customer_email: 'ivan@mail.ua', drugstore_name: 'Аптека №1', status_name: 'created')
+    create(
+      :order,
+      :submitted,
+      drugstore:,
+      customer_first_name: 'Іван',
+      customer_last_name: 'Коваленко',
+      customer_middle_name: 'Петрович',
+      customer_phone_number: '380501234567',
+      customer_email: 'ivan@mail.ua',
+      drugstore_name: 'Аптека №1',
+      status_name: 'created'
+    )
   end
   let(:failed) { create(:order, :submission_failed, customer_phone_number: '380671112233') }
   let(:cart) { create(:order, drugstore:) }
@@ -84,13 +93,23 @@ RSpec.describe 'Admin orders' do
     end
 
     it 'shows the drugstore, the delivery with its address and the payment' do
-      expect(response.body).to include('Аптека №1', admin_drugstore_path(drugstore), 'Укрпошта', 'Київ, Хрещатик, 1',
-                                       'Оплата в аптеці')
+      expect(response.body).to include(
+        'Аптека №1',
+        admin_drugstore_path(drugstore),
+        'Укрпошта',
+        'Київ, Хрещатик, 1',
+        'Оплата в аптеці'
+      )
     end
 
     it 'shows the items with prices and a link to the SKU' do
-      expect(response.body).to include('Парацетамол', 'Дарниця', '25.50 ₴', '51.00 ₴',
-                                       admin_sku_path(sent.items.first.goods))
+      expect(response.body).to include(
+        'Парацетамол',
+        'Дарниця',
+        '25.50 ₴',
+        '51.00 ₴',
+        admin_sku_path(sent.items.first.goods)
+      )
     end
 
     it 'never shows the guest keys' do
@@ -125,8 +144,12 @@ RSpec.describe 'Admin orders' do
     it 'shows a guest cart without prices and without the guest keys', :aggregate_failures do
       get admin_order_path(cart)
 
-      expect(response.body).to include('Кошик', admin_drugstore_path(drugstore), 'гість',
-                                       admin_sku_path(cart.items.first.goods))
+      expect(response.body).to include(
+        'Кошик',
+        admin_drugstore_path(drugstore),
+        'гість',
+        admin_sku_path(cart.items.first.goods)
+      )
       expect(response.body).not_to include(cart.token, cart.share_token, 'Ціна')
     end
   end

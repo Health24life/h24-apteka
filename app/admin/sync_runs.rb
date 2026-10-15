@@ -11,8 +11,10 @@ ActiveAdmin.register SyncRun do
   includes :provider
 
   filter :kind, as: :select, collection: proc { SyncRun.kinds.keys.map { [ t("admin.sync_runs.kinds.#{it}"), it ] } }
-  filter :mode_eq, as: :select, label: proc { SyncRun.human_attribute_name(:mode) },
-                   collection: proc { %w[full pull].map { [ t("admin.sync_runs.mode.#{it}"), it ] } }
+  filter :mode_eq,
+         as: :select,
+         label: proc { SyncRun.human_attribute_name(:mode) },
+         collection: proc { %w[full pull].map { [ t("admin.sync_runs.mode.#{it}"), it ] } }
   filter :status, as: :select, collection: proc { SyncRun.statuses.keys }
   filter :started_at
 
@@ -45,8 +47,10 @@ ActiveAdmin.register SyncRun do
     end
 
     panel t('admin.sync_runs.request_logs') do
-      para link_to(t('admin.sync_runs.open_request_logs'),
-                   admin_provider_request_logs_path(q: { sync_run_id_eq: resource.id }))
+      para link_to(
+        t('admin.sync_runs.open_request_logs'),
+        admin_provider_request_logs_path(q: { sync_run_id_eq: resource.id })
+      )
     end
 
     panel t('admin.sync_runs.failures') do
@@ -70,8 +74,10 @@ ActiveAdmin.register SyncRun do
       if Catalog::Sync::Cron.enabled?(kind)
         button_to label, start_admin_sync_runs_path(kind:), class: 'action-item-button', form: { class: 'inline' }
       else
-        tag.span label, class: 'action-item-button opacity-50 cursor-not-allowed', aria: { disabled: true },
-                        title: t('admin.sync_runs.disabled_hint')
+        tag.span label,
+                 class: 'action-item-button opacity-50 cursor-not-allowed',
+                 aria: { disabled: true },
+                 title: t('admin.sync_runs.disabled_hint')
       end
     end
     safe_join(buttons)

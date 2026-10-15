@@ -20,7 +20,7 @@ class Pharmapoint::Logging::Retention
     cutoff = @now - @config.retention_for(category)
     removed = 0
     loop do
-      ids = Provider::RequestLog.where(category:).older_than(cutoff).limit(BATCH).pluck(:id)
+      ids = Provider::RequestLog.where(category:).older_than(cutoff).limit(BATCH).ids
       break if ids.empty?
 
       removed += Provider::RequestLog.where(id: ids).delete_all

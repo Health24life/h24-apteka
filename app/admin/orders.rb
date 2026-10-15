@@ -17,9 +17,11 @@ ActiveAdmin.register Order do
   filter :own_number
   filter :provider_order_number
   filter :customer_phone_eq, as: :string, label: proc { Order.human_attribute_name(:customer_phone_number) }
-  filter :state, as: :select, collection: proc {
-    %w[submitted submission_failed].map { |state| [ t("admin.orders.states.#{state}"), state ] }
-  }
+  filter :state,
+         as: :select,
+         collection: proc {
+           %w[submitted submission_failed].map { |state| [ t("admin.orders.states.#{state}"), state ] }
+         }
   filter :status_name_eq, as: :string, label: proc { Order.human_attribute_name(:status_name) }
   filter :drugstore, as: :tom_select, ajax: true
   filter :provider
@@ -121,8 +123,11 @@ ActiveAdmin.register Order do
           end
           row(:delivery_address) do
             address = resource.delivery&.address
-            address && [ address.postal_code, address.city, address.street, address.building, address.post_office ]
-              .compact_blank.join(', ')
+            next unless address
+
+            [ address.postal_code, address.city, address.street, address.building, address.post_office ]
+              .compact_blank
+              .join(', ')
           end
           row(:payment_type_code) do
             resource.payment && t("admin.orders.payment_types.#{resource.payment.payment_type_code}")

@@ -2,9 +2,19 @@
 
 class Provider::Link < ApplicationRecord
   LINKABLE_TYPES = %w[
-    Catalog::Drugstore::Brand Catalog::Goods::Form Catalog::Goods::Measure Catalog::Goods::PriceGroup
-    Catalog::Goods::TemperatureMode Catalog::Goods::Restriction Catalog::Category Catalog::Producer
-    Catalog::Goods::Name Catalog::AtcClass Catalog::Goods::Group Catalog::Goods Catalog::Drugstore
+    Catalog::Drugstore::Brand
+    Catalog::Goods::Form
+    Catalog::Goods::Measure
+    Catalog::Goods::PriceGroup
+    Catalog::Goods::TemperatureMode
+    Catalog::Goods::Restriction
+    Catalog::Category
+    Catalog::Producer
+    Catalog::Goods::Name
+    Catalog::AtcClass
+    Catalog::Goods::Group
+    Catalog::Goods
+    Catalog::Drugstore
   ].freeze
 
   belongs_to :provider, inverse_of: :provider_links

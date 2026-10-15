@@ -56,8 +56,10 @@ RSpec.describe Catalog::Sync::InstructionStore do
   end
 
   it 'drops scripts and event handlers from what is kept' do
-    described_class.call(goods,
-                         '<p onclick="x()"><b>Склад: </b>а<script>alert(1)</script></p><p><b>Показання. </b>б</p>')
+    described_class.call(
+      goods,
+      '<p onclick="x()"><b>Склад: </b>а<script>alert(1)</script></p><p><b>Показання. </b>б</p>'
+    )
 
     expect(sections.map(&:body_html_uk).join).not_to match(/script|onclick|alert/)
   end

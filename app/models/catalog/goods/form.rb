@@ -3,8 +3,10 @@
 class Catalog::Goods::Form < ApplicationRecord
   include Catalog::Dictionary
 
-  has_many :goods, class_name: 'Catalog::Goods', inverse_of: :form,
-                   dependent: :restrict_with_exception
+  has_many :goods,
+           class_name: 'Catalog::Goods',
+           inverse_of: :form,
+           dependent: :restrict_with_exception
 end
 
 # == Schema Information

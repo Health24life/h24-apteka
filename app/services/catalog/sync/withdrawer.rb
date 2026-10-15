@@ -16,8 +16,10 @@ class Catalog::Sync::Withdrawer
   private
 
   def withdraw(model)
-    unseen = Provider::Link.where(provider_id: @run.provider_id, linkable_type: model.name)
-                           .where(synced_at: ...@run.started_at).where.not(external_id: failed_ids(model))
+    unseen = Provider::Link
+      .where(provider_id: @run.provider_id, linkable_type: model.name)
+      .where(synced_at: ...@run.started_at)
+      .where.not(external_id: failed_ids(model))
     model.where(id: unseen.select(:linkable_id)).update_all(withdrawn: true) # rubocop:disable Rails/SkipsModelValidations
   end
 

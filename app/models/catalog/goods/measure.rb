@@ -3,8 +3,10 @@
 class Catalog::Goods::Measure < ApplicationRecord
   include Catalog::Dictionary
 
-  has_many :goods, class_name: 'Catalog::Goods', inverse_of: :measure,
-                   dependent: :restrict_with_exception
+  has_many :goods,
+           class_name: 'Catalog::Goods',
+           inverse_of: :measure,
+           dependent: :restrict_with_exception
 end
 
 # == Schema Information

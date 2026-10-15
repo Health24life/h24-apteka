@@ -10,8 +10,10 @@ class Catalog::AtcClass < ApplicationRecord
   # has to be followed by rebuild!.
   has_closure_tree dependent: :restrict_with_exception
 
-  has_many :goods_groups, class_name: 'Catalog::Goods::Group', inverse_of: :atc_class,
-                          dependent: :restrict_with_exception
+  has_many :goods_groups,
+           class_name: 'Catalog::Goods::Group',
+           inverse_of: :atc_class,
+           dependent: :restrict_with_exception
 
   validates :atc_code, presence: true, uniqueness: true
 end

@@ -3,8 +3,10 @@
 class Catalog::Drugstore::Brand < ApplicationRecord
   include Catalog::ProviderLinked
 
-  has_many :drugstores, class_name: 'Catalog::Drugstore', inverse_of: :brand,
-                        dependent: :restrict_with_exception
+  has_many :drugstores,
+           class_name: 'Catalog::Drugstore',
+           inverse_of: :brand,
+           dependent: :restrict_with_exception
 
   validates :name, presence: true
 end

@@ -15,8 +15,17 @@ RSpec.describe Order::Delivery do
   end
 
   it 'knows the methods of the dictionary', :aggregate_failures do
-    expect(described_class.delivery_type_codes.values).to eq(%w[pick_up ukr_post nova_poshta meest_express justin uklon
-                                                                ipost])
+    expect(described_class.delivery_type_codes.values).to eq(
+      %w[
+        pick_up
+        ukr_post
+        nova_poshta
+        meest_express
+        justin
+        uklon
+        ipost
+      ]
+    )
     expect(build(:order_delivery, order:, delivery_type_code: 'dhl')).not_to be_valid
   end
 
