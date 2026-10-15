@@ -11,20 +11,28 @@ class Catalog::Goods::Group < ApplicationRecord
   belongs_to :atc_class, class_name: 'Catalog::AtcClass', optional: true, inverse_of: :goods_groups
 
   has_many :goods, class_name: 'Catalog::Goods', inverse_of: :goods_group, dependent: :restrict_with_exception
-  has_many :goods_group_categories, class_name: 'Catalog::Goods::Group::Category', inverse_of: :goods_group,
-                                    dependent: :delete_all
+  has_many :goods_group_categories,
+           class_name: 'Catalog::Goods::Group::Category',
+           inverse_of: :goods_group,
+           dependent: :delete_all
   has_many :categories, through: :goods_group_categories
-  has_one :primary_goods_group_category, -> { where(is_primary: true) }, class_name: 'Catalog::Goods::Group::Category',
-                                                                         inverse_of: :goods_group,
-                                                                         dependent: nil
+  has_one :primary_goods_group_category,
+          -> { where(is_primary: true) },
+          class_name: 'Catalog::Goods::Group::Category',
+          inverse_of: :goods_group,
+          dependent: nil
   has_one :primary_category, through: :primary_goods_group_category, source: :category
 
   validates :name_uk, presence: true
 
   # The name lives in the translations table, so the admin filters by it through this scope rather than a column.
-  scope :name_cont, lambda { |text|
-    joins(:translations).where('catalog_goods_group_translations.name ILIKE ?', "%#{sanitize_sql_like(text.to_s)}%")
-  }
+  scope :name_cont,
+        lambda { |text|
+          joins(:translations).where(
+            'catalog_goods_group_translations.name ILIKE ?',
+            "%#{sanitize_sql_like(text.to_s)}%"
+          )
+        }
 
   def self.ransackable_scopes(_auth_object = nil) = %i[name_cont]
 end

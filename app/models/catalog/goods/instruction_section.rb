@@ -10,8 +10,9 @@ class Catalog::Goods::InstructionSection < ApplicationRecord
   validates :source_title, :body_html_uk, presence: true
   validates :code, inclusion: { in: Catalog::Instructions::Sections::CODES }
   validates :anchor, presence: true, format: { with: Catalog::Sluggable::FORMAT }, uniqueness: { scope: :goods_id }
-  validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 1 },
-                       uniqueness: { scope: :goods_id }
+  validates :position,
+            numericality: { only_integer: true, greater_than_or_equal_to: 1 },
+            uniqueness: { scope: :goods_id }
 
   def title = I18n.t(code, scope: 'catalog.instruction_sections')
 end

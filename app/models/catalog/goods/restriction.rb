@@ -4,8 +4,11 @@ class Catalog::Goods::Restriction < ApplicationRecord
   include Catalog::Dictionary
 
   Catalog::Goods::RESTRICTIONS.each do |restriction|
-    has_many :"#{restriction}_goods", class_name: 'Catalog::Goods', foreign_key: :"#{restriction}_id",
-                                      inverse_of: restriction, dependent: :restrict_with_exception
+    has_many :"#{restriction}_goods",
+             class_name: 'Catalog::Goods',
+             foreign_key: :"#{restriction}_id",
+             inverse_of: restriction,
+             dependent: :restrict_with_exception
   end
 end
 

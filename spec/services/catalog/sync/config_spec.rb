@@ -13,8 +13,15 @@ RSpec.describe Catalog::Sync::Config do
   it 'reads the search points from JSON, as the environment gives them' do
     config.configure { it.search_points = '[{"latitude": 50.4, "longitude": 30.5, "radius": 20000}]' }
 
-    expect(config.search_points).to eq([ Pharmapoint::SearchPoint.new(latitude: 50.4, longitude: 30.5,
-                                                                      radius: 20_000) ])
+    expect(config.search_points).to eq(
+      [
+        Pharmapoint::SearchPoint.new(
+          latitude: 50.4,
+          longitude: 30.5,
+          radius: 20_000
+        )
+      ]
+    )
   end
 
   it 'reads the periods of the pull as seconds and days', :aggregate_failures do

@@ -9,8 +9,10 @@ RSpec.describe 'the settings built from the environment at boot' do # rubocop:di
   end
 
   it 'keeps the default of a setting the environment leaves empty' do
-    expect(Pharmapoint.config.connection.base_url).to eq(ENV['PHARMAPOINT_BASE_URL'].presence ||
-                                                         Pharmapoint::Config::DEFAULT_BASE_URL)
+    expect(Pharmapoint.config.connection.base_url).to eq(
+      ENV['PHARMAPOINT_BASE_URL'].presence ||
+                                                               Pharmapoint::Config::DEFAULT_BASE_URL
+    )
   end
 
   it 'freezes both', :aggregate_failures do

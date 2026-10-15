@@ -66,8 +66,8 @@ class Catalog::Sync::Pulls::EnqueueFound
 
   def known_groups(ids)
     rows = Catalog::Goods::Group.joins(:provider_links)
-                                .where(provider_links: { provider_id: @provider.id, external_id: ids })
-                                .pluck('provider_links.external_id', 'provider_links.synced_at', :withdrawn, :hidden)
+      .where(provider_links: { provider_id: @provider.id, external_id: ids })
+      .pluck('provider_links.external_id', 'provider_links.synced_at', :withdrawn, :hidden)
     rows.to_h { |id, synced_at, withdrawn, hidden| [ id, Known.new(synced_at:, withdrawn:, hidden:) ] }
   end
 
@@ -75,7 +75,7 @@ class Catalog::Sync::Pulls::EnqueueFound
     return Set.new if ids.empty?
 
     Provider::Link.where(provider: @provider, linkable_type: Catalog::Goods.name, external_id: ids)
-                  .pluck(:external_id).to_set
+      .pluck(:external_id).to_set
   end
 
   def queue(groups)

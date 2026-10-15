@@ -35,8 +35,11 @@ class Catalog::Sync::Pulls::Enqueue
   end
 
   def present?
-    link = Provider::Link.find_by(provider: @provider || Catalog::Sync.provider, external_id: @external_id,
-                                  linkable_type: Catalog::Sync::Pulls::TYPES.fetch(@type)[:model].name)
+    link = Provider::Link.find_by(
+      provider: @provider || Catalog::Sync.provider,
+      external_id: @external_id,
+      linkable_type: Catalog::Sync::Pulls::TYPES.fetch(@type)[:model].name
+    )
     return false unless link
 
     stale = link.synced_at < @config.stale_record_after.ago

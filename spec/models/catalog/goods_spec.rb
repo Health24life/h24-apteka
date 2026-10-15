@@ -23,8 +23,14 @@ RSpec.describe Catalog::Goods do
   it 'starts with the prescription and hiding flags off', :aggregate_failures do
     goods = create(:catalog_goods)
 
-    expect(goods).to have_attributes(is_recipe: false, is_strict_recipe: false, in_medication_program: false,
-                                     withdrawn: false, hidden: false, image_paths: [])
+    expect(goods).to have_attributes(
+      is_recipe: false,
+      is_strict_recipe: false,
+      in_medication_program: false,
+      withdrawn: false,
+      hidden: false,
+      image_paths: []
+    )
   end
 
   it 'keeps the withdrawn and hidden flags independent' do
@@ -43,9 +49,13 @@ RSpec.describe Catalog::Goods do
   end
 
   it 'links the four dictionaries', :aggregate_failures do
-    goods = create(:catalog_goods, form: create(:catalog_goods_form), measure: create(:catalog_goods_measure),
-                                   price_group: create(:catalog_goods_price_group),
-                                   temperature_mode: create(:catalog_goods_temperature_mode))
+    goods = create(
+      :catalog_goods,
+      form: create(:catalog_goods_form),
+      measure: create(:catalog_goods_measure),
+      price_group: create(:catalog_goods_price_group),
+      temperature_mode: create(:catalog_goods_temperature_mode)
+    )
 
     expect(goods.reload.form).to be_present
     expect(goods.temperature_mode).to be_present
@@ -53,9 +63,14 @@ RSpec.describe Catalog::Goods do
 
   it 'links the five restrictions' do
     restriction = create(:catalog_goods_restriction)
-    goods = create(:catalog_goods, adult_restriction: restriction, child_restriction: restriction,
-                                   diabetic_restriction: restriction, driver_restriction: restriction,
-                                   pregnant_and_lactating_restriction: restriction)
+    goods = create(
+      :catalog_goods,
+      adult_restriction: restriction,
+      child_restriction: restriction,
+      diabetic_restriction: restriction,
+      driver_restriction: restriction,
+      pregnant_and_lactating_restriction: restriction
+    )
 
     expect(goods.reload.pregnant_and_lactating_restriction).to eq(restriction)
   end
@@ -68,8 +83,14 @@ RSpec.describe Catalog::Goods do
 
   describe 'pack quantities' do
     it 'accept zero and positive whole numbers and nil' do
-      expect(build(:catalog_goods, pack_quantity_in_pack: 0, pack_quantity_unit_in_pack: 10,
-                                   pack_quantity_in_unit: nil))
+      expect(
+        build(
+          :catalog_goods,
+          pack_quantity_in_pack: 0,
+          pack_quantity_unit_in_pack: 10,
+          pack_quantity_in_unit: nil
+        )
+      )
         .to be_valid
     end
 

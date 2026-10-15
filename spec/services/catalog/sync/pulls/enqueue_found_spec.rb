@@ -27,8 +27,12 @@ RSpec.describe Catalog::Sync::Pulls::EnqueueFound do
 
   def link_goods(ids = goods_ids)
     ids.each do |id|
-      Provider::Link.create!(provider:, linkable: create(:catalog_goods, goods_group: group), external_id: id,
-                             synced_at: 1.hour.ago)
+      Provider::Link.create!(
+        provider:,
+        linkable: create(:catalog_goods, goods_group: group),
+        external_id: id,
+        synced_at: 1.hour.ago
+      )
     end
   end
 
@@ -99,9 +103,11 @@ RSpec.describe Catalog::Sync::Pulls::EnqueueFound do
   end
 
   it 'queues a group found twice once while the first fetch has not ended' do
-    expect(with_unique_jobs do
- [ found, found ]
-    end).to eq([ { group_id => :enqueued }, { group_id => :queued_already } ])
+    expect(
+      with_unique_jobs do
+       [ found, found ]
+      end
+    ).to eq([ { group_id => :enqueued }, { group_id => :queued_already } ])
   end
 
   describe 'after a fetch failed for good' do

@@ -30,8 +30,10 @@ RSpec.describe Catalog::Sync::Pulls::Enqueue do
 
     it 'is queued once whoever asks', :aggregate_failures do
       results = with_unique_jobs do
-        [ described_class.call(:goods_group, group_id, user_id: 1),
-          described_class.call(:goods_group, group_id, user_id: 2) ]
+        [
+          described_class.call(:goods_group, group_id, user_id: 1),
+          described_class.call(:goods_group, group_id, user_id: 2)
+        ]
       end
 
       expect(results).to eq(%i[enqueued queued_already])
@@ -90,8 +92,12 @@ RSpec.describe Catalog::Sync::Pulls::Enqueue do
 
     it 'is checked against the links of that provider' do
       other = create(:provider, code: 'other')
-      Provider::Link.create!(provider:, linkable: create(:catalog_goods_group), external_id: group_id,
-                             synced_at: 1.hour.ago)
+      Provider::Link.create!(
+        provider:,
+        linkable: create(:catalog_goods_group),
+        external_id: group_id,
+        synced_at: 1.hour.ago
+      )
 
       expect(described_class.call(:goods_group, group_id, provider: other)).to eq(:enqueued)
     end

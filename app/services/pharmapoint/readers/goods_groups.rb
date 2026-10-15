@@ -5,15 +5,9 @@
 class Pharmapoint::Readers::GoodsGroups
   include Pharmapoint::Readers::Base
 
-  # The fields of a group and of its SKU that depend on the drugstore and the moment.
-  LIVE_KEYS = %w[online_price drugstore_price quantity nds preorder is_preorder drugstores_count_available
-                 drugstores_count_all offers price_min drugstore_count].freeze
-
   def self.page(body, page:, per_page:) = new.page(body, page:, per_page:)
 
   def self.one(body) = new.one(body)
-
-  def self.stashable(record) = new.stashable(record)
 
   def page(body, page:, per_page:)
     items = list(envelope(body)).filter_map { group(it) }
@@ -26,23 +20,7 @@ class Pharmapoint::Readers::GoodsGroups
     group(data.is_a?(Array) ? data.first : data) || raise(Pharmapoint::InvalidResponse, 'the answer has no goods group')
   end
 
-  # The group as the provider gave it, without the live fields, for a later save that need not ask the provider again.
-  # Nil when the record lacks what such a save would wipe in the catalog: the SKU, the instruction of any of them or the
-  # categories of the group.
-  def stashable(record)
-    return unless record.is_a?(Hash) && id_at(record, 'id') && list_at(record, 'goods_categories').any?
-
-    forms = complete_forms(list_at(record, 'release_forms'))
-    record.except(*LIVE_KEYS).merge('release_forms' => forms.map { it.except(*LIVE_KEYS) }) if forms
-  end
-
   private
-
-  # The SKU when there are some and every one has its instruction.
-  def complete_forms(values)
-    forms = values.filter_map { it if it.is_a?(Hash) && text_at(it, 'instruction') }
-    forms if forms.any? && forms.size == values.size
-  end
 
   def group(record)
     return unless record.is_a?(Hash)
@@ -53,9 +31,13 @@ class Pharmapoint::Readers::GoodsGroups
 
   def build_group(external_id, record)
     Pharmapoint::GoodsGroup.new(
-      external_id:, name: name(record), included_to_offers: affirmative_at?(record, 'included_to_offers'),
-      producer: producer(record['goods_producer']), goods_name: goods_name(record['goods_name']),
-      atc_class: atc_class(record), categories: categories(record),
+      external_id:,
+      name: name(record),
+      included_to_offers: affirmative_at?(record, 'included_to_offers'),
+      producer: producer(record['goods_producer']),
+      goods_name: goods_name(record['goods_name']),
+      atc_class: atc_class(record),
+      categories: categories(record),
       goods: list_at(record, 'release_forms').filter_map { Pharmapoint::Readers::Goods.call(it) }
     )
   end
@@ -65,8 +47,12 @@ class Pharmapoint::Readers::GoodsGroups
     external_id = id_at(record, 'id')
     return unless external_id
 
-    Pharmapoint::Producer.new(external_id:, name: text_at(record, 'name'), country: text_at(record, 'country'),
-                              country_code: text_at(record, 'country_code')&.upcase)
+    Pharmapoint::Producer.new(
+      external_id:,
+      name: text_at(record, 'name'),
+      country: text_at(record, 'country'),
+      country_code: text_at(record, 'country_code')&.upcase
+    )
   end
 
   def goods_name(value)
@@ -80,8 +66,12 @@ class Pharmapoint::Readers::GoodsGroups
     entry = atc_entry(record['goods_atc_class'])
     return unless entry
 
-    Pharmapoint::AtcClass.new(external_id: entry.external_id, atc_code: entry.atc_code, name: entry.name,
-                              ancestors: list_at(record, 'goods_atc_class_tree').filter_map { atc_entry(it) })
+    Pharmapoint::AtcClass.new(
+      external_id: entry.external_id,
+      atc_code: entry.atc_code,
+      name: entry.name,
+      ancestors: list_at(record, 'goods_atc_class_tree').filter_map { atc_entry(it) }
+    )
   end
 
   def atc_entry(value)
@@ -89,8 +79,11 @@ class Pharmapoint::Readers::GoodsGroups
     external_id = id_at(record, 'id')
     return unless external_id
 
-      Pharmapoint::AtcEntry.new(external_id:, atc_code: text_at(record, 'atc_code'),
-                                name: text_at(record, 'name'))
+      Pharmapoint::AtcEntry.new(
+        external_id:,
+        atc_code: text_at(record, 'atc_code'),
+        name: text_at(record, 'name')
+      )
   end
 
   # The paths run from the root to the leaf; a category's `tree_id` is the index of its path.
@@ -104,8 +97,11 @@ class Pharmapoint::Readers::GoodsGroups
     external_id = id_at(record, 'id')
     return unless external_id
 
-    Pharmapoint::GroupCategory.new(external_id:, name: name(record),
-                                   path: category_path(paths, int_at(record, 'tree_id')))
+    Pharmapoint::GroupCategory.new(
+      external_id:,
+      name: name(record),
+      path: category_path(paths, int_at(record, 'tree_id'))
+    )
   end
 
   def category_path(paths, index)

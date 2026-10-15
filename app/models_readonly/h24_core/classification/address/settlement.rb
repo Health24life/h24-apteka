@@ -7,8 +7,10 @@ class H24Core::Classification::Address::Settlement < H24Core::ApplicationRecord
 
   belongs_to :region, class_name: 'H24Core::Classification::Address::Region', optional: true, inverse_of: :settlements
 
-  has_many :city_districts, class_name: 'H24Core::Classification::Address::CityDistrict', inverse_of: :settlement,
-                            dependent: nil
+  has_many :city_districts,
+           class_name: 'H24Core::Classification::Address::CityDistrict',
+           inverse_of: :settlement,
+           dependent: nil
 
   hstore_translated :title, :title_translations
 

@@ -11,8 +11,10 @@ class Catalog::Category < ApplicationRecord
   # has to be followed by rebuild!.
   has_closure_tree dependent: :restrict_with_exception
 
-  has_many :goods_group_categories, class_name: 'Catalog::Goods::Group::Category', inverse_of: :category,
-                                    dependent: :restrict_with_exception
+  has_many :goods_group_categories,
+           class_name: 'Catalog::Goods::Group::Category',
+           inverse_of: :category,
+           dependent: :restrict_with_exception
   has_many :goods_groups, through: :goods_group_categories
 
   validates :name_uk, presence: true

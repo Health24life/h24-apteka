@@ -12,8 +12,13 @@ RSpec.describe Pharmapoint::Readers::Categories do
   it 'nests the children on four levels' do
     leaf = tree.first.children.first.children.first.children.first
 
-    expect(leaf).to eq(Pharmapoint::CategoryNode.new(external_id: '980', name: 'Інші анальгетики й антипіретики',
-                                                     children: []))
+    expect(leaf).to eq(
+      Pharmapoint::CategoryNode.new(
+        external_id: '980',
+        name: 'Інші анальгетики й антипіретики',
+        children: []
+      )
+    )
   end
 
   it 'refuses an answer that is not a tree' do

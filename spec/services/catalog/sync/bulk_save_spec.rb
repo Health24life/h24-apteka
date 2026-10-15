@@ -63,8 +63,11 @@ RSpec.describe Catalog::Sync::BulkSave do
     saved = bulk.call(Catalog::Goods, [ goods('1', nil), goods('2', 'Цитрамон') ])
 
     expect(saved.keys).to eq([ '2' ])
-    expect(tracker.run.failures.sole).to have_attributes(entity_type: 'Catalog::Goods', external_id: '1',
-                                                         error_class: 'ActiveRecord::RecordInvalid')
+    expect(tracker.run.failures.sole).to have_attributes(
+      entity_type: 'Catalog::Goods',
+      external_id: '1',
+      error_class: 'ActiveRecord::RecordInvalid'
+    )
   end
 
   it 'saves the records one by one when the database refuses the batch', :aggregate_failures do
@@ -127,8 +130,10 @@ RSpec.describe Catalog::Sync::BulkSave do
 
     bulk.call(Catalog::Goods, [ goods('1', 'Аспірин') ])
 
-    expect(Rails.error).to have_received(:report).with(an_instance_of(ActiveRecord::RecordNotUnique),
-                                                       hash_including(handled: true))
+    expect(Rails.error).to have_received(:report).with(
+      an_instance_of(ActiveRecord::RecordNotUnique),
+      hash_including(handled: true)
+    )
   end
 
   it 'moves the link of a record that did not change as a save would' do
@@ -142,9 +147,14 @@ RSpec.describe Catalog::Sync::BulkSave do
 
   it 'leaves the associations of a saved record to be read from the database' do
     saved = bulk.call(Catalog::Goods, [ goods('1', 'Аспірин') ]).fetch('1')
-    Catalog::Goods::InstructionSection.create!(goods_id: saved.id, position: 1, anchor: 'x', source_title: 'X',
-                                               code: Catalog::Instructions::Sections::CODES.first,
-                                               body_html_uk: '<p>x</p>')
+    Catalog::Goods::InstructionSection.create!(
+      goods_id: saved.id,
+      position: 1,
+      anchor: 'x',
+      source_title: 'X',
+      code: Catalog::Instructions::Sections::CODES.first,
+      body_html_uk: '<p>x</p>'
+    )
 
     expect(saved.instruction_sections.to_a.size).to eq(1)
   end

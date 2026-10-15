@@ -30,8 +30,11 @@ class Catalog::Sync::Pulls::Runner
   def call
     provider = self.class.find_provider(@provider_id)
     unless provider
-      Rails.error.report(ActiveRecord::RecordNotFound.new("No enabled provider #{@provider_id} for #{@external_id}"),
-                         handled: true, context: { source: 'catalog_sync_pull' })
+      Rails.error.report(
+        ActiveRecord::RecordNotFound.new("No enabled provider #{@provider_id} for #{@external_id}"),
+        handled: true,
+        context: { source: 'catalog_sync_pull' }
+      )
       return
     end
 
@@ -55,8 +58,14 @@ class Catalog::Sync::Pulls::Runner
     raise Pharmapoint::RateLimited, wait if wait.positive?
 
     track(provider, 'provider') do |tracker|
-      client = Pharmapoint::Client.new(provider:, purpose: :refresh, user_id: @user_id, sync_run: tracker.run,
-                                       attempt: SidekiqMiddleware::JobAttempt.current, rate_limiter: limiter)
+      client = Pharmapoint::Client.new(
+        provider:,
+        purpose: :refresh,
+        user_id: @user_id,
+        sync_run: tracker.run,
+        attempt: SidekiqMiddleware::JobAttempt.current,
+        rate_limiter: limiter
+      )
       linker = Catalog::Sync::Linker.new(provider)
       @type == :goods_group ? pull_goods_group(client, linker, tracker) : pull_drugstore(client, linker, tracker)
     end

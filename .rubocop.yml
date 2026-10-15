@@ -26,3 +26,43 @@ Layout/LineLength:
 # the methods of a class body, but see neither a `Data.define` block nor its constant as that class.
 Style/DataInheritance:
   Enabled: false
+
+# A multi-line call reads top-down: chained calls are indented one step under the receiver instead of aligned to its
+# first dot, and arguments that do not fit on one line each go on their own line, starting with the first.
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Layout/FirstMethodArgumentLineBreak:
+  Enabled: true
+
+Layout/MultilineMethodArgumentLineBreaks:
+  Enabled: true
+
+# The same one-per-line rule for hash keys, array elements and method parameters.
+Layout/FirstHashElementLineBreak:
+  Enabled: true
+
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: true
+
+Layout/FirstArrayElementLineBreak:
+  Enabled: true
+
+Layout/MultilineArrayLineBreaks:
+  Enabled: true
+
+Layout/FirstMethodParameterLineBreak:
+  Enabled: true
+
+Layout/MultilineMethodParameterLineBreaks:
+  Enabled: true
+
+Rails/PluckId:
+  Enabled: true
+
+# A call, hash or array split one item per line is still one statement, so the length metrics count it as one line.
+Metrics/MethodLength:
+  CountAsOne: ['method_call', 'hash', 'array']
+
+RSpec/ExampleLength:
+  CountAsOne: ['method_call', 'hash', 'array']

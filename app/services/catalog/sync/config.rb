@@ -15,8 +15,11 @@ class Catalog::Sync::Config
     list.map do |point|
       next point if point.is_a?(Pharmapoint::SearchPoint)
 
-      Pharmapoint::SearchPoint.new(latitude: Float(point.fetch('latitude')), longitude: Float(point.fetch('longitude')),
-                                   radius: Integer(point.fetch('radius')))
+      Pharmapoint::SearchPoint.new(
+        latitude: Float(point.fetch('latitude')),
+        longitude: Float(point.fetch('longitude')),
+        radius: Integer(point.fetch('radius'))
+      )
     end
   end
 

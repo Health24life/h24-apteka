@@ -47,9 +47,13 @@ RSpec.describe Catalog::Sync::RunTracker do
       result = tracker.guard('Catalog::Drugstore', 42, { id: 42 }) { raise ArgumentError, 'broken' }
 
       expect(result).to be_nil
-      expect(tracker.run.failures.sole).to have_attributes(entity_type: 'Catalog::Drugstore', external_id: '42',
-                                                           error_class: 'ArgumentError', message: 'broken',
-                                                           payload: { 'id' => 42 })
+      expect(tracker.run.failures.sole).to have_attributes(
+        entity_type: 'Catalog::Drugstore',
+        external_id: '42',
+        error_class: 'ArgumentError',
+        message: 'broken',
+        payload: { 'id' => 42 }
+      )
     end
 
     it 'counts the failure in the run' do

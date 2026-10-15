@@ -50,10 +50,16 @@ RSpec.describe Orders::OwnNumbers::Assign do
   end
 
   it 'is saved by the caller together with the new state' do
-    cart.assign_attributes(state: 'submitted', personal_data_consent_at: Time.current, customer_first_name: 'Anna',
-                           customer_phone_number: '380501234567', provider_drugstore_external_id: '1',
-                           provider_order_number: 'PP1', delivery: build(:order_delivery, order: cart),
-                           payment: build(:order_payment, order: cart))
+    cart.assign_attributes(
+      state: 'submitted',
+      personal_data_consent_at: Time.current,
+      customer_first_name: 'Anna',
+      customer_phone_number: '380501234567',
+      provider_drugstore_external_id: '1',
+      provider_order_number: 'PP1',
+      delivery: build(:order_delivery, order: cart),
+      payment: build(:order_payment, order: cart)
+    )
 
     expect(described_class.call(cart).save).to be(true)
   end

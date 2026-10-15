@@ -56,8 +56,12 @@ RSpec.describe Catalog::Drugstore do
   end
 
   it 'takes the reimbursement flag and the three status flags off by default', :aggregate_failures do
-    expect(create(:catalog_drugstore)).to have_attributes(work_with_reimbursement: false, withdrawn: false,
-                                                          hidden: false, incomplete: false)
+    expect(create(:catalog_drugstore)).to have_attributes(
+      work_with_reimbursement: false,
+      withdrawn: false,
+      hidden: false,
+      incomplete: false
+    )
   end
 
   it 'keeps the withdrawn, hidden and incomplete flags independent' do

@@ -196,7 +196,7 @@ Catalog::Sync::Pulls::EnqueueFound.call(provider:, found: records, user_id: curr
 
 **Сховище живої відповіді (`Stash`).** Перед постановкою `EnqueueFound` кладе запис групи в `Rails.cache` під ключем
 `catalog_sync_stash:<provider_id>:goods_group:<external_id>` на `CATALOG_SYNC_STASH_TTL` секунд (типово 600), а завдання
-отримує цей ключ. Кладеться JSON без живих полів (`Pharmapoint::Readers::GoodsGroups::LIVE_KEYS`) і лише повний запис:
+отримує цей ключ. Кладеться JSON без живих полів (`Pharmapoint::Readers::StashableGoodsGroup::LIVE_KEYS`) і лише повний запис:
 з SKU, інструкцією в кожного SKU й категоріями групи — інакше збереження стерло б категорії чи інструкцію. Сховище
 втрачальне: промах (TTL, витіснення, збій запису) означає звичайний `goods-group/get-by-id`.
 

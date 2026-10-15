@@ -1,19 +1,15 @@
 class Pharmapoint::Readers::GoodsGroups
   include Pharmapoint::Readers::Base
 
-  LIVE_KEYS: Array[String]
 
   def self.page: (Pharmapoint::json body, page: Integer, per_page: Integer) -> Pharmapoint::Page
   def self.one: (Pharmapoint::json body) -> Pharmapoint::GoodsGroup
-  def self.stashable: (Pharmapoint::json record) -> Pharmapoint::Readers::Base::record?
 
   def page: (Pharmapoint::json body, page: Integer, per_page: Integer) -> Pharmapoint::Page
   def one: (Pharmapoint::json body) -> Pharmapoint::GoodsGroup
-  def stashable: (Pharmapoint::json record) -> Pharmapoint::Readers::Base::record?
 
   private
 
-  def complete_forms: (Array[Pharmapoint::json] values) -> Array[Pharmapoint::Readers::Base::record]?
 
   def group: (Pharmapoint::json record) -> Pharmapoint::GoodsGroup?
   def build_group: (String external_id, Pharmapoint::Readers::Base::record record) -> Pharmapoint::GoodsGroup

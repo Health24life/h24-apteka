@@ -33,12 +33,19 @@ RSpec.describe Provider::RequestLog do
   end
 
   it 'keeps headers and bodies as JSON, including a body that is only text' do
-    log = create(:provider_request_log, request_headers: { 'accept' => 'application/json' },
-                                        response_headers: { 'x-ratelimit-remaining' => '12' },
-                                        request_body: { 'a' => 1 }, response_body: 'Bad gateway')
+    log = create(
+      :provider_request_log,
+      request_headers: { 'accept' => 'application/json' },
+      response_headers: { 'x-ratelimit-remaining' => '12' },
+      request_body: { 'a' => 1 },
+      response_body: 'Bad gateway'
+    )
 
-    expect(log.reload).to have_attributes(response_headers: { 'x-ratelimit-remaining' => '12' },
-                                          request_body: { 'a' => 1 }, response_body: 'Bad gateway')
+    expect(log.reload).to have_attributes(
+      response_headers: { 'x-ratelimit-remaining' => '12' },
+      request_body: { 'a' => 1 },
+      response_body: 'Bad gateway'
+    )
   end
 
   it 'is kept when its sync run is removed, without the link to it' do

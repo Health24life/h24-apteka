@@ -42,29 +42,44 @@ class Catalog::Sync::Savers::Goods
   end
 
   def card_attributes(card)
-    { release_form: card.release_form, dosage: card.dosage, mnn: card.mnn, composition: card.composition,
-      image_paths: card.image_paths, is_recipe: card.is_recipe, is_strict_recipe: card.is_strict_recipe,
-      in_medication_program: card.in_medication_program }
+    {
+      release_form: card.release_form,
+      dosage: card.dosage,
+      mnn: card.mnn,
+      composition: card.composition,
+      image_paths: card.image_paths,
+      is_recipe: card.is_recipe,
+      is_strict_recipe: card.is_strict_recipe,
+      in_medication_program: card.in_medication_program
+    }
   end
 
   def pack_attributes(pack)
-    { pack_unit_name: pack.unit_name, pack_quantity_in_pack: pack.quantity_in_pack,
-      pack_quantity_unit_in_pack: pack.quantity_unit_in_pack, pack_quantity_in_unit: pack.quantity_in_unit }
+    {
+      pack_unit_name: pack.unit_name,
+      pack_quantity_in_pack: pack.quantity_in_pack,
+      pack_quantity_unit_in_pack: pack.quantity_unit_in_pack,
+      pack_quantity_in_unit: pack.quantity_in_unit
+    }
   end
 
   def references(refs)
-    { form: @linker.fetch(Catalog::Goods::Form, refs.form),
+    {
+      form: @linker.fetch(Catalog::Goods::Form, refs.form),
       measure: @linker.fetch(Catalog::Goods::Measure, refs.measure),
       price_group: @linker.fetch(Catalog::Goods::PriceGroup, refs.price_group),
-      temperature_mode: @linker.fetch(Catalog::Goods::TemperatureMode, refs.temperature_mode) }
-      .merge(restrictions(refs))
+      temperature_mode: @linker.fetch(Catalog::Goods::TemperatureMode, refs.temperature_mode)
+    }.merge(restrictions(refs))
   end
 
   def restrictions(refs)
-    { adult_restriction: restriction(refs.adult_restriction), child_restriction: restriction(refs.child_restriction),
+    {
+      adult_restriction: restriction(refs.adult_restriction),
+      child_restriction: restriction(refs.child_restriction),
       diabetic_restriction: restriction(refs.diabetic_restriction),
       driver_restriction: restriction(refs.driver_restriction),
-      pregnant_and_lactating_restriction: restriction(refs.pregnant_and_lactating_restriction) }
+      pregnant_and_lactating_restriction: restriction(refs.pregnant_and_lactating_restriction)
+    }
   end
 
   def restriction(external_id) = @linker.fetch(Catalog::Goods::Restriction, external_id)

@@ -28,11 +28,10 @@ Rails.application.configure do
   end
 
   # Redis-backed like production, in its own DB so it never shares keys with Sidekiq's queue.
-  config.cache_store = :redis_cache_store, {
-    url: ENV.fetch('REDIS_URL'),
-    namespace: 'h24_apteka_cache',
-    reconnect_attempts: 1
-  }
+  config.cache_store = [
+    :redis_cache_store,
+    { url: ENV.fetch('REDIS_URL'), namespace: 'h24_apteka_cache', reconnect_attempts: 1 }
+  ]
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local

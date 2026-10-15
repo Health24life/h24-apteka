@@ -36,8 +36,11 @@ RSpec.describe Pharmapoint::Client do
 
     it 'reads the drugstores around a point' do
       point = Pharmapoint::SearchPoint.new(latitude: 50.45, longitude: 30.52, radius: 1000)
-      stub_pharmapoint('drugstore', fixture: 'drugstores',
-                                    query: { latitude: '50.45', longitude: '30.52', radius: '1000' })
+      stub_pharmapoint(
+        'drugstore',
+        fixture: 'drugstores',
+        query: { latitude: '50.45', longitude: '30.52', radius: '1000' }
+      )
 
       expect(client.drugstores(point).size).to eq(2)
     end
@@ -55,8 +58,15 @@ RSpec.describe Pharmapoint::Client do
     it 'records the answer: status code, outcome, category and attempt', :aggregate_failures do
       client.dictionaries
 
-      expect(log).to have_attributes(http_method: 'GET', path: '/api/dictionaries', response_status: 200,
-                                     outcome: 'success', category: 'refresh', attempt: 1, error_class: nil)
+      expect(log).to have_attributes(
+        http_method: 'GET',
+        path: '/api/dictionaries',
+        response_status: 200,
+        outcome: 'success',
+        category: 'refresh',
+        attempt: 1,
+        error_class: nil
+      )
       expect(log).to have_attributes(user_id: nil, sync_run_id: nil)
     end
 

@@ -21,8 +21,11 @@ class Catalog::Sync::Savers::Dictionary
 
   def save_all(model, attribute, entries)
     batch = entries.map do |entry|
-      Catalog::Sync::BulkSave::Entry.new(external_id: entry.external_id, attributes: { attribute => entry.name },
-                                         payload: entry)
+      Catalog::Sync::BulkSave::Entry.new(
+        external_id: entry.external_id,
+        attributes: { attribute => entry.name },
+        payload: entry
+      )
     end
     @tracker.processed!(Catalog::Sync::BulkSave.new(@linker, @tracker).call(model, batch).size)
   end

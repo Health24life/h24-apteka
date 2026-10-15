@@ -59,7 +59,11 @@ class Catalog::Sync::StepRunner
   def importer = Catalog::Sync::Importers.for(@tracker.run.kind)
 
   def client
-    Pharmapoint::Client.new(provider: @tracker.run.provider, purpose: :refresh, sync_run: @tracker.run,
-                            attempt: SidekiqMiddleware::JobAttempt.current)
+    Pharmapoint::Client.new(
+      provider: @tracker.run.provider,
+      purpose: :refresh,
+      sync_run: @tracker.run,
+      attempt: SidekiqMiddleware::JobAttempt.current
+    )
   end
 end

@@ -33,26 +33,39 @@ class Pharmapoint::Readers::Drugstores
 
   def build(external_id, record)
     Pharmapoint::Drugstore.new(
-      external_id:, outer_id: text_at(record, 'ext_drugstore_id'), name: text_at(record, 'name'),
-      complete: complete?(record), legal_entity_name: text_at(record, 'legal_entity_name'),
-      legal_entity_code: text_at(record, 'legal_entity_code'), week_working_hours: week_hours(record),
+      external_id:,
+      outer_id: text_at(record, 'ext_drugstore_id'),
+      name: text_at(record, 'name'),
+      complete: complete?(record),
+      legal_entity_name: text_at(record, 'legal_entity_name'),
+      legal_entity_code: text_at(record, 'legal_entity_code'),
+      week_working_hours: week_hours(record),
       work_with_reimbursement: affirmative_at?(record, 'work_with_reimbursement'),
-      brand: brand(record['drugstore_brand']), contacts: contacts(record), location: location(record)
+      brand: brand(record['drugstore_brand']),
+      contacts: contacts(record),
+      location: location(record)
     )
   end
 
   def complete?(record) = COMPLETENESS_KEYS.all? { text_at(record, it) }
 
   def contacts(record)
-    Pharmapoint::Contacts.new(phone: text_at(record, 'phone'), mobile_phone: text_at(record, 'mobile_phone'),
-                              email: text_at(record, 'email'))
+    Pharmapoint::Contacts.new(
+      phone: text_at(record, 'phone'),
+      mobile_phone: text_at(record, 'mobile_phone'),
+      email: text_at(record, 'email')
+    )
   end
 
   def location(record)
     coordinates = hash_at(record, 'coordinates')
-    Pharmapoint::Location.new(address: text_at(record, 'address'), city: text_at(record, 'city'),
-                              state: text_at(record, 'state'), latitude: float_at(coordinates, 'latitude'),
-                              longitude: float_at(coordinates, 'longitude'))
+    Pharmapoint::Location.new(
+      address: text_at(record, 'address'),
+      city: text_at(record, 'city'),
+      state: text_at(record, 'state'),
+      latitude: float_at(coordinates, 'latitude'),
+      longitude: float_at(coordinates, 'longitude')
+    )
   end
 
   # The partner does not say which day the week starts with, so the seven entries are kept in the given order.
@@ -63,7 +76,10 @@ class Pharmapoint::Readers::Drugstores
     external_id = id_at(record, 'id')
     return unless external_id
 
-      Pharmapoint::Brand.new(external_id:, name: text_at(record, 'name'),
-                             image_path: text_at(record, 'image_url'))
+      Pharmapoint::Brand.new(
+        external_id:,
+        name: text_at(record, 'name'),
+        image_path: text_at(record, 'image_url')
+      )
   end
 end

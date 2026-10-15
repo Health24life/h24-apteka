@@ -42,8 +42,14 @@ RSpec.describe Provider::Link do
     let(:first) { create(:provider_link) }
     let(:now) { Time.current }
     let(:row) do
-      { provider_id: first.provider_id, linkable_type: 'Catalog::Drugstore::Brand', attrs: {}, synced_at: now,
-        created_at: now, updated_at: now }
+      {
+        provider_id: first.provider_id,
+        linkable_type: 'Catalog::Drugstore::Brand',
+        attrs: {},
+        synced_at: now,
+        created_at: now,
+        updated_at: now
+      }
     end
 
     it 'refuses a repeated external id of one provider' do

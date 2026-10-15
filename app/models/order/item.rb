@@ -13,8 +13,10 @@ class Order::Item < ApplicationRecord
   # The provider of an item is the provider of its cart; the validators below read it from here.
   delegate :provider, to: :order, allow_nil: true
 
-  monetize :price_cents, :total_cents, allow_nil: true,
-                                       numericality: { greater_than_or_equal_to: 0, less_than: MAX_AMOUNT }
+  monetize :price_cents,
+           :total_cents,
+           allow_nil: true,
+           numericality: { greater_than_or_equal_to: 0, less_than: MAX_AMOUNT }
 
   validates :quantity, numericality: { greater_than_or_equal_to: MIN_QUANTITY, less_than: MAX_QUANTITY }
 

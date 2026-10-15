@@ -2,8 +2,19 @@
 
 # Writes one entry of the provider request log per attempt. A failed write is reported and never reaches the caller.
 class Pharmapoint::Logging::RequestLogger
-  class Entry < Data.define(:http_method, :path, :query, :request_headers, :request_body, :response_status,
-                            :response_headers, :response_body, :outcome, :error_class, :duration_ms)
+  class Entry < Data.define(
+    :http_method,
+    :path,
+    :query,
+    :request_headers,
+    :request_body,
+    :response_status,
+    :response_headers,
+    :response_body,
+    :outcome,
+    :error_class,
+    :duration_ms
+  )
   end
 
   # rubocop:disable-next Metrics/ParameterLists -- the context of one client: who asked, why, and which attempt it is.
@@ -40,10 +51,18 @@ class Pharmapoint::Logging::RequestLogger
 
   # Secrets are masked here, before anything is written.
   def attributes_of(entry)
-    { http_method: entry.http_method, path: entry.path, query: @masker.body(entry.query),
-      request_headers: @masker.headers(entry.request_headers), request_body: @masker.body(entry.request_body),
-      response_headers: @masker.headers(entry.response_headers), response_body: @masker.body(entry.response_body),
-      response_status: entry.response_status, outcome: entry.outcome, error_class: entry.error_class,
-      duration_ms: entry.duration_ms }
+    {
+      http_method: entry.http_method,
+      path: entry.path,
+      query: @masker.body(entry.query),
+      request_headers: @masker.headers(entry.request_headers),
+      request_body: @masker.body(entry.request_body),
+      response_headers: @masker.headers(entry.response_headers),
+      response_body: @masker.body(entry.response_body),
+      response_status: entry.response_status,
+      outcome: entry.outcome,
+      error_class: entry.error_class,
+      duration_ms: entry.duration_ms
+    }
   end
 end

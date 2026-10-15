@@ -143,8 +143,11 @@ RSpec.describe Catalog::Sync::StepWorker do
 
       it 'logs that SKU and closes the run with failures', :aggregate_failures do
         expect(run).to have_attributes(status: 'completed_with_failures', failed_count: 1)
-        expect(run.failures.sole).to have_attributes(entity_type: 'Catalog::Goods', external_id: '1795035',
-                                                     error_class: 'Catalog::Sync::MissingReference')
+        expect(run.failures.sole).to have_attributes(
+          entity_type: 'Catalog::Goods',
+          external_id: '1795035',
+          error_class: 'Catalog::Sync::MissingReference'
+        )
       end
 
       it 'saves the other SKU and the groups' do

@@ -134,8 +134,12 @@ RSpec.describe Order::Item do
 
     it 'may repeat the same product of the provider', :aggregate_failures do
       first = sent.items.first
-      repeated = build(:order_item, order: sent, goods: first.goods,
-                                    provider_goods_external_id: first.provider_goods_external_id)
+      repeated = build(
+        :order_item,
+        order: sent,
+        goods: first.goods,
+        provider_goods_external_id: first.provider_goods_external_id
+      )
 
       expect(repeated).to be_valid
       expect(repeated.save).to be(true)
@@ -197,8 +201,14 @@ RSpec.describe Order::Item do
     let(:sent) { create(:order, :submitted) }
     let(:now) { Time.current }
     let(:row) do
-      { order_id: sent.id, quantity: 1, name: 'Medicine', provider_goods_external_id: '7', created_at: now,
-        updated_at: now }
+      {
+        order_id: sent.id,
+        quantity: 1,
+        name: 'Medicine',
+        provider_goods_external_id: '7',
+        created_at: now,
+        updated_at: now
+      }
     end
 
     def store_row(attributes)
@@ -233,10 +243,12 @@ RSpec.describe Order::Item do
     let(:disabled_cart) { create(:order).tap { |cart| cart.provider.update!(active: false) } }
     let(:cart) { create(:order) }
     let(:refused) do
-      [ build(:order_item, served: false),
+      [
+        build(:order_item, served: false),
         build(:order_item, goods: create(:catalog_goods, hidden: true)),
         build(:order_item, order: disabled_cart),
-        build(:order_item, order: cart, goods: cart.items.first.goods) ]
+        build(:order_item, order: cart, goods: cart.items.first.goods)
+      ]
     end
 
     it 'are worded in the locale files', :aggregate_failures do

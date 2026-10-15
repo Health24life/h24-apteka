@@ -26,8 +26,11 @@ RSpec.describe Catalog::Sync::PullWorker do
   it 'fetches the group and saves it with its SKU through a run of its own', :aggregate_failures do
     pull
 
-    expect(run).to have_attributes(kind: 'goods_groups', status: 'succeeded',
-                                   progress: { 'mode' => 'pull', 'source' => 'provider' })
+    expect(run).to have_attributes(
+      kind: 'goods_groups',
+      status: 'succeeded',
+      progress: { 'mode' => 'pull', 'source' => 'provider' }
+    )
     expect(Catalog::Goods.find_linked(provider, '1795034')).to be_present
   end
 
@@ -50,14 +53,20 @@ RSpec.describe Catalog::Sync::PullWorker do
 
     pull(:drugstore, '38628')
 
-    expect(Catalog::Drugstore.find_linked(provider, '38628')).to have_attributes(ext_drugstore_id: '2369',
-                                                                                 incomplete: false)
+    expect(Catalog::Drugstore.find_linked(provider, '38628')).to have_attributes(
+      ext_drugstore_id: '2369',
+      incomplete: false
+    )
   end
 
   describe 'when the provider does not give the record' do
     it 'writes the failure to the journal and leaves the user answer alone', :aggregate_failures do
-      stub_pharmapoint('goods-group/get-by-id', body: '{"message":"no such group"}', status: 404,
-                                                query: { id: group_id })
+      stub_pharmapoint(
+        'goods-group/get-by-id',
+        body: '{"message":"no such group"}',
+        status: 404,
+        query: { id: group_id }
+      )
 
       pull
 
@@ -89,8 +98,10 @@ RSpec.describe Catalog::Sync::PullWorker do
 
   describe 'a group the live search stashed' do
     let(:stash_key) do
-      Catalog::Sync::Pulls::Stash.write(provider:,
-                                        records: [ complete_goods_group('goods_group_get_by_id') ]).fetch(group_id)
+      Catalog::Sync::Pulls::Stash.write(
+        provider:,
+        records: [ complete_goods_group('goods_group_get_by_id') ]
+      ).fetch(group_id)
     end
 
     before { allow(Rails).to receive(:cache).and_return(ActiveSupport::Cache::MemoryStore.new) }

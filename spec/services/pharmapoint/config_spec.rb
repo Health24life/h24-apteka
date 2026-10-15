@@ -6,8 +6,12 @@ RSpec.describe Pharmapoint::Config do
   subject(:config) { described_class.new }
 
   it 'has the defaults of the partner API', :aggregate_failures do
-    expect(config.connection).to have_attributes(base_url: described_class::DEFAULT_BASE_URL, api_key: nil,
-                                                 open_timeout: 5, read_timeout: 30)
+    expect(config.connection).to have_attributes(
+      base_url: described_class::DEFAULT_BASE_URL,
+      api_key: nil,
+      open_timeout: 5,
+      read_timeout: 30
+    )
     expect(config.rate_limit).to have_attributes(per_minute: 60, window: 60)
     expect(config.goods_groups_per_page).to eq(50)
   end

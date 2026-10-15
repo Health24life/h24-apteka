@@ -12,9 +12,13 @@ RSpec.describe 'the schedule of recurring jobs' do # rubocop:disable RSpec/Descr
   end
 
   it 'schedules the dictionaries, the categories, the drugstores and both cleanups by default' do
-    expect(jobs.keys).to contain_exactly('catalog_sync_dictionaries', 'catalog_sync_categories',
-                                         'catalog_sync_drugstores', 'provider_request_log_cleanup',
-                                         'catalog_sync_pull_run_cleanup')
+    expect(jobs.keys).to contain_exactly(
+      'catalog_sync_dictionaries',
+      'catalog_sync_categories',
+      'catalog_sync_drugstores',
+      'provider_request_log_cleanup',
+      'catalog_sync_pull_run_cleanup'
+    )
   end
 
   it 'takes the periodicity of the cleanup of on-demand fetches from the environment', :aggregate_failures do

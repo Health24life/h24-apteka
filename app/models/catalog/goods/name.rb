@@ -3,8 +3,10 @@
 class Catalog::Goods::Name < ApplicationRecord
   include Catalog::ProviderLinked
 
-  has_many :goods_groups, class_name: 'Catalog::Goods::Group', inverse_of: :goods_name,
-                          dependent: :restrict_with_exception
+  has_many :goods_groups,
+           class_name: 'Catalog::Goods::Group',
+           inverse_of: :goods_name,
+           dependent: :restrict_with_exception
 
   validates :name, presence: true
 end

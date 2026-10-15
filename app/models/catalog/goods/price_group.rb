@@ -3,8 +3,10 @@
 class Catalog::Goods::PriceGroup < ApplicationRecord
   include Catalog::Dictionary
 
-  has_many :goods, class_name: 'Catalog::Goods', inverse_of: :price_group,
-                   dependent: :restrict_with_exception
+  has_many :goods,
+           class_name: 'Catalog::Goods',
+           inverse_of: :price_group,
+           dependent: :restrict_with_exception
 end
 
 # == Schema Information

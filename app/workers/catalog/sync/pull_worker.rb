@@ -9,7 +9,10 @@ class Catalog::Sync::PullWorker < ApplicationWorker
   # Covers every retry with Sidekiq's own jitter, so the lock does not drop while the fetch still waits for a try.
   LOCK_TTL = ((0...RETRIES).sum { BACKOFF.call(it) } + 30.minutes).to_i
 
-  sidekiq_options retry: RETRIES, lock: :until_executed, lock_ttl: LOCK_TTL, on_conflict: :log,
+  sidekiq_options retry: RETRIES,
+                  lock: :until_executed,
+                  lock_ttl: LOCK_TTL,
+                  on_conflict: :log,
                   lock_args_method: :lock_args
 
   sidekiq_retry_in { |count, error| error.is_a?(Pharmapoint::RateLimited) ? error.retry_after : BACKOFF.call(count) }
