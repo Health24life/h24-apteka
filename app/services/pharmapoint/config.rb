@@ -16,7 +16,7 @@ class Pharmapoint::Config
   PRESENT = ->(value) { value.presence }
 
   setting :connection, reader: true do
-    setting :base_url, default: DEFAULT_BASE_URL
+    setting :base_url, default: DEFAULT_BASE_URL, constructor: ->(value) { value.presence || DEFAULT_BASE_URL }
     setting :api_key, constructor: PRESENT
     setting :domain_name, constructor: PRESENT
     setting :open_timeout, default: 5, constructor: INTEGER

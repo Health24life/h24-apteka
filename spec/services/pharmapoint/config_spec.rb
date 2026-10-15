@@ -27,6 +27,12 @@ RSpec.describe Pharmapoint::Config do
     expect { config.configure { it.rate_limit.per_minute = 'many' } }.to raise_error(ArgumentError)
   end
 
+  it 'keeps the default address when it is given empty' do
+    config.configure { it.connection.base_url = '' }
+
+    expect(config.connection.base_url).to eq(described_class::DEFAULT_BASE_URL)
+  end
+
   it 'treats an empty key as no key' do
     config.configure { it.connection.api_key = '' }
 
