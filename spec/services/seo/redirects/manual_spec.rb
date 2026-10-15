@@ -96,4 +96,20 @@ RSpec.describe Seo::Redirects::Manual do
 
     expect(described_class.new(config).send(:store, first).errors).to eq(source: :redirected)
   end
+
+  describe '.target_error' do
+    def target_error(target) = described_class.target_error(target, config:)
+
+    it 'accepts a page on the storefront without an old address' do
+      expect(target_error('/katalog/zneboliuvalni')).to be_nil
+    end
+
+    it 'names why a target is refused', :aggregate_failures do
+      hidden = create(:catalog_goods, hidden: true)
+
+      expect(target_error("/tovar/#{hidden.slug}")).to eq(:unavailable)
+      expect(target_error('https://h24.ua/doctors')).to eq(:other_host)
+      expect(target_error('/cart')).to eq(:not_a_page)
+    end
+  end
 end

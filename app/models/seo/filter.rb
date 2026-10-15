@@ -26,6 +26,19 @@ class Seo::Filter < ApplicationRecord
   page_history
   history_owner
 
+  # A form sends every parameter, blank ones too, with ids as strings. Anything else stays for the validator to refuse.
+  normalizes :params, with: lambda { |params|
+    next params unless params.respond_to?(:each_pair)
+
+    # @type var kept: Hash[String, untyped]
+    kept = {}
+    params.each_pair do |key, ids|
+      ids = ids.compact_blank.map { it.is_a?(String) && it.match?(/\A\d+\z/) ? it.to_i : it } if ids.is_a?(Array)
+      kept[key.to_s] = ids if ids.present?
+    end
+    kept
+  }
+
   belongs_to :category, class_name: 'Catalog::Category', optional: true, inverse_of: :seo_filters
   has_one :seo_override, class_name: 'Seo::Override', as: :target, inverse_of: :target, dependent: :destroy
 
@@ -51,6 +64,15 @@ class Seo::Filter < ApplicationRecord
     transaction do
       update!(published: false, removed_at: Time.current)
       seo_redirects.destroy_all
+    end
+  end
+
+  # Brings a removed filter back as a draft. A redirect an editor set from its address leads to another page and holds
+  # the address against the filter itself, so it goes first.
+  def restore!
+    transaction do
+      Seo::Redirect.where(page_type: Seo::Redirect.page_type_for(self.class), slug:, manual: true).destroy_all
+      update!(removed_at: nil)
     end
   end
 

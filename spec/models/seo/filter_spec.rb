@@ -48,6 +48,34 @@ RSpec.describe Seo::Filter do
     expect(filter.errors.details[:params]).to include(error: :unknown_param, param: 'price_max')
   end
 
+  describe 'parameters sent by a form' do
+    let(:form) { create(:catalog_goods_form) }
+
+    it 'drops the parameters left blank and reads the ids as numbers' do
+      filter = build(:seo_filter, params: { 'form_id' => [ '', form.id.to_s ], 'producer_id' => [ '' ] })
+
+      expect(filter.params).to eq('form_id' => [ form.id ])
+    end
+
+    it 'takes form parameters with symbol keys' do
+      expect(build(:seo_filter, params: { form_id: [ form.id ] }).params).to eq('form_id' => [ form.id ])
+    end
+
+    it 'still refuses an id that is not a number', :aggregate_failures do
+      filter = build(:seo_filter, params: { 'form_id' => [ 'syrup' ] })
+
+      expect(filter).not_to be_valid
+      expect(filter.errors.details[:params]).to include(error: :invalid_param_values, param: 'form_id')
+    end
+
+    it 'still refuses a value that is not a list' do
+      filter = build(:seo_filter, params: { 'form_id' => form.id })
+      filter.validate
+
+      expect(filter.errors.details[:params]).to include(error: :invalid_param_values, param: 'form_id')
+    end
+  end
+
   it 'knows the parameters of the catalog search in the order of the page' do
     expect(described_class::PARAMS.keys).to eq(
       %w[category_id form_id producer_id adult_restriction_id child_restriction_id diabetic_restriction_id
@@ -124,6 +152,40 @@ RSpec.describe Seo::Filter do
 
       expect { filter.update_column(:published, true) } # rubocop:disable Rails/SkipsModelValidations
         .to raise_error(ActiveRecord::StatementInvalid, /seo_filters_removed_check/)
+    end
+  end
+
+  describe '#restore!' do
+    subject!(:filter) { create(:seo_filter, :published, slug: 'dlia-skhudnennia').tap(&:remove!) }
+
+    let(:category) { create(:catalog_category) }
+
+    before do
+      create(:seo_redirect, manual: true, page_type: 'filter', slug: 'dlia-skhudnennia', redirectable: category)
+    end
+
+    it 'brings the filter back as a draft with its address', :aggregate_failures do
+      filter.restore!
+
+      expect(filter.reload).not_to be_removed
+      expect(filter).to have_attributes(published: false, slug: 'dlia-skhudnennia')
+    end
+
+    it 'drops the redirect an editor set from its address, so the address answers 404', :aggregate_failures do
+      expect { filter.restore! }.to change(Seo::Redirect, :count).by(-1)
+      expect(Seo::Pages::Resolve.call('/dobirka/dlia-skhudnennia').status).to eq(404)
+    end
+
+    it 'keeps the redirects from the addresses of other pages' do
+      create(:seo_redirect, manual: true, page_type: 'goods', slug: 'dlia-skhudnennia', redirectable: category)
+
+      expect { filter.restore! }.to change(Seo::Redirect, :count).by(-1)
+    end
+
+    it 'records the restore and the dropped redirect in its history' do
+      filter.restore!
+
+      expect(Seo::Version.where(item_type: 'Seo::Redirect', event: 'destroy')).to exist
     end
   end
 

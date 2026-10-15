@@ -37,9 +37,18 @@ RSpec.describe 'Admin SEO screens' do
       import_admin_seo_redirects_path, admin_seo_histories_path ]
   end
 
+  def filter_screens
+    filter = create(:seo_filter, :published, category:)
+    removed = create(:seo_filter, :published).tap(&:remove!)
+    [ admin_seo_filters_path, admin_seo_filter_path(filter), new_admin_seo_filter_path,
+      edit_admin_seo_filter_path(filter), seo_admin_seo_filter_path(filter), slug_admin_seo_filter_path(filter),
+      remove_admin_seo_filter_path(filter), admin_seo_filter_path(removed),
+      edit_admin_seo_template_path(Seo::Template.find_by(page_type: 'filter')) ]
+  end
+
   def failing(paths) = paths.reject { get(it) && response.ok? }
 
   it 'opens every SEO screen' do
-    expect(failing(template_screens + page_screens + static_page_screens + redirect_screens)).to eq([])
+    expect(failing(template_screens + page_screens + static_page_screens + redirect_screens + filter_screens)).to eq([])
   end
 end

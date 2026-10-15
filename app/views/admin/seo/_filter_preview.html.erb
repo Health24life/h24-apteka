@@ -1,0 +1,15 @@
+<div class="seo-filter-preview">
+  <p><%= t("admin.seo_filters.goods_count", count: preview.count) %></p>
+  <% if preview.count.zero? %>
+    <p><%= t("admin.seo_filters.no_goods") %></p>
+  <% else %>
+    <% if preview.count > preview.goods.size %>
+      <p><%= t("admin.seo_filters.goods_first", count: preview.goods.size) %></p>
+    <% end %>
+    <ol class="list-decimal ps-6">
+      <% preview.goods.each do |goods| %>
+        <li><%= link_to goods.name_uk, admin_sku_path(goods) %></li>
+      <% end %>
+    </ol>
+  <% end %>
+</div>

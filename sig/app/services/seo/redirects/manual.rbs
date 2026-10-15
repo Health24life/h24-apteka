@@ -17,6 +17,7 @@ class Seo::Redirects::Manual
   @config: Seo::Config
 
   def self.call: (source: String?, target: String?, ?redirect: Seo::Redirect?, ?save: bool, ?config: Seo::Config) -> Result
+  def self.target_error: (String? target, ?config: Seo::Config) -> Symbol?
 
   def initialize: (Seo::Config config) -> void
   def call: (source: String?, target: String?, redirect: Seo::Redirect?, save: bool) -> Result

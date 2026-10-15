@@ -91,6 +91,15 @@
   justify-content: flex-end;
 }
 
+/* A published SEO filter that selects no goods: its page is closed to search engines, so its row in the list stands
+   out. The state column says so in words as well. */
+tr.seo-filter-empty > td {
+  background: #fef3c7;
+}
+.dark tr.seo-filter-empty > td {
+  background: rgba(245, 158, 11, 0.15);
+}
+
 /* Trix inside the admin forms, drawn like the other inputs of the admin: groups of buttons with one thin border and
    rounded corners, the active and hovered buttons tinted, the text field with the input's border and focus ring, and
    the dark theme. The vendored trix.css keeps its own look; only these rules change it. */

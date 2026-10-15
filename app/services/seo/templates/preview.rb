@@ -11,7 +11,9 @@ class Seo::Templates::Preview
     def cut? = title.cut? || description.cut?
   end
 
-  MODELS = { 'goods' => Catalog::Goods, 'category' => Catalog::Category, 'static' => Seo::StaticPage }.freeze
+  MODELS = {
+    'goods' => Catalog::Goods, 'category' => Catalog::Category, 'static' => Seo::StaticPage, 'filter' => Seo::Filter
+  }.freeze
 
   def self.call(template:, record:)
     values = Seo::Pages::Meta.values_for(record)
@@ -27,6 +29,7 @@ class Seo::Templates::Preview
     when 'goods' then goods(template, branch)
     when 'category' then branch || Catalog::Category.all
     when 'static' then Seo::StaticPage.pages
+    when 'filter' then Seo::Filter.where(removed_at: nil)
     else Seo::StaticPage.none
     end
   end
