@@ -13,3 +13,18 @@ class ActiveRecord::Base
   def self.authorizable_ransackable_attributes: () -> Array[String]
   def self.authorizable_ransackable_associations: () -> Array[String]
 end
+
+# Without a block, `in_batches` returns the batches themselves; the collected signatures declare only the block form.
+module ActiveRecord
+  interface _Batches
+    def delete_all: () -> Integer
+  end
+
+  class Relation
+    module Methods[Model, PrimaryKey]
+      def in_batches: (?of: Integer, ?start: Integer, ?finish: Integer, ?load: bool, ?error_on_ignore: bool,
+                       ?order: untyped) -> _Batches
+                    | ...
+    end
+  end
+end

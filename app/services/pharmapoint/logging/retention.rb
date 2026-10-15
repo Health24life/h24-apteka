@@ -18,13 +18,6 @@ class Pharmapoint::Logging::Retention
 
   def purge(category)
     cutoff = @now - @config.retention_for(category)
-    removed = 0
-    loop do
-      ids = Provider::RequestLog.where(category:).older_than(cutoff).limit(BATCH).pluck(:id)
-      break if ids.empty?
-
-      removed += Provider::RequestLog.where(id: ids).delete_all
-    end
-    removed
+    Provider::RequestLog.where(category:).older_than(cutoff).in_batches(of: BATCH).delete_all
   end
 end
