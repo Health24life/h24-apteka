@@ -29,8 +29,7 @@ class Catalog::Sync::Savers::Drugstore
       week_working_hours: record.week_working_hours,
       work_with_reimbursement: record.work_with_reimbursement,
       withdrawn: false
-    }
-      .merge(contact_attributes(record.contacts))
+    }.merge(contact_attributes(record.contacts))
     record.complete ? attributes.merge(full_record_attributes(record)) : attributes
   end
 

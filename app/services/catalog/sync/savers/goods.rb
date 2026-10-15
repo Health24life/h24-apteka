@@ -69,8 +69,7 @@ class Catalog::Sync::Savers::Goods
       measure: @linker.fetch(Catalog::Goods::Measure, refs.measure),
       price_group: @linker.fetch(Catalog::Goods::PriceGroup, refs.price_group),
       temperature_mode: @linker.fetch(Catalog::Goods::TemperatureMode, refs.temperature_mode)
-    }
-      .merge(restrictions(refs))
+    }.merge(restrictions(refs))
   end
 
   def restrictions(refs)
