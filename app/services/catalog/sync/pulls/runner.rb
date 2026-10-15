@@ -3,7 +3,7 @@
 # Saves one record the way a pass would: from the stash the live search left, or else fetched from the provider. Every
 # fetch has a run of its own in the journal, so a failure is seen there. A run is opened only once the record can be
 # had: a provider that is off or a used-up request limit leaves no failed run behind.
-class Catalog::Sync::PullRunner
+class Catalog::Sync::Pulls::Runner
   def self.call(type, external_id, user_id: nil, provider_id: nil, stash_key: nil)
     new(type, external_id, user_id, provider_id, stash_key).call
   end
@@ -11,7 +11,7 @@ class Catalog::Sync::PullRunner
   # The retries are spent: the record is not queued again for a while.
   def self.give_up(type, external_id, _user_id = nil, provider_id = nil)
     provider = find_provider(provider_id)
-    Catalog::Sync::Pull.cool_down!(provider.id, type, external_id) if provider
+    Catalog::Sync::Pulls::Cooldown.pause!(provider.id, type, external_id) if provider
   end
 
   # A job queued before providers were told apart carries none and belongs to the default one.
@@ -36,7 +36,7 @@ class Catalog::Sync::PullRunner
     end
 
     stash_key = @stash_key
-    stashed = @type == :goods_group && stash_key ? Catalog::Sync::Stash.read(stash_key) : nil
+    stashed = @type == :goods_group && stash_key ? Catalog::Sync::Pulls::Stash.read(stash_key) : nil
     stashed ? save_stashed(provider, stashed) : fetch_and_save(provider)
   end
 
@@ -63,20 +63,20 @@ class Catalog::Sync::PullRunner
   end
 
   def track(provider, source)
-    tracker = Catalog::Sync::RunTracker.pull(provider:, kind: Catalog::Sync::Pull::TYPES.fetch(@type)[:kind], source:)
+    tracker = Catalog::Sync::RunTracker.pull(provider:, kind: Catalog::Sync::Pulls::TYPES.fetch(@type)[:kind], source:)
     yield tracker
     tracker.finish!
-    cool_down(provider) unless tracker.run.succeeded?
+    pause(provider) unless tracker.run.succeeded?
   rescue *Catalog::Sync::StepRunner::LOST_STEP_ERRORS, Pharmapoint::ConfigurationError => e
     # The provider will not give the record; another try would not change that, so the journal has the last word.
     tracker&.fail!(e.message)
-    cool_down(provider)
+    pause(provider)
   rescue StandardError => e
     tracker&.fail!(e.message)
     raise
   end
 
-  def cool_down(provider) = Catalog::Sync::Pull.cool_down!(provider.id, @type, @external_id)
+  def pause(provider) = Catalog::Sync::Pulls::Cooldown.pause!(provider.id, @type, @external_id)
 
   def pull_goods_group(client, linker, tracker)
     Catalog::Sync::Savers::GoodsGroup.new(linker, tracker).call([ client.goods_group(@external_id) ])

@@ -1,0 +1,19 @@
+class Catalog::Sync::Pulls::Enqueue
+  @type: Catalog::Sync::Pulls::kind
+  @external_id: String
+  @user_id: Integer?
+  @provider: Provider?
+  @config: Pharmapoint::Config
+
+  def self.call: (Catalog::Sync::Pulls::kind type, String | Integer external_id, ?user_id: Integer?, ?provider: Provider?,
+                  ?config: Pharmapoint::Config) -> (:enqueued | :queued_already | :present)
+
+  def initialize: (Catalog::Sync::Pulls::kind type, String external_id, Integer? user_id, Provider? provider,
+                   Pharmapoint::Config config) -> void
+  def call: () -> (:enqueued | :queued_already | :present)
+
+  private
+
+  def queue: () -> String?
+  def present?: () -> bool
+end

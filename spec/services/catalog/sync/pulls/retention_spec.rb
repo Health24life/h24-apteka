@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Catalog::Sync::PullRunRetention do
+RSpec.describe Catalog::Sync::Pulls::Retention do
   let(:provider) { create(:provider) }
 
   def pull_run(started_at) = create(:sync_run, :succeeded, provider:, started_at:, progress: { 'mode' => 'pull' })

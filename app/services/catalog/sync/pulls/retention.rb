@@ -3,7 +3,7 @@
 # Removes the runs of on-demand fetches that outlived their period, with their failures; the live search makes one for
 # every group it brings, so they would pile up. The recurring runs are kept. It deletes in batches, so it does not hold
 # the journal while fetches write to it.
-class Catalog::Sync::PullRunRetention
+class Catalog::Sync::Pulls::Retention
   BATCH = 1000
 
   # The failures go with their run through the foreign key.

@@ -1,4 +1,4 @@
-class Catalog::Sync::Stash
+class Catalog::Sync::Pulls::Stash
   PREFIX: String
 
   def self.key: (Integer provider_id, Pharmapoint::json external_id) -> String

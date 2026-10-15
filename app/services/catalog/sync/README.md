@@ -163,31 +163,36 @@ sidekiq-cron ──► StartWorker(kind) ──► Starter ──► RunTracker.
 
 ## Дотягування на вимогу
 
+Усе дотягування живе в неймспейсі `Catalog::Sync::Pulls`: постановка одного запису (`Enqueue`) і сторінки пошуку
+(`EnqueueFound`), сховище живої відповіді (`Stash`), пауза після збою (`Cooldown`), саме дотягування (`Runner`) і очистка
+його журналу (`Retention`). Воркери — `Catalog::Sync::PullWorker` і `PullRunCleanupWorker`: Sidekiq зберігає ім'я класу
+в поставлених завданнях, тож вони свої назви не змінюють.
+
 ```ruby
-Catalog::Sync::Pull.enqueue(:goods_group, '122c4abff4ae26d0068e7b4cfce236a6', user_id: current_user&.id)
+Catalog::Sync::Pulls::Enqueue.call(:goods_group, '122c4abff4ae26d0068e7b4cfce236a6', user_id: current_user&.id)
 # => :enqueued | :queued_already | :present
 
-Catalog::Sync::Pull.enqueue_found(provider:, found: records, user_id: current_user&.id)
-# => { '122c…' => :enqueued | :queued_already | :present | :hidden | :cooling_down }
+Catalog::Sync::Pulls::EnqueueFound.call(provider:, found: records, user_id: current_user&.id)
+# => { '122c…' => :enqueued | :queued_already | :present | :hidden | :paused }
 ```
 
-`enqueue` — для одного запису, якого немає в БД (аптека з неповними даними, первинне наповнення). Відповідь користувачу не
+`Enqueue` — для одного запису, якого немає в БД (аптека з неповними даними, первинне наповнення). Відповідь користувачу не
 чекає. Запис, що вже є й не застарів (`stale_record_after`), не дотягується; неповну аптеку дотягують завжди. Без
 `provider:` завдання йде без провайдера, і воркер бере типового (`Catalog::Sync::PROVIDER_CODE`).
 
-`enqueue_found` — для сторінки живого пошуку: `found` — сирі записи груп товарів із відповіді провайдера. Сторінка
+`EnqueueFound` — для сторінки живого пошуку: `found` — сирі записи груп товарів із відповіді провайдера. Сторінка
 перевіряється двома запитами (посилання груп і посилання SKU цього провайдера), а не двома на групу. Група ставиться в
 чергу, якщо її немає, вона застаріла, знята з показу (`withdrawn`) або приносить SKU, якого в БД немає. Прихована
 оператором група (`hidden`) і група на паузі після збою не ставляться. Збій постановки (Redis, вимкнений провайдер) іде в
 `Rails.error.report` і на відповідь пошуку не впливає.
 
-**Сховище живої відповіді (`Stash`).** Перед постановкою `enqueue_found` кладе запис групи в `Rails.cache` під ключем
+**Сховище живої відповіді (`Stash`).** Перед постановкою `EnqueueFound` кладе запис групи в `Rails.cache` під ключем
 `catalog_sync_stash:<provider_id>:goods_group:<external_id>` на `CATALOG_SYNC_STASH_TTL` секунд (типово 600), а завдання
 отримує цей ключ. Кладеться JSON без живих полів (`Pharmapoint::Readers::GoodsGroups::LIVE_KEYS`) і лише повний запис:
 з SKU, інструкцією в кожного SKU й категоріями групи — інакше збереження стерло б категорії чи інструкцію. Сховище
 втрачальне: промах (TTL, витіснення, збій запису) означає звичайний `goods-group/get-by-id`.
 
-**Виконання (`PullWorker` → `PullRunner`).** Аргументи — `(type, external_id, user_id, provider_id, stash_key)`; останні
+**Виконання (`PullWorker` → `Runner`).** Аргументи — `(type, external_id, user_id, provider_id, stash_key)`; останні
 два необов'язкові, тож завдання зі старої черги працюють через типового провайдера. Вимкнений чи відсутній провайдер — вихід
 із `Rails.error.report` без запису в журналі. Спершу сховище: попадання зберігає групу без `Pharmapoint::Client` і не чіпає
 ліміт. На промаху `RateLimiter#wait_time` (читання без витрати бюджету) перевіряється ще до відкриття запису журналу:
@@ -199,14 +204,14 @@ Catalog::Sync::Pull.enqueue_found(provider:, found: records, user_id: current_us
 і провайдером (користувач і ключ сховища не важливі). Той самий id у різних провайдерів — різні завдання. Замок тримається
 через повтори (`RETRIES` = 8, `LOCK_TTL` покриває всі паузи між ними) і сам спливає, якщо воркер завис.
 
-**Пауза після збою.** Коли запис не вдалося отримати чи зберегти (провайдер відмовив, запис не зберігся, спроби вичерпано),
-у Redis ставиться `catalog_sync_pull_cooldown:<provider_id>:<type>:<external_id>` на `CATALOG_SYNC_PULL_COOLDOWN` секунд
-(типово 900), і `enqueue_found` цей запис не ставить. Інакше група з постійним `MissingReference` журналювалася б на
-кожному пошуку.
+**Пауза після збою (`Cooldown`).** Коли запис не вдалося отримати чи зберегти (провайдер відмовив, запис не зберігся,
+спроби вичерпано), у Redis ставиться `catalog_sync_pull_cooldown:<provider_id>:<type>:<external_id>` на
+`CATALOG_SYNC_PULL_COOLDOWN` секунд (типово 900), і `EnqueueFound` цей запис не ставить. Інакше група з постійним
+`MissingReference` журналювалася б на кожному пошуку.
 
-**Очистка журналу дотягувань.** `PullRunCleanupWorker` за розкладом видаляє записи з `progress.mode = 'pull'`, старші за
-`SYNC_PULL_RUN_RETENTION_DAYS` днів (типово 90), частинами; збої йдуть разом із записом через зовнішній ключ. Періодичні
-прогони не чіпаються.
+**Очистка журналу дотягувань (`Retention`).** `PullRunCleanupWorker` за розкладом видаляє записи з
+`progress.mode = 'pull'`, старші за `SYNC_PULL_RUN_RETENTION_DAYS` днів (типово 90), частинами; збої йдуть разом із
+записом через зовнішній ключ. Періодичні прогони не чіпаються.
 
 ## Первинне наповнення
 

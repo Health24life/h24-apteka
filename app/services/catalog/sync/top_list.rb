@@ -31,6 +31,6 @@ class Catalog::Sync::TopList
       return :failed
     end
 
-    Catalog::Sync::Pull.enqueue(:goods_group, id) == :enqueued ? :enqueued : :present
+    Catalog::Sync::Pulls::Enqueue.call(:goods_group, id) == :enqueued ? :enqueued : :present
   end
 end

@@ -22,6 +22,6 @@ class Catalog::Sync::Importers::Drugstores
       saver.call(record)
       tracker.processed!
     end
-    Catalog::Sync::Pull.enqueue(:drugstore, record.external_id) if saved && !record.complete
+    Catalog::Sync::Pulls::Enqueue.call(:drugstore, record.external_id) if saved && !record.complete
   end
 end

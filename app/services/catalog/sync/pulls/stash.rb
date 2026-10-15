@@ -3,7 +3,7 @@
 # Goods groups as the live search got them, kept for a short while so that their on-demand fetch saves them without
 # asking the provider again. The cache may lose an entry at any time: a fetch that misses it asks the provider. A group
 # is kept as the provider's JSON, not as a value object, so an entry written before a deploy still reads after it.
-class Catalog::Sync::Stash
+class Catalog::Sync::Pulls::Stash
   PREFIX = 'catalog_sync_stash'
 
   def self.key(provider_id, external_id) = "#{PREFIX}:#{provider_id}:goods_group:#{external_id}"

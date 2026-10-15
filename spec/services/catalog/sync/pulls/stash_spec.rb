@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Catalog::Sync::Stash do
+RSpec.describe Catalog::Sync::Pulls::Stash do
   include ActiveSupport::Testing::TimeHelpers
 
   let(:provider) { create(:provider, code: 'pharmapoint') }

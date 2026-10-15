@@ -7,7 +7,7 @@ RSpec.describe Catalog::Sync::PullWorker do
   let(:group_id) { 'a060d7776d3d256af22378e018bea336' }
   let(:run) { SyncRun.last }
 
-  def pull(type = :goods_group, id = group_id, **) = run_jobs { Catalog::Sync::Pull.enqueue(type, id, **) }
+  def pull(type = :goods_group, id = group_id, **) = run_jobs { Catalog::Sync::Pulls::Enqueue.call(type, id, **) }
 
   # Answers the fetch of the group with its fields changed.
   def stub_group_with(changes)
@@ -89,7 +89,8 @@ RSpec.describe Catalog::Sync::PullWorker do
 
   describe 'a group the live search stashed' do
     let(:stash_key) do
-      Catalog::Sync::Stash.write(provider:, records: [ complete_goods_group('goods_group_get_by_id') ]).fetch(group_id)
+      Catalog::Sync::Pulls::Stash.write(provider:,
+                                        records: [ complete_goods_group('goods_group_get_by_id') ]).fetch(group_id)
     end
 
     before { allow(Rails).to receive(:cache).and_return(ActiveSupport::Cache::MemoryStore.new) }
@@ -173,33 +174,33 @@ RSpec.describe Catalog::Sync::PullWorker do
   end
 
   describe 'after a failure for good' do
-    def cooling? = Catalog::Sync::Pull.cooling_down(provider, :goods_group, [ group_id ]).include?(group_id)
+    def paused? = Catalog::Sync::Pulls::Cooldown.paused(provider.id, :goods_group, [ group_id ]).include?(group_id)
 
     it 'pauses a record the provider would not give' do
       stub_pharmapoint('goods-group/get-by-id', body: '{}', status: 404, query: { id: group_id })
       described_class.new.perform('goods_group', group_id, nil, provider.id)
 
-      expect(cooling?).to be(true)
+      expect(paused?).to be(true)
     end
 
     it 'pauses a record that could not be saved' do
       stub_group_with('goods_producer' => { 'id' => 1, 'name' => nil })
       described_class.new.perform('goods_group', group_id, nil, provider.id)
 
-      expect(cooling?).to be(true)
+      expect(paused?).to be(true)
     end
 
     it 'pauses a record whose retries are spent' do
       job = { 'args' => [ 'goods_group', group_id, nil, provider.id, nil ] }
       described_class.sidekiq_retries_exhausted_block.call(job, Pharmapoint::TransientError.new('down'))
 
-      expect(cooling?).to be(true)
+      expect(paused?).to be(true)
     end
 
     it 'does not pause a record that was saved' do
       described_class.new.perform('goods_group', group_id, nil, provider.id)
 
-      expect(cooling?).to be(false)
+      expect(paused?).to be(false)
     end
   end
 end

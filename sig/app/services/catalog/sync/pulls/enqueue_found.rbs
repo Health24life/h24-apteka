@@ -1,0 +1,40 @@
+class Catalog::Sync::Pulls::EnqueueFound
+  type outcome = :enqueued | :queued_already | :present | :hidden | :paused | :wanted
+
+  class Found < Data
+    attr_reader external_id: String
+    attr_reader goods_ids: Array[String]
+    attr_reader record: Pharmapoint::Readers::Base::record
+
+    def self.new: (external_id: String, goods_ids: Array[String], record: Pharmapoint::Readers::Base::record) -> instance
+  end
+
+  class Known < Data
+    attr_reader synced_at: ActiveSupport::TimeWithZone
+    attr_reader withdrawn: bool
+    attr_reader hidden: bool
+
+    def self.new: (synced_at: ActiveSupport::TimeWithZone, withdrawn: bool, hidden: bool) -> instance
+  end
+
+  @provider: Provider
+  @user_id: Integer?
+  @config: Pharmapoint::Config
+
+  def self.call: (provider: Provider, found: Array[Pharmapoint::json], ?user_id: Integer?,
+                  ?config: Pharmapoint::Config) -> Hash[String, outcome]
+
+  def initialize: (Provider provider, Integer? user_id, Pharmapoint::Config config) -> void
+  def call: (Array[Pharmapoint::json] found) -> Hash[String, outcome]
+
+  private
+
+  def read: (Pharmapoint::json record) -> Found?
+  def decide: (Array[Found] groups) -> Hash[String, outcome]
+  def decision: (Found group, Known? known, Set[String] linked_goods, Set[String] paused) -> outcome
+  def current?: (Known known) -> bool
+  def known_groups: (Array[String] ids) -> Hash[String, Known]
+  def linked_goods: (Array[String] ids) -> Set[String]
+  def queue: (Array[Found] groups) -> Hash[String, outcome]
+  def report: (Exception error) -> Hash[String, outcome]
+end
