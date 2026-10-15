@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 # Connection, load and log settings of the partner API. They come from the environment, so changing one needs no code.
-class Pharmapoint::Config < Data.define(:base_url, :api_key, :domain_name, :rate_limit_per_minute, :rate_limit_window,
-                                        :open_timeout, :read_timeout, :goods_groups_per_page, :search_points,
-                                        :stale_run_after, :stale_record_after, :retention_days, :stash_ttl,
-                                        :pull_cooldown, :pull_run_retention)
+class Pharmapoint::Config
   class Point < Data.define(:latitude, :longitude, :radius); end
 
   DEFAULT_BASE_URL = 'https://pharmapoint.ua/api/v1/online-drugstore'
@@ -13,6 +10,11 @@ class Pharmapoint::Config < Data.define(:base_url, :api_key, :domain_name, :rate
   SECRET_HEADERS = %w[api-key customer-phone authorization cookie].freeze
   # Keys of a request or response body that hold a client's phone number or the code that redeems a prescription.
   SECRET_BODY_KEYS = %w[customer_phone_number repayment_code].freeze
+
+  attr_reader :base_url, :api_key, :domain_name, :rate_limit_per_minute, :rate_limit_window, :open_timeout,
+              :read_timeout, :goods_groups_per_page, :search_points, :stale_run_after, :stale_record_after,
+              :retention_days, :stash_ttl, :pull_cooldown, :pull_run_retention
+
   def self.current = @current ||= from_env
 
   def self.reset! = @current = nil
@@ -51,14 +53,30 @@ class Pharmapoint::Config < Data.define(:base_url, :api_key, :domain_name, :rate
     end
   end
 
-  # Every setting has a default, so a caller names only what differs.
-  # rubocop:disable-next Metrics/ParameterLists -- a settings object takes every setting as a keyword.
+  # Every setting has a default, so a caller names only what differs. The settings are read by every process at once,
+  # so the object is frozen once built.
+  # rubocop:disable-next Metrics/ParameterLists, Metrics/MethodLength -- it takes and keeps every setting.
   def initialize(base_url: DEFAULT_BASE_URL, api_key: nil, domain_name: nil, rate_limit_per_minute: 60,
                  rate_limit_window: 60, open_timeout: 5, read_timeout: 30, goods_groups_per_page: 50,
                  search_points: [], stale_run_after: 6.hours, stale_record_after: 1.day,
                  retention_days: RETENTION_DAYS, stash_ttl: 10.minutes, pull_cooldown: 15.minutes,
                  pull_run_retention: 90.days)
-    super
+    @base_url = base_url
+    @api_key = api_key
+    @domain_name = domain_name
+    @rate_limit_per_minute = rate_limit_per_minute
+    @rate_limit_window = rate_limit_window
+    @open_timeout = open_timeout
+    @read_timeout = read_timeout
+    @goods_groups_per_page = goods_groups_per_page
+    @search_points = search_points
+    @stale_run_after = stale_run_after
+    @stale_record_after = stale_record_after
+    @retention_days = retention_days
+    @stash_ttl = stash_ttl
+    @pull_cooldown = pull_cooldown
+    @pull_run_retention = pull_run_retention
+    freeze
   end
 
   # The key and the domain name are required to call the partner; a missing one stops the call before it is sent.

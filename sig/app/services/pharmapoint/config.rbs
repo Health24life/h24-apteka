@@ -1,4 +1,4 @@
-class Pharmapoint::Config < Data
+class Pharmapoint::Config
   # What the code asks of the environment: ENV, or any hash of strings in a spec.
   interface _Env
     def fetch: [T] (String key, T default) -> (String | T)
@@ -42,13 +42,6 @@ class Pharmapoint::Config < Data
   def self.parse_retention: (_Env env) -> Hash[String, Integer]
   def self.parse_pull: (_Env env) -> { stash_ttl: ActiveSupport::Duration, pull_cooldown: ActiveSupport::Duration,
                                         pull_run_retention: ActiveSupport::Duration }
-
-  def self.new: (?base_url: String, ?api_key: String?, ?domain_name: String?, ?rate_limit_per_minute: Integer,
-                 ?rate_limit_window: Integer, ?open_timeout: Integer, ?read_timeout: Integer,
-                 ?goods_groups_per_page: Integer, ?search_points: Array[Point],
-                 ?stale_run_after: ActiveSupport::Duration, ?stale_record_after: ActiveSupport::Duration,
-                 ?retention_days: Hash[String, Integer], ?stash_ttl: ActiveSupport::Duration,
-                 ?pull_cooldown: ActiveSupport::Duration, ?pull_run_retention: ActiveSupport::Duration) -> instance
 
   def initialize: (?base_url: String, ?api_key: String?, ?domain_name: String?, ?rate_limit_per_minute: Integer,
                    ?rate_limit_window: Integer, ?open_timeout: Integer, ?read_timeout: Integer,
