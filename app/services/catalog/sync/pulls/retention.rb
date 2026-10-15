@@ -7,7 +7,7 @@ class Catalog::Sync::Pulls::Retention
   BATCH = 1000
 
   # The failures go with their run through the foreign key.
-  def self.call(config: Pharmapoint::Config.current, now: Time.current)
-    SyncRun.mode_eq('pull').where(started_at: ...(now - config.pull_run_retention)).in_batches(of: BATCH).delete_all
+  def self.call(config: Catalog::Sync.config, now: Time.current)
+    SyncRun.mode_eq('pull').where(started_at: ...(now - config.pull.run_retention)).in_batches(of: BATCH).delete_all
   end
 end

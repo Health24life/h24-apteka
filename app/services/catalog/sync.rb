@@ -9,5 +9,10 @@ module Catalog::Sync
   # The provider's record lacks what is needed to save it at all.
   class MissingData < StandardError; end
 
+  class << self
+    # The settings of the sync, built from the environment at boot by config/initializers/settings.rb.
+    attr_accessor :config
+  end
+
   def self.provider = Provider.enabled.find_by!(code: PROVIDER_CODE)
 end

@@ -1,91 +1,56 @@
 # frozen_string_literal: true
 
-# Connection, load and log settings of the partner API. They come from the environment, so changing one needs no code.
+# Connection, load and log settings of the partner API, declared with their defaults and types. The values come from the
+# environment in config/initializers/settings.rb, which keeps the frozen result as Pharmapoint.config; a spec builds its
+# own with `Pharmapoint::Config.new.configure`.
 class Pharmapoint::Config
-  class Point < Data.define(:latitude, :longitude, :radius); end
+  include Dry::Configurable
 
   DEFAULT_BASE_URL = 'https://pharmapoint.ua/api/v1/online-drugstore'
-  RETENTION_DAYS = { 'booking' => 14, 'search' => 1, 'refresh' => 7, 'other' => 7 }.freeze
   # Request headers whose value never reaches a log.
   SECRET_HEADERS = %w[api-key customer-phone authorization cookie].freeze
   # Keys of a request or response body that hold a client's phone number or the code that redeems a prescription.
   SECRET_BODY_KEYS = %w[customer_phone_number repayment_code].freeze
+  INTEGER = ->(value) { Integer(value) }
+  # An empty value in the environment means none.
+  PRESENT = ->(value) { value.presence }
 
-  attr_reader :base_url, :api_key, :domain_name, :rate_limit_per_minute, :rate_limit_window, :open_timeout,
-              :read_timeout, :goods_groups_per_page, :search_points, :stale_run_after, :stale_record_after,
-              :retention_days, :stash_ttl, :pull_cooldown, :pull_run_retention
-
-  def self.current = @current ||= from_env
-
-  def self.reset! = @current = nil
-
-  def self.from_env(env = ENV)
-    new(
-      base_url: env.fetch('PHARMAPOINT_BASE_URL', nil).presence || DEFAULT_BASE_URL,
-      api_key: env.fetch('PHARMAPOINT_API_KEY', nil).presence,
-      domain_name: env.fetch('PHARMAPOINT_DOMAIN_NAME', nil).presence,
-      rate_limit_per_minute: Integer(env.fetch('PHARMAPOINT_RATE_LIMIT_PER_MINUTE', 60)),
-      goods_groups_per_page: Integer(env.fetch('PHARMAPOINT_GOODS_GROUPS_PER_PAGE', 50)),
-      search_points: parse_points(env.fetch('PHARMAPOINT_DRUGSTORE_SEARCH_POINTS', nil)),
-      retention_days: parse_retention(env), **parse_pull(env)
-    )
+  setting :connection, reader: true do
+    setting :base_url, default: DEFAULT_BASE_URL
+    setting :api_key, constructor: PRESENT
+    setting :domain_name, constructor: PRESENT
+    setting :open_timeout, default: 5, constructor: INTEGER
+    setting :read_timeout, default: 30, constructor: INTEGER
   end
 
-  # How long the on-demand fetch keeps a stashed group, pauses a failed record and keeps its runs.
-  def self.parse_pull(env)
-    { stash_ttl: Integer(env.fetch('CATALOG_SYNC_STASH_TTL', 600)).seconds,
-      pull_cooldown: Integer(env.fetch('CATALOG_SYNC_PULL_COOLDOWN', 900)).seconds,
-      pull_run_retention: Integer(env.fetch('SYNC_PULL_RUN_RETENTION_DAYS', 90)).days }
+  setting :rate_limit, reader: true do
+    setting :per_minute, default: 60, constructor: INTEGER
+    # Seconds to wait when the partner reports nothing left and names no wait of its own.
+    setting :window, default: 60, constructor: INTEGER
   end
 
-  def self.parse_points(json)
-    return [] if json.blank?
+  setting :goods_groups_per_page, default: 50, constructor: INTEGER, reader: true
 
-    JSON.parse(json).map do |point|
-      Point.new(latitude: Float(point.fetch('latitude')), longitude: Float(point.fetch('longitude')),
-                radius: Integer(point.fetch('radius')))
-    end
-  end
-
-  def self.parse_retention(env)
-    RETENTION_DAYS.to_h do |category, default|
-      [ category, Integer(env.fetch("PHARMAPOINT_LOG_RETENTION_#{category.upcase}_DAYS", default)) ]
-    end
-  end
-
-  # Every setting has a default, so a caller names only what differs. The settings are read by every process at once,
-  # so the object is frozen once built.
-  # rubocop:disable-next Metrics/ParameterLists, Metrics/MethodLength -- it takes and keeps every setting.
-  def initialize(base_url: DEFAULT_BASE_URL, api_key: nil, domain_name: nil, rate_limit_per_minute: 60,
-                 rate_limit_window: 60, open_timeout: 5, read_timeout: 30, goods_groups_per_page: 50,
-                 search_points: [], stale_run_after: 6.hours, stale_record_after: 1.day,
-                 retention_days: RETENTION_DAYS, stash_ttl: 10.minutes, pull_cooldown: 15.minutes,
-                 pull_run_retention: 90.days)
-    @base_url = base_url
-    @api_key = api_key
-    @domain_name = domain_name
-    @rate_limit_per_minute = rate_limit_per_minute
-    @rate_limit_window = rate_limit_window
-    @open_timeout = open_timeout
-    @read_timeout = read_timeout
-    @goods_groups_per_page = goods_groups_per_page
-    @search_points = search_points
-    @stale_run_after = stale_run_after
-    @stale_record_after = stale_record_after
-    @retention_days = retention_days
-    @stash_ttl = stash_ttl
-    @pull_cooldown = pull_cooldown
-    @pull_run_retention = pull_run_retention
-    freeze
+  # Days a request log entry is kept, per category of the log.
+  setting :log_retention_days, reader: true do
+    setting :booking, default: 14, constructor: INTEGER
+    setting :search, default: 1, constructor: INTEGER
+    setting :refresh, default: 7, constructor: INTEGER
+    setting :other, default: 7, constructor: INTEGER
   end
 
   # The key and the domain name are required to call the partner; a missing one stops the call before it is sent.
   def credentials!
+    api_key = connection.api_key
+    domain_name = connection.domain_name
     raise Pharmapoint::ConfigurationError, 'PHARMAPOINT_API_KEY is not set' if api_key.blank?
     raise Pharmapoint::ConfigurationError, 'PHARMAPOINT_DOMAIN_NAME is not set' if domain_name.blank?
 
     [ api_key.to_s, domain_name.to_s ]
   end
 
-  def retention_for(category) = retention_days.fetch(category.to_s) { retention_days.fetch('other') }.days
+  # A category the log does not know is kept as long as the other ones.
+  def retention_for(category)
+    log_retention_days.to_h.fetch(category.to_sym) { log_retention_days.other }.days
+  end
 end

@@ -4,7 +4,7 @@
 class Pharmapoint::Logging::Masker
   MARKER = '[masked]'
 
-  def initialize(config: Pharmapoint::Config.current)
+  def initialize(config: Pharmapoint.config)
     @config = config
   end
 
@@ -23,7 +23,7 @@ class Pharmapoint::Logging::Masker
 
   # Free text such as an error message: the key is cut out wherever it happens to appear.
   def text(value)
-    api_key = @config.api_key
+    api_key = @config.connection.api_key
     clean(api_key.present? ? value.gsub(api_key, MARKER) : value)
   end
 

@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Catalog::Sync::Pulls::Cooldown do
-  let(:config) { pharmapoint_config(pull_cooldown: 15.minutes) }
+  let(:config) { sync_config(pull: { cooldown: 900 }) }
 
   def paused(ids = %w[1 2], provider_id: 1) = described_class.paused(provider_id, :goods_group, ids)
 

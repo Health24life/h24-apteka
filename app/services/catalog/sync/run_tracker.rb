@@ -6,7 +6,7 @@ class Catalog::Sync::RunTracker
 
   # Starts a run unless the same kind is already running. A run that has hung longer than the allowed time is
   # closed as failed first, so a crashed worker does not block the kind for good.
-  def self.start(provider:, kind:, config: Pharmapoint::Config.current)
+  def self.start(provider:, kind:, config: Catalog::Sync.config)
     running = SyncRun.excluding_pulls.where(provider:, kind:, status: 'running')
     running.where(started_at: ...config.stale_run_after.ago).find_each do |stale|
       new(stale).fail!('The run did not finish in time and was closed by the next start')

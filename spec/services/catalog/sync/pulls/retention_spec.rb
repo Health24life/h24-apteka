@@ -33,7 +33,7 @@ RSpec.describe Catalog::Sync::Pulls::Retention do
   it 'applies the period the configuration gives' do
     pull_run(10.days.ago)
 
-    expect { described_class.call(config: pharmapoint_config(pull_run_retention: 7.days)) }
+    expect { described_class.call(config: sync_config(pull: { run_retention: 7 })) }
       .to change(SyncRun, :count).by(-1)
   end
 

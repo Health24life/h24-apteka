@@ -6,14 +6,14 @@ class Catalog::Sync::Importers::Drugstores
   def self.first_cursor = 0
 
   def self.call(tracker, client, linker, cursor)
-    points = Pharmapoint::Config.current.search_points
+    points = Catalog::Sync.config.search_points
     point = points.fetch(cursor.to_i) { raise Pharmapoint::ConfigurationError, 'no drugstore search points are configured' }
     saver = Catalog::Sync::Savers::Drugstore.new(linker)
     client.drugstores(point).each { |record| save(tracker, saver, record) }
     following(cursor, points.size)
   end
 
-  def self.skip(_tracker, cursor) = following(cursor, Pharmapoint::Config.current.search_points.size)
+  def self.skip(_tracker, cursor) = following(cursor, Catalog::Sync.config.search_points.size)
 
   def self.following(cursor, size) = cursor.to_i + 1 < size ? cursor.to_i + 1 : nil
 

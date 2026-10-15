@@ -32,6 +32,14 @@ sidekiq-cron ──► StartWorker(kind) ──► Starter ──► RunTracker.
 без довідників він іде в збій (`MissingReference`), а не зберігається з порожнім посиланням. Виробник, клас АТХ і категорії
 групи створюються з даних самої групи, якщо їх ще немає.
 
+## Налаштування
+
+`Catalog::Sync::Config` (`dry-configurable`) — налаштування синхронізації, окремо від налаштувань партнера
+(`Pharmapoint::Config`): пункти пошуку аптек (`PHARMAPOINT_DRUGSTORE_SEARCH_POINTS`), `stale_run_after`,
+`stale_record_after` і група `pull` — строк сховища, пауза після збою й строк журналу дотягувань
+(`CATALOG_SYNC_STASH_TTL`, `CATALOG_SYNC_PULL_COOLDOWN`, `SYNC_PULL_RUN_RETENTION_DAYS`). Значення зі змінних середовища
+бере `config/initializers/settings.rb` і заморожує результат як `Catalog::Sync.config`.
+
 ## Цикл роботи
 
 ### 1. Старт прогону

@@ -12,7 +12,7 @@ class Catalog::Sync::Pulls::EnqueueFound
   class Known < Data.define(:synced_at, :withdrawn, :hidden); end
 
   # Returns what became of each group by its id: :enqueued, :queued_already, :present, :hidden or :paused.
-  def self.call(provider:, found:, user_id: nil, config: Pharmapoint::Config.current)
+  def self.call(provider:, found:, user_id: nil, config: Catalog::Sync.config)
     new(provider, user_id, config).call(found)
   end
 

@@ -2,7 +2,7 @@ class Catalog::Sync::Pulls::Cooldown
   PREFIX: String
 
   def self.pause!: (Integer provider_id, Catalog::Sync::Pulls::kind | String type, String external_id,
-                    ?config: Pharmapoint::Config) -> void
+                    ?config: Catalog::Sync::Config) -> void
   def self.paused: (Integer provider_id, Catalog::Sync::Pulls::kind type, Array[String] ids) -> Set[String]
   def self.key: (Integer provider_id, Catalog::Sync::Pulls::kind | String type, String external_id) -> String
 end

@@ -5,9 +5,9 @@
 class Catalog::Sync::Pulls::Cooldown
   PREFIX = 'catalog_sync_pull_cooldown'
 
-  def self.pause!(provider_id, type, external_id, config: Pharmapoint::Config.current)
+  def self.pause!(provider_id, type, external_id, config: Catalog::Sync.config)
     Sidekiq.redis do |redis|
-      redis.call('SET', key(provider_id, type, external_id), '1', 'EX', config.pull_cooldown.to_i)
+      redis.call('SET', key(provider_id, type, external_id), '1', 'EX', config.pull.cooldown.to_i)
     end
   end
 

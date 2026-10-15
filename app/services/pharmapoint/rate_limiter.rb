@@ -5,7 +5,7 @@ class Pharmapoint::RateLimiter
   KEY = 'pharmapoint:rate_limit'
   MINUTE = 60
 
-  def initialize(config: Pharmapoint::Config.current, clock: Time)
+  def initialize(config: Pharmapoint.config, clock: Time)
     @config = config
     @clock = clock
   end
@@ -29,13 +29,13 @@ class Pharmapoint::RateLimiter
 
     window = now / MINUTE
     used = redis { it.call('GET', window_key(window)) }.to_i
-    used >= @config.rate_limit_per_minute ? ((window + 1) * MINUTE) - now : 0
+    used >= @config.rate_limit.per_minute ? ((window + 1) * MINUTE) - now : 0
   end
 
   # The partner reports what is left of its limit on every answer; nothing left means wait for the window.
   def record(headers)
     remaining = Integer(headers['x-ratelimit-remaining'], exception: false)
-    block!(@config.rate_limit_window) if remaining&.zero?
+    block!(@config.rate_limit.window) if remaining&.zero?
   end
 
   def block!(seconds)
@@ -59,7 +59,7 @@ class Pharmapoint::RateLimiter
         pipeline.call('EXPIRE', key, MINUTE * 2)
       end.first
     end
-    used.to_i > @config.rate_limit_per_minute ? ((window + 1) * MINUTE) - now : 0
+    used.to_i > @config.rate_limit.per_minute ? ((window + 1) * MINUTE) - now : 0
   end
 
   def window_key(window) = "#{KEY}:window:#{window}"

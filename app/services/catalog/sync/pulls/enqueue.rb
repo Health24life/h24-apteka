@@ -6,7 +6,7 @@
 class Catalog::Sync::Pulls::Enqueue
   # Returns what became of the request: :enqueued, :queued_already or :present. Without a provider the job carries
   # none and the worker takes the default one, as the jobs queued before providers were told apart do.
-  def self.call(type, external_id, user_id: nil, provider: nil, config: Pharmapoint::Config.current)
+  def self.call(type, external_id, user_id: nil, provider: nil, config: Catalog::Sync.config)
     new(type, external_id.to_s, user_id, provider, config).call
   end
 

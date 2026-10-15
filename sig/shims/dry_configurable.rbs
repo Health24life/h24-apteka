@@ -1,0 +1,19 @@
+# dry-configurable ships no signatures. A setting reads as a method its owner declares in its own signature; this shim
+# declares only the macro that defines settings and what an instance does with its whole config.
+module Dry
+  module Configurable
+    def configure: () { (untyped config) -> void } -> self
+    def finalize!: (?freeze_values: bool) -> self
+    def config: () -> untyped
+
+    module ClassMethods
+      def setting: (Symbol name, ?default: untyped, ?constructor: ^(untyped) -> untyped, ?reader: bool)
+                     ?{ () [self: Dry::Configurable::DSL] -> void } -> void
+    end
+
+    class DSL
+      def setting: (Symbol name, ?default: untyped, ?constructor: ^(untyped) -> untyped, ?reader: bool)
+                     ?{ () [self: Dry::Configurable::DSL] -> void } -> void
+    end
+  end
+end

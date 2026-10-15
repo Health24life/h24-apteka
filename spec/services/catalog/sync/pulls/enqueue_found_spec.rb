@@ -105,7 +105,7 @@ RSpec.describe Catalog::Sync::Pulls::EnqueueFound do
   end
 
   describe 'after a fetch failed for good' do
-    before { Catalog::Sync::Pulls::Cooldown.pause!(provider.id, :goods_group, group_id, config: pharmapoint_config) }
+    before { Catalog::Sync::Pulls::Cooldown.pause!(provider.id, :goods_group, group_id, config: sync_config) }
 
     it 'does not queue the group during the pause', :aggregate_failures do
       expect(found).to eq(group_id => :paused)

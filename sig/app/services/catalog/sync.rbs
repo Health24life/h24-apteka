@@ -2,7 +2,17 @@ module Catalog::Sync
   # The values a model's attributes are assigned from: whatever types its columns have.
   type attributes = Hash[Symbol, untyped]
 
+  # What the code asks of the environment: ENV, or any hash of strings in a spec.
+  interface _Env
+    def fetch: [T] (String key, T default) -> (String | T)
+  end
+
   PROVIDER_CODE: String
+
+  self.@config: Catalog::Sync::Config?
+
+  def self.config: () -> Catalog::Sync::Config
+  def self.config=: (Catalog::Sync::Config config) -> Catalog::Sync::Config
 
   def self.provider: () -> Provider
 end

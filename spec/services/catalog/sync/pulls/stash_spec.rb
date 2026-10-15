@@ -13,7 +13,7 @@ RSpec.describe Catalog::Sync::Pulls::Stash do
 
   before { allow(Rails).to receive(:cache).and_return(cache) }
 
-  def write(records = [ complete ], **) = described_class.write(provider:, records:, config: pharmapoint_config(**))
+  def write(records = [ complete ], **) = described_class.write(provider:, records:, config: sync_config(**))
 
   it 'keeps a group under a key of the provider and the group, and reads it back without the live fields',
      :aggregate_failures do
@@ -30,7 +30,7 @@ RSpec.describe Catalog::Sync::Pulls::Stash do
   end
 
   it 'lets an entry expire', :aggregate_failures do
-    keys = write(stash_ttl: 1.minute)
+    keys = write(pull: { stash_ttl: 60 })
 
     travel_to(2.minutes.from_now) { expect(described_class.read(keys.fetch(group_id))).to be_nil }
   end

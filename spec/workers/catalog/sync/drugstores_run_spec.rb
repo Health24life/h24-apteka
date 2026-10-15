@@ -6,8 +6,8 @@ RSpec.describe 'a run over the drugstore directory' do # rubocop:disable RSpec/D
   let!(:provider) { create(:provider, code: 'pharmapoint') }
   let(:run) { SyncRun.where(kind: 'drugstores').excluding_pulls.last }
   let(:points) do
-    [ Pharmapoint::Config::Point.new(latitude: 50.45, longitude: 30.52, radius: 1000),
-      Pharmapoint::Config::Point.new(latitude: 49.99, longitude: 36.23, radius: 1000) ]
+    [ Pharmapoint::SearchPoint.new(latitude: 50.45, longitude: 30.52, radius: 1000),
+      Pharmapoint::SearchPoint.new(latitude: 49.99, longitude: 36.23, radius: 1000) ]
   end
   let(:any_point) { hash_including({}) }
 
@@ -28,7 +28,8 @@ RSpec.describe 'a run over the drugstore directory' do # rubocop:disable RSpec/D
   end
 
   before do
-    use_pharmapoint_config(search_points: points)
+    use_pharmapoint_config
+    use_sync_config(search_points: points)
     stub_points
   end
 
@@ -102,7 +103,7 @@ RSpec.describe 'a run over the drugstore directory' do # rubocop:disable RSpec/D
   end
 
   it 'fails the run when no search points are configured', :aggregate_failures do
-    use_pharmapoint_config(search_points: [])
+    use_sync_config(search_points: [])
 
     sync
 

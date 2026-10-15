@@ -5,7 +5,7 @@
 class Pharmapoint::Logging::Retention
   BATCH = 1000
 
-  def self.call(config: Pharmapoint::Config.current, now: Time.current) = new(config, now).call
+  def self.call(config: Pharmapoint.config, now: Time.current) = new(config, now).call
 
   def initialize(config, now)
     @config = config

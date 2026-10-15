@@ -19,12 +19,12 @@ class Catalog::Sync::Pulls::EnqueueFound
 
   @provider: Provider
   @user_id: Integer?
-  @config: Pharmapoint::Config
+  @config: Catalog::Sync::Config
 
   def self.call: (provider: Provider, found: Array[Pharmapoint::json], ?user_id: Integer?,
-                  ?config: Pharmapoint::Config) -> Hash[String, outcome]
+                  ?config: Catalog::Sync::Config) -> Hash[String, outcome]
 
-  def initialize: (Provider provider, Integer? user_id, Pharmapoint::Config config) -> void
+  def initialize: (Provider provider, Integer? user_id, Catalog::Sync::Config config) -> void
   def call: (Array[Pharmapoint::json] found) -> Hash[String, outcome]
 
   private
