@@ -161,6 +161,14 @@ RSpec.describe Pharmapoint::Client do
       expect(WebMock).not_to have_requested(:get, /partner.test/)
       expect(Provider::RequestLog.count).to eq(0)
     end
+
+    it 'does not spend the request limit without a key', :aggregate_failures do
+      config = pharmapoint_config(api_key: nil, rate_limit_per_minute: 1)
+      client = build_client(config:)
+
+      expect { client.dictionaries }.to raise_error(Pharmapoint::ConfigurationError)
+      expect(Pharmapoint::RateLimiter.new(config:).wait_time).to eq(0)
+    end
   end
 
   describe 'an answer that cannot be read' do

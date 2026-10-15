@@ -5,9 +5,15 @@
 class Pharmapoint::Readers::GoodsGroups
   include Pharmapoint::Readers::Base
 
+  # The fields of a group and of its SKU that depend on the drugstore and the moment.
+  LIVE_KEYS = %w[online_price drugstore_price quantity nds preorder is_preorder drugstores_count_available
+                 drugstores_count_all offers price_min drugstore_count].freeze
+
   def self.page(body, page:, per_page:) = new.page(body, page:, per_page:)
 
   def self.one(body) = new.one(body)
+
+  def self.stashable(record) = new.stashable(record)
 
   def page(body, page:, per_page:)
     items = list(envelope(body)).filter_map { group(it) }
@@ -20,7 +26,23 @@ class Pharmapoint::Readers::GoodsGroups
     group(data.is_a?(Array) ? data.first : data) || raise(Pharmapoint::InvalidResponse, 'the answer has no goods group')
   end
 
+  # The group as the provider gave it, without the live fields, for a later save that need not ask the provider again.
+  # Nil when the record lacks what such a save would wipe in the catalog: the SKU, the instruction of any of them or the
+  # categories of the group.
+  def stashable(record)
+    return unless record.is_a?(Hash) && id_at(record, 'id') && list_at(record, 'goods_categories').any?
+
+    forms = complete_forms(list_at(record, 'release_forms'))
+    record.except(*LIVE_KEYS).merge('release_forms' => forms.map { it.except(*LIVE_KEYS) }) if forms
+  end
+
   private
+
+  # The SKU when there are some and every one has its instruction.
+  def complete_forms(values)
+    forms = values.filter_map { it if it.is_a?(Hash) && text_at(it, 'instruction') }
+    forms if forms.any? && forms.size == values.size
+  end
 
   def group(record)
     return unless record.is_a?(Hash)

@@ -3,7 +3,8 @@
 # Connection, load and log settings of the partner API. They come from the environment, so changing one needs no code.
 class Pharmapoint::Config < Data.define(:base_url, :api_key, :domain_name, :rate_limit_per_minute, :rate_limit_window,
                                         :open_timeout, :read_timeout, :goods_groups_per_page, :search_points,
-                                        :stale_run_after, :stale_record_after, :retention_days)
+                                        :stale_run_after, :stale_record_after, :retention_days, :stash_ttl,
+                                        :pull_cooldown, :pull_run_retention)
   class Point < Data.define(:latitude, :longitude, :radius); end
 
   DEFAULT_BASE_URL = 'https://pharmapoint.ua/api/v1/online-drugstore'
@@ -24,8 +25,15 @@ class Pharmapoint::Config < Data.define(:base_url, :api_key, :domain_name, :rate
       rate_limit_per_minute: Integer(env.fetch('PHARMAPOINT_RATE_LIMIT_PER_MINUTE', 60)),
       goods_groups_per_page: Integer(env.fetch('PHARMAPOINT_GOODS_GROUPS_PER_PAGE', 50)),
       search_points: parse_points(env.fetch('PHARMAPOINT_DRUGSTORE_SEARCH_POINTS', nil)),
-      retention_days: parse_retention(env)
+      retention_days: parse_retention(env), **parse_pull(env)
     )
+  end
+
+  # How long the on-demand fetch keeps a stashed group, pauses a failed record and keeps its runs.
+  def self.parse_pull(env)
+    { stash_ttl: Integer(env.fetch('CATALOG_SYNC_STASH_TTL', 600)).seconds,
+      pull_cooldown: Integer(env.fetch('CATALOG_SYNC_PULL_COOLDOWN', 900)).seconds,
+      pull_run_retention: Integer(env.fetch('SYNC_PULL_RUN_RETENTION_DAYS', 90)).days }
   end
 
   def self.parse_points(json)
@@ -48,7 +56,8 @@ class Pharmapoint::Config < Data.define(:base_url, :api_key, :domain_name, :rate
   def initialize(base_url: DEFAULT_BASE_URL, api_key: nil, domain_name: nil, rate_limit_per_minute: 60,
                  rate_limit_window: 60, open_timeout: 5, read_timeout: 30, goods_groups_per_page: 50,
                  search_points: [], stale_run_after: 6.hours, stale_record_after: 1.day,
-                 retention_days: RETENTION_DAYS)
+                 retention_days: RETENTION_DAYS, stash_ttl: 10.minutes, pull_cooldown: 15.minutes,
+                 pull_run_retention: 90.days)
     super
   end
 

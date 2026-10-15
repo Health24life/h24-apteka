@@ -26,6 +26,14 @@ module PharmapointHelpers
     config
   end
 
+  # The first goods group of a fixture with an instruction in every SKU, complete enough to be stashed.
+  def complete_goods_group(fixture = 'goods_group_search')
+    data = JSON.parse(pharmapoint_fixture(fixture))['data']
+    group = data.is_a?(Array) ? data.first : data
+    group['release_forms'].each { |form| form['instruction'] ||= '<p>Склад</p>' }
+    group
+  end
+
   def pharmapoint_url(path) = "#{BASE_URL}/#{path}"
 
   def stub_pharmapoint(path, fixture: nil, query: nil, **answer)
@@ -39,9 +47,13 @@ module PharmapointHelpers
       headers: { 'Content-Type' => 'application/json' }.merge(headers) }
   end
 
-  # The limiter's counters and the locks of the on-demand fetch live in Redis, which outlives an example.
+  # The limiter's counters and the pauses of the on-demand fetch live in Redis, which outlives an example.
   def reset_pharmapoint_redis
-    Sidekiq.redis { |redis| redis.scan('MATCH', 'pharmapoint:*') { |key| redis.call('DEL', key) } }
+    Sidekiq.redis do |redis|
+      %w[pharmapoint:* catalog_sync_pull_cooldown:*].each do |pattern|
+        redis.scan('MATCH', pattern) { |key| redis.call('DEL', key) }
+      end
+    end
   end
 end
 

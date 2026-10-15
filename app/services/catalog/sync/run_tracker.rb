@@ -16,14 +16,15 @@ class Catalog::Sync::RunTracker
     open_run(provider, kind, 'full')
   end
 
-  # A short run for records fetched on demand; it never blocks and is never blocked by a run.
-  def self.pull(provider:, kind:)
-    open_run(provider, kind, 'pull')
+  # A short run for records fetched on demand; it never blocks and is never blocked by a run. The source says whether
+  # the record came from the stash of the live search or from the provider.
+  def self.pull(provider:, kind:, source:)
+    open_run(provider, kind, 'pull', 'source' => source)
   end
 
   # `new` and `save!` rather than `create!`, which the type signatures say may answer with a list of records.
-  def self.open_run(provider, kind, mode)
-    run = SyncRun.new(provider:, kind:, started_at: Time.current, progress: { 'mode' => mode })
+  def self.open_run(provider, kind, mode, progress = {})
+    run = SyncRun.new(provider:, kind:, started_at: Time.current, progress: { 'mode' => mode, **progress })
     run.save!
     new(run)
   end

@@ -32,7 +32,7 @@ RSpec.describe Catalog::Sync::RunTracker do
     end
 
     it 'is not held up by a fetch on demand that is still running' do
-      described_class.pull(provider:, kind: 'drugstores')
+      described_class.pull(provider:, kind: 'drugstores', source: 'provider')
 
       expect(tracker).to be_present
     end

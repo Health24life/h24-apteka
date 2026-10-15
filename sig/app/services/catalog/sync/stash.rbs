@@ -1,0 +1,7 @@
+class Catalog::Sync::Stash
+  PREFIX: String
+
+  def self.key: (Integer provider_id, Pharmapoint::json external_id) -> String
+  def self.write: (provider: Provider, records: Array[Pharmapoint::json], ?config: Pharmapoint::Config) -> Hash[String, String]
+  def self.read: (String key) -> Pharmapoint::Readers::Base::record?
+end

@@ -26,7 +26,8 @@ RSpec.describe Catalog::Sync::PullWorker do
   it 'fetches the group and saves it with its SKU through a run of its own', :aggregate_failures do
     pull
 
-    expect(run).to have_attributes(kind: 'goods_groups', status: 'succeeded', progress: { 'mode' => 'pull' })
+    expect(run).to have_attributes(kind: 'goods_groups', status: 'succeeded',
+                                   progress: { 'mode' => 'pull', 'source' => 'provider' })
     expect(Catalog::Goods.find_linked(provider, '1795034')).to be_present
   end
 
@@ -84,5 +85,121 @@ RSpec.describe Catalog::Sync::PullWorker do
 
     expect(run.failures.sole).to have_attributes(entity_type: 'Catalog::Goods::Group', external_id: group_id)
     expect(run).to have_attributes(status: 'completed_with_failures')
+  end
+
+  describe 'a group the live search stashed' do
+    let(:stash_key) do
+      Catalog::Sync::Stash.write(provider:, records: [ complete_goods_group('goods_group_get_by_id') ]).fetch(group_id)
+    end
+
+    before { allow(Rails).to receive(:cache).and_return(ActiveSupport::Cache::MemoryStore.new) }
+
+    def perform(key = stash_key) = described_class.new.perform('goods_group', group_id, 7, provider.id, key)
+
+    it 'is saved from the stash without asking the provider', :aggregate_failures do
+      perform
+
+      expect(Catalog::Goods.find_linked(provider, '1795034')).to be_present
+      expect(run).to have_attributes(status: 'succeeded', progress: { 'mode' => 'pull', 'source' => 'stash' })
+      expect(WebMock).not_to have_requested(:get, /get-by-id/)
+    end
+
+    it 'is saved from the stash even when the request limit is used up', :aggregate_failures do
+      Pharmapoint::RateLimiter.new.block!(60)
+
+      expect { perform }.not_to raise_error
+      expect(run).to have_attributes(status: 'succeeded')
+    end
+
+    it 'is fetched from the provider once the stash has lost it', :aggregate_failures do
+      key = stash_key
+      Rails.cache.clear
+      perform(key)
+
+      expect(run).to have_attributes(status: 'succeeded', progress: { 'mode' => 'pull', 'source' => 'provider' })
+      expect(WebMock).to have_requested(:get, /get-by-id/).once
+    end
+  end
+
+  describe 'when the request limit is used up' do
+    before { Pharmapoint::RateLimiter.new.block!(42) }
+
+    it 'puts the fetch off without a failed run in the journal', :aggregate_failures do
+      expect { described_class.new.perform('goods_group', group_id, nil, provider.id) }
+        .to raise_error(Pharmapoint::RateLimited) { expect(it.retry_after).to be_between(41, 42) }
+      expect(SyncRun.where(status: 'failed')).to be_empty
+      expect(WebMock).not_to have_requested(:get, /get-by-id/)
+    end
+  end
+
+  it 'fetches a job queued before providers were told apart from the default provider', :aggregate_failures do
+    described_class.new.perform('goods_group', group_id, nil)
+
+    expect(run).to have_attributes(provider_id: provider.id, status: 'succeeded')
+  end
+
+  it 'reports a job of a disabled provider and opens no run', :aggregate_failures do
+    provider.update!(active: false)
+    allow(Rails.error).to receive(:report)
+
+    described_class.new.perform('goods_group', group_id, nil, provider.id)
+
+    expect(Rails.error).to have_received(:report)
+    expect(SyncRun.where(progress: { 'mode' => 'pull' })).to be_empty
+  end
+
+  describe 'a lock' do
+    it 'holds the same record of the same provider once while it is fetched', :aggregate_failures do
+      results = with_unique_jobs do
+        [ 7, 8 ].map { described_class.perform_async('goods_group', group_id, it, provider.id, 'key') }
+      end
+
+      expect(results.compact.size).to eq(1)
+    end
+
+    it 'does not hold the same id of another provider' do
+      results = with_unique_jobs do
+        [ provider.id, provider.id + 1 ].map { described_class.perform_async('goods_group', group_id, nil, it) }
+      end
+
+      expect(results.compact.size).to eq(2)
+    end
+
+    it 'outlasts every retry' do
+      waits = (0...described_class::RETRIES).sum { described_class::BACKOFF.call(it) }
+
+      expect(described_class::LOCK_TTL).to be > waits
+    end
+  end
+
+  describe 'after a failure for good' do
+    def cooling? = Catalog::Sync::Pull.cooling_down(provider, :goods_group, [ group_id ]).include?(group_id)
+
+    it 'pauses a record the provider would not give' do
+      stub_pharmapoint('goods-group/get-by-id', body: '{}', status: 404, query: { id: group_id })
+      described_class.new.perform('goods_group', group_id, nil, provider.id)
+
+      expect(cooling?).to be(true)
+    end
+
+    it 'pauses a record that could not be saved' do
+      stub_group_with('goods_producer' => { 'id' => 1, 'name' => nil })
+      described_class.new.perform('goods_group', group_id, nil, provider.id)
+
+      expect(cooling?).to be(true)
+    end
+
+    it 'pauses a record whose retries are spent' do
+      job = { 'args' => [ 'goods_group', group_id, nil, provider.id, nil ] }
+      described_class.sidekiq_retries_exhausted_block.call(job, Pharmapoint::TransientError.new('down'))
+
+      expect(cooling?).to be(true)
+    end
+
+    it 'does not pause a record that was saved' do
+      described_class.new.perform('goods_group', group_id, nil, provider.id)
+
+      expect(cooling?).to be(false)
+    end
   end
 end

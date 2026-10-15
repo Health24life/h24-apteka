@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'the schedule of recurring jobs' do # rubocop:disable RSpec/DescribeClass
-  let(:cron_variables) { Catalog::Sync::Cron::KINDS.values.map(&:first) << 'LOG_CLEANUP_CRON' }
+  let(:cron_variables) { Catalog::Sync::Cron::KINDS.values.map(&:first) + %w[LOG_CLEANUP_CRON SYNC_PULL_RUN_CLEANUP_CRON] }
 
   # Renders the file as sidekiq-cron does, with the cron variables unset unless given, so their defaults apply.
   def jobs(env = {})
@@ -11,9 +11,18 @@ RSpec.describe 'the schedule of recurring jobs' do # rubocop:disable RSpec/Descr
     Sidekiq::Cron::Support.load_yaml(ERB.new(Rails.root.join('config/schedule.yml').read).result) || {}
   end
 
-  it 'schedules the dictionaries, the categories, the drugstores and the log cleanup by default' do
+  it 'schedules the dictionaries, the categories, the drugstores and both cleanups by default' do
     expect(jobs.keys).to contain_exactly('catalog_sync_dictionaries', 'catalog_sync_categories',
-                                         'catalog_sync_drugstores', 'provider_request_log_cleanup')
+                                         'catalog_sync_drugstores', 'provider_request_log_cleanup',
+                                         'catalog_sync_pull_run_cleanup')
+  end
+
+  it 'takes the periodicity of the cleanup of on-demand fetches from the environment', :aggregate_failures do
+    expect(jobs['catalog_sync_pull_run_cleanup'])
+      .to include('cron' => '20 4 * * *', 'class' => 'Catalog::Sync::PullRunCleanupWorker')
+    expect(jobs('SYNC_PULL_RUN_CLEANUP_CRON' => '0 5 * * *')['catalog_sync_pull_run_cleanup'])
+      .to include('cron' => '0 5 * * *')
+    expect(jobs('SYNC_PULL_RUN_CLEANUP_CRON' => '')).not_to have_key('catalog_sync_pull_run_cleanup')
   end
 
   it 'passes the kind of data to the worker that starts a run' do

@@ -20,6 +20,18 @@ class Pharmapoint::RateLimiter
     raise Pharmapoint::RateLimited, wait if wait.positive?
   end
 
+  # The seconds to wait before a request would get through, zero when it would; nothing is spent. A worker that can
+  # put its job off asks this before it opens anything it would have to close as failed.
+  def wait_time
+    now = @clock.now.to_i
+    blocked = blocked_for(now)
+    return blocked if blocked.positive?
+
+    window = now / MINUTE
+    used = redis { it.call('GET', window_key(window)) }.to_i
+    used >= @config.rate_limit_per_minute ? ((window + 1) * MINUTE) - now : 0
+  end
+
   # The partner reports what is left of its limit on every answer; nothing left means wait for the window.
   def record(headers)
     remaining = Integer(headers['x-ratelimit-remaining'], exception: false)
@@ -40,7 +52,7 @@ class Pharmapoint::RateLimiter
   # Counts a request in the current minute; returns the seconds to wait when the minute's budget is already spent.
   def spend(now)
     window = now / MINUTE
-    key = "#{KEY}:window:#{window}"
+    key = window_key(window)
     used = redis do |connection|
       connection.pipelined do |pipeline|
         pipeline.call('INCR', key)
@@ -49,6 +61,8 @@ class Pharmapoint::RateLimiter
     end
     used.to_i > @config.rate_limit_per_minute ? ((window + 1) * MINUTE) - now : 0
   end
+
+  def window_key(window) = "#{KEY}:window:#{window}"
 
   def redis(&) = Sidekiq.redis(&)
 end

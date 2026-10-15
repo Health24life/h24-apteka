@@ -31,24 +31,31 @@ class Pharmapoint::Config < Data
   attr_reader stale_run_after: ActiveSupport::Duration
   attr_reader stale_record_after: ActiveSupport::Duration
   attr_reader retention_days: Hash[String, Integer]
+  attr_reader stash_ttl: ActiveSupport::Duration
+  attr_reader pull_cooldown: ActiveSupport::Duration
+  attr_reader pull_run_retention: ActiveSupport::Duration
 
   def self.current: () -> Pharmapoint::Config
   def self.reset!: () -> nil
   def self.from_env: (?_Env env) -> Pharmapoint::Config
   def self.parse_points: (String? json) -> Array[Point]
   def self.parse_retention: (_Env env) -> Hash[String, Integer]
+  def self.parse_pull: (_Env env) -> { stash_ttl: ActiveSupport::Duration, pull_cooldown: ActiveSupport::Duration,
+                                        pull_run_retention: ActiveSupport::Duration }
 
   def self.new: (?base_url: String, ?api_key: String?, ?domain_name: String?, ?rate_limit_per_minute: Integer,
                  ?rate_limit_window: Integer, ?open_timeout: Integer, ?read_timeout: Integer,
                  ?goods_groups_per_page: Integer, ?search_points: Array[Point],
                  ?stale_run_after: ActiveSupport::Duration, ?stale_record_after: ActiveSupport::Duration,
-                 ?retention_days: Hash[String, Integer]) -> instance
+                 ?retention_days: Hash[String, Integer], ?stash_ttl: ActiveSupport::Duration,
+                 ?pull_cooldown: ActiveSupport::Duration, ?pull_run_retention: ActiveSupport::Duration) -> instance
 
   def initialize: (?base_url: String, ?api_key: String?, ?domain_name: String?, ?rate_limit_per_minute: Integer,
                    ?rate_limit_window: Integer, ?open_timeout: Integer, ?read_timeout: Integer,
                    ?goods_groups_per_page: Integer, ?search_points: Array[Point],
                    ?stale_run_after: ActiveSupport::Duration, ?stale_record_after: ActiveSupport::Duration,
-                   ?retention_days: Hash[String, Integer]) -> void
+                   ?retention_days: Hash[String, Integer], ?stash_ttl: ActiveSupport::Duration,
+                   ?pull_cooldown: ActiveSupport::Duration, ?pull_run_retention: ActiveSupport::Duration) -> void
   def credentials!: () -> [ String, String ]
   def retention_for: (String | Symbol category) -> ActiveSupport::Duration
 end

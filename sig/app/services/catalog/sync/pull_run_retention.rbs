@@ -1,0 +1,5 @@
+class Catalog::Sync::PullRunRetention
+  BATCH: Integer
+
+  def self.call: (?config: Pharmapoint::Config, ?now: ActiveSupport::TimeWithZone | Time) -> Integer
+end

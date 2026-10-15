@@ -44,7 +44,9 @@ class Pharmapoint::Client
 
   private
 
+  # The key is checked first: a call that cannot be sent does not spend the request limit.
   def fetch(path, params = {})
+    @config.credentials!
     @rate_limiter.guard!
     response = request(path, params)
     @rate_limiter.record(response.headers)

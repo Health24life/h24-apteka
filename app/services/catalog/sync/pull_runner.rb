@@ -1,41 +1,82 @@
 # frozen_string_literal: true
 
-# Fetches one record from the provider and saves it the way a pass would. Every fetch has a run of its own in the
-# journal, so a failure is seen there.
+# Saves one record the way a pass would: from the stash the live search left, or else fetched from the provider. Every
+# fetch has a run of its own in the journal, so a failure is seen there. A run is opened only once the record can be
+# had: a provider that is off or a used-up request limit leaves no failed run behind.
 class Catalog::Sync::PullRunner
-  def self.call(type, external_id, user_id: nil) = new(type, external_id, user_id).call
+  def self.call(type, external_id, user_id: nil, provider_id: nil, stash_key: nil)
+    new(type, external_id, user_id, provider_id, stash_key).call
+  end
 
-  def initialize(type, external_id, user_id)
+  # The retries are spent: the record is not queued again for a while.
+  def self.give_up(type, external_id, _user_id = nil, provider_id = nil)
+    provider = find_provider(provider_id)
+    Catalog::Sync::Pull.cool_down!(provider.id, type, external_id) if provider
+  end
+
+  # A job queued before providers were told apart carries none and belongs to the default one.
+  def self.find_provider(provider_id)
+    Provider.enabled.find_by(provider_id ? { id: provider_id } : { code: Catalog::Sync::PROVIDER_CODE })
+  end
+
+  def initialize(type, external_id, user_id, provider_id, stash_key)
     @type = type.to_sym
     @external_id = external_id
     @user_id = user_id
+    @provider_id = provider_id
+    @stash_key = stash_key
   end
 
   def call
-    provider = Catalog::Sync.provider
-    tracker = Catalog::Sync::RunTracker.pull(provider:, kind: Catalog::Sync::Pull::TYPES.fetch(@type)[:kind])
-    fetch_and_save(provider, tracker)
+    provider = self.class.find_provider(@provider_id)
+    unless provider
+      Rails.error.report(ActiveRecord::RecordNotFound.new("No enabled provider #{@provider_id} for #{@external_id}"),
+                         handled: true, context: { source: 'catalog_sync_pull' })
+      return
+    end
+
+    stash_key = @stash_key
+    stashed = @type == :goods_group && stash_key ? Catalog::Sync::Stash.read(stash_key) : nil
+    stashed ? save_stashed(provider, stashed) : fetch_and_save(provider)
+  end
+
+  private
+
+  def save_stashed(provider, record)
+    track(provider, 'stash') do |tracker|
+      group = Pharmapoint::Readers::GoodsGroups.one('data' => record)
+      Catalog::Sync::Savers::GoodsGroup.new(Catalog::Sync::Linker.new(provider), tracker).call([ group ])
+    end
+  end
+
+  def fetch_and_save(provider)
+    limiter = Pharmapoint::RateLimiter.new
+    wait = limiter.wait_time
+    raise Pharmapoint::RateLimited, wait if wait.positive?
+
+    track(provider, 'provider') do |tracker|
+      client = Pharmapoint::Client.new(provider:, purpose: :refresh, user_id: @user_id, sync_run: tracker.run,
+                                       attempt: SidekiqMiddleware::JobAttempt.current, rate_limiter: limiter)
+      linker = Catalog::Sync::Linker.new(provider)
+      @type == :goods_group ? pull_goods_group(client, linker, tracker) : pull_drugstore(client, linker, tracker)
+    end
+  end
+
+  def track(provider, source)
+    tracker = Catalog::Sync::RunTracker.pull(provider:, kind: Catalog::Sync::Pull::TYPES.fetch(@type)[:kind], source:)
+    yield tracker
     tracker.finish!
+    cool_down(provider) unless tracker.run.succeeded?
   rescue *Catalog::Sync::StepRunner::LOST_STEP_ERRORS, Pharmapoint::ConfigurationError => e
     # The provider will not give the record; another try would not change that, so the journal has the last word.
     tracker&.fail!(e.message)
+    cool_down(provider)
   rescue StandardError => e
     tracker&.fail!(e.message)
     raise
   end
 
-  private
-
-  def fetch_and_save(provider, tracker)
-    client = Pharmapoint::Client.new(provider:, purpose: :refresh, user_id: @user_id, sync_run: tracker.run,
-                                     attempt: SidekiqMiddleware::JobAttempt.current)
-    linker = Catalog::Sync::Linker.new(provider)
-    if @type == :goods_group
-      pull_goods_group(client, linker, tracker)
-    else
-      pull_drugstore(client, linker, tracker)
-    end
-  end
+  def cool_down(provider) = Catalog::Sync::Pull.cool_down!(provider.id, @type, @external_id)
 
   def pull_goods_group(client, linker, tracker)
     Catalog::Sync::Savers::GoodsGroup.new(linker, tracker).call([ client.goods_group(@external_id) ])

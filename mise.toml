@@ -28,6 +28,13 @@ SYNC_CRON_CATEGORIES = "10 3 * * *"
 SYNC_CRON_GOODS_GROUPS = ""
 SYNC_CRON_DRUGSTORES = "30 3 * * *"
 LOG_CLEANUP_CRON = "0 4 * * *"
+SYNC_PULL_RUN_CLEANUP_CRON = "20 4 * * *"
+# Seconds a goods group found by the live search waits in the cache for its on-demand fetch, and seconds a record
+# whose fetch has failed for good is not queued again.
+CATALOG_SYNC_STASH_TTL = "600"
+CATALOG_SYNC_PULL_COOLDOWN = "900"
+# Days the journal keeps the runs of on-demand fetches; the recurring runs are kept for good.
+SYNC_PULL_RUN_RETENTION_DAYS = "90"
 # Days a provider request log entry is kept, per category.
 PHARMAPOINT_LOG_RETENTION_BOOKING_DAYS = "14"
 PHARMAPOINT_LOG_RETENTION_SEARCH_DAYS = "1"
