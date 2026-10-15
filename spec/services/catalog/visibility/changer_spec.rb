@@ -12,8 +12,11 @@ RSpec.describe Catalog::Visibility::Changer do
     it 'hides the record with a reason and leaves a comment by the admin', :aggregate_failures do
       expect(switch(hidden: true, reason: ' скарга на опис ')).to eq(:changed)
       expect(record.reload.hidden).to be(true)
-      expect(comments.sole).to have_attributes(author: admin, namespace: 'admin',
-                                               body: 'Приховано з вітрини. Причина: скарга на опис')
+      expect(comments.sole).to have_attributes(
+        author: admin,
+        namespace: 'admin',
+        body: 'Приховано з вітрини. Причина: скарга на опис'
+      )
     end
 
     it 'refuses to hide without a reason and changes nothing', :aggregate_failures do

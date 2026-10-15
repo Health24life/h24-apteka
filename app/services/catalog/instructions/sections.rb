@@ -10,15 +10,21 @@ module Catalog::Instructions::Sections
     Section.new(code: 'sklad', synonyms: [ 'склад', 'склад лікарського засобу', 'склад препарату' ]),
     Section.new(code: 'likarska-forma', synonyms: [ 'лікарська форма' ]),
     Section.new(code: 'farmakoterapevtychna-hrupa', synonyms: [ 'фармакотерапевтична група' ]),
-    Section.new(code: 'pokazannia',
-                synonyms: [ 'показання', 'показання до застосування', 'показання для застосування' ]),
+    Section.new(
+      code: 'pokazannia',
+      synonyms: [ 'показання', 'показання до застосування', 'показання для застосування' ]
+    ),
     Section.new(code: 'protypokazannia', synonyms: [ 'протипоказання' ]),
-    Section.new(code: 'vzaiemodiia-z-inshymy-likarskymy-zasobamy',
-                synonyms: [ 'взаємодія з іншими лікарськими засобами',
-                            'взаємодія з іншими лікарськими засобами та інші види взаємодій',
-                            'взаємодія з іншими лікарськими засобами та інші форми взаємодій' ]),
-    Section.new(code: 'sposib-zastosuvannia-ta-dozy',
-                synonyms: [ 'спосіб застосування та дози', 'спосіб застосування і дози', 'спосіб застосування' ]),
+    Section.new(
+      code: 'vzaiemodiia-z-inshymy-likarskymy-zasobamy',
+      synonyms: [ 'взаємодія з іншими лікарськими засобами',
+                  'взаємодія з іншими лікарськими засобами та інші види взаємодій',
+                  'взаємодія з іншими лікарськими засобами та інші форми взаємодій' ]
+    ),
+    Section.new(
+      code: 'sposib-zastosuvannia-ta-dozy',
+      synonyms: [ 'спосіб застосування та дози', 'спосіб застосування і дози', 'спосіб застосування' ]
+    ),
     Section.new(code: 'pobichni-reaktsii', synonyms: [ 'побічні реакції', 'побічна дія', 'побічні дії' ]),
     Section.new(code: 'peredozuvannia', synonyms: [ 'передозування' ]),
     Section.new(code: 'umovy-zberihannia', synonyms: [ 'умови зберігання' ]),

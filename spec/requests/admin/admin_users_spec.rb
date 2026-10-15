@@ -18,9 +18,10 @@ RSpec.describe 'Admin::AdminUsers' do
 
   it 'creates an admin user' do
     expect do
-      post admin_admin_users_path, params: {
-        admin_user: { email: 'new@example.com', password: 'secret123', password_confirmation: 'secret123' }
-      }
+      post admin_admin_users_path,
+           params: {
+             admin_user: { email: 'new@example.com', password: 'secret123', password_confirmation: 'secret123' }
+           }
     end.to change(AdminUser, :count).by(1)
   end
 

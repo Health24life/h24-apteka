@@ -166,9 +166,16 @@ RSpec.describe Order do
 
   # Fills a cart with what a sent order must have, as the checkout would before the state changes.
   def send_out(cart, **overrides)
-    cart.assign_attributes(state: 'submitted', personal_data_consent_at: Time.current, customer_first_name: 'Anna',
-                           customer_phone_number: '380501234567', own_number: 'H24-0000000009',
-                           provider_drugstore_external_id: '42', provider_order_number: 'PP9', **overrides)
+    cart.assign_attributes(
+      state: 'submitted',
+      personal_data_consent_at: Time.current,
+      customer_first_name: 'Anna',
+      customer_phone_number: '380501234567',
+      own_number: 'H24-0000000009',
+      provider_drugstore_external_id: '42',
+      provider_order_number: 'PP9',
+      **overrides
+    )
     cart.build_delivery(delivery_type_code: 'pick_up')
     cart.build_payment(payment_type_code: 'cash_in_store')
   end
@@ -285,8 +292,13 @@ RSpec.describe Order do
 
     it 'refuses the number of the provider that another order of this provider has', :aggregate_failures do
       first = create(:order, :submitted)
-      second = build(:order, :submitted, provider: first.provider, drugstore: first.drugstore,
-                                         provider_order_number: first.provider_order_number)
+      second = build(
+        :order,
+        :submitted,
+        provider: first.provider,
+        drugstore: first.drugstore,
+        provider_order_number: first.provider_order_number
+      )
 
       expect(second).not_to be_valid
       expect(second.errors).to be_of_kind(:provider_order_number, :taken)
@@ -335,8 +347,14 @@ RSpec.describe Order do
 
   describe 'status of the provider' do
     it 'is stored as sent, without checks', :aggregate_failures do
-      sent = create(:order, :submitted, status_name: 'awaiting_courier', status_comment: 'Wait', cancel_reason: nil,
-                                        progress: { step: 3, completed: false, label: 'Courier' })
+      sent = create(
+        :order,
+        :submitted,
+        status_name: 'awaiting_courier',
+        status_comment: 'Wait',
+        cancel_reason: nil,
+        progress: { step: 3, completed: false, label: 'Courier' }
+      )
 
       expect(sent.reload).to have_attributes(status_name: 'awaiting_courier', status_comment: 'Wait')
       expect(sent.progress).to eq('step' => 3, 'completed' => false, 'label' => 'Courier')

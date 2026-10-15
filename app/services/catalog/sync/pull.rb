@@ -26,7 +26,10 @@ class Catalog::Sync::Pull
   end
 
   def self.linked(type, external_id)
-    Provider::Link.find_by(provider: Catalog::Sync.provider, linkable_type: TYPES.fetch(type)[:model].name,
-                           external_id: external_id.to_s)
+    Provider::Link.find_by(
+      provider: Catalog::Sync.provider,
+      linkable_type: TYPES.fetch(type)[:model].name,
+      external_id: external_id.to_s
+    )
   end
 end

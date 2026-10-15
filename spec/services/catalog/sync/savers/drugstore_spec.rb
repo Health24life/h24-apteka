@@ -18,8 +18,12 @@ RSpec.describe Catalog::Sync::Savers::Drugstore do
   it 'saves the address with single spaces and the coordinates', :aggregate_failures do
     drugstore = saver.call(listed)
 
-    expect(drugstore.address).to have_attributes(address: 'м. Харків, вул. Чернишевська, 1', latitude: 49.995691,
-                                                 city: 'Харків', state: 'Харківська обл.')
+    expect(drugstore.address).to have_attributes(
+      address: 'м. Харків, вул. Чернишевська, 1',
+      latitude: 49.995691,
+      city: 'Харків',
+      state: 'Харківська обл.'
+    )
   end
 
   it 'keeps the phones as they came, in whatever format', :aggregate_failures do
@@ -36,8 +40,11 @@ RSpec.describe Catalog::Sync::Savers::Drugstore do
   it 'does not blank the name when a list entry arrives after the full record', :aggregate_failures do
     saver.call(full)
 
-    expect(saver.call(listed)).to have_attributes(incomplete: false, name: 'Аптека №2369, "Подорожник"',
-                                                  ext_drugstore_id: '2369')
+    expect(saver.call(listed)).to have_attributes(
+      incomplete: false,
+      name: 'Аптека №2369, "Подорожник"',
+      ext_drugstore_id: '2369'
+    )
   end
 
   it 'takes a drugstore that came back off the withdrawn list' do

@@ -25,8 +25,12 @@ RSpec.describe Catalog::Goods::Group do
 
   it 'takes producer, trade name and ATC class as optional', :aggregate_failures do
     expect(build(:catalog_goods_group)).to be_valid
-    group = build(:catalog_goods_group, producer: create(:catalog_producer), goods_name: create(:catalog_goods_name),
-                                        atc_class: create(:catalog_atc_class))
+    group = build(
+      :catalog_goods_group,
+      producer: create(:catalog_producer),
+      goods_name: create(:catalog_goods_name),
+      atc_class: create(:catalog_atc_class)
+    )
     expect(group).to be_valid
   end
 

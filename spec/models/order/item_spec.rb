@@ -134,8 +134,12 @@ RSpec.describe Order::Item do
 
     it 'may repeat the same product of the provider', :aggregate_failures do
       first = sent.items.first
-      repeated = build(:order_item, order: sent, goods: first.goods,
-                                    provider_goods_external_id: first.provider_goods_external_id)
+      repeated = build(
+        :order_item,
+        order: sent,
+        goods: first.goods,
+        provider_goods_external_id: first.provider_goods_external_id
+      )
 
       expect(repeated).to be_valid
       expect(repeated.save).to be(true)

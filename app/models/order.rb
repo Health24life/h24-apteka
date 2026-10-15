@@ -44,17 +44,21 @@ class Order < ApplicationRecord
 
   # Mirror the orders_sent_data_check constraint: a cart has none of this data yet.
   with_options unless: :cart? do
-    validates :own_number, :customer_first_name, :customer_phone_number, :provider_drugstore_external_id,
+    validates :own_number,
+              :customer_first_name,
+              :customer_phone_number,
+              :provider_drugstore_external_id,
               presence: true
     validates :personal_data_consent_at, presence: true
     validates :delivery, :payment, presence: true
   end
   validates :provider_order_number, presence: true, if: :submitted?
 
-  scope :customer_phone_eq, lambda { |value|
-    phone = Orders::Customers::PhoneNormalizer.call(value)
-    phone ? where(customer_phone_number: phone) : none
-  }
+  scope :customer_phone_eq,
+        lambda { |value|
+          phone = Orders::Customers::PhoneNormalizer.call(value)
+          phone ? where(customer_phone_number: phone) : none
+        }
 
   def self.ransackable_attributes(_auth_object = nil) = FILTERABLE
   def self.ransackable_associations(_auth_object = nil) = %w[drugstore provider]

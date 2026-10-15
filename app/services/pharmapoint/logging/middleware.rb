@@ -53,8 +53,13 @@ class Pharmapoint::Logging::Middleware < Faraday::Middleware
   def answered(env)
     status = env.status.to_i
     unless status.positive?
-      return Result.new(status: nil, headers: {}, body: nil, outcome: 'connection_error',
-                        error_class: nil)
+      return Result.new(
+        status: nil,
+        headers: {},
+        body: nil,
+        outcome: 'connection_error',
+        error_class: nil
+      )
     end
 
     body = json_value(env.body)

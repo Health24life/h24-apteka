@@ -16,13 +16,18 @@ class Catalog::Goods < ApplicationRecord
   belongs_to :price_group, class_name: 'Catalog::Goods::PriceGroup', optional: true, inverse_of: :goods
   belongs_to :temperature_mode, class_name: 'Catalog::Goods::TemperatureMode', optional: true, inverse_of: :goods
   RESTRICTIONS.each do |restriction|
-    belongs_to restriction, class_name: 'Catalog::Goods::Restriction', optional: true,
-                            inverse_of: :"#{restriction}_goods"
+    belongs_to restriction,
+               class_name: 'Catalog::Goods::Restriction',
+               optional: true,
+               inverse_of: :"#{restriction}_goods"
   end
   # The core lives in another database, so there is no foreign key and the link is set by the import.
   belongs_to :core_inn, class_name: 'H24Core::Medication::Inn', optional: true, inverse_of: false
-  has_many :instruction_sections, -> { order(:position) }, class_name: 'Catalog::Goods::InstructionSection',
-                                                           inverse_of: :goods, dependent: :destroy
+  has_many :instruction_sections,
+           -> { order(:position) },
+           class_name: 'Catalog::Goods::InstructionSection',
+           inverse_of: :goods,
+           dependent: :destroy
   has_many :order_items, class_name: '::Order::Item', inverse_of: :goods, dependent: :restrict_with_exception
 
   has_one :producer, through: :goods_group
@@ -30,14 +35,18 @@ class Catalog::Goods < ApplicationRecord
   has_one :atc_class, through: :goods_group
 
   validates :name_uk, presence: true
-  validates :pack_quantity_in_pack, :pack_quantity_unit_in_pack, :pack_quantity_in_unit,
-            numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :pack_quantity_in_pack,
+            :pack_quantity_unit_in_pack,
+            :pack_quantity_in_unit,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 },
+            allow_nil: true
   validate :image_paths_are_strings
 
   # The name lives in the translations table, so the admin filters by it through this scope rather than a column.
-  scope :name_cont, lambda { |text|
-    joins(:translations).where('catalog_goods_translations.name ILIKE ?', "%#{sanitize_sql_like(text.to_s)}%")
-  }
+  scope :name_cont,
+        lambda { |text|
+          joins(:translations).where('catalog_goods_translations.name ILIKE ?', "%#{sanitize_sql_like(text.to_s)}%")
+        }
 
   def self.ransackable_scopes(_auth_object = nil) = %i[name_cont]
 

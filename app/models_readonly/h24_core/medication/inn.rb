@@ -6,9 +6,10 @@ class H24Core::Medication::Inn < H24Core::ApplicationRecord
   self.table_name = 'medication_inns'
 
   # The dictionary keeps case variants of one name; the eHealth-backed row wins.
-  scope :by_original, lambda { |name|
-    where('lower(title_original) = ?', name.to_s.downcase.strip).order(in_ehealth: :desc, id: :asc)
-  }
+  scope :by_original,
+        lambda { |name|
+          where('lower(title_original) = ?', name.to_s.downcase.strip).order(in_ehealth: :desc, id: :asc)
+        }
 
   hstore_translated :title, :title_translations
 end

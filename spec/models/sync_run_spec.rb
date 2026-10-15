@@ -22,8 +22,12 @@ RSpec.describe SyncRun do
   end
 
   it 'refuses a finish time before the start' do
-    run = build(:sync_run, :succeeded, started_at: Time.zone.parse('2026-09-29 12:00'),
-                                       finished_at: Time.zone.parse('2026-09-29 11:00'))
+    run = build(
+      :sync_run,
+      :succeeded,
+      started_at: Time.zone.parse('2026-09-29 12:00'),
+      finished_at: Time.zone.parse('2026-09-29 11:00')
+    )
 
     expect(run).not_to be_valid
   end
@@ -58,8 +62,14 @@ RSpec.describe SyncRun do
     end
 
     it 'counts a run that finished with failures as successful' do
-      run = create(:sync_run, provider:, kind: 'goods_groups', status: 'completed_with_failures',
-                              started_at: 1.hour.ago, finished_at: 30.minutes.ago)
+      run = create(
+        :sync_run,
+        provider:,
+        kind: 'goods_groups',
+        status: 'completed_with_failures',
+        started_at: 1.hour.ago,
+        finished_at: 30.minutes.ago
+      )
 
       expect(described_class.last_successful(provider, 'goods_groups')).to eq(run)
     end

@@ -13,8 +13,11 @@ RSpec.describe Pharmapoint::Logging::DisplayMasker do
   end
   let(:pick_up_order) do
     order_part.merge(
-      'customer_first_name' => 'Олена', 'customer_last_name' => 'Коваль', 'customer_phone_number' => '380777777777',
-      'customer_email' => 'olena@mail.ua', 'comment' => 'Подзвоніть за годину',
+      'customer_first_name' => 'Олена',
+      'customer_last_name' => 'Коваль',
+      'customer_phone_number' => '380777777777',
+      'customer_email' => 'olena@mail.ua',
+      'comment' => 'Подзвоніть за годину',
       'delivery' => { 'delivery_type_code' => 'PickUp', 'ettn' => nil, 'postcode' => '12345', 'city' => 'Київ',
                       'street' => 'Братиславська', 'house_number' => '11', 'apartment_number' => '145' },
       'payment' => { 'payment_method_code' => 'cash_in_store' }
@@ -22,8 +25,11 @@ RSpec.describe Pharmapoint::Logging::DisplayMasker do
   end
   let(:masked_pick_up_order) do
     order_part.merge(
-      'customer_first_name' => '[masked]', 'customer_last_name' => '[masked]', 'customer_phone_number' => '[masked]',
-      'customer_email' => '[masked]', 'comment' => '[masked]',
+      'customer_first_name' => '[masked]',
+      'customer_last_name' => '[masked]',
+      'customer_phone_number' => '[masked]',
+      'customer_email' => '[masked]',
+      'comment' => '[masked]',
       'delivery' => { 'delivery_type_code' => 'PickUp', 'ettn' => nil, 'postcode' => '[masked]', 'city' => '[masked]',
                       'street' => '[masked]', 'house_number' => '[masked]', 'apartment_number' => '[masked]' },
       'payment' => { 'payment_method_code' => '[masked]' }
@@ -49,8 +55,12 @@ RSpec.describe Pharmapoint::Logging::DisplayMasker do
 
     it 'hides the prescription number and the repayment code of a prescription order' do
       expect(described_class.body(recipe_order)).to eq(
-        'recipe_number' => '[masked]', 'repayment_code' => '[masked]', 'drugstore_id' => 38_049,
-        'goods_id' => 1_826_972, 'customer_middle_name' => '[masked]', 'total' => 0,
+        'recipe_number' => '[masked]',
+        'repayment_code' => '[masked]',
+        'drugstore_id' => 38_049,
+        'goods_id' => 1_826_972,
+        'customer_middle_name' => '[masked]',
+        'total' => 0,
         'delivery' => { 'delivery_type_code' => 'ukr_post', 'city' => '[masked]' }
       )
     end
@@ -71,8 +81,11 @@ RSpec.describe Pharmapoint::Logging::DisplayMasker do
     end
 
     it 'hides a phone, an e-mail and a prescription number in a field nobody has listed' do
-      result = described_class.body('contact' => 'тел. +38 (050) 123-45-67', 'note' => [ 'пишіть на a.b@x.com.ua' ],
-                                    'rx' => 'рецепт 0000-AMP5-H1KM-MEAM')
+      result = described_class.body(
+        'contact' => 'тел. +38 (050) 123-45-67',
+        'note' => [ 'пишіть на a.b@x.com.ua' ],
+        'rx' => 'рецепт 0000-AMP5-H1KM-MEAM'
+      )
 
       expect(result).to eq('contact' => 'тел. [masked]', 'note' => [ 'пишіть на [masked]' ], 'rx' => 'рецепт [masked]')
     end

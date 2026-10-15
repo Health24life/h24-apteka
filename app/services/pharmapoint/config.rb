@@ -1,9 +1,20 @@
 # frozen_string_literal: true
 
 # Connection, load and log settings of the partner API. They come from the environment, so changing one needs no code.
-class Pharmapoint::Config < Data.define(:base_url, :api_key, :domain_name, :rate_limit_per_minute, :rate_limit_window,
-                                        :open_timeout, :read_timeout, :goods_groups_per_page, :search_points,
-                                        :stale_run_after, :stale_record_after, :retention_days)
+class Pharmapoint::Config < Data.define(
+  :base_url,
+  :api_key,
+  :domain_name,
+  :rate_limit_per_minute,
+  :rate_limit_window,
+  :open_timeout,
+  :read_timeout,
+  :goods_groups_per_page,
+  :search_points,
+  :stale_run_after,
+  :stale_record_after,
+  :retention_days
+)
   class Point < Data.define(:latitude, :longitude, :radius); end
 
   DEFAULT_BASE_URL = 'https://pharmapoint.ua/api/v1/online-drugstore'
@@ -32,8 +43,11 @@ class Pharmapoint::Config < Data.define(:base_url, :api_key, :domain_name, :rate
     return [] if json.blank?
 
     JSON.parse(json).map do |point|
-      Point.new(latitude: Float(point.fetch('latitude')), longitude: Float(point.fetch('longitude')),
-                radius: Integer(point.fetch('radius')))
+      Point.new(
+        latitude: Float(point.fetch('latitude')),
+        longitude: Float(point.fetch('longitude')),
+        radius: Integer(point.fetch('radius'))
+      )
     end
   end
 

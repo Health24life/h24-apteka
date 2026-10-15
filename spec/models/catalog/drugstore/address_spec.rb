@@ -43,19 +43,32 @@ RSpec.describe Catalog::Drugstore::Address do
 
   it 'links to core region, settlement and city district', :aggregate_failures do
     region, settlement, district = %i[h24_core_region h24_core_settlement h24_core_city_district].map { create(it) }
-    linked = create(:catalog_drugstore_address, core_region_id: region.id, core_settlement_id: settlement.id,
-                                                core_city_district_id: district.id)
+    linked = create(
+      :catalog_drugstore_address,
+      core_region_id: region.id,
+      core_settlement_id: settlement.id,
+      core_city_district_id: district.id
+    )
 
     expect(linked).to have_attributes(core_region: region, core_settlement: settlement, core_city_district: district)
   end
 
   it 'keeps core ids beyond the four-byte integer range' do
     big = 2**31
-    address = create(:catalog_drugstore_address, core_region_id: big, core_settlement_id: big + 1,
-                                                 core_city_district_id: big + 2, core_metro_station_id: big + 3)
+    address = create(
+      :catalog_drugstore_address,
+      core_region_id: big,
+      core_settlement_id: big + 1,
+      core_city_district_id: big + 2,
+      core_metro_station_id: big + 3
+    )
 
-    expect(address.reload).to have_attributes(core_region_id: big, core_settlement_id: big + 1,
-                                              core_city_district_id: big + 2, core_metro_station_id: big + 3)
+    expect(address.reload).to have_attributes(
+      core_region_id: big,
+      core_settlement_id: big + 1,
+      core_city_district_id: big + 2,
+      core_metro_station_id: big + 3
+    )
   end
 
   it 'leaves the core links optional' do

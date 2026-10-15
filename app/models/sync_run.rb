@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
 class SyncRun < ApplicationRecord
-  enum :kind, { dictionaries: 'dictionaries', categories: 'categories', goods_groups: 'goods_groups',
-                drugstores: 'drugstores' }, validate: true
-  enum :status, { running: 'running', succeeded: 'succeeded', completed_with_failures: 'completed_with_failures',
-                  failed: 'failed' }, validate: true
+  enum :kind,
+       { dictionaries: 'dictionaries', categories: 'categories', goods_groups: 'goods_groups',
+         drugstores: 'drugstores' },
+       validate: true
+  enum :status,
+       { running: 'running', succeeded: 'succeeded', completed_with_failures: 'completed_with_failures',
+         failed: 'failed' },
+       validate: true
 
   belongs_to :provider, inverse_of: :sync_runs
 

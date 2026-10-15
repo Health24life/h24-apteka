@@ -8,8 +8,12 @@ RSpec.describe 'Admin catalog' do
   let(:group) { create(:catalog_goods_group, name_uk: 'Аспірин', producer: create(:catalog_producer, name: 'Bayer')) }
   let(:goods) { create(:catalog_goods, goods_group: group, name_uk: 'Аспірин 500 мг №10') }
   let(:drugstore) do
-    create(:catalog_drugstore, name: 'Аптека на Хрещатику', drugstore_legal_entity_code: '38001234',
-                               drugstore_legal_entity_name: 'ТОВ «Здоров’я»')
+    create(
+      :catalog_drugstore,
+      name: 'Аптека на Хрещатику',
+      drugstore_legal_entity_code: '38001234',
+      drugstore_legal_entity_name: 'ТОВ «Здоров’я»'
+    )
   end
 
   before { sign_in admin }

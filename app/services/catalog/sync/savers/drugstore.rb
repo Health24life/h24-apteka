@@ -25,7 +25,7 @@ class Catalog::Sync::Savers::Drugstore
     attributes = { brand: brand(record.brand), drugstore_legal_entity_name: record.legal_entity_name,
                    drugstore_legal_entity_code: record.legal_entity_code, week_working_hours: record.week_working_hours,
                    work_with_reimbursement: record.work_with_reimbursement, withdrawn: false }
-                 .merge(contact_attributes(record.contacts))
+      .merge(contact_attributes(record.contacts))
     record.complete ? attributes.merge(full_record_attributes(record)) : attributes
   end
 
@@ -38,13 +38,21 @@ class Catalog::Sync::Savers::Drugstore
   def brand(brand)
     return unless brand
 
-    @linker.sync(Catalog::Drugstore::Brand, brand.external_id,
-                 { name: brand.name, image_path: brand.image_path }.compact)
+    @linker.sync(
+      Catalog::Drugstore::Brand,
+      brand.external_id,
+      { name: brand.name, image_path: brand.image_path }.compact
+    )
   end
 
   def save_address(drugstore, location)
     address = drugstore.address || drugstore.build_address
-    address.update!(address: location.address, city: location.city, state: location.state,
-                    latitude: location.latitude, longitude: location.longitude)
+    address.update!(
+      address: location.address,
+      city: location.city,
+      state: location.state,
+      latitude: location.latitude,
+      longitude: location.longitude
+    )
   end
 end

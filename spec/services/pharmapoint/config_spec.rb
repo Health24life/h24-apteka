@@ -14,8 +14,13 @@ RSpec.describe Pharmapoint::Config do
       config = described_class.from_env(env)
 
       expect(config).to have_attributes(base_url: 'https://p.test/api', api_key: 'k', rate_limit_per_minute: 30)
-      expect(config.search_points).to eq([ described_class::Point.new(latitude: 50.4, longitude: 30.5,
-                                                                      radius: 20_000) ])
+      expect(config.search_points).to eq(
+        [ described_class::Point.new(
+          latitude: 50.4,
+          longitude: 30.5,
+          radius: 20_000
+        ) ]
+      )
     end
 
     it 'treats an empty key as no key' do

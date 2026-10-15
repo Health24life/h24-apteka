@@ -7,9 +7,15 @@ RSpec.describe 'Admin sync journal' do
   let!(:provider) { create(:provider, code: 'pharmapoint', name: 'Pharmapoint') }
   let(:run) { create(:sync_run, :failed, provider:, kind: 'drugstores', processed_count: 3) }
   let(:order_log) do
-    create(:provider_request_log, provider:, category: 'booking', http_method: 'POST',
-                                  path: '/order/store-pick-up-order', request_body: order_body,
-                                  response_body: { 'data' => { 'order_number' => '2E-2H-X4-K5' } })
+    create(
+      :provider_request_log,
+      provider:,
+      category: 'booking',
+      http_method: 'POST',
+      path: '/order/store-pick-up-order',
+      request_body: order_body,
+      response_body: { 'data' => { 'order_number' => '2E-2H-X4-K5' } }
+    )
   end
 
   def order_body
@@ -44,8 +50,13 @@ RSpec.describe 'Admin sync journal' do
 
       get admin_sync_run_path(run)
 
-      expect(response.body).to include('Catalog::Drugstore', 'call [masked]', '&quot;to&quot;: &quot;[masked]&quot;',
-                                       'boom', "q%5Bsync_run_id_eq%5D=#{run.id}")
+      expect(response.body).to include(
+        'Catalog::Drugstore',
+        'call [masked]',
+        '&quot;to&quot;: &quot;[masked]&quot;',
+        'boom',
+        "q%5Bsync_run_id_eq%5D=#{run.id}"
+      )
       expect(response.body).not_to include('olena@mail.ua', '380501234567')
     end
   end
@@ -121,8 +132,10 @@ RSpec.describe 'Admin sync journal' do
 
       get admin_provider_request_logs_path, params: { q: { request_body_cont: '380501234567', path_cont: 'order' } }
 
-      expect(response.body).to include(admin_provider_request_log_path(other),
-                                       admin_provider_request_log_path(order_log))
+      expect(response.body).to include(
+        admin_provider_request_log_path(other),
+        admin_provider_request_log_path(order_log)
+      )
     end
   end
 

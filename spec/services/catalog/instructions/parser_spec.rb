@@ -13,8 +13,10 @@ RSpec.describe Catalog::Instructions::Parser do
     subject(:result) { parse(spazmalgon) }
 
     it 'finds the known sections in document order' do
-      expect(result.sections.map(&:code)).to eq(%w[sklad likarska-forma farmakoterapevtychna-hrupa pokazannia
-                                                   sposib-zastosuvannia-ta-dozy termin-prydatnosti])
+      expect(result.sections.map(&:code)).to eq(
+        %w[sklad likarska-forma farmakoterapevtychna-hrupa pokazannia
+           sposib-zastosuvannia-ta-dozy termin-prydatnosti]
+      )
     end
 
     it 'numbers the sections from one' do
@@ -51,8 +53,10 @@ RSpec.describe Catalog::Instructions::Parser do
     it 'leaves a heading outside the list inside the current section' do
       dosage = result.sections.find { it.code == 'sposib-zastosuvannia-ta-dozy' }
 
-      expect(dosage.body_html).to eq('<p>Дорослим — по 1–2 таблетки 2–3 рази на добу.</p>' \
-                                     '<p><b>Діти.</b></p><p>Не застосовувати дітям віком до 15 років.</p>')
+      expect(dosage.body_html).to eq(
+        '<p>Дорослим — по 1–2 таблетки 2–3 рази на добу.</p>' \
+        '<p><b>Діти.</b></p><p>Не застосовувати дітям віком до 15 років.</p>'
+      )
     end
 
     it 'gives the same result when the instruction is parsed again' do
@@ -62,12 +66,16 @@ RSpec.describe Catalog::Instructions::Parser do
 
   describe 'headings' do
     it 'gives a synonym, another case and other punctuation the same code and anchor', :aggregate_failures do
-      section = parse('<p><b>СПОСІБ ЗАСТОСУВАННЯ:</b></p><p>По 1 таблетці.</p>' \
-                      '<p><b>Показання</b></p><p>Біль.</p>').sections.first
+      section = parse(
+        '<p><b>СПОСІБ ЗАСТОСУВАННЯ:</b></p><p>По 1 таблетці.</p>' \
+        '<p><b>Показання</b></p><p>Біль.</p>'
+      ).sections.first
 
-      expect(section).to have_attributes(code: 'sposib-zastosuvannia-ta-dozy',
-                                         anchor: 'sposib-zastosuvannia-ta-dozy',
-                                         source_title: 'СПОСІБ ЗАСТОСУВАННЯ:')
+      expect(section).to have_attributes(
+        code: 'sposib-zastosuvannia-ta-dozy',
+        anchor: 'sposib-zastosuvannia-ta-dozy',
+        source_title: 'СПОСІБ ЗАСТОСУВАННЯ:'
+      )
     end
 
     it 'recognises a heading typed with Latin letters that look Cyrillic' do
@@ -88,8 +96,10 @@ RSpec.describe Catalog::Instructions::Parser do
     end
 
     it 'does not take bold text inside a paragraph for a heading' do
-      result = parse('<p><b>Склад.</b></p><p>Спазмалгон<b><sup>®</sup></b> містить метамізол.</p>' \
-                     '<p><b>Показання.</b></p><p>Біль.</p>')
+      result = parse(
+        '<p><b>Склад.</b></p><p>Спазмалгон<b><sup>®</sup></b> містить метамізол.</p>' \
+        '<p><b>Показання.</b></p><p>Біль.</p>'
+      )
 
       expect(result.sections.first.body_html).to eq('<p>Спазмалгон<b><sup>®</sup></b> містить метамізол.</p>')
     end
@@ -100,8 +110,10 @@ RSpec.describe Catalog::Instructions::Parser do
     end
 
     it 'skips a known heading with no text under it' do
-      result = parse('<p><b>Склад.</b></p><p><b>Показання.</b></p><p>Біль.</p>' \
-                     '<p><b>Протипоказання.</b></p><p>Вагітність.</p>')
+      result = parse(
+        '<p><b>Склад.</b></p><p><b>Показання.</b></p><p>Біль.</p>' \
+        '<p><b>Протипоказання.</b></p><p>Вагітність.</p>'
+      )
 
       expect(result.sections.map { [ it.position, it.anchor ] })
         .to eq([ [ 1, 'pokazannia' ], [ 2, 'protypokazannia' ] ])

@@ -37,8 +37,11 @@ class Catalog::Sync::Savers::GoodsGroup
   def producer(record)
     return unless record
 
-    @linker.sync(Catalog::Producer, record.external_id,
-                 { name: record.name, country: record.country, country_code: record.country_code })
+    @linker.sync(
+      Catalog::Producer,
+      record.external_id,
+      { name: record.name, country: record.country, country_code: record.country_code }
+    )
   end
 
   def goods_name(record)
@@ -75,8 +78,10 @@ class Catalog::Sync::Savers::GoodsGroup
   # A category the tree import has not brought yet is built from the path the group carries, root down.
   def ensure_category(category)
     nodes = if category.path.empty?
-  [ Pharmapoint::PathNode.new(external_id: category.external_id,
-                              name: category.name) ]
+  [ Pharmapoint::PathNode.new(
+    external_id: category.external_id,
+    name: category.name
+  ) ]
     else
   category.path
     end

@@ -7,8 +7,11 @@ RSpec.describe Pharmapoint::Logging::Masker do
 
   describe '#headers' do
     it 'lowercases the names and hides the key and the phone of a client', :aggregate_failures do
-      result = masker.headers('API-Key' => 'secret-key', 'Customer-Phone' => '380501112233',
-                              'Accept' => 'application/json')
+      result = masker.headers(
+        'API-Key' => 'secret-key',
+        'Customer-Phone' => '380501112233',
+        'Accept' => 'application/json'
+      )
 
       expect(result).to eq('api-key' => '[masked]', 'customer-phone' => '[masked]', 'accept' => 'application/json')
     end
@@ -19,8 +22,11 @@ RSpec.describe Pharmapoint::Logging::Masker do
       body = { 'customer_phone_number' => '380501112233', 'total' => 5,
                'goods' => [ { 'id' => 1, 'customer_phone_number' => '1' } ] }
 
-      expect(masker.body(body)).to eq('customer_phone_number' => '[masked]', 'total' => 5,
-                                      'goods' => [ { 'id' => 1, 'customer_phone_number' => '[masked]' } ])
+      expect(masker.body(body)).to eq(
+        'customer_phone_number' => '[masked]',
+        'total' => 5,
+        'goods' => [ { 'id' => 1, 'customer_phone_number' => '[masked]' } ]
+      )
     end
 
     it 'hides the code that redeems a prescription' do

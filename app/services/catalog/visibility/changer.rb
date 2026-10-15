@@ -15,8 +15,12 @@ class Catalog::Visibility::Changer
 
   def self.comment(record, admin, action, reason)
     key = reason.empty? ? action : "#{action}_with_reason"
-    ActiveAdmin::Comment.new(resource: record, author: admin, namespace: 'admin',
-                             body: I18n.t("admin.visibility.#{key}", reason:)).save!
+    ActiveAdmin::Comment.new(
+      resource: record,
+      author: admin,
+      namespace: 'admin',
+      body: I18n.t("admin.visibility.#{key}", reason:)
+    ).save!
   end
 
   private_class_method :comment

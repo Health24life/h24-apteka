@@ -19,8 +19,10 @@ class Catalog::Instructions::Parser
 
     sections = split(fragment)
     if sections.size < MIN_SECTIONS
-      return Catalog::Instructions::ParsedInstruction.new(sections: [],
-                                                          fallback_html: clean)
+      return Catalog::Instructions::ParsedInstruction.new(
+        sections: [],
+        fallback_html: clean
+      )
     end
 
     Catalog::Instructions::ParsedInstruction.new(sections:, fallback_html: nil)
@@ -72,8 +74,11 @@ class Catalog::Instructions::Parser
       code = draft[:code]
       seen[code] += 1
       Catalog::Instructions::ParsedInstruction::Section.new(
-        position: index + 1, code:, anchor: seen[code] == 1 ? code : "#{code}-#{seen[code]}",
-        source_title: draft[:source_title], body_html: draft[:body].join
+        position: index + 1,
+        code:,
+        anchor: seen[code] == 1 ? code : "#{code}-#{seen[code]}",
+        source_title: draft[:source_title],
+        body_html: draft[:body].join
       )
     end
   end

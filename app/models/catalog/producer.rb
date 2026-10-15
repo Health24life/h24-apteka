@@ -3,11 +3,17 @@
 class Catalog::Producer < ApplicationRecord
   include Catalog::ProviderLinked
 
-  belongs_to :core_country, class_name: 'H24Core::Classification::Address::Country', foreign_key: :country_code,
-                            primary_key: :code, optional: true, inverse_of: false
+  belongs_to :core_country,
+             class_name: 'H24Core::Classification::Address::Country',
+             foreign_key: :country_code,
+             primary_key: :code,
+             optional: true,
+             inverse_of: false
 
-  has_many :goods_groups, class_name: 'Catalog::Goods::Group', inverse_of: :producer,
-                          dependent: :restrict_with_exception
+  has_many :goods_groups,
+           class_name: 'Catalog::Goods::Group',
+           inverse_of: :producer,
+           dependent: :restrict_with_exception
 
   normalizes :country_code, with: -> { it.presence }
 

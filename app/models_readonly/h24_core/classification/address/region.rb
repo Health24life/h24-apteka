@@ -5,8 +5,10 @@ class H24Core::Classification::Address::Region < H24Core::ApplicationRecord
 
   self.table_name = 'regions'
 
-  has_many :settlements, class_name: 'H24Core::Classification::Address::Settlement', inverse_of: :region,
-                         dependent: nil
+  has_many :settlements,
+           class_name: 'H24Core::Classification::Address::Settlement',
+           inverse_of: :region,
+           dependent: nil
 
   hstore_translated :title, :title_translations
 end

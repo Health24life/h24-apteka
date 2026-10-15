@@ -2,8 +2,19 @@
 
 # Writes one entry of the provider request log per attempt. A failed write is reported and never reaches the caller.
 class Pharmapoint::Logging::RequestLogger
-  class Entry < Data.define(:http_method, :path, :query, :request_headers, :request_body, :response_status,
-                            :response_headers, :response_body, :outcome, :error_class, :duration_ms)
+  class Entry < Data.define(
+    :http_method,
+    :path,
+    :query,
+    :request_headers,
+    :request_body,
+    :response_status,
+    :response_headers,
+    :response_body,
+    :outcome,
+    :error_class,
+    :duration_ms
+  )
   end
 
   # rubocop:disable-next Metrics/ParameterLists -- the context of one client: who asked, why, and which attempt it is.

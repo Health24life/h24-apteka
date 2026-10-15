@@ -10,9 +10,12 @@ class Pharmapoint::Readers::Dictionaries
   def call(body)
     data = hash_or_empty(envelope(body))
     Pharmapoint::Dictionaries.new(
-      forms: entries(data, 'goods_form'), measures: entries(data, 'goods_measure'),
-      price_groups: entries(data, 'goods_price_group'), temperature_modes: entries(data, 'goods_temperature_mode'),
-      restrictions: entries(data, 'goods_restrictions'), brands: entries(data, 'drugstore_brands')
+      forms: entries(data, 'goods_form'),
+      measures: entries(data, 'goods_measure'),
+      price_groups: entries(data, 'goods_price_group'),
+      temperature_modes: entries(data, 'goods_temperature_mode'),
+      restrictions: entries(data, 'goods_restrictions'),
+      brands: entries(data, 'drugstore_brands')
     )
   end
 

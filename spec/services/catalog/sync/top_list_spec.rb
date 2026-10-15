@@ -37,8 +37,10 @@ RSpec.describe Catalog::Sync::TopList do
     result = list(ids.first, '', 'paracetamol', ids.second)
 
     expect(result).to have_attributes(enqueued: 2, failed: 2)
-    expect(result.messages).to eq([ 'line 2: empty line, skipped',
-                                    "line 3: 'paracetamol' is not a goods group id, skipped" ])
+    expect(result.messages).to eq(
+      [ 'line 2: empty line, skipped',
+        "line 3: 'paracetamol' is not a goods group id, skipped" ]
+    )
   end
 
   it 'queues a group once when the list names it twice' do

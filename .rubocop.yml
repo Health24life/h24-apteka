@@ -26,3 +26,21 @@ Layout/LineLength:
 # the methods of a class body, but see neither a `Data.define` block nor its constant as that class.
 Style/DataInheritance:
   Enabled: false
+
+# A multi-line call reads top-down: chained calls are indented one step under the receiver instead of aligned to its
+# first dot, and arguments that do not fit on one line each go on their own line, starting with the first.
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Layout/FirstMethodArgumentLineBreak:
+  Enabled: true
+
+Layout/MultilineMethodArgumentLineBreaks:
+  Enabled: true
+
+# A call split one argument per line is still one statement, so the length metrics count it as one line.
+Metrics/MethodLength:
+  CountAsOne: ['method_call']
+
+RSpec/ExampleLength:
+  CountAsOne: ['method_call']
