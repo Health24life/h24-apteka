@@ -1,0 +1,20 @@
+class Catalog::Sync::Config
+  include Dry::Configurable
+  extend Dry::Configurable::ClassMethods
+
+  interface _Pull
+    def stash_ttl: () -> ActiveSupport::Duration
+    def cooldown: () -> ActiveSupport::Duration
+    def run_retention: () -> ActiveSupport::Duration
+  end
+
+  SECONDS: ^(untyped) -> ActiveSupport::Duration
+  DAYS: ^(untyped) -> ActiveSupport::Duration
+
+  def self.parse_points: (String | Array[Pharmapoint::SearchPoint | Hash[String, untyped]] value) -> Array[Pharmapoint::SearchPoint]
+
+  def search_points: () -> Array[Pharmapoint::SearchPoint]
+  def stale_run_after: () -> ActiveSupport::Duration
+  def stale_record_after: () -> ActiveSupport::Duration
+  def pull: () -> _Pull
+end

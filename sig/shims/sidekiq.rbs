@@ -6,7 +6,8 @@ module Sidekiq
   end
 
   interface _Redis
-    def call: (*String | Integer args) -> (String | Integer | nil)
+    def call: ("MGET", *String keys) -> Array[String?]
+            | (*String | Integer args) -> (String | Integer | nil)
     def pipelined: () { (_RedisPipeline) -> void } -> Array[Integer]
     def scan: (*String args) { (String) -> void } -> void
   end

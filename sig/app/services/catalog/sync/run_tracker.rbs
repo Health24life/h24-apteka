@@ -8,9 +8,9 @@ class Catalog::Sync::RunTracker
 
   attr_reader run: SyncRun
 
-  def self.start: (provider: Provider, kind: String, ?config: Pharmapoint::Config) -> Catalog::Sync::RunTracker?
-  def self.open_run: (Provider provider, String kind, String mode) -> Catalog::Sync::RunTracker
-  def self.pull: (provider: Provider, kind: String) -> Catalog::Sync::RunTracker
+  def self.start: (provider: Provider, kind: String, ?config: Catalog::Sync::Config) -> Catalog::Sync::RunTracker?
+  def self.open_run: (Provider provider, String kind, String mode, ?Hash[String, String] progress) -> Catalog::Sync::RunTracker
+  def self.pull: (provider: Provider, kind: String, source: String) -> Catalog::Sync::RunTracker
 
   def initialize: (SyncRun run) -> void
   def running?: () -> bool

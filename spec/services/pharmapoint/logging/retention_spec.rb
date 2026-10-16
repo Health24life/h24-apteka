@@ -31,20 +31,10 @@ RSpec.describe Pharmapoint::Logging::Retention do
     search = entry('search', 3.days)
     refresh = entry('refresh', 3.days)
 
-    purge(retention_days: { 'booking' => 14, 'search' => 7, 'refresh' => 1, 'other' => 7 })
+    purge(log_retention_days: { search: 7, refresh: 1 })
 
     expect(Provider::RequestLog.where(id: search)).to exist
     expect(Provider::RequestLog.where(id: refresh)).to be_empty
-  end
-
-  it 'keeps a category that has no period of its own for the period of the other category', :aggregate_failures do
-    old = entry('booking', 10.days)
-    fresh = entry('booking', 8.days)
-
-    purge(retention_days: { 'search' => 1, 'other' => 9 })
-
-    expect(Provider::RequestLog.where(id: old)).to be_empty
-    expect(Provider::RequestLog.where(id: fresh)).to exist
   end
 
   it 'removes a large number of entries in batches' do

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Catalog::Sync::Pull do
+RSpec.describe Catalog::Sync::Pulls::Enqueue do
   let!(:provider) { create(:provider, code: 'pharmapoint') }
   let(:group_id) { 'a060d7776d3d256af22378e018bea336' }
   let(:queued) { Catalog::Sync::PullWorker.jobs.pluck('args') }
@@ -10,19 +10,19 @@ RSpec.describe Catalog::Sync::Pull do
   before { use_pharmapoint_config }
 
   it 'queues a goods group the catalog does not have, without waiting for it', :aggregate_failures do
-    expect(described_class.enqueue(:goods_group, group_id)).to eq(:enqueued)
+    expect(described_class.call(:goods_group, group_id)).to eq(:enqueued)
     expect(queued).to eq([ [ 'goods_group', group_id, nil ] ])
   end
 
   it 'passes on the user whose request found the gap' do
-    described_class.enqueue(:goods_group, group_id, user_id: 7)
+    described_class.call(:goods_group, group_id, user_id: 7)
 
     expect(queued).to eq([ [ 'goods_group', group_id, 7 ] ])
   end
 
   describe 'a record asked for twice' do
     it 'is queued once while the first fetch has not ended', :aggregate_failures do
-      results = with_unique_jobs { Array.new(2) { described_class.enqueue(:goods_group, group_id) } }
+      results = with_unique_jobs { Array.new(2) { described_class.call(:goods_group, group_id) } }
 
       expect(results).to eq(%i[enqueued queued_already])
       expect(queued.size).to eq(1)
@@ -31,8 +31,8 @@ RSpec.describe Catalog::Sync::Pull do
     it 'is queued once whoever asks', :aggregate_failures do
       results = with_unique_jobs do
         [
-          described_class.enqueue(:goods_group, group_id, user_id: 1),
-          described_class.enqueue(:goods_group, group_id, user_id: 2)
+          described_class.call(:goods_group, group_id, user_id: 1),
+          described_class.call(:goods_group, group_id, user_id: 2)
         ]
       end
 
@@ -40,15 +40,15 @@ RSpec.describe Catalog::Sync::Pull do
     end
 
     it 'is queued again once the first fetch has ended' do
-      allow(Catalog::Sync::PullRunner).to receive(:call)
-      with_unique_jobs { described_class.enqueue(:goods_group, group_id) }
+      allow(Catalog::Sync::Pulls::Runner).to receive(:call)
+      with_unique_jobs { described_class.call(:goods_group, group_id) }
       Catalog::Sync::PullWorker.drain
 
-      expect(with_unique_jobs { described_class.enqueue(:goods_group, group_id) }).to eq(:enqueued)
+      expect(with_unique_jobs { described_class.call(:goods_group, group_id) }).to eq(:enqueued)
     end
 
     it 'does not hold two different records against each other' do
-      results = with_unique_jobs { [ group_id, 'f' * 32 ].map { described_class.enqueue(:goods_group, it) } }
+      results = with_unique_jobs { [ group_id, 'f' * 32 ].map { described_class.call(:goods_group, it) } }
 
       expect(results).to eq(%i[enqueued enqueued])
     end
@@ -62,14 +62,14 @@ RSpec.describe Catalog::Sync::Pull do
     it 'is not fetched again while it is fresh', :aggregate_failures do
       link(1.hour.ago)
 
-      expect(described_class.enqueue(:goods_group, group_id)).to eq(:present)
+      expect(described_class.call(:goods_group, group_id)).to eq(:present)
       expect(queued).to be_empty
     end
 
     it 'is fetched again once it is stale' do
       link(3.days.ago)
 
-      expect(described_class.enqueue(:goods_group, group_id)).to eq(:enqueued)
+      expect(described_class.call(:goods_group, group_id)).to eq(:enqueued)
     end
   end
 
@@ -79,7 +79,27 @@ RSpec.describe Catalog::Sync::Pull do
     it 'is fetched to be completed even when it is fresh' do
       Provider::Link.create!(provider:, linkable: drugstore, external_id: '38628', synced_at: 1.minute.ago)
 
-      expect(described_class.enqueue(:drugstore, '38628')).to eq(:enqueued)
+      expect(described_class.call(:drugstore, '38628')).to eq(:enqueued)
+    end
+  end
+
+  describe 'a record of a provider asked for by name' do
+    it 'carries the provider to the worker' do
+      described_class.call(:goods_group, group_id, provider:)
+
+      expect(queued).to eq([ [ 'goods_group', group_id, nil, provider.id ] ])
+    end
+
+    it 'is checked against the links of that provider' do
+      other = create(:provider, code: 'other')
+      Provider::Link.create!(
+        provider:,
+        linkable: create(:catalog_goods_group),
+        external_id: group_id,
+        synced_at: 1.hour.ago
+      )
+
+      expect(described_class.call(:goods_group, group_id, provider: other)).to eq(:enqueued)
     end
   end
 end

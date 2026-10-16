@@ -18,7 +18,7 @@ class Pharmapoint::Client
   def category_tree: () -> Array[Pharmapoint::CategoryNode]
   def goods_groups: (page: Integer, ?per_page: Integer) -> Pharmapoint::Page
   def goods_group: (String external_id) -> Pharmapoint::GoodsGroup
-  def drugstores: (Pharmapoint::Config::Point point) -> Array[Pharmapoint::Drugstore]
+  def drugstores: (Pharmapoint::SearchPoint point) -> Array[Pharmapoint::Drugstore]
   def drugstore: (String external_id) -> Pharmapoint::Drugstore
 
   private

@@ -5,7 +5,7 @@
 class Pharmapoint::Logging::Retention
   BATCH = 1000
 
-  def self.call(config: Pharmapoint::Config.current, now: Time.current) = new(config, now).call
+  def self.call(config: Pharmapoint.config, now: Time.current) = new(config, now).call
 
   def initialize(config, now)
     @config = config
@@ -18,13 +18,6 @@ class Pharmapoint::Logging::Retention
 
   def purge(category)
     cutoff = @now - @config.retention_for(category)
-    removed = 0
-    loop do
-      ids = Provider::RequestLog.where(category:).older_than(cutoff).limit(BATCH).ids
-      break if ids.empty?
-
-      removed += Provider::RequestLog.where(id: ids).delete_all
-    end
-    removed
+    Provider::RequestLog.where(category:).older_than(cutoff).in_batches(of: BATCH).delete_all
   end
 end

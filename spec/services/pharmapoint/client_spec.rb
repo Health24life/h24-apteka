@@ -35,7 +35,7 @@ RSpec.describe Pharmapoint::Client do
     end
 
     it 'reads the drugstores around a point' do
-      point = Pharmapoint::Config::Point.new(latitude: 50.45, longitude: 30.52, radius: 1000)
+      point = Pharmapoint::SearchPoint.new(latitude: 50.45, longitude: 30.52, radius: 1000)
       stub_pharmapoint(
         'drugstore',
         fixture: 'drugstores',
@@ -165,11 +165,19 @@ RSpec.describe Pharmapoint::Client do
     end
 
     it 'sends nothing and logs nothing without a key', :aggregate_failures do
-      client = build_client(config: pharmapoint_config(api_key: nil))
+      client = build_client(config: pharmapoint_config(connection: { api_key: nil }))
 
       expect { client.dictionaries }.to raise_error(Pharmapoint::ConfigurationError)
       expect(WebMock).not_to have_requested(:get, /partner.test/)
       expect(Provider::RequestLog.count).to eq(0)
+    end
+
+    it 'does not spend the request limit without a key', :aggregate_failures do
+      config = pharmapoint_config(connection: { api_key: nil }, rate_limit: { per_minute: 1 })
+      client = build_client(config:)
+
+      expect { client.dictionaries }.to raise_error(Pharmapoint::ConfigurationError)
+      expect(Pharmapoint::RateLimiter.new(config:).wait_time).to eq(0)
     end
   end
 
@@ -198,7 +206,7 @@ RSpec.describe Pharmapoint::Client do
 
   it 'holds calls back once the per-minute budget of the whole service is spent' do
     stub_pharmapoint('dictionaries', fixture: 'dictionaries')
-    limited = build_client(config: pharmapoint_config(rate_limit_per_minute: 1))
+    limited = build_client(config: pharmapoint_config(rate_limit: { per_minute: 1 }))
     limited.dictionaries
 
     expect { limited.dictionaries }.to raise_error(Pharmapoint::RateLimited)

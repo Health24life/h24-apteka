@@ -20,7 +20,14 @@ PHARMAPOINT_API_KEY = ""
 PHARMAPOINT_DOMAIN_NAME = "h24.ua"
 PHARMAPOINT_RATE_LIMIT_PER_MINUTE = "60"
 PHARMAPOINT_GOODS_GROUPS_PER_PAGE = "50"
-# JSON array of {latitude, longitude, radius}: the drugstore directory is fetched around these points.
+# Points the drugstore directory is gathered around: the partner gives drugstores only near a point, never all of them.
+# A JSON array of objects, each with all three keys:
+#   latitude  - decimal degrees, -90..90 (Kyiv: 50.4501)
+#   longitude - decimal degrees, -180..180 (Kyiv: 30.5234)
+#   radius    - whole metres around the point (50 km: 50000)
+# e.g. '[{"latitude": 50.4501, "longitude": 30.5234, "radius": 50000}, {"latitude": 49.8397, "longitude": 24.0297, "radius": 30000}]'
+# An empty array leaves the drugstore run failing; a drugstore found by several points is saved once.
+# See app/services/catalog/sync/README.md, "Пункти пошуку аптек".
 PHARMAPOINT_DRUGSTORE_SEARCH_POINTS = '[{"latitude": 50.4501, "longitude": 30.5234, "radius": 50000}]'
 # Recurring runs, cron syntax. Goods groups stay off until a full import is agreed with the partner.
 SYNC_CRON_DICTIONARIES = "0 3 * * *"
@@ -28,6 +35,13 @@ SYNC_CRON_CATEGORIES = "10 3 * * *"
 SYNC_CRON_GOODS_GROUPS = ""
 SYNC_CRON_DRUGSTORES = "30 3 * * *"
 LOG_CLEANUP_CRON = "0 4 * * *"
+SYNC_PULL_RUN_CLEANUP_CRON = "20 4 * * *"
+# Seconds a goods group found by the live search waits in the cache for its on-demand fetch, and seconds a record
+# whose fetch has failed for good is not queued again.
+CATALOG_SYNC_STASH_TTL = "600"
+CATALOG_SYNC_PULL_COOLDOWN = "900"
+# Days the journal keeps the runs of on-demand fetches; the recurring runs are kept for good.
+SYNC_PULL_RUN_RETENTION_DAYS = "90"
 # Days a provider request log entry is kept, per category.
 PHARMAPOINT_LOG_RETENTION_BOOKING_DAYS = "14"
 PHARMAPOINT_LOG_RETENTION_SEARCH_DAYS = "1"
