@@ -1,0 +1,4 @@
+uk:
+  api_controller:
+    errors:
+      unauthorized: Сесія недійсна або завершилася. Увійдіть знову.

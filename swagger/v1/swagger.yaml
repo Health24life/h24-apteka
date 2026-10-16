@@ -5,6 +5,29 @@ info:
   version: v1
 paths: {}
 components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          - message
+          properties:
+            code:
+              type: string
+              description: Stable machine code
+            message:
+              type: string
+              description: Message in Ukrainian
   parameters:
     header_lang:
       name: Accept-Language
@@ -12,12 +35,5 @@ components:
       schema:
         type: string
         enum:
+        - uk
         - en
-    auth_token:
-      name: Authorization
-      in: header
-      required: true
-      schema:
-        type: string
-      description: Bearer token (required unless the '.AspNet.ApplicationCookie' cookie
-        is present)
