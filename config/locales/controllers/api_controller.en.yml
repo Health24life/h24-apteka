@@ -2,4 +2,3 @@ en:
   api_controller:
     errors:
       unauthorized: The session is invalid or has expired. Sign in again.
-      too_many_requests: Too many requests. Try again a little later.
