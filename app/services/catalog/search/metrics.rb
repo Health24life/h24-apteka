@@ -43,8 +43,7 @@ module Catalog::Search::Metrics
   end
 
   def outcome(result)
-    failures = result.failures
-    return 'busy' if result.unavailable? && failures.any? && failures.all?(&:rate_limited?)
+    return 'busy' if result.busy?
     return result.status unless result.status == 'ok'
 
     result.goods.empty? ? 'empty' : 'ok'

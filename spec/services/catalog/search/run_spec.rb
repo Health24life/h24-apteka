@@ -86,6 +86,21 @@ RSpec.describe Catalog::Search::Run do
     expect(result).to have_attributes(status: 'unavailable', goods: [], failures: [ failure(first, :rate_limited, 12) ])
   end
 
+  it 'is busy, with the earliest wait, when every provider refused for its limit', :aggregate_failures do
+    result = run(
+      adapter(first, failure(first, :rate_limited, 30)),
+      adapter(second, failure(second, :rate_limited, 12))
+    ).sole
+
+    expect(result).to have_attributes(busy?: true, retry_after: 12)
+  end
+
+  it 'is not busy when one of the providers is down for another reason' do
+    result = run(adapter(first, failure(first, :rate_limited, 30)), adapter(second, failure(second))).sole
+
+    expect(result.busy?).to be(false)
+  end
+
   it 'is unavailable with no provider to ask' do
     expect(run.sole).to have_attributes(status: 'unavailable', failures: [])
   end

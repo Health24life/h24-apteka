@@ -8,7 +8,10 @@
 ## Потік
 
 ```
-Api::V1::SearchController#create   (валідація queries, text, page, location → Query з округленою Location)
+Api::V1::SearchController#create
+        │
+        ▼
+Catalog::Search::Queries::Build   (валідація queries, text, page, location → Query з округленою Location; Invalid → 422)
         │
         ▼
 Catalog::Search::Run ──► Adapters.build ──► [Pharmapoint::Search, …]      (провайдери, яким дозволено пошук)
@@ -24,7 +27,8 @@ Result на кожен запит ──► ResponseBlueprint   або   503 sea
 
 | Файл | Навіщо |
 |---|---|
-| `../search.rb` | Простір імен і `Catalog::Search.config` |
+| `../search.rb` | Простір імен, `Catalog::Search.config` і помилка `Invalid` з кодом поля |
+| `queries/build.rb` | Розбір і валідація запитів із тіла звернення |
 | `config.rb` | Налаштування пошуку (`dry-configurable`): провайдери, максимум запитів, дедлайн, точка й радіус |
 | `adapters.rb` | Реєстр адаптерів за `provider.code`; провайдер без адаптера (зокрема власний) не шукається |
 | `run.rb` | Обхід запитів × провайдерів під дедлайном, злиття, статус результату, передача знайденого |

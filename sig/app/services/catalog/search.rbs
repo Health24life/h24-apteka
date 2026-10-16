@@ -4,3 +4,9 @@ module Catalog::Search
   def self.config: () -> Catalog::Search::Config
   def self.config=: (Catalog::Search::Config config) -> Catalog::Search::Config
 end
+
+class Catalog::Search::Invalid < StandardError
+  attr_reader code: Symbol
+
+  def initialize: (Symbol code) -> void
+end

@@ -14,4 +14,10 @@ class Catalog::Search::Result < Data.define(
   :failures
 )
   def unavailable? = status == 'unavailable'
+
+  # No provider answered, and every one of them refused for its request limit.
+  def busy? = unavailable? && failures.any? && failures.all?(&:rate_limited?)
+
+  # The earliest a provider that refused for its limit lets the search try again.
+  def retry_after = failures.filter_map(&:retry_after).min
 end

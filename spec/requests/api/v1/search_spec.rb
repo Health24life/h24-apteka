@@ -293,30 +293,6 @@ RSpec.describe 'Search of goods', :partner_calls do
       expect(requested_around(latitude: '49.84', longitude: '24.03', radius: '30000')).to have_been_requested
     end
 
-    it 'refuses a radius larger than the maximum' do
-      use_search_config(location: { max_radius: 50_000 })
-
-      search([ { text: 'спазмалгон', location: { radius: 50_001 } } ])
-
-      expect(error_code).to eq('invalid_search_location')
-    end
-
-    it 'refuses a page or a radius that is not a whole number', :aggregate_failures do
-      search([ { text: 'спазмалгон', page: '2' } ])
-      expect(error_code).to eq('invalid_search_page')
-
-      search([ { text: 'спазмалгон', location: { radius: 0 } } ])
-      expect(error_code).to eq('invalid_search_location')
-    end
-
-    it 'refuses queries given as a string or as an empty array', :aggregate_failures do
-      search('спазмалгон')
-      expect(error_code).to eq('invalid_search_queries')
-
-      search([])
-      expect(error_code).to eq('invalid_search_queries')
-    end
-
     it 'answers 503 without a key of the provider' do
       use_pharmapoint_config(connection: { api_key: '' })
       allow(Rails.error).to receive(:report)
