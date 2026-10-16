@@ -1,0 +1,30 @@
+class Catalog::Search::Hit < Data
+  type pack = { unit_name: String?, quantity_in_pack: Integer?, quantity_unit_in_pack: Integer?, quantity_in_unit: Integer? }
+
+  attr_reader provider: String
+  attr_reader group_external_id: String
+  attr_reader external_id: String
+  attr_reader name: String?
+  attr_reader release_form: String?
+  attr_reader dosage: String?
+  attr_reader pack: pack
+  attr_reader trade_name: String?
+  attr_reader producer_name: String?
+  attr_reader producer_country_code: String?
+  attr_reader group_name: String?
+  attr_reader is_recipe: bool
+  attr_reader is_strict_recipe: bool
+  attr_reader ready: bool
+  attr_reader id: Integer?
+  attr_reader slug: String?
+
+  def self.new: (provider: String, group_external_id: String, external_id: String, name: String?, release_form: String?,
+                 dosage: String?, pack: pack, trade_name: String?, producer_name: String?,
+                 producer_country_code: String?, group_name: String?, is_recipe: bool, is_strict_recipe: bool,
+                 ready: bool, id: Integer?, slug: String?) -> instance
+
+  def with: (?ready: bool, ?id: Integer?, ?slug: String?) -> instance
+
+  def ref: () -> String
+  def group_ref: () -> String
+end

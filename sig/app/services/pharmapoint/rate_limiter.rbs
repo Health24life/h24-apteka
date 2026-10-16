@@ -10,7 +10,8 @@ class Pharmapoint::RateLimiter
   @clock: _Clock
 
   def initialize: (?config: Pharmapoint::Config, ?clock: _Clock) -> void
-  def guard!: () -> void
+  def guard!: (?share: Symbol?) -> void
+  def remaining: (share: Symbol) -> Integer
   def wait_time: () -> Integer
   def record: (Hash[String, String] headers) -> void
   def block!: (Integer seconds) -> void
@@ -18,7 +19,9 @@ class Pharmapoint::RateLimiter
   private
 
   def blocked_for: (Integer now) -> Integer
-  def spend: (Integer now) -> Integer
-  def window_key: (Integer window) -> String
+  def spend: (Integer now, String prefix, Integer limit) -> Integer
+  def window_key: (Integer window, ?String prefix) -> String
+  def share_key: (Symbol share) -> String
+  def share_limit: (Symbol share) -> Integer
   def redis: [T] () { (Sidekiq::_Redis) -> T } -> T
 end

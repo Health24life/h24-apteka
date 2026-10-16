@@ -8,3 +8,5 @@
 Rails.application.config.filter_parameters += %i[
   passw email secret token _key crypt salt certificate otp ssn cvv cvc
 ]
+# What a user searches for may tell of their health; the provider request log keeps it, the application log does not.
+Rails.application.config.filter_parameters += %i[queries]

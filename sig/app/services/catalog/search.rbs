@@ -1,0 +1,6 @@
+module Catalog::Search
+  self.@config: Catalog::Search::Config?
+
+  def self.config: () -> Catalog::Search::Config
+  def self.config=: (Catalog::Search::Config config) -> Catalog::Search::Config
+end

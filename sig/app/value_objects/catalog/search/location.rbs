@@ -1,0 +1,10 @@
+class Catalog::Search::Location < Data
+  PRECISION: Integer
+
+  attr_reader latitude: Float
+  attr_reader longitude: Float
+  attr_reader radius: Integer
+
+  def self.new: (latitude: Float, longitude: Float, radius: Integer) -> instance
+  def self.around: (?latitude: Float?, ?longitude: Float?, ?radius: Integer?, ?config: Catalog::Search::Config) -> instance
+end

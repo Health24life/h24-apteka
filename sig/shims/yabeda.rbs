@@ -1,0 +1,25 @@
+# yabeda ships no signatures. A group of metrics reads as a method of Yabeda named after it; this shim declares the
+# group of the search and the calls the code makes on its metrics.
+module Yabeda
+  interface _AptekaSearch
+    def requests_total: () -> Yabeda::Counter
+    def provider_answers_total: () -> Yabeda::Counter
+    def provider_duration_seconds: () -> Yabeda::Histogram
+    def rate_limit_share_left: () -> Yabeda::Gauge
+    def pulls: () -> Yabeda::Gauge
+  end
+
+  def self.apteka_search: () -> _AptekaSearch
+
+  class Counter
+    def increment: (Hash[Symbol, String] tags, ?by: Integer) -> Integer
+  end
+
+  class Gauge
+    def set: (Hash[Symbol, String] tags, Numeric value) -> Numeric
+  end
+
+  class Histogram
+    def measure: (Hash[Symbol, String] tags, Numeric value) -> Numeric
+  end
+end

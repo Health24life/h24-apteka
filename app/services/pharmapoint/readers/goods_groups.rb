@@ -9,11 +9,17 @@ class Pharmapoint::Readers::GoodsGroups
 
   def self.one(body) = new.one(body)
 
+  def self.found(body, page:, per_page:) = new.found(body, page:, per_page:)
+
   def page(body, page:, per_page:)
     items = list(envelope(body)).filter_map { group(it) }
     meta = hash_at(hash_or_empty(body), 'meta')
     Pharmapoint::Page.new(items:, page:, per_page:, total: int_at(meta, 'total') || items.size)
   end
+
+  # A page of the live search, and the records of its groups as they came, live fields and all: what to keep of them
+  # is decided by whoever saves them.
+  def found(body, page:, per_page:) = [ page(body, page:, per_page:), list(envelope(body)) ]
 
   def one(body)
     data = envelope(body)

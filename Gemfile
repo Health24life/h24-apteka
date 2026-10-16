@@ -93,6 +93,10 @@ gem 'faraday-typhoeus', '~> 1.1'
 # Settings declared with their defaults and types; the values come from the environment in an initializer.
 gem 'dry-configurable', '~> 1.4'
 
+# Metrics of the search and the on-demand fetch. No collector is plugged in yet: the monitoring stack is not agreed.
+# [https://github.com/yabeda-rb/yabeda]
+gem 'yabeda', '~> 0.16'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', platforms: %i[mri windows], require: 'debug/prelude'
