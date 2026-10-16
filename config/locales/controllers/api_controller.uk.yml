@@ -1,0 +1,5 @@
+uk:
+  api_controller:
+    errors:
+      unauthorized: Сесія недійсна або завершилася. Увійдіть знову.
+      too_many_requests: Забагато запитів. Спробуйте трохи згодом.

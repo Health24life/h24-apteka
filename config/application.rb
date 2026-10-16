@@ -36,6 +36,8 @@ module H24Apteka
     # in config/environments, which are processed later.
     #
     config.time_zone = 'Europe/Kyiv'
+    # The translations of a class sit at its path under config/locales, as controllers/api_controller.uk.yml.
+    config.i18n.load_path += Rails.root.glob('config/locales/*/**/*.yml')
     config.i18n.available_locales = %i[uk en]
     config.i18n.default_locale = :uk
     config.i18n.fallbacks = { uk: %i[en], en: %i[uk] }

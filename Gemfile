@@ -83,6 +83,14 @@ gem 'uklatn', '~> 1.20'
 # [https://github.com/zdennis/activerecord-import]
 gem 'activerecord-import', '~> 2.3'
 
+# Serializes the API responses.
+gem 'blueprinter', '~> 1.3'
+
+# Lets the section's browser front call the API from its own domains, without cookies.
+gem 'rack-cors', '~> 3.0'
+# Throttles the API per client, so one bot cannot spend the partner's request limit for everyone.
+gem 'rack-attack', '~> 6.8'
+
 # HTTP client for the Pharmapoint partner API; Typhoeus is the adapter the ecosystem uses (libcurl, no GET-body quirks).
 gem 'faraday', '~> 2.14'
 gem 'faraday-typhoeus', '~> 1.1'

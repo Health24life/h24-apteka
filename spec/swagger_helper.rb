@@ -14,6 +14,26 @@ RSpec.configure do |config|
       },
       paths: {},
       components: {
+        securitySchemes: {
+          # The Health24 session token. The API takes it from this header only; a request without it is a guest.
+          bearer: { type: :http, scheme: :bearer, bearerFormat: :JWT }
+        },
+        schemas: {
+          error: {
+            type: :object,
+            required: %w[error],
+            properties: {
+              error: {
+                type: :object,
+                required: %w[code message],
+                properties: {
+                  code: { type: :string, description: 'Stable machine code' },
+                  message: { type: :string, description: 'Message in Ukrainian' }
+                }
+              }
+            }
+          }
+        },
         parameters: {
           header_lang: {
             name: 'Accept-Language',
@@ -22,13 +42,6 @@ RSpec.configure do |config|
               type: :string,
               enum: I18n.available_locales
             }
-          },
-          auth_token: {
-            name: :Authorization,
-            in: :header,
-            required: true,
-            schema: { type: :string },
-            description: "Bearer token (required unless the '.AspNet.ApplicationCookie' cookie is present)"
           }
         }
       }

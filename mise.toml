@@ -13,6 +13,11 @@ SECRET_JWT_TOKEN = "local-jwt-secret-stub"
 H24_CORE_REPLICA_DB_URL = "postgresql://user:123456@localhost:2401/h24_development"
 H24_CORE_MASTER_DB_URL = "postgresql://user:123456@localhost:2400/h24_development"
 H24_CORE_TEST_DB_URL = "postgresql://user:123456@localhost:2400/h24_test"
+# Browser origins allowed to call the API, space-separated; empty lets none in. Local front origins go to mise.local.toml.
+CORS_ORIGINS = ""
+# Requests one client address may send to the API per period, in seconds.
+API_THROTTLE_LIMIT = "120"
+API_THROTTLE_PERIOD = "60"
 # Pharmapoint partner API. The key stays empty here: a run without it ends as failed instead of calling the partner.
 # Real values go to mise.local.toml.
 PHARMAPOINT_BASE_URL = "https://pharmapoint.ua/api/v1/online-drugstore"
