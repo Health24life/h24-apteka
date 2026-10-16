@@ -1,0 +1,4 @@
+en:
+  api_controller:
+    errors:
+      unauthorized: The session is invalid or has expired. Sign in again.
