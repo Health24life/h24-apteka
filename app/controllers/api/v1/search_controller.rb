@@ -3,10 +3,11 @@
 # The search of goods for the web and the app. It always asks the providers live and never the local catalog, so a
 # provider that does not answer is an error of the search, not an empty list. A guest is served as a signed-in user is.
 class Api::V1::SearchController < ApiController
+  before_action :no_store, only: :create
+
   rescue_from Catalog::Search::Invalid, with: ->(error) { render_error(error.code, status: :unprocessable_content) }
 
   def create
-    no_store
     queries = Catalog::Search::Queries::Build.call(params.to_unsafe_h['queries'])
     results = Catalog::Search::Run.call(queries, user_id: current_user_id)
     return refuse(results) if results.all?(&:unavailable?)
