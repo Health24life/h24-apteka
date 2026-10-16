@@ -15,6 +15,13 @@ class Pharmapoint::Config
     def window: () -> Integer
   end
 
+  interface _Search
+    def open_timeout: () -> Integer
+    def read_timeout: () -> Integer
+    def per_page: () -> Integer
+    def rate_limit_per_minute: () -> Integer
+  end
+
   interface _LogRetentionDays
     def booking: () -> Integer
     def search: () -> Integer
@@ -32,6 +39,7 @@ class Pharmapoint::Config
   def connection: () -> _Connection
   def rate_limit: () -> _RateLimit
   def goods_groups_per_page: () -> Integer
+  def search: () -> _Search
   def log_retention_days: () -> _LogRetentionDays
   def credentials!: () -> [ String, String ]
   def retention_for: (String | Symbol category) -> ActiveSupport::Duration

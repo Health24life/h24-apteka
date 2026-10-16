@@ -4,9 +4,11 @@ class Pharmapoint::Readers::GoodsGroups
 
   def self.page: (Pharmapoint::json body, page: Integer, per_page: Integer) -> Pharmapoint::Page
   def self.one: (Pharmapoint::json body) -> Pharmapoint::GoodsGroup
+  def self.found: (Pharmapoint::json body, page: Integer, per_page: Integer) -> [ Pharmapoint::Page, Array[Pharmapoint::json] ]
 
   def page: (Pharmapoint::json body, page: Integer, per_page: Integer) -> Pharmapoint::Page
   def one: (Pharmapoint::json body) -> Pharmapoint::GoodsGroup
+  def found: (Pharmapoint::json body, page: Integer, per_page: Integer) -> [ Pharmapoint::Page, Array[Pharmapoint::json] ]
 
   private
 

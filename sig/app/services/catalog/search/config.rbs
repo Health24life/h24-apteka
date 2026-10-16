@@ -1,0 +1,20 @@
+class Catalog::Search::Config
+  include Dry::Configurable
+  extend Dry::Configurable::ClassMethods
+
+  interface _Location
+    def latitude: () -> Float
+    def longitude: () -> Float
+    def radius: () -> Integer
+    def max_radius: () -> Integer
+  end
+
+  INTEGER: ^(untyped) -> Integer
+  FLOAT: ^(untyped) -> Float
+  CODES: ^(String | Array[String] value) -> Array[String]
+
+  def providers: () -> Array[String]
+  def max_queries: () -> Integer
+  def deadline: () -> Float
+  def location: () -> _Location
+end

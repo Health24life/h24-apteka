@@ -1,0 +1,26 @@
+class Pharmapoint::Search
+  attr_reader provider: Provider
+
+  @config: Pharmapoint::Config
+  @rate_limiter: Pharmapoint::RateLimiter
+  @client: Pharmapoint::Client
+
+  def initialize: (provider: Provider, ?user_id: Integer?, ?config: Pharmapoint::Config,
+                   ?rate_limiter: Pharmapoint::RateLimiter) -> void
+  def call: (Catalog::Search::Query query, time_left: Float) -> (Catalog::Search::ProviderPage | Catalog::Search::Failure)
+
+  private
+
+  def search: (Catalog::Search::Query query, Float time_left) -> [ Pharmapoint::Page, Array[Pharmapoint::json] ]
+  def measured: [T] () { () -> T } -> T
+  def page: (Pharmapoint::Page groups, Array[Pharmapoint::json] records) -> Catalog::Search::ProviderPage
+  def hit: (Pharmapoint::GoodsGroup group, Pharmapoint::Goods goods) -> Catalog::Search::Hit
+  def group_fields: (Pharmapoint::GoodsGroup group) -> { provider: String, group_external_id: String, group_name: String?,
+                                                         trade_name: String?, producer_name: String?,
+                                                         producer_country_code: String? }
+  def goods_fields: (Pharmapoint::Goods goods) -> { external_id: String, name: String?, release_form: String?,
+                                                    dosage: String?, pack: Catalog::Search::Hit::pack, is_recipe: bool,
+                                                    is_strict_recipe: bool }
+  def pack: (Pharmapoint::Pack pack) -> Catalog::Search::Hit::pack
+  def failure: (Catalog::Search::Failure::reason reason, ?Integer? retry_after) -> Catalog::Search::Failure
+end

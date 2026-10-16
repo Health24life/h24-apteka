@@ -15,6 +15,8 @@ module PharmapointHelpers
 
   def sync_config(**overrides) = Catalog::Sync::Config.new.configure { it.update(overrides) }
 
+  def search_config(**overrides) = Catalog::Search::Config.new.configure { it.update(overrides) }
+
   # Runs the workers queued inside the block at once, in the order they queue each other.
   def run_jobs(&) = Sidekiq::Testing.inline!(&)
 
@@ -29,6 +31,12 @@ module PharmapointHelpers
   def use_pharmapoint_config(**overrides)
     config = pharmapoint_config(**overrides)
     allow(Pharmapoint).to receive(:config).and_return(config)
+    config
+  end
+
+  def use_search_config(**overrides)
+    config = search_config(**overrides)
+    allow(Catalog::Search).to receive(:config).and_return(config)
     config
   end
 

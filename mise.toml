@@ -29,6 +29,23 @@ PHARMAPOINT_GOODS_GROUPS_PER_PAGE = "50"
 # An empty array leaves the drugstore run failing; a drugstore found by several points is saved once.
 # See app/services/catalog/sync/README.md, "Пункти пошуку аптек".
 PHARMAPOINT_DRUGSTORE_SEARCH_POINTS = '[{"latitude": 50.4501, "longitude": 30.5234, "radius": 50000}]'
+# Live search of the partner: its share of the request limit, its own timeouts in seconds and the size of a page of goods
+# groups. The timeouts are kept short, as a user waits for the answer.
+PHARMAPOINT_SEARCH_RATE_LIMIT_PER_MINUTE = "40"
+PHARMAPOINT_SEARCH_OPEN_TIMEOUT = "1"
+PHARMAPOINT_SEARCH_READ_TIMEOUT = "3"
+PHARMAPOINT_SEARCH_PER_PAGE = "20"
+# Codes of the providers the search asks, comma-separated; an empty value turns the search off and leaves the sync on.
+CATALOG_SEARCH_PROVIDERS = "pharmapoint"
+# Queries one search request may hold, and seconds the whole request may take.
+CATALOG_SEARCH_MAX_QUERIES = "1"
+CATALOG_SEARCH_DEADLINE = "4"
+# Where the search looks when the front sends no place: decimal degrees, and the radius in whole metres. A larger radius
+# from the front than the maximum is refused.
+APTEKA_SEARCH_DEFAULT_LATITUDE = "50.4501"
+APTEKA_SEARCH_DEFAULT_LONGITUDE = "30.5234"
+APTEKA_SEARCH_RADIUS = "25000"
+APTEKA_SEARCH_MAX_RADIUS = "100000"
 # Recurring runs, cron syntax. Goods groups stay off until a full import is agreed with the partner.
 SYNC_CRON_DICTIONARIES = "0 3 * * *"
 SYNC_CRON_CATEGORIES = "10 3 * * *"

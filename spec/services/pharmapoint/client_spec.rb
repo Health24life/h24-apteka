@@ -204,6 +204,59 @@ RSpec.describe Pharmapoint::Client do
     end
   end
 
+  describe 'live search' do
+    let(:point) { Pharmapoint::SearchPoint.new(latitude: 50.45, longitude: 30.52, radius: 25_000) }
+    let(:query) do
+      { query: 'спазмалгон', page: '1', per_page: '20', latitude: '50.45', longitude: '30.52', radius: '25000' }
+    end
+
+    before { stub_pharmapoint('goods-group/search', fixture: 'goods_group_search_by_query', query:) }
+
+    def search(client = build_client(purpose: :search))
+      client.search_goods_groups(query: 'спазмалгон', page: 1, location: point)
+    end
+
+    it 'reads the groups found by the text around the point, and keeps their records as the partner gave them',
+       :aggregate_failures do
+      groups, records = search
+
+      expect(groups.items.map(&:external_id))
+        .to eq(%w[a060d7776d3d256af22378e018bea336 122c4abff4ae26d0068e7b4cfce236a6])
+      expect(groups).to have_attributes(page: 1, per_page: 20, total: 2)
+      expect(records.first).to include('id' => 'a060d7776d3d256af22378e018bea336', 'online_price' => 28.99)
+    end
+
+    it 'sends no phone of a client' do
+      search
+
+      sent = a_request(:get, pharmapoint_url('goods-group/search')).with(query:) do |request|
+        !request.headers.keys.intersect?(%w[Customer-Phone Insurance-Code])
+      end
+      expect(sent).to have_been_requested
+    end
+
+    it 'logs the call as a search of the user' do
+      search(build_client(purpose: :search, user_id: 42))
+
+      expect(log).to have_attributes(category: 'search', user_id: 42)
+    end
+
+    it 'spends the share of the search, not only the budget of the whole service', :aggregate_failures do
+      stub_pharmapoint('dictionaries', fixture: 'dictionaries')
+      config = pharmapoint_config(rate_limit: { per_minute: 3 }, search: { rate_limit_per_minute: 1 })
+      search(build_client(purpose: :search, config:))
+
+      expect { search(build_client(purpose: :search, config:)) }.to raise_error(Pharmapoint::RateLimited)
+      expect { 2.times { build_client(config:).dictionaries } }.not_to raise_error
+    end
+
+    it 'treats a timeout of the search as transient' do
+      stub_request(:get, pharmapoint_url('goods-group/search')).with(query:).to_timeout
+
+      expect { search }.to raise_error(Pharmapoint::TransientError)
+    end
+  end
+
   it 'holds calls back once the per-minute budget of the whole service is spent' do
     stub_pharmapoint('dictionaries', fixture: 'dictionaries')
     limited = build_client(config: pharmapoint_config(rate_limit: { per_minute: 1 }))

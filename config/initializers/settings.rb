@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# The settings of the partner API and of the catalog sync are declared on their classes with defaults and types; here
-# they take their values from the environment, and an unset variable keeps the default. They are built again after
-# every code reload, as the modules that hold them are reloaded too, and are frozen once built.
+# The settings of the partner API, the catalog sync and the search are declared on their classes with defaults and
+# types; here they take their values from the environment, and an unset variable keeps the default. They are built again
+# after every code reload, as the modules that hold them are reloaded too, and are frozen once built.
 Rails.application.config.to_prepare do
   Pharmapoint.config = Pharmapoint::Config.new.configure do |config|
     connection = config.connection
@@ -11,6 +11,12 @@ Rails.application.config.to_prepare do
     connection.domain_name = ENV.fetch('PHARMAPOINT_DOMAIN_NAME', connection.domain_name)
     config.rate_limit.per_minute = ENV.fetch('PHARMAPOINT_RATE_LIMIT_PER_MINUTE', config.rate_limit.per_minute)
     config.goods_groups_per_page = ENV.fetch('PHARMAPOINT_GOODS_GROUPS_PER_PAGE', config.goods_groups_per_page)
+
+    search = config.search
+    search.open_timeout = ENV.fetch('PHARMAPOINT_SEARCH_OPEN_TIMEOUT', search.open_timeout)
+    search.read_timeout = ENV.fetch('PHARMAPOINT_SEARCH_READ_TIMEOUT', search.read_timeout)
+    search.per_page = ENV.fetch('PHARMAPOINT_SEARCH_PER_PAGE', search.per_page)
+    search.rate_limit_per_minute = ENV.fetch('PHARMAPOINT_SEARCH_RATE_LIMIT_PER_MINUTE', search.rate_limit_per_minute)
 
     retention = config.log_retention_days
     retention.booking = ENV.fetch('PHARMAPOINT_LOG_RETENTION_BOOKING_DAYS', retention.booking)
@@ -28,5 +34,19 @@ Rails.application.config.to_prepare do
     pull.stash_ttl = ENV.fetch('CATALOG_SYNC_STASH_TTL', pull.stash_ttl)
     pull.cooldown = ENV.fetch('CATALOG_SYNC_PULL_COOLDOWN', pull.cooldown)
     pull.run_retention = ENV.fetch('SYNC_PULL_RUN_RETENTION_DAYS', pull.run_retention)
+  end.finalize!
+end
+
+Rails.application.config.to_prepare do
+  Catalog::Search.config = Catalog::Search::Config.new.configure do |config|
+    config.providers = ENV.fetch('CATALOG_SEARCH_PROVIDERS', config.providers)
+    config.max_queries = ENV.fetch('CATALOG_SEARCH_MAX_QUERIES', config.max_queries)
+    config.deadline = ENV.fetch('CATALOG_SEARCH_DEADLINE', config.deadline)
+
+    location = config.location
+    location.latitude = ENV.fetch('APTEKA_SEARCH_DEFAULT_LATITUDE', location.latitude)
+    location.longitude = ENV.fetch('APTEKA_SEARCH_DEFAULT_LONGITUDE', location.longitude)
+    location.radius = ENV.fetch('APTEKA_SEARCH_RADIUS', location.radius)
+    location.max_radius = ENV.fetch('APTEKA_SEARCH_MAX_RADIUS', location.max_radius)
   end.finalize!
 end

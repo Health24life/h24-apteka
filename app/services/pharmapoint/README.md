@@ -9,9 +9,10 @@
 |---|---|
 | `../pharmapoint.rb` | Простір імен і всі помилки інтеграції (`Error`, `ConfigurationError`, `TransientError`, `PermanentError`, `InvalidResponse`, `RateLimited`) |
 | `config.rb` | Налаштування партнера (`dry-configurable`): з'єднання, ліміт, розмір сторінки груп, строки зберігання журналу. Пункти пошуку аптек — у `Catalog::Sync::Config` |
-| `client.rb` | Клієнт: `dictionaries`, `category_tree`, `goods_groups`, `goods_group`, `drugstores`, `drugstore` |
+| `client.rb` | Клієнт: `dictionaries`, `category_tree`, `goods_groups`, `search_goods_groups`, `goods_group`, `drugstores`, `drugstore` |
+| `search.rb` | Адаптер живого пошуку для [`Catalog::Search`](../catalog/search/README.md) |
 | `readers/` | По читачу на оболонку відповіді; повертають прості значення з символьними ключами |
-| `rate_limiter.rb` | Ліміт запитів, спільний для всіх воркерів (стан у Redis) |
+| `rate_limiter.rb` | Ліміт запитів, спільний для всіх воркерів (стан у Redis), і частка пошуку в ньому |
 | `logging/middleware.rb`, `logging/request_logger.rb` | Запис кожної спроби запиту в журнал звернень |
 | `logging/masker.rb` | Маскування ключа й телефону клієнта перед записом |
 | `logging/display_masker.rb` | Маскування персональних даних клієнта під час показу журналу в адмінці |
@@ -27,6 +28,9 @@ client.goods_groups(page: 1)        # => Pharmapoint::Page з групами т�
 client.drugstore('38628')           # => запис однієї аптеки
 ```
 
+- `search_goods_groups(query:, page:, location:, read_timeout:)` — живий пошук користувача: повертає сторінку груп і
+  сирі записи груп для збереження без повторного запиту. Витрачає частку пошуку в ліміті й має власні короткі таймаути;
+  `read_timeout` урізається до залишку часу звернення. Телефон клієнта не передається.
 - `purpose` — категорія звернення в журналі: `refresh` (оновлення даних), `search`, `booking`, `other`.
 - `user_id` — користувач Health24, чия дія викликала звернення; для системних звернень (розклад) лишається порожнім.
 - Помилки: `TransientError` (мережа, таймаут, 5xx) і `RateLimited` (429 або вичерпаний ліміт) варто повторити пізніше;
@@ -48,6 +52,9 @@ client.drugstore('38628')           # => запис однієї аптеки
 | `PHARMAPOINT_DOMAIN_NAME` | `h24.ua` | Заголовок `Domain-Name` |
 | `PHARMAPOINT_RATE_LIMIT_PER_MINUTE` | `60` | Власна межа запитів на хвилину на весь сервіс |
 | `PHARMAPOINT_GOODS_GROUPS_PER_PAGE` | `50` | Розмір сторінки груп товарів |
+| `PHARMAPOINT_SEARCH_RATE_LIMIT_PER_MINUTE` | `40` | Частка пошуку в ліміті: пошук перевіряє спершу її, потім спільний; відмова в частці не витрачає спільного бюджету, тож синхронізації лишається решта |
+| `PHARMAPOINT_SEARCH_OPEN_TIMEOUT`, `PHARMAPOINT_SEARCH_READ_TIMEOUT` | `1`, `3` | Таймаути пошуку в секундах, коротші за таймаути синхронізації |
+| `PHARMAPOINT_SEARCH_PER_PAGE` | `20` | Розмір сторінки груп у пошуку |
 | `PHARMAPOINT_DRUGSTORE_SEARCH_POINTS` | один пункт у Києві | JSON-масив об'єктів `{"latitude": градуси, "longitude": градуси, "radius": метри}`: навколо цих точок збирається довідник аптек. Читає `Catalog::Sync::Config`; формат і приклад — у [README синхронізації](../catalog/sync/README.md) |
 | `PHARMAPOINT_LOG_RETENTION_<КАТЕГОРІЯ>_DAYS` | бронювання 14, пошук 1, оновлення даних 7, інші 7 | Строк зберігання журналу по категоріях |
 | `SYNC_CRON_DICTIONARIES`, `SYNC_CRON_CATEGORIES`, `SYNC_CRON_GOODS_GROUPS`, `SYNC_CRON_DRUGSTORES` | див. `schedule.rb` | Cron кожного прогону; **порожнє значення вимикає задачу**. Прогін груп товарів за замовчуванням вимкнений |
@@ -87,6 +94,8 @@ client.drugstore('38628')           # => запис однієї аптеки
 - **Фікстури складені вручну за описом контракту в `docs/research/Pharmapoint_API_Data_Model.md`**, а не з живих відповідей:
   ключа й стенду партнера ще немає. Коли ключ з'явиться, їх треба перезаписати справжніми відповідями й виправити
   розбіжності у читачах.
+- `goods_group_search_by_query.json` — відповідь `goods-group/search` із `query`, координатами й радіусом; теж складена
+  вручну, живим викликом не підтверджена.
 - Припущення, яке теж треба звірити: ключ іде заголовком `API-Key`, а ідентифікатор групи в `goods-group/get-by-id` — параметром `id`.
 
 ## Типи
