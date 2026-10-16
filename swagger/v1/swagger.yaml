@@ -134,7 +134,6 @@ components:
       required:
       - query
       - status
-      - unavailable_providers
       - page
       - per_page
       - total_groups
@@ -149,13 +148,9 @@ components:
           - ok
           - partial
           - unavailable
-          description: "`partial`: some providers did not answer; `unavailable`: none
-            did, while another query of the request was answered"
-        unavailable_providers:
-          type: array
-          items:
-            type: string
-          description: Codes of providers
+          description: "`partial`: the list may lack goods, as some sources did not
+            answer; `unavailable`: no source answered, while another query of the
+            request was answered"
         page:
           type: integer
         per_page:
@@ -173,10 +168,9 @@ components:
     search_goods:
       type: object
       description: 'A release form (SKU) with the static data of its card: no prices,
-        stock or images'
+        stock or images, and nothing of the provider it came from'
       required:
       - ref
-      - provider
       - ready
       - id
       - slug
@@ -192,9 +186,9 @@ components:
       properties:
         ref:
           type: string
-          description: Stable key of the row; not to be taken apart
-        provider:
-          type: string
+          pattern: "^[0-9a-f]{16}$"
+          description: Opaque key of the row, the same in every search; tells nothing
+            of where the goods come from
         ready:
           type: boolean
           description: 'Whether the catalog shows the SKU. A row that is not ready
@@ -253,6 +247,8 @@ components:
           properties:
             ref:
               type: string
+              pattern: "^[0-9a-f]{16}$"
+              description: Opaque key of the goods group
             name:
               type: string
               nullable: true

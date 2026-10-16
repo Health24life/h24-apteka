@@ -5,7 +5,6 @@
 class Catalog::Search::Result < Data.define(
   :query,
   :status,
-  :unavailable_providers,
   :page,
   :per_page,
   :total_groups,

@@ -1,0 +1,8 @@
+module Catalog::Search::Ref
+  LENGTH: Integer
+
+  self.@key: String?
+
+  def self.for: (*String parts) -> String
+  def self.key: () -> String
+end

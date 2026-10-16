@@ -40,7 +40,6 @@ RSpec.describe Catalog::Search::Metrics do
     Catalog::Search::Result.new(
       query: 'спазмалгон',
       status:,
-      unavailable_providers: [],
       page: 1,
       per_page: 20,
       total_groups: 0,

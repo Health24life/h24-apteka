@@ -24,12 +24,12 @@ RSpec.describe Pharmapoint::Search do
     it 'turns every release form of a group into a row of its own', :aggregate_failures do
       page = call
 
-      expect(page.hits.map(&:ref)).to eq(
-        %w[
-          pharmapoint:a060d7776d3d256af22378e018bea336:1795034
-          pharmapoint:a060d7776d3d256af22378e018bea336:1795035
-          pharmapoint:a060d7776d3d256af22378e018bea336:1795036
-          pharmapoint:122c4abff4ae26d0068e7b4cfce236a6:2001001
+      expect(page.hits.map { [ it.group_external_id, it.external_id ] }).to eq(
+        [
+          %w[a060d7776d3d256af22378e018bea336 1795034],
+          %w[a060d7776d3d256af22378e018bea336 1795035],
+          %w[a060d7776d3d256af22378e018bea336 1795036],
+          %w[122c4abff4ae26d0068e7b4cfce236a6 2001001]
         ]
       )
       expect(page.hits.map(&:pack).pluck(:quantity_in_pack)).to eq([ 50, 20, 10, 10 ])

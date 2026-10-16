@@ -20,8 +20,7 @@ class Catalog::Search::Hit < Data.define(
   :id,
   :slug
 )
-  # A provider's code holds no colon, so the key reads one way only; the front does not take it apart.
-  def ref = "#{group_ref}:#{external_id}"
+  def ref = Catalog::Search::Ref.for(provider, group_external_id, external_id)
 
-  def group_ref = "#{provider}:#{group_external_id}"
+  def group_ref = Catalog::Search::Ref.for(provider, group_external_id)
 end

@@ -1,7 +1,6 @@
 class Catalog::Search::Result < Data
   attr_reader query: String
   attr_reader status: String
-  attr_reader unavailable_providers: Array[String]
   attr_reader page: Integer
   attr_reader per_page: Integer
   attr_reader total_groups: Integer
@@ -9,7 +8,7 @@ class Catalog::Search::Result < Data
   attr_reader goods: Array[Catalog::Search::Hit]
   attr_reader failures: Array[Catalog::Search::Failure]
 
-  def self.new: (query: String, status: String, unavailable_providers: Array[String], page: Integer, per_page: Integer,
+  def self.new: (query: String, status: String, page: Integer, per_page: Integer,
                  total_groups: Integer, has_more: bool, goods: Array[Catalog::Search::Hit],
                  failures: Array[Catalog::Search::Failure]) -> instance
 

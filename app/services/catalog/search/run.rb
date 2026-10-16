@@ -46,7 +46,6 @@ class Catalog::Search::Run
     Catalog::Search::Result.new(
       query: query.text,
       status: status(pages, failures),
-      unavailable_providers: failures.map(&:provider),
       page: query.page,
       per_page: provider_pages.sum(&:per_page),
       total_groups: provider_pages.sum(&:total_groups),

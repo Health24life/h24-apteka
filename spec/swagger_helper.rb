@@ -66,16 +66,15 @@ RSpec.configure do |config|
           },
           search_result: {
             type: :object,
-            required: %w[query status unavailable_providers page per_page total_groups has_more goods],
+            required: %w[query status page per_page total_groups has_more goods],
             properties: {
               query: { type: :string },
               status: {
                 type: :string,
                 enum: %w[ok partial unavailable],
-                description: '`partial`: some providers did not answer; `unavailable`: none did, while another query ' \
-                             'of the request was answered'
+                description: '`partial`: the list may lack goods, as some sources did not answer; `unavailable`: no ' \
+                             'source answered, while another query of the request was answered'
               },
-              unavailable_providers: { type: :array, items: { type: :string }, description: 'Codes of providers' },
               page: { type: :integer },
               per_page: { type: :integer, description: 'Goods groups per page, not rows' },
               total_groups: { type: :integer, description: 'Goods groups the providers have for the text' },
@@ -85,10 +84,10 @@ RSpec.configure do |config|
           },
           search_goods: {
             type: :object,
-            description: 'A release form (SKU) with the static data of its card: no prices, stock or images',
+            description: 'A release form (SKU) with the static data of its card: no prices, stock or images, and ' \
+                         'nothing of the provider it came from',
             required: %w[
               ref
-              provider
               ready
               id
               slug
@@ -103,8 +102,12 @@ RSpec.configure do |config|
               group
             ],
             properties: {
-              ref: { type: :string, description: 'Stable key of the row; not to be taken apart' },
-              provider: { type: :string },
+              ref: {
+                type: :string,
+                pattern: '^[0-9a-f]{16}$',
+                description: 'Opaque key of the row, the same in every search; tells nothing of where the goods ' \
+                             'come from'
+              },
               ready: {
                 type: :boolean,
                 description: 'Whether the catalog shows the SKU. A row that is not ready has no card yet: it cannot ' \
@@ -136,7 +139,10 @@ RSpec.configure do |config|
               },
               group: {
                 type: :object,
-                properties: { ref: { type: :string }, name: { type: :string, nullable: true } }
+                properties: {
+                  ref: { type: :string, pattern: '^[0-9a-f]{16}$', description: 'Opaque key of the goods group' },
+                  name: { type: :string, nullable: true }
+                }
               }
             }
           },

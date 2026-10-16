@@ -61,11 +61,10 @@ RSpec.describe Catalog::Search::Run do
   it 'lists the goods of every provider in the order of the providers, each in its own', :aggregate_failures do
     result = run(adapter(first, page(first, 'b', 'a', total: 3, more: true)), adapter(second, page(second, 'c'))).sole
 
-    expect(result.goods.map(&:ref)).to eq(%w[first:group:b first:group:a second:group:c])
+    expect(result.goods.map { [ it.provider, it.external_id ] }).to eq([ %w[first b], %w[first a], %w[second c] ])
     expect(result).to have_attributes(
       query: 'спазмалгон',
       status: 'ok',
-      unavailable_providers: [],
       page: 1,
       per_page: 40,
       total_groups: 4,
@@ -73,11 +72,11 @@ RSpec.describe Catalog::Search::Run do
     )
   end
 
-  it 'answers with the providers that answered, naming those that did not', :aggregate_failures do
+  it 'answers with the providers that answered, keeping those that did not among its failures', :aggregate_failures do
     result = run(adapter(first, failure(first)), adapter(second, page(second, 'c'))).sole
 
-    expect(result).to have_attributes(status: 'partial', unavailable_providers: %w[first])
-    expect(result.goods.map(&:ref)).to eq(%w[second:group:c])
+    expect(result).to have_attributes(status: 'partial', failures: [ failure(first) ])
+    expect(result.goods.map(&:external_id)).to eq(%w[c])
   end
 
   it 'is unavailable when no provider answered' do

@@ -71,11 +71,11 @@ RSpec.describe 'Search of goods', :partner_calls do
         end
 
         run_test! do
-          expect(results.sole['goods'].map { it.values_at('ref', 'ready', 'id', 'slug') }).to eq(
+          expect(results.sole['goods'].map { it.values_at('name', 'ready', 'id', 'slug') }).to eq(
             [
-              [ 'pharmapoint:a060d7776d3d256af22378e018bea336:1795034', true, saved.id, saved.slug ],
-              [ 'pharmapoint:a060d7776d3d256af22378e018bea336:1795035', false, nil, nil ],
-              [ 'pharmapoint:122c4abff4ae26d0068e7b4cfce236a6:2001001', false, nil, nil ]
+              [ 'Спазмалгон табл. №50(10х5)', true, saved.id, saved.slug ],
+              [ 'Спазмалгон табл. №20', false, nil, nil ],
+              [ 'Цитрамон-Дарниця табл. №10', false, nil, nil ]
             ]
           )
         end
@@ -108,7 +108,6 @@ RSpec.describe 'Search of goods', :partner_calls do
         run_test! do
           expect(results.sole).to include(
             'status' => 'partial',
-            'unavailable_providers' => %w[other],
             'goods' => have_attributes(size: 4)
           )
         end
@@ -239,7 +238,6 @@ RSpec.describe 'Search of goods', :partner_calls do
       expect(results.sole).to include(
         'query' => 'спазмалгон',
         'status' => 'ok',
-        'unavailable_providers' => [],
         'page' => 1,
         'per_page' => 20,
         'total_groups' => 2,
@@ -256,8 +254,34 @@ RSpec.describe 'Search of goods', :partner_calls do
         'name' => 'Спазмалгон табл. №50(10х5)',
         'trade_name' => 'Спазмалгон',
         'producer' => { 'name' => 'Balkanpharma', 'country_code' => 'BG' },
-        'group' => { 'ref' => 'pharmapoint:a060d7776d3d256af22378e018bea336', 'name' => 'Спазмалгон табл. №50(10х5)' }
+        'group' => { 'ref' => match(/\A\h{16}\z/), 'name' => 'Спазмалгон табл. №50(10х5)' }
       )
+    end
+
+    it 'tells nothing of the provider: no code and no ids' do
+      stub_search
+
+      search
+
+      expect(response.body).not_to include('pharmapoint', 'a060d7776d3d256af22378e018bea336', '1795034')
+    end
+
+    it 'gives every row an opaque key of its own, and the rows of a group one key of the group', :aggregate_failures do
+      stub_search
+
+      search
+
+      goods = results.sole['goods']
+      expect(goods.pluck('ref')).to all(match(/\A\h{16}\z/)).and(eq(goods.pluck('ref').uniq))
+      expect(goods.first(2).map { it.dig('group', 'ref') }.uniq.size).to eq(1)
+    end
+
+    it 'gives a row the same key in every search' do
+      stub_search
+
+      keys = Array.new(2) { search && results.sole['goods'].pluck('ref') }
+
+      expect(keys.first).to eq(keys.last)
     end
 
     it 'gives no prices, stock or images, though the provider sent them' do
