@@ -4,17 +4,18 @@ class Order < ApplicationRecord
   NAME_LENGTH = 100
   # 380 and nine digits, no plus sign.
   PHONE_FORMAT = /\A380\d{9}\z/
-  # The tokens are a guest's keys to the cart and the order, and the rest is the client's personal data, so they stay
+  # The token is the owner's key to the cart and the order, and the rest is the client's personal data, so they stay
   # out of filters and sorting. A new column is not filterable until it is added here.
   FILTERABLE = %w[id own_number provider_order_number state status_name drugstore_id provider_id created_at].freeze
 
   enum :state, { cart: 'cart', submitted: 'submitted', submission_failed: 'submission_failed' }, validate: true
 
+  # The one key to the cart and to the order it becomes: kept when the cart is booked, and the link a booking is shared
+  # by, so someone else can pick it up.
   has_secure_token :token
-  has_secure_token :share_token
 
-  # Switching the pharmacy or the provider means clearing the cart, and a shared link must keep working.
-  attr_readonly :drugstore_id, :provider_id, :share_token
+  # Switching the pharmacy or the provider means clearing the cart.
+  attr_readonly :drugstore_id, :provider_id
 
   belongs_to :drugstore, class_name: 'Catalog::Drugstore', inverse_of: :orders
   belongs_to :provider, inverse_of: :orders
@@ -90,7 +91,6 @@ end
 #  provider_payload               :jsonb            not null
 #  provider_updated_at            :datetime
 #  register_account               :boolean          default(FALSE), not null
-#  share_token                    :string           not null
 #  state                          :string           default("cart"), not null
 #  status_comment                 :string
 #  status_name                    :string
@@ -107,7 +107,6 @@ end
 #
 #  index_orders_on_own_number                             (own_number) UNIQUE
 #  index_orders_on_provider_id_and_provider_order_number  (provider_id,provider_order_number) UNIQUE
-#  index_orders_on_share_token                            (share_token) UNIQUE
 #  index_orders_on_token                                  (token) UNIQUE
 #  index_orders_on_user_id_cart                           (user_id) UNIQUE WHERE (((state)::text = 'cart'::text) AND (user_id IS NOT NULL))
 #

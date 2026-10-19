@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_07_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_19_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -332,7 +332,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_07_120000) do
     t.integer "user_id"
     t.string "state", default: "cart", null: false
     t.string "token", null: false
-    t.string "share_token", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "customer_first_name", limit: 100
@@ -357,7 +356,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_07_120000) do
     t.jsonb "provider_payload", default: {}, null: false
     t.index ["own_number"], name: "index_orders_on_own_number", unique: true
     t.index ["provider_id", "provider_order_number"], name: "index_orders_on_provider_id_and_provider_order_number", unique: true
-    t.index ["share_token"], name: "index_orders_on_share_token", unique: true
     t.index ["token"], name: "index_orders_on_token", unique: true
     t.index ["user_id"], name: "index_orders_on_user_id_cart", unique: true, where: "(((state)::text = 'cart'::text) AND (user_id IS NOT NULL))"
     t.check_constraint "customer_phone_number IS NULL OR customer_phone_number::text ~ '^380[0-9]{9}$'::text", name: "orders_customer_phone_number_check"

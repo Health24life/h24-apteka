@@ -63,7 +63,6 @@ end
 #  provider_payload               :jsonb            not null
 #  provider_updated_at            :datetime
 #  register_account               :boolean          default(FALSE), not null
-#  share_token                    :string           not null
 #  state                          :string           default("cart"), not null
 #  status_comment                 :string
 #  status_name                    :string
@@ -80,7 +79,6 @@ end
 #
 #  index_orders_on_own_number                             (own_number) UNIQUE
 #  index_orders_on_provider_id_and_provider_order_number  (provider_id,provider_order_number) UNIQUE
-#  index_orders_on_share_token                            (share_token) UNIQUE
 #  index_orders_on_token                                  (token) UNIQUE
 #  index_orders_on_user_id_cart                           (user_id) UNIQUE WHERE (((state)::text = 'cart'::text) AND (user_id IS NOT NULL))
 #
