@@ -146,6 +146,98 @@ RSpec.configure do |config|
               }
             }
           },
+          drugstores_request: {
+            type: :object,
+            properties: {
+              location: {
+                type: :object,
+                description: 'Where to look, as in the search: without the coordinates the configured point is ' \
+                             'taken, without the radius the configured one; the coordinates are rounded to about a ' \
+                             'kilometre',
+                properties: {
+                  latitude: { type: :number, minimum: -90, maximum: 90, description: 'With longitude only' },
+                  longitude: { type: :number, minimum: -180, maximum: 180, description: 'With latitude only' },
+                  radius: { type: :integer, minimum: 1, description: 'Metres, up to the configured maximum' }
+                }
+              },
+              sort: {
+                type: :string,
+                enum: %w[price distance],
+                default: 'price',
+                description: 'The cheapest or the nearest first'
+              },
+              work_with_reimbursement: {
+                type: :boolean,
+                description: 'Only drugstores of the program «Доступні ліки»'
+              }
+            }
+          },
+          drugstores_response: {
+            type: :object,
+            required: %w[drugstores],
+            properties: {
+              drugstores: { type: :array, items: { '$ref' => '#/components/schemas/nearby_drugstore' } }
+            }
+          },
+          drugstore: {
+            type: :object,
+            description: 'A drugstore of the directory, with the legal entity, its EDRPOU code and the working hours',
+            required: %w[id legal_entity week_working_hours work_with_reimbursement],
+            properties: {
+              id: { type: :integer },
+              name: { type: :string, nullable: true },
+              brand: { type: :object, nullable: true, properties: { name: { type: :string } } },
+              legal_entity: {
+                type: :object,
+                required: %w[name code],
+                properties: {
+                  name: { type: :string, description: 'Full name of the legal entity' },
+                  code: { type: :string, pattern: '^[0-9]{8}([0-9]{2})?$', description: 'EDRPOU code' }
+                }
+              },
+              address: { type: :string, nullable: true },
+              latitude: { type: :number, nullable: true },
+              longitude: { type: :number, nullable: true },
+              phone: { type: :string, nullable: true },
+              week_working_hours: {
+                type: :array,
+                description: 'Seven days from Monday, `HH:MM-HH:MM` or null for a day off; empty when unknown',
+                items: { type: :string, nullable: true }
+              },
+              work_with_reimbursement: { type: :boolean, description: 'Takes part in the program «Доступні ліки»' }
+            }
+          },
+          nearby_drugstore: {
+            allOf: [
+              { '$ref' => '#/components/schemas/drugstore' },
+              {
+                type: :object,
+                required: %w[goods],
+                properties: {
+                  distance: { type: :integer, nullable: true, description: 'Metres from the place asked about' },
+                  open_now: { type: :boolean, nullable: true, description: 'Null when the provider did not tell' },
+                  opens_at: {
+                    type: :string,
+                    nullable: true,
+                    description: '`HH:MM` the drugstore next opens at, today or on its next working day; null when ' \
+                                 'it is open or the hours are unknown'
+                  },
+                  goods: {
+                    type: :object,
+                    required: %w[price available_quantity],
+                    properties: {
+                      price: {
+                        type: :string,
+                        pattern: '^[0-9]+\\.[0-9]{2}$',
+                        description: 'Price in the drugstore, hryvnias'
+                      },
+                      available_quantity: { type: :integer, description: 'Whole packs the drugstore has' }
+                    }
+                  }
+                }
+              }
+            ]
+          },
           error: {
             type: :object,
             required: %w[error],

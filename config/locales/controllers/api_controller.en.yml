@@ -8,3 +8,8 @@ en:
       invalid_search_location: Send the latitude and the longitude together, and the radius as a positive whole number of metres no larger than allowed.
       search_unavailable: The search is unavailable for now. Try again later.
       search_busy: The search is busy right now. Try again a little later.
+      goods_not_found: The goods are not found or not available.
+      invalid_location: Send the latitude and the longitude together, and the radius as a positive whole number of metres no larger than allowed.
+      invalid_sort: Sort by price or by distance only.
+      drugstores_unavailable: Prices in drugstores are unavailable for now. Try again later.
+      drugstores_busy: The price service is busy now. Try again a little later.

@@ -4,8 +4,6 @@ class Catalog::Search::Queries::Build
 
   TEXT_LENGTH: Range[Integer]
   PAGES: Range[Integer]
-  LATITUDE_LIMIT: Integer
-  LONGITUDE_LIMIT: Integer
 
   @config: Catalog::Search::Config
 
@@ -20,7 +18,5 @@ class Catalog::Search::Queries::Build
   def text: (value value) -> String
   def page: (value value) -> Integer
   def location: (value value) -> Catalog::Search::Location
-  def coordinate: (value value, Integer limit) -> Float?
-  def radius: (value value) -> Integer?
   def invalid!: (Symbol code) -> bot
 end

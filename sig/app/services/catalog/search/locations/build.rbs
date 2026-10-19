@@ -1,0 +1,20 @@
+class Catalog::Search::Locations::Build
+  type value = Catalog::Search::Queries::Build::value
+
+  LATITUDE_LIMIT: Integer
+  LONGITUDE_LIMIT: Integer
+
+  @code: Symbol
+  @config: Catalog::Search::Config
+
+  def self.call: (value value, code: Symbol, ?config: Catalog::Search::Config) -> Catalog::Search::Location
+
+  def initialize: (Symbol code, Catalog::Search::Config config) -> void
+  def call: (value value) -> Catalog::Search::Location
+
+  private
+
+  def coordinate: (value value, Integer limit) -> Float?
+  def radius: (value value) -> Integer?
+  def invalid!: () -> bot
+end
