@@ -1,2 +1,4 @@
 module Orders::Carts
+  def self.config: () -> Orders::Carts::Config
+  def self.config=: (Orders::Carts::Config config) -> Orders::Carts::Config
 end

@@ -1,0 +1,6 @@
+class Orders::Carts::Config
+  include Dry::Configurable
+  extend Dry::Configurable::ClassMethods
+
+  def guest_ttl_days: () -> Integer
+end

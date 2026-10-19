@@ -1,0 +1,20 @@
+class Orders::Carts::Check
+  @cart: Order
+  @goods: Catalog::Goods
+  @quantity: Integer | BigDecimal
+  @user_id: Integer?
+
+  def self.call: (Order cart, goods: Catalog::Goods, quantity: Integer | BigDecimal, ?user_id: Integer?)
+               -> Orders::Offers::DrugstoreOffer
+
+  def initialize: (Order cart, Catalog::Goods goods, Integer | BigDecimal quantity, Integer? user_id) -> void
+  def call: () -> Orders::Offers::DrugstoreOffer
+
+  private
+
+  def ask: () -> (Orders::Offers::DrugstoreOffer | Orders::Offers::Failure | nil)
+  def known: ((Orders::Offers::DrugstoreOffer | Orders::Offers::Failure | nil) offer) -> Orders::Offers::DrugstoreOffer
+  def busy: (Integer? retry_after) -> bot
+  def unavailable: () -> bot
+  def refuse: (Symbol code, Symbol status, ?details: Hash[Symbol, untyped]?) -> bot
+end

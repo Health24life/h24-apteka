@@ -1,0 +1,53 @@
+# Orders::Carts — API кошика
+
+Кошик «Аптеки» для вебу й застосунку. Кошик — це замовлення в стані `cart`, прив'язане з першим товаром до однієї
+аптеки й провайдера (модель — `Order`, `Order::Item`). Ціна й наявність **ніколи не зберігаються**: кожен показ і кожна
+зміна питають провайдера наживо через `Orders::Offers::Adapters` (для Pharmapoint — `Pharmapoint::Offers`,
+`order/get-drugstore-for-order-goods`). Аптеку для першого товару фронт бере зі списку `POST /api/v1/goods/:id/drugstores`
+(`Orders::Offers::Nearby`).
+
+## Ендпоінти
+
+| Запит | Що робить |
+|---|---|
+| `GET /api/v1/cart` | Кошик з живими цінами; провайдер не відповів — `200` без цін, `prices_available: false` |
+| `POST /api/v1/cart/items` | `goods_id`, `drugstore_id`, `quantity`; без кошика створює його (`201`, гостю — `token`) |
+| `PATCH /api/v1/cart/items/:id` | Нова кількість, перевірена наживо |
+| `DELETE /api/v1/cart/items/:id` | `204`; кошик іде разом з останньою позицією |
+| `DELETE /api/v1/cart` | `204`, кошик видалено з позиціями |
+
+## Потік
+
+```
+CartActions (owner: X-Cart-Token | сесія)
+   │
+   ▼
+Find ── гість за токеном, акаунт за user_id; сесія + токен і в акаунта немає кошика → гостьовий переходить в акаунт
+   │
+   ▼
+Opening / Tidy ── вимкнений провайдер чи прихована аптека → кошик видалено, 404 cart_not_found + reason;
+   │              прихований чи знятий SKU (або група) → позицію видалено, у відповіді в `removed`
+   ▼
+Show ── in_drugstore про всі позиції → View (ItemView: available, price, total)
+AddItem / ChangeQuantity ── зміна в пам'яті → Check (in_drugstore про весь кошик зі зміною) → save! → View
+```
+
+- **Перевірка** (`Check`) вирішує лише за SKU, що додається чи змінюється: непокритий — `goods_not_in_drugstore`,
+  більше за залишок — `quantity_exceeds_stock` з `details.available_quantity`. Немає даних (`order: null`) чи збій —
+  `503 cart_check_unavailable`; ліміт — `503 cart_check_busy` + `Retry-After`. Нічого не зберігається, доки перевірка не
+  пройшла; відповідь перевірки йде в показ кошика після зміни, тож провайдера питають один раз.
+- **Позиція, якої зараз немає**, з кошика не видаляється: `available: false`, без ціни й без внеску в `total`.
+- **Кількість** — лише цілі упаковки (`invalid_quantity` ще до звернення до провайдера).
+- **Помилки** — `Orders::Carts::Refused` (код, статус, деталі, `retry_after`), які `CartActions` перетворює на відповідь.
+
+## Покинуті кошики
+
+`Orders::Carts::AbandonedCleanupWorker` (cron `ORDERS_CART_CLEANUP_CRON`, за замовчуванням `40 4 * * *`; порожнє значення
+вимикає) видаляє гостьові кошики без змін довше за `APTEKA_GUEST_CART_TTL_DAYS` днів (7). Кошики акаунтів і відправлені
+замовлення не чіпає. Час зміни кошика оновлюють позиції (`touch: true`).
+
+## Тести
+
+- Сервіси — `spec/services/orders/carts/*` з фейковим адаптером (`stub_offers_adapter`, `offer_for`);
+- ендпоінти — rswag-спеки `spec/requests/api/v1/cart_spec.rb` і `spec/requests/api/v1/cart/items_spec.rb` на заглушці
+  Pharmapoint (`stub_drugstore_offers`); після зміни — `mise run rswag`.

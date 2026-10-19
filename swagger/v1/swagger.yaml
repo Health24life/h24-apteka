@@ -4,6 +4,177 @@ info:
   title: Health24 Apteka API
   version: v1
 paths:
+  "/api/v1/cart/items":
+    parameters:
+    - name: X-Cart-Token
+      in: header
+      required: false
+      schema:
+        type: string
+      description: A guest's key to their cart; without a cart, the first item makes
+        one and its token comes back. A signed-in user is known by the Authorization
+        header
+    post:
+      summary: Puts a SKU in the cart
+      tags:
+      - Cart
+      description: The first SKU makes the cart, bound to the drugstore it is put
+        in; later ones go to that drugstore only, and one already in the cart adds
+        to its item. Each is checked live against what the drugstore has; nothing
+        is saved when the check refuses or cannot be made.
+      parameters: []
+      responses:
+        '201':
+          description: the first SKU made the cart; a guest gets its token
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cart_response"
+        '200':
+          description: the SKU went to the cart that was there
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cart_response"
+        '404':
+          description: goods_not_found or drugstore_not_found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '409':
+          description: 'cart_drugstore_mismatch: the cart is in another drugstore;
+            clear it to start in this one'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '422':
+          description: 'invalid_quantity: not a whole number of packs from 1'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '503':
+          description: 'cart_check_unavailable, or cart_check_busy with Retry-After:
+            the stock could not be checked'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/cart_item_request"
+        required: true
+  "/api/v1/cart/items/{id}":
+    parameters:
+    - name: X-Cart-Token
+      in: header
+      required: false
+      schema:
+        type: string
+      description: A guest's key to their cart; without a cart, the first item makes
+        one and its token comes back. A signed-in user is known by the Authorization
+        header
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Sets the quantity of an item
+      tags:
+      - Cart
+      description: Checked live against what the drugstore has, as when a SKU is put
+        in.
+      parameters: []
+      responses:
+        '200':
+          description: the cart with the new quantity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cart_response"
+        '404':
+          description: 'cart_item_not_found: no such item in the cart'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/cart_quantity_request"
+        required: true
+    delete:
+      summary: Takes an item out of the cart
+      tags:
+      - Cart
+      description: The cart goes with its last item; read the cart again for the rest.
+      responses:
+        '204':
+          description: the item is out
+        '404':
+          description: cart_item_not_found
+  "/api/v1/cart":
+    parameters:
+    - name: Authorization
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Bearer token of a signed-in user, whose account has the cart
+    - name: X-Cart-Token
+      in: header
+      required: false
+      schema:
+        type: string
+      description: A guest's key to their cart. Sent with a session right after signing
+        in, it gives the guest's cart to the account when the account has none; carts
+        are never merged
+    get:
+      summary: Shows the cart with the live prices of its drugstore
+      tags:
+      - Cart
+      description: 'Prices and stock are asked of the provider live and never stored:
+        an item the drugstore has not now stays in the cart as not available. A provider
+        that does not answer gives the cart without prices, not an error. What can
+        no longer be sold is taken out and listed in `removed`; a cart whose drugstore
+        or provider went is gone.'
+      responses:
+        '200':
+          description: a signed-in user's cart, with no token in the answer
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cart_response"
+        '404':
+          description: 'cart_not_found: no cart, a token of no cart, or a cart whose
+            drugstore or provider went'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '401':
+          description: an expired or invalid token
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+    delete:
+      summary: Clears the cart for good
+      tags:
+      - Cart
+      description: Removes the cart with its items, so a cart can be started in another
+        drugstore.
+      responses:
+        '204':
+          description: the cart is gone
+        '404':
+          description: cart_not_found
   "/api/v1/goods/{id}/drugstores":
     post:
       summary: Lists the drugstores around that have a SKU, with its price there
@@ -457,6 +628,120 @@ components:
               available_quantity:
                 type: integer
                 description: Whole packs the drugstore has
+    cart_item_request:
+      type: object
+      required:
+      - goods_id
+      - drugstore_id
+      - quantity
+      properties:
+        goods_id:
+          type: integer
+          description: SKU of the catalog
+        drugstore_id:
+          type: integer
+          description: The drugstore picked from the list of drugstores with the price
+            of the SKU; the drugstore of the cart when it has items
+        quantity:
+          type: integer
+          minimum: 1
+          description: Whole packs, added to those already in the cart
+    cart_quantity_request:
+      type: object
+      required:
+      - quantity
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+          description: Whole packs
+    cart_response:
+      type: object
+      required:
+      - cart
+      properties:
+        cart:
+          "$ref": "#/components/schemas/cart"
+    cart:
+      type: object
+      required:
+      - drugstore
+      - prices_available
+      - items
+      - removed
+      properties:
+        token:
+          type: string
+          description: A guest's secret key to the cart, sent back in `X-Cart-Token`;
+            given to a guest only
+        drugstore:
+          "$ref": "#/components/schemas/drugstore"
+        prices_available:
+          type: boolean
+          description: 'False when the provider did not answer: the items come without
+            prices'
+        items:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - quantity
+            - available
+            properties:
+              id:
+                type: integer
+              goods:
+                type: object
+                nullable: true
+                properties:
+                  id:
+                    type: integer
+                  slug:
+                    type: string
+                  name:
+                    type: string
+              quantity:
+                type: integer
+              available:
+                type: boolean
+                description: Whether the drugstore has the whole quantity now; an
+                  item it has not stays in the cart
+              available_quantity:
+                type: integer
+                nullable: true
+                description: Whole packs it has
+              price:
+                type: string
+                nullable: true
+                description: Hryvnias; only when available
+              total:
+                type: string
+                nullable: true
+                description: Hryvnias; only when available
+        total:
+          type: string
+          nullable: true
+          description: Hryvnias, of the available items; null without prices
+        removed:
+          type: array
+          description: 'What was taken out on the way: a SKU hidden or withdrawn,
+            alone or with its group'
+          items:
+            type: object
+            properties:
+              reason:
+                type: string
+                enum:
+                - goods_hidden
+                - goods_withdrawn
+              goods:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
     error:
       type: object
       required:
@@ -474,6 +759,10 @@ components:
             message:
               type: string
               description: Message in Ukrainian
+            details:
+              type: object
+              description: 'What the front acts on, for some codes only: `available_quantity`
+                for `quantity_exceeds_stock`, `reason` for a cart that went whole'
   parameters:
     header_lang:
       name: Accept-Language

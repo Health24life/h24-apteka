@@ -1,0 +1,15 @@
+class Orders::Carts::Tidy
+  @cart: Order
+
+  def self.call: (Order cart) -> Orders::Carts::Tidied
+
+  def initialize: (Order cart) -> void
+  def call: () -> Orders::Carts::Tidied
+
+  private
+
+  def cart_reason: () -> Symbol?
+  def remove: (Order::Item item) -> Orders::Carts::Removed?
+  def goods_reason: (Catalog::Goods goods) -> Symbol?
+  def gone: (Symbol reason, Array[Orders::Carts::Removed] removed) -> Orders::Carts::Tidied
+end

@@ -1,0 +1,11 @@
+class Orders::Carts::ItemView < Data
+  attr_reader item: Order::Item
+  attr_reader line: Orders::Offers::Line?
+
+  def self.new: (item: Order::Item, line: Orders::Offers::Line?) -> instance
+
+  def available?: () -> bool
+  def available_quantity: () -> Integer?
+  def price: () -> BigDecimal?
+  def total: () -> BigDecimal?
+end

@@ -1,0 +1,27 @@
+class Orders::Carts::AddItem
+  class Result < Data
+    attr_reader view: Orders::Carts::View
+    attr_reader created: bool
+
+    def self.new: (view: Orders::Carts::View, created: bool) -> instance
+  end
+
+  @owner: Orders::Carts::Owner
+  @goods_id: untyped
+  @drugstore_id: untyped
+  @quantity: Integer
+
+  def self.call: (Orders::Carts::Owner owner, goods_id: untyped, drugstore_id: untyped, quantity: Integer) -> Result
+
+  def initialize: (Orders::Carts::Owner owner, untyped goods_id, untyped drugstore_id, Integer quantity) -> void
+  def call: () -> Result
+
+  private
+
+  def add: (Orders::Carts::Opened opened, Catalog::Goods goods) -> Result
+  def create: (Catalog::Goods goods) -> Result
+  def bumped: (Order cart, Catalog::Goods goods) -> Order::Item
+  def provider_of: (Catalog::Drugstore drugstore, Catalog::Goods goods) -> Provider?
+  def check: (Order cart, Catalog::Goods goods, Integer | BigDecimal quantity) -> Orders::Offers::DrugstoreOffer
+  def refuse: (Symbol code, Symbol status) -> bot
+end

@@ -13,3 +13,12 @@ en:
       invalid_sort: Sort by price or by distance only.
       drugstores_unavailable: Prices in drugstores are unavailable for now. Try again later.
       drugstores_busy: The price service is busy now. Try again a little later.
+      cart_not_found: The cart is not found or no longer available.
+      cart_item_not_found: The cart has no such item.
+      cart_drugstore_mismatch: The cart is already in another drugstore. Clear it to start in this one.
+      drugstore_not_found: The drugstore is not found or not available.
+      goods_not_in_drugstore: The drugstore of the cart does not have the goods.
+      quantity_exceeds_stock: The drugstore does not have that many packs.
+      invalid_quantity: The quantity must be a whole number of packs, from 1.
+      cart_check_unavailable: The stock of the drugstore could not be checked. Try again later.
+      cart_check_busy: The price service is busy now. Try again a little later.

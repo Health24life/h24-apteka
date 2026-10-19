@@ -1,0 +1,9 @@
+class Orders::Carts::RemoveAbandoned
+  @config: Orders::Carts::Config
+  @now: ActiveSupport::TimeWithZone
+
+  def self.call: (?config: Orders::Carts::Config, ?now: ActiveSupport::TimeWithZone) -> Integer
+
+  def initialize: (Orders::Carts::Config config, ActiveSupport::TimeWithZone now) -> void
+  def call: () -> Integer
+end

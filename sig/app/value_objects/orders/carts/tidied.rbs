@@ -1,0 +1,7 @@
+class Orders::Carts::Tidied < Data
+  attr_reader cart: Order?
+  attr_reader removed: Array[Orders::Carts::Removed]
+  attr_reader reason: Symbol?
+
+  def self.new: (cart: Order?, removed: Array[Orders::Carts::Removed], reason: Symbol?) -> instance
+end
