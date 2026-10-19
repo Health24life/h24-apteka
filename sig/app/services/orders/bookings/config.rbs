@@ -1,0 +1,9 @@
+class Orders::Bookings::Config
+  include Dry::Configurable
+  extend Dry::Configurable::ClassMethods
+
+  IDS: ^(untyped) -> Array[Integer]
+
+  def drugstore_ids: () -> Array[Integer]
+  def allowed?: (Integer? drugstore_id) -> bool
+end

@@ -22,11 +22,11 @@ class Pharmapoint::Offers
     failure(e)
   end
 
-  # What the drugstore has of the items, all of them in one call.
-  def in_drugstore(drugstore, items)
+  # What the drugstore has of the items, all of them in one call. A booking asks with no share of the limit.
+  def in_drugstore(drugstore, items, share: :cart)
     refs = goods_refs(items.map { sku(it) })
     external_id = drugstore_ref(drugstore)
-    found = @client.offers_in_drugstore(goods: order_lines(items, refs), drugstore_external_id: external_id)
+    found = @client.offers_in_drugstore(goods: order_lines(items, refs), drugstore_external_id: external_id, share:)
       .find { it.drugstore_external_id == external_id }
     found ? offer(found, drugstore.id, refs) : Orders::Offers::DrugstoreOffer.unknown(drugstore.id)
   rescue StandardError => e

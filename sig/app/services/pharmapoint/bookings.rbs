@@ -1,0 +1,27 @@
+class Pharmapoint::Bookings
+  DELIVERY_TYPE_CODES: Hash[String, String]
+  PAYMENT_METHOD_CODES: Hash[String, String]
+  CLOCK_SKEW: ActiveSupport::Duration
+
+  attr_reader provider: Provider
+
+  @client: Pharmapoint::Client
+
+  def initialize: (provider: Provider, ?user_id: Integer?, ?config: Pharmapoint::Config,
+                   ?rate_limiter: Pharmapoint::RateLimiter) -> void
+  def submit: (Order order) -> (Pharmapoint::PartnerOrder | Orders::Bookings::Failure)
+  def find_submitted: (Order order, since: ActiveSupport::TimeWithZone?)
+                    -> (Pharmapoint::PartnerOrder | Orders::Bookings::Failure | nil)
+  def status: (Order order) -> (Pharmapoint::PartnerOrder | Orders::Bookings::Failure)
+
+  private
+
+  def body: (Order order) -> Hash[Symbol, untyped]
+  def receiving: (Order order) -> Hash[Symbol, Hash[Symbol, String]]
+  def customer: (Order order) -> Hash[Symbol, String]
+  def line: (Order::Item item) -> Hash[Symbol, untyped]
+  def money: (Numeric amount) -> String
+  def same?: (Pharmapoint::PartnerOrder partner_order, Order order, ActiveSupport::TimeWithZone? since) -> bool
+  def quantities: (Array[[ String?, BigDecimal ]] pairs) -> Hash[String?, BigDecimal]
+  def failure: (StandardError error) -> Orders::Bookings::Failure
+end

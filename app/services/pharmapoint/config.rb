@@ -48,6 +48,14 @@ class Pharmapoint::Config
     setting :rate_limit_per_minute, default: 15, constructor: INTEGER
   end
 
+  # Making an order and reading it back: a user waits for the order, which the partner may make slowly, so the read
+  # timeout is longer than the cart's. These calls spend no share: the shares of the search and the cart cannot leave a
+  # booking without a budget.
+  setting :booking, reader: true do
+    setting :open_timeout, default: 1, constructor: INTEGER
+    setting :read_timeout, default: 10, constructor: INTEGER
+  end
+
   # Days a request log entry is kept, per category of the log.
   setting :log_retention_days, reader: true do
     setting :booking, default: 14, constructor: INTEGER

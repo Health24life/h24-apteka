@@ -43,6 +43,8 @@ gem 'activeadmin', '4.0.0.beta23'
 gem 'activeadmin-tom_select'
 # Per-action authorization for the admin panel, via ActiveAdmin's built-in PunditAdapter. Policies live in app/policies.
 gem 'pundit'
+# Cloudflare Turnstile checked on the server, as in system_ruby, so bots do not book.
+gem 'rails_cloudflare_turnstile', '~> 0.4'
 # Authentication backing ActiveAdmin's AdminUser model [https://github.com/heartcombo/devise]
 gem 'devise'
 # Standalone Tailwind CSS CLI binary (no Node) to build ActiveAdmin's stylesheet.

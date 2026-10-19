@@ -1,0 +1,29 @@
+class Orders::Bookings::Request < Data
+  type value = Catalog::Search::Queries::Build::value
+
+  class Line < Data
+    attr_reader quantity: Integer
+    attr_reader price: BigDecimal
+
+    def self.new: (quantity: Integer, price: BigDecimal) -> instance
+  end
+
+  NAME_LENGTH: Integer
+  CUSTOMER_FIELDS: Array[String]
+  NAMES: Array[String]
+
+  attr_reader goods: Hash[Integer, Line]
+  attr_reader customer: Hash[String, String?]
+  attr_reader register_account: bool
+
+  def self.new: (goods: Hash[Integer, Line], customer: Hash[String, String?], register_account: bool) -> instance
+  def self.from: (Hash[String, untyped] body) -> instance
+  def self.goods: (untyped value) -> Hash[Integer, Line]
+  def self.line: (untyped entry) -> [ Integer, Line ]?
+  def self.customer: (untyped value) -> Hash[String, String?]
+  def self.check_names!: (Hash[String, String?] fields) -> void
+  def self.invalid!: (String field) -> bot
+  def self.refuse: (Symbol code, ?Symbol status, ?details: Hash[Symbol, untyped]?) -> bot
+
+  def matches?: (untyped items) -> bool
+end

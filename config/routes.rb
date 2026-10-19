@@ -33,6 +33,7 @@ Rails.application.routes.draw do
         get :current, on: :collection
         scope module: :orders do
           resources :items, only: %i[create update destroy]
+          resource :booking, only: :create
         end
       end
     end

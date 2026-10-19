@@ -40,6 +40,15 @@ PHARMAPOINT_SEARCH_PER_PAGE = "20"
 PHARMAPOINT_CART_RATE_LIMIT_PER_MINUTE = "15"
 PHARMAPOINT_CART_OPEN_TIMEOUT = "1"
 PHARMAPOINT_CART_READ_TIMEOUT = "3"
+# Making an order at the partner and reading it back: timeouts in seconds. The partner may make an order slowly.
+PHARMAPOINT_BOOKING_OPEN_TIMEOUT = "1"
+PHARMAPOINT_BOOKING_READ_TIMEOUT = "10"
+# Drugstores of the directory booking is allowed in (the pilot), ids comma-separated; an empty value turns booking off.
+APTEKA_BOOKING_DRUGSTORE_IDS = ""
+# Keys of Cloudflare Turnstile that guards booking from bots. Without them the check is off outside production, where
+# a booking is then refused; in development and tests the front sends "mocked".
+CF_TURNSTILE_SITE_KEY = ""
+CF_TURNSTILE_SECRET_KEY = ""
 # Days a guest's cart lives after its last change; a daily job removes older ones. An account's cart has no end.
 APTEKA_GUEST_CART_TTL_DAYS = "7"
 # When the daily job removes the abandoned guest carts; an empty value turns it off.

@@ -13,4 +13,6 @@ class Catalog::DrugstoreBlueprint < Blueprinter::Base
   field(:latitude) { |drugstore| drugstore.address&.latitude&.to_f }
   field(:longitude) { |drugstore| drugstore.address&.longitude&.to_f }
   field(:phone) { |drugstore| drugstore.phone || drugstore.mobile_phone }
+  # Booking goes only to the drugstores of the pilot.
+  field(:booking_available) { |drugstore| Orders::Bookings.config.allowed?(drugstore.id) }
 end

@@ -1,0 +1,18 @@
+module Orders::Bookings::Adapters
+  # What is asked of a provider's adapter: make an order, and find one an earlier attempt may have made.
+  interface _Adapter
+    def provider: () -> Provider
+    def submit: (Order order) -> (Pharmapoint::PartnerOrder | Orders::Bookings::Failure)
+    def find_submitted: (Order order, since: ActiveSupport::TimeWithZone?)
+                      -> (Pharmapoint::PartnerOrder | Orders::Bookings::Failure | nil)
+    def status: (Order order) -> (Pharmapoint::PartnerOrder | Orders::Bookings::Failure)
+  end
+
+  interface _AdapterClass
+    def new: (provider: Provider, ?user_id: Integer?) -> _Adapter
+  end
+
+  BY_CODE: Hash[String, _AdapterClass]
+
+  def self.for: (Provider provider, ?user_id: Integer?) -> _Adapter?
+end

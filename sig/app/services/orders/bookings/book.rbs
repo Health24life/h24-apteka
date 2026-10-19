@@ -1,0 +1,31 @@
+class Orders::Bookings::Book
+  class Result < Data
+    attr_reader order: Order
+    attr_reader submitted: bool
+
+    def self.new: (order: Order, submitted: bool) -> instance
+  end
+
+  @owner: Orders::Carts::Owner
+  @request: Orders::Bookings::Request
+
+  def self.call: (Orders::Carts::Owner owner, Orders::Bookings::Request request) -> Result
+
+  def initialize: (Orders::Carts::Owner owner, Orders::Bookings::Request request) -> void
+  def call: () -> Result
+
+  private
+
+  def bookable: () -> Order
+  def confirmed: (Order order) -> Orders::Offers::DrugstoreOffer
+  def take_client: (Order order) -> void
+  def sent_before: (Order order) -> Pharmapoint::PartnerOrder?
+  def send_to_provider: (Order order, Orders::Offers::DrugstoreOffer offer) -> Result
+  def accepted: (Order order, Orders::Offers::DrugstoreOffer offer, Pharmapoint::PartnerOrder partner_order) -> Result
+  def partner_state: (Pharmapoint::PartnerOrder partner_order) -> Hash[Symbol, untyped]
+  def keep: (Order order) -> void
+  def adapter: (Order order) -> Orders::Bookings::Adapters::_Adapter
+  def busy: (Integer? retry_after) -> bot
+  def unavailable: () -> bot
+  def refuse: (Symbol code, Symbol status) -> bot
+end

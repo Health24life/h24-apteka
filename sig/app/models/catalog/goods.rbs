@@ -13,6 +13,7 @@ class Catalog::Goods
   RESTRICTIONS: Array[Symbol]
 
   def name_uk: () -> String?
+  def name: () -> String?
 
   private
 

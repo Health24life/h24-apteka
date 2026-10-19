@@ -9,6 +9,14 @@ gems:
     revision: aa277106e7cbbabd01ff57ee6988271e19000f34
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
+- name: actionmailbox
+  version: '8.1'
+  source:
+    type: git
+    name: ruby/gem_rbs_collection
+    revision: 957ba06520fbe2f6d6633ceaedcced6324fa9d39
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    repo_dir: gems
 - name: actionmailer
   version: '7.0'
   source:

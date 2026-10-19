@@ -1,0 +1,17 @@
+class Pharmapoint::Readers::PartnerOrders
+  include Pharmapoint::Readers::Base
+
+  ZONE: String
+
+  def self.one: (Pharmapoint::json body) -> Pharmapoint::PartnerOrder
+  def self.many: (Pharmapoint::json body) -> Array[Pharmapoint::PartnerOrder]
+
+  def one: (Pharmapoint::json body) -> Pharmapoint::PartnerOrder
+  def many: (Pharmapoint::json body) -> Array[Pharmapoint::PartnerOrder]
+
+  private
+
+  def order: (Pharmapoint::json record) -> Pharmapoint::PartnerOrder?
+  def lines: (Pharmapoint::Readers::Base::record record) -> Array[Pharmapoint::PartnerOrderLine]
+  def time: (Pharmapoint::json value) -> ActiveSupport::TimeWithZone?
+end

@@ -3,6 +3,12 @@ class Order::Item
   MAX_QUANTITY: BigDecimal
   MAX_AMOUNT: BigDecimal
 
+  # Readers and writers money-rails adds for the money columns.
+  def price: () -> Money?
+  def price=: (Numeric | Money | String | nil value) -> void
+  def total: () -> Money?
+  def total=: (Numeric | Money | String | nil value) -> void
+
   private
 
   def in_cart?: () -> bool
