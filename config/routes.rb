@@ -28,11 +28,11 @@ Rails.application.routes.draw do
     namespace :v1 do
       post 'search', to: 'search#create'
       post 'goods/:id/drugstores', to: 'goods/drugstores#create', as: :goods_drugstores
-      get 'cart', to: 'cart#show'
-      delete 'cart', to: 'cart#destroy'
-      post 'cart/items', to: 'cart/items#create', as: :cart_items
-      patch 'cart/items/:id', to: 'cart/items#update', as: :cart_item
-      delete 'cart/items/:id', to: 'cart/items#destroy'
+      resource :cart, only: %i[show destroy] do
+        scope module: :carts do
+          resources :items, only: %i[create update destroy]
+        end
+      end
     end
   end
 

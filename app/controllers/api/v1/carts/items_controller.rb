@@ -2,7 +2,7 @@
 
 # The items of the cart. The first item makes the cart, bound to the drugstore it is put in; every item put in or
 # changed is checked live against what that drugstore has.
-class Api::V1::Cart::ItemsController < ApiController
+class Api::V1::Carts::ItemsController < ApiController
   include CartActions
 
   def create
