@@ -32,16 +32,9 @@ class Orders::Bookings::OrderBlueprint < Blueprinter::Base
       phone: order.drugstore_phone
     }
   end
-  field(:items) do |order|
-    order.items.order(:id).map do |item|
-      {
-        goods_id: item.goods_id,
-        name: item.name,
-        quantity: item.quantity.to_i,
-        price: MONEY.call(item.price),
-        total: MONEY.call(item.total)
-      }
-    end
+  field(:total, preload: :items) { |order| MONEY.call(order.items.sum { it.total || 0 }) }
+
+  association :items, blueprint: Orders::Bookings::ItemBlueprint do |order, _options|
+    order.items.sort_by(&:id)
   end
-  field(:total) { |order| MONEY.call(order.items.sum { it.total || 0 }) }
 end

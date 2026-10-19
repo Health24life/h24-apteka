@@ -87,6 +87,8 @@ gem 'activerecord-import', '~> 2.3'
 
 # Serializes the API responses.
 gem 'blueprinter', '~> 1.3'
+# Preloads the associations a blueprint declares with `preload:` on its fields, as in system_ruby.
+gem 'blueprinter-activerecord', '~> 1.3'
 
 # HTTP client for the Pharmapoint partner API; Typhoeus is the adapter the ecosystem uses (libcurl, no GET-body quirks).
 gem 'faraday', '~> 2.14'
