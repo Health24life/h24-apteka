@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-# Puts a SKU in the cart of the one who asks. The first one makes the cart, bound to the drugstore picked and to a
-# provider that serves both; later ones go only to that drugstore. A SKU already in the cart adds to its item. Every
+# Puts a SKU in the cart of the one who asks. Without a token, the first one makes the cart, bound to the drugstore
+# picked and to a provider that serves both, unless the signed-in user has a cart already; with the token of a cart,
+# the SKU goes to that cart, and only for its drugstore. A SKU already in the cart adds to its item. Every
 # change is checked live against what the drugstore has, and nothing is saved when the check refuses or cannot be made.
 class Orders::Carts::AddItem
   Result = Data.define(:view, :created)
@@ -18,7 +19,10 @@ class Orders::Carts::AddItem
   def call
     goods = Orders::Offers::Nearby.find_goods(@goods_id) || refuse(:goods_not_found, :not_found)
     cart = Orders::Carts::Find.call(@owner)
-    cart ? add(Orders::Carts::Opening.tidy(cart), goods) : create(goods)
+    return add(Orders::Carts::Opening.tidy(cart), goods) if cart
+    return create(goods) unless @owner.token
+
+    Orders::Carts::Opening.not_found
   end
 
   private

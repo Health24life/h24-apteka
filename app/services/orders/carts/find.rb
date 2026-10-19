@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# The cart of the one who asks. A guest's cart is found by its secret token; an account's by the user. With both, right
-# after signing in, the guest's cart goes to the account only when the account has none: carts are never merged, and
-# the guest's one is left to live out its days.
+# The cart of the one who asks. With a token, the cart of that token: a guest's cart opens to anyone with the token,
+# an account's cart only with the session of its user. A signed-in user who opens a guest's cart takes it to the
+# account when the account has none; carts are never merged. Without a token, the cart of the signed-in user.
 class Orders::Carts::Find
   def self.call(owner) = new(owner).call
 
@@ -11,29 +11,33 @@ class Orders::Carts::Find
   end
 
   def call
-    guest = guest_cart
-    user_id = @owner.user_id
-    return guest unless user_id
+    token = @owner.token
+    return account_cart unless token
 
-    account = Order.cart.find_by(user_id:)
-    return account if account
-
-    claim(guest, user_id) if guest
+    cart = Order.cart.find_by(token:)
+    cart && opened(cart)
   end
 
   private
 
-  # A token of a cart that went to an account, or of an order already sent, finds nothing.
-  def guest_cart
-    token = @owner.token
-    Order.cart.find_by(token:, user_id: nil) if token
+  def account_cart
+    user_id = @owner.user_id
+    Order.cart.find_by(user_id:) if user_id
   end
 
-  # Two requests may claim at once; the unique cart of a user lets one through, and the other takes its cart.
+  def opened(cart)
+    user_id = @owner.user_id
+    owner_id = cart.user_id
+    return (cart if owner_id == user_id) if owner_id
+
+    user_id && !Order.cart.exists?(user_id:) ? claim(cart, user_id) : cart
+  end
+
+  # Two requests may claim at once; the unique cart of a user lets one through, and the other keeps the guest's cart.
   def claim(cart, user_id)
     cart.update!(user_id:)
     cart
   rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
-    Order.cart.find_by(user_id:)
+    cart.reload
   end
 end

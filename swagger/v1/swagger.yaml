@@ -4,177 +4,6 @@ info:
   title: Health24 Apteka API
   version: v1
 paths:
-  "/api/v1/cart/items":
-    parameters:
-    - name: X-Cart-Token
-      in: header
-      required: false
-      schema:
-        type: string
-      description: A guest's key to their cart; without a cart, the first item makes
-        one and its token comes back. A signed-in user is known by the Authorization
-        header
-    post:
-      summary: Puts a SKU in the cart
-      tags:
-      - Cart
-      description: The first SKU makes the cart, bound to the drugstore it is put
-        in; later ones go to that drugstore only, and one already in the cart adds
-        to its item. Each is checked live against what the drugstore has; nothing
-        is saved when the check refuses or cannot be made.
-      parameters: []
-      responses:
-        '201':
-          description: the first SKU made the cart; a guest gets its token
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/cart_response"
-        '200':
-          description: the SKU went to the cart that was there
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/cart_response"
-        '404':
-          description: goods_not_found or drugstore_not_found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error"
-        '409':
-          description: 'cart_drugstore_mismatch: the cart is in another drugstore;
-            clear it to start in this one'
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error"
-        '422':
-          description: 'invalid_quantity: not a whole number of packs from 1'
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error"
-        '503':
-          description: 'cart_check_unavailable, or cart_check_busy with Retry-After:
-            the stock could not be checked'
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/cart_item_request"
-        required: true
-  "/api/v1/cart/items/{id}":
-    parameters:
-    - name: X-Cart-Token
-      in: header
-      required: false
-      schema:
-        type: string
-      description: A guest's key to their cart; without a cart, the first item makes
-        one and its token comes back. A signed-in user is known by the Authorization
-        header
-    - name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-    patch:
-      summary: Sets the quantity of an item
-      tags:
-      - Cart
-      description: Checked live against what the drugstore has, as when a SKU is put
-        in.
-      parameters: []
-      responses:
-        '200':
-          description: the cart with the new quantity
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/cart_response"
-        '404':
-          description: 'cart_item_not_found: no such item in the cart'
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/cart_quantity_request"
-        required: true
-    delete:
-      summary: Takes an item out of the cart
-      tags:
-      - Cart
-      description: The cart goes with its last item; read the cart again for the rest.
-      responses:
-        '204':
-          description: the item is out
-        '404':
-          description: cart_item_not_found
-  "/api/v1/cart":
-    parameters:
-    - name: Authorization
-      in: header
-      required: false
-      schema:
-        type: string
-      description: Bearer token of a signed-in user, whose account has the cart
-    - name: X-Cart-Token
-      in: header
-      required: false
-      schema:
-        type: string
-      description: A guest's key to their cart. Sent with a session right after signing
-        in, it gives the guest's cart to the account when the account has none; carts
-        are never merged
-    get:
-      summary: Shows the cart with the live prices of its drugstore
-      tags:
-      - Cart
-      description: 'Prices and stock are asked of the provider live and never stored:
-        an item the drugstore has not now stays in the cart as not available. A provider
-        that does not answer gives the cart without prices, not an error. What can
-        no longer be sold is taken out and listed in `removed`; a cart whose drugstore
-        or provider went is gone.'
-      responses:
-        '200':
-          description: a signed-in user's cart, with no token in the answer
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/cart_response"
-        '404':
-          description: 'cart_not_found: no cart, a token of no cart, or a cart whose
-            drugstore or provider went'
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error"
-        '401':
-          description: an expired or invalid token
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error"
-    delete:
-      summary: Clears the cart for good
-      tags:
-      - Cart
-      description: Removes the cart with its items, so a cart can be started in another
-        drugstore.
-      responses:
-        '204':
-          description: the cart is gone
-        '404':
-          description: cart_not_found
   "/api/v1/goods/{id}/drugstores":
     post:
       summary: Lists the drugstores around that have a SKU, with its price there
@@ -249,6 +78,244 @@ paths:
           application/json:
             schema:
               "$ref": "#/components/schemas/drugstores_request"
+  "/api/v1/orders/{order_token}/items":
+    parameters:
+    - name: order_token
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Token of the cart
+    post:
+      summary: Puts a SKU in the cart
+      tags:
+      - Cart
+      description: The SKU goes to the drugstore of the cart only, and one already
+        in the cart adds to its item. It is checked live against what the drugstore
+        has; nothing is saved when the check refuses or cannot be made.
+      parameters: []
+      responses:
+        '200':
+          description: the SKU went to the cart
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cart_response"
+        '404':
+          description: cart_not_found, goods_not_found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '409':
+          description: 'cart_drugstore_mismatch: the cart is in another drugstore;
+            clear it to start in this one'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '422':
+          description: 'invalid_quantity: not a whole number of packs from 1'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/cart_item_request"
+        required: true
+  "/api/v1/orders/{order_token}/items/{id}":
+    parameters:
+    - name: order_token
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Token of the cart
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Sets the quantity of an item
+      tags:
+      - Cart
+      description: Checked live against what the drugstore has, as when a SKU is put
+        in.
+      parameters: []
+      responses:
+        '200':
+          description: the cart with the new quantity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cart_response"
+        '404':
+          description: 'cart_item_not_found: no such item in the cart'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/cart_quantity_request"
+        required: true
+    delete:
+      summary: Takes an item out of the cart
+      tags:
+      - Cart
+      description: The cart goes with its last item; read the cart again for the rest.
+      responses:
+        '204':
+          description: the item is out
+        '404':
+          description: cart_item_not_found
+  "/api/v1/orders":
+    parameters:
+    - name: Authorization
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Bearer token of a signed-in user; the cart of an account opens
+        only with it
+    post:
+      summary: Makes the cart with its first SKU
+      tags:
+      - Cart
+      description: A cart is an order in the cart state, bound to the drugstore its
+        first SKU is put in. The answer gives `token`, the owner's key to the cart
+        used in the path of every call on it, and `share_token` for a link anyone
+        can open to look. A signed-in user who has a cart already gets the SKU put
+        in it. The SKU is checked live against what the drugstore has; nothing is
+        saved when the check refuses or cannot be made.
+      parameters: []
+      responses:
+        '201':
+          description: the cart is made, with its token and its share token
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cart_response"
+        '200':
+          description: 'a signed-in user had a cart: the SKU went to it'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cart_response"
+        '404':
+          description: goods_not_found or drugstore_not_found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '422':
+          description: quantity_exceeds_stock, goods_not_in_drugstore or invalid_quantity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '503':
+          description: 'cart_check_unavailable, or cart_check_busy with Retry-After:
+            the stock could not be checked'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/cart_item_request"
+        required: true
+  "/api/v1/orders/current":
+    parameters:
+    - name: Authorization
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Bearer token of a signed-in user; the cart of an account opens
+        only with it
+    get:
+      summary: Shows the signed-in user's cart
+      tags:
+      - Cart
+      description: The way a signed-in user learns the token of the account's cart.
+      responses:
+        '200':
+          description: the account's cart with live prices
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cart_response"
+        '404':
+          description: 'cart_not_found: the account has no cart, or there is no session'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+  "/api/v1/orders/{token}":
+    parameters:
+    - name: Authorization
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Bearer token of a signed-in user; the cart of an account opens
+        only with it
+    - name: token
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Token of the cart
+    get:
+      summary: Shows the cart with the live prices of its drugstore
+      tags:
+      - Cart
+      description: 'Prices and stock are asked of the provider live and never stored:
+        an item the drugstore has not now stays in the cart as not available. A provider
+        that does not answer gives the cart without prices, not an error. What can
+        no longer be sold is taken out and listed in `removed`; a cart whose drugstore
+        or provider went is gone. A signed-in user who opens a guest''s cart takes
+        it to the account when the account has none; carts are never merged.'
+      responses:
+        '200':
+          description: 'the provider did not answer: the items without prices'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cart_response"
+        '404':
+          description: 'cart_not_found: no such cart, an account''s cart without its
+            session, or a cart that went'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '401':
+          description: an expired or invalid session
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+    delete:
+      summary: Clears the cart for good
+      tags:
+      - Cart
+      description: Removes the cart with its items, so a cart can be started in another
+        drugstore.
+      responses:
+        '204':
+          description: the cart is gone
+        '404':
+          description: cart_not_found
   "/api/v1/search":
     post:
       summary: Searches the providers live for goods by name
@@ -312,6 +379,32 @@ paths:
             schema:
               "$ref": "#/components/schemas/search_request"
         required: true
+  "/api/v1/shared/orders/{share_token}":
+    parameters:
+    - name: share_token
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Shows a cart by its shared link
+      tags:
+      - Cart
+      description: 'Anyone with the link sees the drugstore, the items and their live
+        prices, and can change nothing: the owner''s token is not given.'
+      responses:
+        '200':
+          description: the cart, without the token of its owner
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cart_response"
+        '404':
+          description: 'cart_not_found: no cart has this link'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
 components:
   securitySchemes:
     bearer:
@@ -641,7 +734,7 @@ components:
         drugstore_id:
           type: integer
           description: The drugstore picked from the list of drugstores with the price
-            of the SKU; the drugstore of the cart when it has items
+            of the SKU; the drugstore of the cart when the SKU goes to a cart
         quantity:
           type: integer
           minimum: 1
@@ -672,8 +765,11 @@ components:
       properties:
         token:
           type: string
-          description: A guest's secret key to the cart, sent back in `X-Cart-Token`;
-            given to a guest only
+          description: The owner's key to the cart, used in the path of every call
+            on it; not given by a shared link
+        share_token:
+          type: string
+          description: Key of the link anyone can open to look at the cart
         drugstore:
           "$ref": "#/components/schemas/drugstore"
         prices_available:

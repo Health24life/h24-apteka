@@ -246,7 +246,7 @@ RSpec.configure do |config|
               drugstore_id: {
                 type: :integer,
                 description: 'The drugstore picked from the list of drugstores with the price of the SKU; the ' \
-                             'drugstore of the cart when it has items'
+                             'drugstore of the cart when the SKU goes to a cart'
               },
               quantity: { type: :integer, minimum: 1, description: 'Whole packs, added to those already in the cart' }
             }
@@ -267,8 +267,10 @@ RSpec.configure do |config|
             properties: {
               token: {
                 type: :string,
-                description: "A guest's secret key to the cart, sent back in `X-Cart-Token`; given to a guest only"
+                description: "The owner's key to the cart, used in the path of every call on it; not given by a " \
+                             'shared link'
               },
+              share_token: { type: :string, description: 'Key of the link anyone can open to look at the cart' },
               drugstore: { '$ref' => '#/components/schemas/drugstore' },
               prices_available: {
                 type: :boolean,

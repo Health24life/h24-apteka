@@ -1,29 +1,33 @@
 # frozen_string_literal: true
 
-# The items of the cart. The first item makes the cart, bound to the drugstore it is put in; every item put in or
-# changed is checked live against what that drugstore has.
-class Api::V1::Carts::ItemsController < ApiController
+# The items of a cart, reached by the token of the cart. Every item put in or changed is checked live against what the
+# drugstore of the cart has.
+class Api::V1::Orders::ItemsController < ApiController
   include CartActions
 
   def create
     body = params.to_unsafe_h
     result = Orders::Carts::AddItem.call(
-      cart_owner,
+      owner,
       goods_id: body['goods_id'],
       drugstore_id: body['drugstore_id'],
       quantity:
     )
-    render_cart(result.view, status: result.created ? :created : :ok)
+    render_cart(result.view)
   end
 
-  def update = render_cart(Orders::Carts::ChangeQuantity.call(cart_owner, item_id: params[:id], quantity:))
+  def update = render_cart(Orders::Carts::ChangeQuantity.call(owner, item_id: params[:id], quantity:))
 
   # The cart goes with its last item; the front reads the cart again for the rest.
   def destroy
-    cart = Orders::Carts::Opening.call(cart_owner).cart
+    cart = Orders::Carts::Opening.call(owner).cart
     item = cart.items.find_by(id: params[:id]) ||
            raise(Orders::Carts::Refused.new(:cart_item_not_found, status: :not_found))
     Orders::Carts::RemoveItem.call(item)
     head :no_content
   end
+
+  private
+
+  def owner = cart_owner(params[:order_token])
 end

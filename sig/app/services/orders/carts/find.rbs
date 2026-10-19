@@ -8,6 +8,8 @@ class Orders::Carts::Find
 
   private
 
-  def guest_cart: () -> Order?
-  def claim: (Order cart, Integer user_id) -> Order?
+  def account_cart: () -> Order?
+  def opened: (Order cart) -> Order?
+
+  def claim: (Order cart, Integer user_id) -> Order
 end

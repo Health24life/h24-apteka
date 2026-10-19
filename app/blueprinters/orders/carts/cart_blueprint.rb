@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-# The cart as the user sees it. The token is given to a guest only: it is the guest's key to the cart. Prices are in
-# hryvnias as strings, live, and only for the items the drugstore has in full.
+# The cart as the user sees it. The token, the owner's key to the cart, is given to the owner only; the share token
+# makes the link anyone can open to look. Prices are in hryvnias as strings, live, and only for the items the drugstore
+# has in full.
 class Orders::Carts::CartBlueprint < Blueprinter::Base
   MONEY = ->(amount) { amount && ActiveSupport::NumberHelper.number_to_rounded(amount, precision: 2) }
 
-  field(:token, if: ->(_name, _view, options) { options[:guest] }) { |view| view.cart.token }
+  field(:token, unless: ->(_name, _view, options) { options[:shared] }) { |view| view.cart.token }
+  field(:share_token) { |view| view.cart.share_token }
   field(:drugstore) { |view| Catalog::DrugstoreBlueprint.render_as_hash(view.cart.drugstore) }
   field :prices_available
   field(:items) do |view|

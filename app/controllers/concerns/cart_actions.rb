@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # What the endpoints of the cart share: the owner of the request, the refusals of the cart and how a cart is answered.
-# A guest is known by the secret token of their cart in the X-Cart-Token header, a user by the session; the API takes
-# no cookies.
+# The owner reaches the cart by its token in the path; a signed-in user also by the session, which a cart of an account
+# asks for. The API takes no cookies.
 module CartActions
   extend ActiveSupport::Concern
 
@@ -20,12 +20,12 @@ module CartActions
 
   private
 
-  def cart_owner
-    @cart_owner ||= Orders::Carts::Owner.new(user_id: current_user_id, token: request.headers['X-Cart-Token'].presence)
+  def cart_owner(token = nil)
+    Orders::Carts::Owner.new(user_id: current_user_id, token:)
   end
 
-  def render_cart(view, status: :ok)
-    render json: { cart: Orders::Carts::CartBlueprint.render_as_hash(view, guest: cart_owner.guest?) }, status:
+  def render_cart(view, status: :ok, shared: false)
+    render json: { cart: Orders::Carts::CartBlueprint.render_as_hash(view, shared:) }, status:
   end
 
   # Whole packs only, so a fraction or a string is refused before the provider is asked.

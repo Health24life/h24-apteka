@@ -52,7 +52,6 @@ RSpec/NestedGroups:
 RSpec/VariableName:
   AllowedPatterns:
     - '\AAuthorization\z'
-    - '\AX-Cart-Token\z'
 
 # A multi-line call reads top-down: chained calls are indented one step under the receiver instead of aligned to its
 # first dot, and arguments that do not fit on one line each go on their own line, starting with the first.
