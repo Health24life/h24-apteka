@@ -40,6 +40,14 @@ class Pharmapoint::Config
     setting :rate_limit_per_minute, default: 40, constructor: INTEGER
   end
 
+  # Live prices and stock of drugstores, asked for the cart and the pharmacy list while a user waits; like the search,
+  # with short timeouts and a share of the limit of its own.
+  setting :cart, reader: true do
+    setting :open_timeout, default: 1, constructor: INTEGER
+    setting :read_timeout, default: 3, constructor: INTEGER
+    setting :rate_limit_per_minute, default: 15, constructor: INTEGER
+  end
+
   # Days a request log entry is kept, per category of the log.
   setting :log_retention_days, reader: true do
     setting :booking, default: 14, constructor: INTEGER

@@ -1,0 +1,10 @@
+class Orders::Offers::Failure < Data
+  type reason = :unavailable | :rate_limited
+
+  attr_reader reason: reason
+  attr_reader retry_after: Integer?
+
+  def self.new: (reason: reason, retry_after: Integer?) -> instance
+
+  def rate_limited?: () -> bool
+end

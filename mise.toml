@@ -35,6 +35,11 @@ PHARMAPOINT_SEARCH_RATE_LIMIT_PER_MINUTE = "40"
 PHARMAPOINT_SEARCH_OPEN_TIMEOUT = "1"
 PHARMAPOINT_SEARCH_READ_TIMEOUT = "3"
 PHARMAPOINT_SEARCH_PER_PAGE = "20"
+# Live prices and stock of drugstores for the cart and the pharmacy list: their share of the request limit and their own
+# timeouts in seconds, short as a user waits for them.
+PHARMAPOINT_CART_RATE_LIMIT_PER_MINUTE = "15"
+PHARMAPOINT_CART_OPEN_TIMEOUT = "1"
+PHARMAPOINT_CART_READ_TIMEOUT = "3"
 # Codes of the providers the search asks, comma-separated; an empty value turns the search off and leaves the sync on.
 CATALOG_SEARCH_PROVIDERS = "pharmapoint"
 # Queries one search request may hold, and seconds the whole request may take.

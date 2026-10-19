@@ -5,6 +5,8 @@ class Pharmapoint::Client
   CATEGORY_TREE_PATH: String
   DRUGSTORES_PATH: String
   DRUGSTORE_PATH: String
+  OFFERS_NEARBY_PATH: String
+  OFFERS_IN_DRUGSTORE_PATH: String
   ERROR_BODY_LIMIT: Integer
 
   @config: Pharmapoint::Config
@@ -22,14 +24,22 @@ class Pharmapoint::Client
   def goods_group: (String external_id) -> Pharmapoint::GoodsGroup
   def drugstores: (Pharmapoint::SearchPoint point) -> Array[Pharmapoint::Drugstore]
   def drugstore: (String external_id) -> Pharmapoint::Drugstore
+  def offers_nearby: (goods: Array[Pharmapoint::OrderLine], location: Pharmapoint::SearchPoint) -> Array[Pharmapoint::Offer]
+  def offers_in_drugstore: (goods: Array[Pharmapoint::OrderLine], drugstore_external_id: String)
+                         -> Array[Pharmapoint::Offer]
 
   private
 
   type timeouts = Hash[Symbol, Integer | Float]
+  type params = Hash[Symbol, String | Integer | Float]
+  type body = Hash[Symbol, untyped]
 
-  def fetch: [T] (String path, ?Hash[Symbol, String | Integer | Float] params, ?share: Symbol?, ?timeouts: timeouts?)
+  def offer_line: (Pharmapoint::OrderLine line) -> { goods_id: String, quantity: Integer }
+  def deliver: [T] (String path, body body, params params) { (Pharmapoint::json) -> T } -> T
+
+  def fetch: [T] (String path, ?params params, ?body: body?, ?share: Symbol?, ?timeouts: timeouts?)
                { (Pharmapoint::json) -> T } -> T
-  def request: (String path, Hash[Symbol, String | Integer | Float] params, timeouts? timeouts) -> Faraday::Response
+  def request: (String path, params params, body? body, timeouts? timeouts) -> Faraday::Response
   def parse: (String? body) -> Pharmapoint::json
   def check_status!: (Faraday::Response response) -> void
   def rate_limited: (Faraday::Response response) -> Pharmapoint::RateLimited

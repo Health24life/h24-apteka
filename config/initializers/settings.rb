@@ -18,6 +18,11 @@ Rails.application.config.to_prepare do
     search.per_page = ENV.fetch('PHARMAPOINT_SEARCH_PER_PAGE', search.per_page)
     search.rate_limit_per_minute = ENV.fetch('PHARMAPOINT_SEARCH_RATE_LIMIT_PER_MINUTE', search.rate_limit_per_minute)
 
+    cart = config.cart
+    cart.open_timeout = ENV.fetch('PHARMAPOINT_CART_OPEN_TIMEOUT', cart.open_timeout)
+    cart.read_timeout = ENV.fetch('PHARMAPOINT_CART_READ_TIMEOUT', cart.read_timeout)
+    cart.rate_limit_per_minute = ENV.fetch('PHARMAPOINT_CART_RATE_LIMIT_PER_MINUTE', cart.rate_limit_per_minute)
+
     retention = config.log_retention_days
     retention.booking = ENV.fetch('PHARMAPOINT_LOG_RETENTION_BOOKING_DAYS', retention.booking)
     retention.search = ENV.fetch('PHARMAPOINT_LOG_RETENTION_SEARCH_DAYS', retention.search)

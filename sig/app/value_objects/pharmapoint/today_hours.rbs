@@ -1,0 +1,8 @@
+class Pharmapoint::TodayHours < Data
+  attr_reader from: String?
+  attr_reader to: String?
+  attr_reader open: bool?
+  attr_reader round_the_clock: bool
+
+  def self.new: (from: String?, to: String?, open: bool?, round_the_clock: bool) -> instance
+end

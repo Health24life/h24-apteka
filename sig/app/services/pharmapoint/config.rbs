@@ -22,6 +22,12 @@ class Pharmapoint::Config
     def rate_limit_per_minute: () -> Integer
   end
 
+  interface _Cart
+    def open_timeout: () -> Integer
+    def read_timeout: () -> Integer
+    def rate_limit_per_minute: () -> Integer
+  end
+
   interface _LogRetentionDays
     def booking: () -> Integer
     def search: () -> Integer
@@ -40,6 +46,7 @@ class Pharmapoint::Config
   def rate_limit: () -> _RateLimit
   def goods_groups_per_page: () -> Integer
   def search: () -> _Search
+  def cart: () -> _Cart
   def log_retention_days: () -> _LogRetentionDays
   def credentials!: () -> [ String, String ]
   def retention_for: (String | Symbol category) -> ActiveSupport::Duration

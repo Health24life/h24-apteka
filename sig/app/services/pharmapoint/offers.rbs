@@ -1,0 +1,24 @@
+class Pharmapoint::Offers
+  attr_reader provider: Provider
+
+  @client: Pharmapoint::Client
+
+  def initialize: (provider: Provider, ?user_id: Integer?, ?config: Pharmapoint::Config,
+                   ?rate_limiter: Pharmapoint::RateLimiter) -> void
+  def nearby: (Catalog::Goods goods, Orders::Offers::Adapters::_Location location)
+            -> (Array[Orders::Offers::DrugstoreOffer] | Orders::Offers::Failure)
+  def in_drugstore: (Catalog::Drugstore drugstore, Array[Orders::Offers::Adapters::_Item] items)
+                  -> (Orders::Offers::DrugstoreOffer | Orders::Offers::Failure)
+
+  private
+
+  def point: (Orders::Offers::Adapters::_Location location) -> Pharmapoint::SearchPoint
+  def order_lines: (Array[Orders::Offers::Adapters::_Item] items, Hash[Integer, String] refs) -> Array[Pharmapoint::OrderLine]
+  def drugstore_ref: (Catalog::Drugstore drugstore) -> String
+  def sku: (Orders::Offers::Adapters::_Item item) -> Catalog::Goods
+  def goods_refs: (Array[Catalog::Goods] goods) -> Hash[Integer, String]
+  def drugstore_ids: (Array[String] external_ids) -> Hash[String, Integer]
+  def offer: (Pharmapoint::Offer offer, Integer? drugstore_id, Hash[Integer, String] refs) -> Orders::Offers::DrugstoreOffer
+  def lines: (Array[Pharmapoint::OfferItem]? items, Hash[String, Integer] goods_ids) -> Array[Orders::Offers::Line]?
+  def failure: (StandardError error) -> Orders::Offers::Failure
+end

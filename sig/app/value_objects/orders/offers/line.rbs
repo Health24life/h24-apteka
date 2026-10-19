@@ -1,0 +1,8 @@
+class Orders::Offers::Line < Data
+  attr_reader goods_id: Integer
+  attr_reader fulfilled: bool
+  attr_reader price: BigDecimal?
+  attr_reader available_quantity: Integer
+
+  def self.new: (goods_id: Integer, fulfilled: bool, price: BigDecimal?, available_quantity: Integer) -> instance
+end

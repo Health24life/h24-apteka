@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-# Reads the catalog and the drugstore directory from the partner API. Every call is paced against the partner's
-# request limit, logged, and answers with plain values: live fields are dropped by the readers.
+# Reads the catalog and the drugstore directory from the partner API, and the live prices and stock of drugstores. Every
+# call is paced against the partner's request limit, logged, and answers with plain values: the catalog readers drop the
+# live fields, the offer readers keep only them.
 class Pharmapoint::Client
   GOODS_GROUPS_PATH = 'goods-group/search'
   GOODS_GROUP_PATH = 'goods-group/get-by-id'
@@ -9,6 +10,9 @@ class Pharmapoint::Client
   CATEGORY_TREE_PATH = 'category/tree'
   DRUGSTORES_PATH = 'drugstore'
   DRUGSTORE_PATH = 'drugstore/%<id>s'
+  # The two differ by one letter: the plural one looks around a point, the singular one in the drugstores named.
+  OFFERS_NEARBY_PATH = 'order/get-drugstores-for-order-goods'
+  OFFERS_IN_DRUGSTORE_PATH = 'order/get-drugstore-for-order-goods'
   ERROR_BODY_LIMIT = 500
 
   # rubocop:disable-next Metrics/ParameterLists -- who asks, why and which attempt it is are the log's context.
@@ -65,13 +69,37 @@ class Pharmapoint::Client
     fetch(format(DRUGSTORE_PATH, id: external_id)) { Pharmapoint::Readers::Drugstores.one(it) }
   end
 
+  # The drugstores around a point that have the goods, each with its price and the quantity it has. Only drugstores with
+  # stock are asked for. No client's phone goes with it.
+  def offers_nearby(goods:, location:)
+    body = { goods: goods.map { offer_line(it) }, **location.to_h }
+    deliver(OFFERS_NEARBY_PATH, body, { with_empty_stock: 0 }) { Pharmapoint::Readers::Offers.call(it) }
+  end
+
+  # What one drugstore has of the goods. Drugstores without stock are asked for too, so that a missing item comes back
+  # as such rather than as no drugstore at all.
+  def offers_in_drugstore(goods:, drugstore_external_id:)
+    body = { goods: goods.map { offer_line(it) }, drugstore_id: drugstore_external_id }
+    deliver(OFFERS_IN_DRUGSTORE_PATH, body, { with_empty_stock: 1 }) { Pharmapoint::Readers::Offers.call(it) }
+  end
+
   private
 
-  # The key is checked first: a call that cannot be sent does not spend the request limit.
-  def fetch(path, params = {}, share: nil, timeouts: nil)
+  def offer_line(line) = { goods_id: line.external_id, quantity: line.quantity }
+
+  # The live offers spend the cart's share of the limit and have its short timeouts.
+  def deliver(path, body, params, &)
+    cart = @config.cart
+    timeouts = { open_timeout: cart.open_timeout, timeout: cart.read_timeout }
+    fetch(path, params, body:, share: :cart, timeouts:, &)
+  end
+
+  # The key is checked first: a call that cannot be sent does not spend the request limit. A call with a body is sent
+  # as a POST of JSON.
+  def fetch(path, params = {}, body: nil, share: nil, timeouts: nil)
     @config.credentials!
     @rate_limiter.guard!(share:)
-    response = request(path, params, timeouts)
+    response = request(path, params, body, timeouts)
     @rate_limiter.record(response.headers)
     check_status!(response)
     yield parse(response.body)
@@ -80,8 +108,12 @@ class Pharmapoint::Client
     raise
   end
 
-  def request(path, params, timeouts)
-    connection(timeouts).get(path, params)
+  def request(path, params, body, timeouts)
+    connection = connection(timeouts)
+    return connection.get(path, params) unless body
+
+    url = params.empty? ? path : "#{path}?#{params.to_query}"
+    connection.post(url, JSON.generate(body), 'Content-Type' => 'application/json')
   rescue Faraday::Error => e
     raise Pharmapoint::TransientError, @masker.text(e.message)
   end

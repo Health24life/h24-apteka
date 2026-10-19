@@ -1,0 +1,30 @@
+module Orders::Offers::Adapters
+  # What a line of a cart gives the adapter: the SKU and the quantity wanted.
+  interface _Item
+    def goods: () -> Catalog::Goods?
+    def quantity: () -> BigDecimal
+  end
+
+  interface _Location
+    def latitude: () -> Float
+    def longitude: () -> Float
+    def radius: () -> Integer
+  end
+
+  # What is asked of a provider's adapter: the drugstores around a place for a SKU, and one drugstore for the items.
+  interface _Adapter
+    def provider: () -> Provider
+    def nearby: (Catalog::Goods goods, _Location location)
+              -> (Array[Orders::Offers::DrugstoreOffer] | Orders::Offers::Failure)
+    def in_drugstore: (Catalog::Drugstore drugstore, Array[_Item] items)
+                    -> (Orders::Offers::DrugstoreOffer | Orders::Offers::Failure)
+  end
+
+  interface _AdapterClass
+    def new: (provider: Provider, ?user_id: Integer?) -> _Adapter
+  end
+
+  BY_CODE: Hash[String, _AdapterClass]
+
+  def self.for: (Provider provider, ?user_id: Integer?) -> _Adapter?
+end

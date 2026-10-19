@@ -1,0 +1,66 @@
+{
+  "data": [
+    {
+      "id": 32953,
+      "ext_drugstore_id": "128",
+      "state": "Львівська обл.",
+      "city": "Львів",
+      "city_id": 422,
+      "legal_entity_name": "Соломия-Сервис ЧП г.Львов",
+      "legal_entity_code": "30163496",
+      "drugstore_brand": {
+        "image_url": "drugstore_brand_photo/fFd2n1Cj81hhmvY8.png",
+        "name": "БАМ",
+        "id": 76
+      },
+      "name": "Аптека №128, \"БАМ\"",
+      "address": "м.Львів, вул.Широка,64",
+      "coordinates": {
+        "latitude": 49.842355,
+        "longitude": 23.969999
+      },
+      "average_order_processing_time": 0,
+      "photos": [],
+      "phone": "380000000000",
+      "mobile_phone": "380000000000",
+      "email": "drugstore0@example.ua",
+      "distance": null,
+      "working_hours": {
+        "from": "08:00",
+        "to": "21:00",
+        "is_open": true,
+        "is_24h": false
+      },
+      "week_working_hours": [
+        "08:00-21:00",
+        "08:00-21:00",
+        "08:00-21:00",
+        "08:00-21:00",
+        "08:00-21:00",
+        "08:00-21:00",
+        "08:00-21:00"
+      ],
+      "work_with_reimbursement": true,
+      "order": {
+        "goods": [
+          {
+            "goods_id": "7592415d-7896-11e4-881f-001d60d868ae",
+            "ext_goods_id": "30721",
+            "is_fulfilled": true,
+            "online_price": 144.67,
+            "drugstore_price": 162.5,
+            "quantity": 1,
+            "online_total": 144.67,
+            "drugstore_total": 162.5
+          }
+        ],
+        "completeness": {
+          "complete": 1,
+          "total": 1
+        },
+        "online_total": 144.67,
+        "drugstore_total": 162.5
+      }
+    }
+  ]
+}

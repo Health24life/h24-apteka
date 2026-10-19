@@ -1,0 +1,16 @@
+class Orders::Offers::DrugstoreOffer < Data
+  attr_reader drugstore_id: Integer?
+  attr_reader distance: Integer?
+  attr_reader open_now: bool?
+  attr_reader opens_at: String?
+  attr_reader closes_at: String?
+  attr_reader round_the_clock: bool
+  attr_reader lines: Array[Orders::Offers::Line]?
+
+  def self.new: (drugstore_id: Integer?, distance: Integer?, open_now: bool?, opens_at: String?, closes_at: String?,
+                 round_the_clock: bool, lines: Array[Orders::Offers::Line]?) -> instance
+  def self.unknown: (Integer drugstore_id) -> instance
+
+  def known?: () -> bool
+  def line_for: (Integer goods_id) -> Orders::Offers::Line?
+end
