@@ -47,23 +47,19 @@ RSpec.describe 'The cart', :partner_calls do
     post 'Makes the cart with its first SKU' do
       tags 'Cart'
       description 'A cart is an order in the cart state, bound to the drugstore its first SKU is put in. The answer ' \
-                  "gives `token`, the owner's key to the cart used in the path of every call on it, and " \
-                  '`share_token` for a link anyone can open to look. A signed-in user who has a cart already gets ' \
-                  'the SKU put in it. The SKU is checked live against what the drugstore has; nothing is saved when ' \
-                  'the check refuses or cannot be made.'
+                  "gives `token`, the owner's key to the cart used in the path of every call on it. A signed-in " \
+                  'user who has a cart already gets the SKU put in it. The SKU is checked live against what the ' \
+                  'drugstore has; nothing is saved when the check refuses or cannot be made.'
       consumes 'application/json'
       produces 'application/json'
       parameter name: :body, in: :body, required: true, schema: { '$ref' => '#/components/schemas/cart_item_request' }
 
       let(:body) { { goods_id: goods.id, drugstore_id: drugstore.id, quantity: 2 } }
 
-      response '201', 'the cart is made, with its token and its share token' do
+      response '201', 'the cart is made, with its token' do
         schema '$ref' => '#/components/schemas/cart_response'
 
-        run_test! do
-          made = Order.cart.sole
-          expect(cart_body).to include('token' => made.token, 'share_token' => made.share_token, 'total' => '325.00')
-        end
+        run_test! { expect(cart_body).to include('token' => Order.cart.sole.token, 'total' => '325.00') }
       end
 
       response '200', 'a signed-in user had a cart: the SKU went to it' do

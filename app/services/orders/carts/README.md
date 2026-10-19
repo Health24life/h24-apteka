@@ -9,19 +9,18 @@
 ## Ендпоінти
 
 Кошик — це замовлення в стані `cart`, тож маршрути — ресурс `orders`. Власник доходить до кошика за `token` у шляху;
-кошик акаунта відкривається лише із сесією його користувача. `share_token` — для посилання, за яким будь-хто лише
-дивиться.
+кошик акаунта відкривається лише із сесією його користувача — це вирішує `OrderPolicy`. Посилання для інших людей немає:
+ділитися можна лише відправленою броню, щоб її забрали.
 
 | Запит | Що робить |
 |---|---|
-| `POST /api/v1/orders` | Перший товар: `goods_id`, `drugstore_id`, `quantity`; створює кошик (`201`, `token` і `share_token`). Користувач, у якого кошик уже є, кладе товар у нього (`200`) |
+| `POST /api/v1/orders` | Перший товар: `goods_id`, `drugstore_id`, `quantity`; створює кошик (`201`, `token`). Користувач, у якого кошик уже є, кладе товар у нього (`200`) |
 | `GET /api/v1/orders/current` | Кошик користувача з сесією — звідси він бере `token` |
 | `GET /api/v1/orders/:token` | Кошик з живими цінами; провайдер не відповів — `200` без цін, `prices_available: false` |
 | `DELETE /api/v1/orders/:token` | `204`, кошик видалено з позиціями |
 | `POST /api/v1/orders/:order_token/items` | Товар у кошик, лише для його аптеки |
 | `PATCH /api/v1/orders/:order_token/items/:id` | Нова кількість, перевірена наживо |
 | `DELETE /api/v1/orders/:order_token/items/:id` | `204`; кошик іде разом з останньою позицією |
-| `GET /api/v1/shared/orders/:share_token` | Кошик за посиланням: аптека, позиції, живі ціни, без `token` |
 
 ## Потік
 
@@ -29,7 +28,8 @@
 CartActions (owner: token зі шляху + сесія)
    │
    ▼
-Find ── за токеном: гостьовий — будь-кому з токеном, акаунта — лише з сесією його користувача; без токена — кошик
+Find ── за токеном, якщо пускає OrderPolicy (гостьовий — будь-кому з токеном, акаунта — лише сесії його користувача);
+   │    без токена — кошик
    │    користувача. Сесія відкриває гостьовий кошик, а в акаунта кошика немає → гостьовий переходить в акаунт
    │
    ▼
@@ -56,7 +56,7 @@ AddItem / ChangeQuantity ── зміна в пам'яті → Check (in_drugst
 
 ## Тести
 
-- Сервіси — `spec/services/orders/carts/*` з фейковим адаптером (`stub_offers_adapter`, `offer_for`);
-- ендпоінти — rswag-спеки `spec/requests/api/v1/orders_spec.rb`, `spec/requests/api/v1/orders/items_spec.rb` і
-  `spec/requests/api/v1/shared/orders_spec.rb` на заглушці
-  Pharmapoint (`stub_drugstore_offers`); після зміни — `mise run rswag`.
+- Сервіси — `spec/services/orders/carts/*` з фейковим адаптером (`stub_offers_adapter`, `offer_for`), права —
+  `spec/policies/order_policy_spec.rb`;
+- ендпоінти — rswag-спеки `spec/requests/api/v1/orders_spec.rb` і `spec/requests/api/v1/orders/items_spec.rb` на
+  заглушці Pharmapoint (`stub_drugstore_offers`); після зміни — `mise run rswag`.

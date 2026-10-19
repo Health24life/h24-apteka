@@ -35,9 +35,6 @@ Rails.application.routes.draw do
           resources :items, only: %i[create update destroy]
         end
       end
-      namespace :shared do
-        resources :orders, only: :show, param: :share_token
-      end
     end
   end
 

@@ -267,10 +267,8 @@ RSpec.configure do |config|
             properties: {
               token: {
                 type: :string,
-                description: "The owner's key to the cart, used in the path of every call on it; not given by a " \
-                             'shared link'
+                description: "The owner's key to the cart, used in the path of every call on it"
               },
-              share_token: { type: :string, description: 'Key of the link anyone can open to look at the cart' },
               drugstore: { '$ref' => '#/components/schemas/drugstore' },
               prices_available: {
                 type: :boolean,

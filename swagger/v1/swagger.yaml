@@ -190,14 +190,13 @@ paths:
       - Cart
       description: A cart is an order in the cart state, bound to the drugstore its
         first SKU is put in. The answer gives `token`, the owner's key to the cart
-        used in the path of every call on it, and `share_token` for a link anyone
-        can open to look. A signed-in user who has a cart already gets the SKU put
-        in it. The SKU is checked live against what the drugstore has; nothing is
-        saved when the check refuses or cannot be made.
+        used in the path of every call on it. A signed-in user who has a cart already
+        gets the SKU put in it. The SKU is checked live against what the drugstore
+        has; nothing is saved when the check refuses or cannot be made.
       parameters: []
       responses:
         '201':
-          description: the cart is made, with its token and its share token
+          description: the cart is made, with its token
           content:
             application/json:
               schema:
@@ -379,32 +378,6 @@ paths:
             schema:
               "$ref": "#/components/schemas/search_request"
         required: true
-  "/api/v1/shared/orders/{share_token}":
-    parameters:
-    - name: share_token
-      in: path
-      required: true
-      schema:
-        type: string
-    get:
-      summary: Shows a cart by its shared link
-      tags:
-      - Cart
-      description: 'Anyone with the link sees the drugstore, the items and their live
-        prices, and can change nothing: the owner''s token is not given.'
-      responses:
-        '200':
-          description: the cart, without the token of its owner
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/cart_response"
-        '404':
-          description: 'cart_not_found: no cart has this link'
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error"
 components:
   securitySchemes:
     bearer:
@@ -766,10 +739,7 @@ components:
         token:
           type: string
           description: The owner's key to the cart, used in the path of every call
-            on it; not given by a shared link
-        share_token:
-          type: string
-          description: Key of the link anyone can open to look at the cart
+            on it
         drugstore:
           "$ref": "#/components/schemas/drugstore"
         prices_available:
