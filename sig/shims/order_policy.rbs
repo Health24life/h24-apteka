@@ -2,4 +2,6 @@
 class OrderPolicy
   def initialize: (Orders::Carts::Owner user, Order record) -> void
   def open?: () -> bool
+  def show?: () -> bool
+  def personal_data?: () -> bool
 end

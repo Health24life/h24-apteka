@@ -3,7 +3,7 @@
 # A booking in the history of an account: its numbers, state and the partner's status, when it was booked, the
 # drugstore as it was then and the total. No client's data and no items, only how many there are.
 class Orders::Bookings::HistoryBlueprint < Blueprinter::Base
-  fields :token, :share_token, :own_number, :state
+  fields :token, :own_number, :state
 
   field(:customer_number) { |order| order.provider_payload['order_number_for_customer'] }
   field(:status) do |order|

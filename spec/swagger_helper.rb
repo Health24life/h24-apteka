@@ -358,13 +358,12 @@ RSpec.configure do |config|
           order: {
             type: :object,
             description: 'A sent order, as it was when it was sent',
-            required: %w[share_token own_number state status drugstore items total],
+            required: %w[token own_number state status drugstore items total],
             properties: {
               token: {
                 type: :string,
-                description: "The owner's key, the same as the cart's; not given by a shared link"
+                description: "The one key, the same as the cart's; also the link the booking is shared by"
               },
-              share_token: { type: :string, description: 'Key of the link someone else picks the order up by' },
               own_number: { type: :string, description: 'Number of Health24' },
               customer_number: { type: :string, nullable: true, description: "The partner's number for the client" },
               state: { type: :string, enum: %w[submitted submission_failed] },
@@ -379,7 +378,7 @@ RSpec.configure do |config|
               },
               customer: {
                 type: :object,
-                description: 'For the owner only; not given by a shared link',
+                description: "Only for the signed-in user of the order's account; not given to a guest or by the link",
                 properties: {
                   first_name: { type: :string },
                   last_name: { type: :string, nullable: true },
@@ -426,10 +425,9 @@ RSpec.configure do |config|
           history_order: {
             type: :object,
             description: "A booking of the account, without the client's data and the items",
-            required: %w[token share_token own_number state status drugstore items_count total],
+            required: %w[token own_number state status drugstore items_count total],
             properties: {
               token: { type: :string },
-              share_token: { type: :string },
               own_number: { type: :string },
               customer_number: { type: :string, nullable: true },
               state: { type: :string, enum: %w[submitted submission_failed] },

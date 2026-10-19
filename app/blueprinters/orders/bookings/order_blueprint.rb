@@ -1,21 +1,20 @@
 # frozen_string_literal: true
 
 # A sent order, as it was when it was sent: the drugstore and the items with their prices, its numbers and the
-# partner's status as the partner wrote it. The owner's view has the client's data and the token; the view of a shared
-# link has neither.
+# partner's status as the partner wrote it. The client's data comes only when the render is told `personal_data: true`,
+# which OrderPolicy decides: the token is also the link the order is shared by.
 class Orders::Bookings::OrderBlueprint < Blueprinter::Base
   MONEY = Orders::Carts::CartBlueprint::MONEY
-  OWNER = ->(_name, _order, options) { !options[:shared] }
+  PERSONAL_DATA = ->(_name, _order, options) { options[:personal_data] == true }
 
-  fields :share_token, :own_number, :state
+  fields :token, :own_number, :state
 
-  field(:token, if: OWNER)
   field(:customer_number) { |order| order.provider_payload['order_number_for_customer'] }
   field(:status) do |order|
     status = Orders::PartnerStatuses::Describe.call(order)
     { title: status.title, comment: status.comment, known: status.known, updated_at: order.status_synced_at }
   end
-  field(:customer, if: OWNER) do |order|
+  field(:customer, if: PERSONAL_DATA) do |order|
     {
       first_name: order.customer_first_name,
       last_name: order.customer_last_name,

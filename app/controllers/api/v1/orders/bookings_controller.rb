@@ -10,10 +10,11 @@ class Api::V1::Orders::BookingsController < ApiController
     return render_error(:turnstile_failed, status: :forbidden) unless turnstile_passed?
 
     request = Orders::Bookings::Request.from(params.to_unsafe_h)
-    result = Orders::Bookings::Book.call(cart_owner(params[:order_token]), request)
+    owner = cart_owner(params[:order_token])
+    result = Orders::Bookings::Book.call(owner, request)
     return render_error(:booking_submission_failed, status: :bad_gateway) unless result.submitted
 
-    render json: { order: Orders::Bookings::OrderBlueprint.render_as_hash(result.order) }, status: :created
+    render_order(result.order, owner, status: :created)
   end
 
   private

@@ -45,7 +45,8 @@ RSpec.describe 'Booking the cart', :partner_calls do
                   'higher price or a missing item stops the booking for a new consent, a lower price is taken. The ' \
                   'consent to the processing of personal data is checked by the server. The same call tries again ' \
                   'a booking whose sending failed, after looking for it at the partner so no second order is made. ' \
-                  'The order keeps the token of the cart; `share_token` makes the link someone else picks it up by.'
+                  'The order keeps the token of the cart, which is also the link it is shared by; the client data ' \
+                  "comes back only to the signed-in user of the order's account."
       consumes 'application/json'
       produces 'application/json'
       parameter name: :body, in: :body, required: true, schema: { '$ref' => '#/components/schemas/booking_request' }
@@ -58,9 +59,21 @@ RSpec.describe 'Booking the cart', :partner_calls do
             'token' => cart.token,
             'state' => 'submitted',
             'customer_number' => '123456',
-            'customer' => include('first_name' => 'Олена', 'phone_number' => '380671234567'),
             'total' => '162.50'
           )
+        end
+      end
+
+      response '201', "a signed-in user's booking comes back with the client's data" do
+        schema '$ref' => '#/components/schemas/order_response'
+
+        let(:Authorization) { "Bearer #{generate_jwt_token(nameid: 42)}" }
+
+        before { cart.update!(user_id: 42) }
+
+        run_test! do
+          expect(response.parsed_body.dig('order', 'customer'))
+            .to include('first_name' => 'Олена', 'phone_number' => '380671234567')
         end
       end
 

@@ -200,23 +200,30 @@ RSpec.describe 'The cart', :partner_calls do
         run_test! { expect(cart_body).to include('prices_available' => true, 'total' => '162.50', 'removed' => []) }
       end
 
-      response '200', 'a booked cart: the order, its stale status asked of the partner first' do
+      response '200', "a booked cart by its token, which is also the link: the order without the client's data" do
         schema '$ref' => '#/components/schemas/order_response'
 
-        let(:token) { create(:order, :submitted, provider:, provider_order_number: 'PB-35-PT-H5').token }
+        let(:token) { create(:order, :submitted, provider:, provider_order_number: 'PB-35-PT-H5', user_id: 42).token }
 
         before do
           stub_request(:get, pharmapoint_url('order/PB-35-PT-H5')).to_return(pharmapoint_answer('partner_order'))
         end
 
         run_test! do
-          expect(response.parsed_body['order'])
-            .to include(
-              'state' => 'submitted',
-              'status' => include('comment' => 'Передан в обработку'),
-              'customer' => be_present
-            )
+          order = response.parsed_body['order']
+          expect([ order['status']['comment'], order.key?('customer') ]).to eq([ 'Передан в обработку', false ])
         end
+      end
+
+      response '200', "the signed-in user of the order's account: the order with the client's data" do
+        schema '$ref' => '#/components/schemas/order_response'
+
+        let(:Authorization) { "Bearer #{generate_jwt_token(nameid: 42)}" }
+        let(:token) do
+          create(:order, :submitted, provider:, user_id: 42, status_synced_at: Time.current).token
+        end
+
+        run_test! { expect(response.parsed_body.dig('order', 'customer', 'first_name')).to eq('Anna') }
       end
 
       response '200', 'the provider did not answer: the items without prices' do

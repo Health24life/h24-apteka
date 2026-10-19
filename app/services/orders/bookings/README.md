@@ -54,11 +54,11 @@ Turnstile ─► Request.from ─► Find (token + OrderPolicy; cart | submissio
   статус не фінальний (`APTEKA_BOOKING_FINAL_STATUSES`, `canceled`) і яку забронювали не раніше
   `APTEKA_BOOKING_STATUS_POLL_DAYS` днів (3). Задача — короткий `with_lock` рядка й `GET order/:order_number`; ліміт —
   перенесення на `Retry-After`. Збій лишає збережений статус.
-- **`GET /api/v1/orders/:token`** віддає кошик, поки той не заброньований, а потім бронь власнику — з даними клієнта
-  (`Orders::Bookings::Open.owned`, права — `OrderPolicy`). Статус, старший за `APTEKA_BOOKING_STATUS_STALE_MINUTES` (5),
+- **`GET /api/v1/orders/:token`** віддає кошик, поки той не заброньований, а потім бронь (`Orders::Bookings::Open.owned`).
+  Токен один, і він же — посилання, яким бронь шарять, щоб її забрала інша людина: відправлену бронь бачить будь-хто з
+  токеном, а дані клієнта (ім'я, телефон, email) — лише користувач із сесією акаунта броні (`OrderPolicy#personal_data?`);
+  гостю й тому, хто відкрив посилання, вони не віддаються. Статус, старший за `APTEKA_BOOKING_STATUS_STALE_MINUTES` (5),
   спершу оновлюється від партнера; партнер не відповів — показується збережений із `status.updated_at`.
-- **`GET /api/v1/shared/orders/:share_token`** — бронь за посиланням, щоб її забрала інша людина: без даних клієнта й
-  `token` власника. Кошик за посиланням не відкривається (`404 order_not_found`).
 
 ## Історія
 
@@ -72,7 +72,7 @@ relation з `preload:` позицій; індекс `index_orders_on_user_id_boo
 - Сервіси — `spec/services/orders/bookings/*` з фейковими адаптерами (`stub_offers_adapter`, `stub_bookings_adapter`);
   адаптер і читач — `spec/services/pharmapoint/bookings_spec.rb`, `…/readers/partner_orders_spec.rb`.
 - Ендпоінти — rswag-спеки `spec/requests/api/v1/orders/booking_spec.rb`, `spec/requests/api/v1/orders_spec.rb` (історія,
-  показ броні), `spec/requests/api/v1/shared/orders_spec.rb`; після зміни — `mise run rswag`. Задачі —
+  показ броні); після зміни — `mise run rswag`. Задачі —
   `spec/workers/orders/bookings/*`.
 - Фікстури `partner_order_created.json`, `partner_order.json`, `partner_order_history.json` — з публічної колекції
   партнера, знеособлені; наживо не звірені.

@@ -13,8 +13,5 @@ namespace :api do
         resource :booking, only: :create
       end
     end
-    namespace :shared do
-      resources :orders, only: :show, param: :share_token
-    end
   end
 end

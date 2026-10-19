@@ -26,7 +26,7 @@ class Api::V1::OrdersController < ApiController
     order = Orders::Bookings::Open.owned(owner)
     return render_cart(Orders::Carts::Show.call(owner)) unless order
 
-    render json: { order: Orders::Bookings::OrderBlueprint.render_as_hash(order) }
+    render_order(order, owner)
   end
 
   def create
