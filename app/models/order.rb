@@ -109,6 +109,7 @@ end
 #  index_orders_on_provider_id_and_provider_order_number  (provider_id,provider_order_number) UNIQUE
 #  index_orders_on_share_token                            (share_token) UNIQUE
 #  index_orders_on_token                                  (token) UNIQUE
+#  index_orders_on_user_id_booked                         (user_id,personal_data_consent_at) WHERE ((state)::text <> 'cart'::text)
 #  index_orders_on_user_id_cart                           (user_id) UNIQUE WHERE (((state)::text = 'cart'::text) AND (user_id IS NOT NULL))
 #
 # Foreign Keys

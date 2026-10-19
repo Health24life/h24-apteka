@@ -54,3 +54,10 @@ orders_cart_abandoned_cleanup:
   class: 'Orders::Carts::AbandonedCleanupWorker'
   queue: default
 <% end %>
+
+<% if (cron = ENV.fetch('APTEKA_BOOKING_STATUS_POLL_CRON', '*/10 * * * *').strip.presence) %>
+orders_booking_status_poll:
+  cron: '<%= cron %>'
+  class: 'Orders::Bookings::StatusPollWorker'
+  queue: default
+<% end %>

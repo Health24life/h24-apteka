@@ -32,3 +32,5 @@ en:
       booking_check_busy: The booking service is busy now. Try again a little later.
       booking_submission_failed: The booking could not be sent to the drugstore. Try again a little later.
       turnstile_failed: We could not confirm you are not a robot. Reload the page and try again.
+      order_not_found: No booking has this link.
+      invalid_page: The page must be a whole number from 1, and the page size no larger than allowed.

@@ -1,0 +1,5 @@
+module Orders::Bookings::Open
+  def self.owned: (Orders::Carts::Owner owner) -> Order?
+  def self.shared: (String? share_token) -> Order
+  def self.fresh: (Order order) -> Order
+end

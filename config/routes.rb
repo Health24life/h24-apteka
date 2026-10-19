@@ -24,20 +24,7 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get 'up' => 'rails/health#show', as: :rails_health_check
 
-  namespace :api do
-    namespace :v1 do
-      post 'search', to: 'search#create'
-      post 'goods/:id/drugstores', to: 'goods/drugstores#create', as: :goods_drugstores
-      # A cart is an order in the cart state; its owner reaches it by the token in the path.
-      resources :orders, only: %i[create show destroy], param: :token do
-        get :current, on: :collection
-        scope module: :orders do
-          resources :items, only: %i[create update destroy]
-          resource :booking, only: :create
-        end
-      end
-    end
-  end
+  draw :api
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

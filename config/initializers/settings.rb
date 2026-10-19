@@ -69,5 +69,10 @@ end
 Rails.application.config.to_prepare do
   Orders::Bookings.config = Orders::Bookings::Config.new.configure do |config|
     config.drugstore_ids = ENV.fetch('APTEKA_BOOKING_DRUGSTORE_IDS', config.drugstore_ids)
+    config.status_stale_minutes = ENV.fetch('APTEKA_BOOKING_STATUS_STALE_MINUTES', config.status_stale_minutes)
+    config.status_poll_days = ENV.fetch('APTEKA_BOOKING_STATUS_POLL_DAYS', config.status_poll_days)
+    config.final_statuses = ENV.fetch('APTEKA_BOOKING_FINAL_STATUSES', config.final_statuses)
+    config.history_per_page = ENV.fetch('APTEKA_ORDERS_PER_PAGE', config.history_per_page)
+    config.history_max_per_page = ENV.fetch('APTEKA_ORDERS_MAX_PER_PAGE', config.history_max_per_page)
   end.finalize!
 end

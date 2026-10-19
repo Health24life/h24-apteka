@@ -45,6 +45,15 @@ PHARMAPOINT_BOOKING_OPEN_TIMEOUT = "1"
 PHARMAPOINT_BOOKING_READ_TIMEOUT = "10"
 # Drugstores of the directory booking is allowed in (the pilot), ids comma-separated; an empty value turns booking off.
 APTEKA_BOOKING_DRUGSTORE_IDS = ""
+# Statuses of booked orders: an order shown with a status older than these minutes asks the partner first; the poll
+# (cron) asks about every order not final yet, for these days after booking; statuses after which nobody asks again.
+APTEKA_BOOKING_STATUS_STALE_MINUTES = "5"
+APTEKA_BOOKING_STATUS_POLL_CRON = "*/10 * * * *"
+APTEKA_BOOKING_STATUS_POLL_DAYS = "3"
+APTEKA_BOOKING_FINAL_STATUSES = "canceled"
+# Orders on a page of the booking history of an account, and the most a page may ask for.
+APTEKA_ORDERS_PER_PAGE = "20"
+APTEKA_ORDERS_MAX_PER_PAGE = "50"
 # Keys of Cloudflare Turnstile that guards booking from bots. Without them the check is off outside production, where
 # a booking is then refused; in development and tests the front sends "mocked".
 CF_TURNSTILE_SITE_KEY = ""

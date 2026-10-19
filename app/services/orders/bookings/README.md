@@ -47,10 +47,32 @@ Turnstile ─► Request.from ─► Find (token + OrderPolicy; cart | submissio
   `CF_TURNSTILE_SITE_KEY` / `CF_TURNSTILE_SECRET_KEY`. Без ключів перевірка вимкнена: у dev і тестах проходить токен
   `mocked`, у production бронь відхиляється (`403 turnstile_failed`).
 
+## Статуси й показ броні
+
+- **Опитування:** вебхуків у партнера немає. `Orders::Bookings::StatusPollWorker` (cron `APTEKA_BOOKING_STATUS_POLL_CRON`,
+  за замовчуванням кожні 10 хв; порожнє значення вимикає) ставить `StatusRefreshWorker` на кожну передану бронь, чий
+  статус не фінальний (`APTEKA_BOOKING_FINAL_STATUSES`, `canceled`) і яку забронювали не раніше
+  `APTEKA_BOOKING_STATUS_POLL_DAYS` днів (3). Задача — короткий `with_lock` рядка й `GET order/:order_number`; ліміт —
+  перенесення на `Retry-After`. Збій лишає збережений статус.
+- **`GET /api/v1/orders/:token`** віддає кошик, поки той не заброньований, а потім бронь власнику — з даними клієнта
+  (`Orders::Bookings::Open.owned`, права — `OrderPolicy`). Статус, старший за `APTEKA_BOOKING_STATUS_STALE_MINUTES` (5),
+  спершу оновлюється від партнера; партнер не відповів — показується збережений із `status.updated_at`.
+- **`GET /api/v1/shared/orders/:share_token`** — бронь за посиланням, щоб її забрала інша людина: без даних клієнта й
+  `token` власника. Кошик за посиланням не відкривається (`404 order_not_found`).
+
+## Історія
+
+`GET /api/v1/orders` (`Orders::Bookings::History`, `HistoryBlueprint`) — лише із сесією (`401` гостю): броні акаунта в
+`submitted` і `submission_failed`, від нових до старих за моментом першої згоди, `page` / `per_page`
+(`APTEKA_ORDERS_PER_PAGE` 20, `APTEKA_ORDERS_MAX_PER_PAGE` 50), `has_more` без `COUNT`. Партнера не питає. Рендер
+relation з `preload:` позицій; індекс `index_orders_on_user_id_booked` — `(user_id, personal_data_consent_at)` поза кошиком.
+
 ## Тести
 
 - Сервіси — `spec/services/orders/bookings/*` з фейковими адаптерами (`stub_offers_adapter`, `stub_bookings_adapter`);
   адаптер і читач — `spec/services/pharmapoint/bookings_spec.rb`, `…/readers/partner_orders_spec.rb`.
-- Ендпоінт — rswag-спека `spec/requests/api/v1/orders/booking_spec.rb`; після зміни — `mise run rswag`.
+- Ендпоінти — rswag-спеки `spec/requests/api/v1/orders/booking_spec.rb`, `spec/requests/api/v1/orders_spec.rb` (історія,
+  показ броні), `spec/requests/api/v1/shared/orders_spec.rb`; після зміни — `mise run rswag`. Задачі —
+  `spec/workers/orders/bookings/*`.
 - Фікстури `partner_order_created.json`, `partner_order.json`, `partner_order_history.json` — з публічної колекції
   партнера, знеособлені; наживо не звірені.

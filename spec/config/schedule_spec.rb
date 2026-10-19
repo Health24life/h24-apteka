@@ -8,6 +8,7 @@ RSpec.describe 'the schedule of recurring jobs' do # rubocop:disable RSpec/Descr
       LOG_CLEANUP_CRON
       SYNC_PULL_RUN_CLEANUP_CRON
       ORDERS_CART_CLEANUP_CRON
+      APTEKA_BOOKING_STATUS_POLL_CRON
     ]
   end
 
@@ -24,8 +25,15 @@ RSpec.describe 'the schedule of recurring jobs' do # rubocop:disable RSpec/Descr
       'catalog_sync_drugstores',
       'provider_request_log_cleanup',
       'catalog_sync_pull_run_cleanup',
-      'orders_cart_abandoned_cleanup'
+      'orders_cart_abandoned_cleanup',
+      'orders_booking_status_poll'
     )
+  end
+
+  it 'polls the statuses of sent orders every ten minutes unless the environment says otherwise', :aggregate_failures do
+    expect(jobs['orders_booking_status_poll'])
+      .to include('cron' => '*/10 * * * *', 'class' => 'Orders::Bookings::StatusPollWorker')
+    expect(jobs('APTEKA_BOOKING_STATUS_POLL_CRON' => '')).not_to have_key('orders_booking_status_poll')
   end
 
   it 'takes the periodicity of the cleanup of abandoned guest carts from the environment', :aggregate_failures do

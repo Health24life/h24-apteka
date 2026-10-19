@@ -267,6 +267,48 @@ paths:
         type: string
       description: Bearer token of a signed-in user; the cart of an account opens
         only with it
+    get:
+      summary: Lists the bookings of the signed-in user's account
+      tags:
+      - Booking
+      description: 'Newest first by the moment of booking, a page at a time, from
+        what Health24 keeps of each booking: the partner is not asked, and the statuses
+        are those the poll kept. A guest''s bookings have no history. `has_more` tells
+        whether there is a next page. Open one booking by its `token`.'
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+        description: Up to the configured maximum, 20 by default
+      responses:
+        '200':
+          description: the bookings of the account, newest first
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/history_response"
+        '401':
+          description: 'unauthorized: no session — a guest has no history'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '422':
+          description: 'invalid_page: a page below one or a page size above the maximum'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
     post:
       summary: Makes the cart with its first SKU
       tags:
@@ -461,6 +503,35 @@ paths:
             schema:
               "$ref": "#/components/schemas/search_request"
         required: true
+  "/api/v1/shared/orders/{share_token}":
+    parameters:
+    - name: share_token
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Shows a booking by its shared link
+      tags:
+      - Booking
+      description: 'For someone else to pick the booking up without signing in: the
+        numbers, the drugstore, the items and the partner''s status. No client''s
+        data and no owner''s token; nothing can be changed. A cart does not open by
+        its link.'
+      responses:
+        '200':
+          description: the booking, without the client's data or the owner's token
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/order_response"
+        '404':
+          description: 'order_not_found: no booking has this link, or it is the link
+            of a cart'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
 components:
   securitySchemes:
     bearer:
@@ -1055,6 +1126,86 @@ components:
               total:
                 type: string
                 nullable: true
+        total:
+          type: string
+    history_response:
+      type: object
+      required:
+      - orders
+      - page
+      - per_page
+      - has_more
+      properties:
+        orders:
+          type: array
+          items:
+            "$ref": "#/components/schemas/history_order"
+        page:
+          type: integer
+        per_page:
+          type: integer
+        has_more:
+          type: boolean
+          description: Whether there is a next page
+    history_order:
+      type: object
+      description: A booking of the account, without the client's data and the items
+      required:
+      - token
+      - share_token
+      - own_number
+      - state
+      - status
+      - drugstore
+      - items_count
+      - total
+      properties:
+        token:
+          type: string
+        share_token:
+          type: string
+        own_number:
+          type: string
+        customer_number:
+          type: string
+          nullable: true
+        state:
+          type: string
+          enum:
+          - submitted
+          - submission_failed
+        status:
+          type: object
+          properties:
+            title:
+              type: string
+              nullable: true
+            comment:
+              type: string
+              nullable: true
+            known:
+              type: boolean
+            updated_at:
+              type: string
+              format: date-time
+              nullable: true
+        booked_at:
+          type: string
+          format: date-time
+          description: The first attempt to book
+        drugstore:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+              nullable: true
+            address:
+              type: string
+              nullable: true
+        items_count:
+          type: integer
         total:
           type: string
     error:

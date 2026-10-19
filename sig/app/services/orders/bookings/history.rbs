@@ -1,0 +1,22 @@
+class Orders::Bookings::History
+  class Page < Data
+    attr_reader orders: Order::ActiveRecord_Relation
+    attr_reader page: Integer
+    attr_reader per_page: Integer
+    attr_reader has_more: bool
+
+    def self.new: (orders: Order::ActiveRecord_Relation, page: Integer, per_page: Integer, has_more: bool) -> instance
+  end
+
+  @user_id: Integer | String
+  @config: Orders::Bookings::Config
+
+  def self.call: (user_id: Integer | String, ?page: untyped, ?per_page: untyped, ?config: Orders::Bookings::Config) -> Page
+
+  def initialize: (Integer | String user_id, Orders::Bookings::Config config) -> void
+  def call: (untyped page, untyped per_page) -> Page
+
+  private
+
+  def number: (untyped value, Integer min, Integer | Float max) -> Integer
+end

@@ -3,7 +3,15 @@ class Orders::Bookings::Config
   extend Dry::Configurable::ClassMethods
 
   IDS: ^(untyped) -> Array[Integer]
+  INTEGER: ^(untyped) -> Integer
+  STATUSES: ^(untyped) -> Array[String]
 
   def drugstore_ids: () -> Array[Integer]
+  def status_stale_minutes: () -> Integer
+  def status_poll_days: () -> Integer
+  def final_statuses: () -> Array[String]
+  def history_per_page: () -> Integer
+  def history_max_per_page: () -> Integer
   def allowed?: (Integer? drugstore_id) -> bool
+  def final?: (String? status_name) -> bool
 end

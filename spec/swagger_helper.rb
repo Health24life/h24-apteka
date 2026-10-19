@@ -413,6 +413,48 @@ RSpec.configure do |config|
               total: { type: :string }
             }
           },
+          history_response: {
+            type: :object,
+            required: %w[orders page per_page has_more],
+            properties: {
+              orders: { type: :array, items: { '$ref' => '#/components/schemas/history_order' } },
+              page: { type: :integer },
+              per_page: { type: :integer },
+              has_more: { type: :boolean, description: 'Whether there is a next page' }
+            }
+          },
+          history_order: {
+            type: :object,
+            description: "A booking of the account, without the client's data and the items",
+            required: %w[token share_token own_number state status drugstore items_count total],
+            properties: {
+              token: { type: :string },
+              share_token: { type: :string },
+              own_number: { type: :string },
+              customer_number: { type: :string, nullable: true },
+              state: { type: :string, enum: %w[submitted submission_failed] },
+              status: {
+                type: :object,
+                properties: {
+                  title: { type: :string, nullable: true },
+                  comment: { type: :string, nullable: true },
+                  known: { type: :boolean },
+                  updated_at: { type: :string, format: 'date-time', nullable: true }
+                }
+              },
+              booked_at: { type: :string, format: 'date-time', description: 'The first attempt to book' },
+              drugstore: {
+                type: :object,
+                properties: {
+                  id: { type: :integer },
+                  name: { type: :string, nullable: true },
+                  address: { type: :string, nullable: true }
+                }
+              },
+              items_count: { type: :integer },
+              total: { type: :string }
+            }
+          },
           error: {
             type: :object,
             required: %w[error],

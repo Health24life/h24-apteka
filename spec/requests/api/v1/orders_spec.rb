@@ -44,6 +44,58 @@ RSpec.describe 'The cart', :partner_calls do
   path '/api/v1/orders' do
     include_context 'with the session of a user'
 
+    get "Lists the bookings of the signed-in user's account" do
+      tags 'Booking'
+      description 'Newest first by the moment of booking, a page at a time, from what Health24 keeps of each ' \
+                  "booking: the partner is not asked, and the statuses are those the poll kept. A guest's bookings " \
+                  'have no history. `has_more` tells whether there is a next page. Open one booking by its `token`.'
+      produces 'application/json'
+      parameter name: :page, in: :query, required: false, schema: { type: :integer, minimum: 1, default: 1 }
+      parameter name: :per_page,
+                in: :query,
+                required: false,
+                schema: { type: :integer, minimum: 1 },
+                description: 'Up to the configured maximum, 20 by default'
+
+      let(:Authorization) { "Bearer #{generate_jwt_token(nameid: 42)}" }
+
+      response '200', 'the bookings of the account, newest first' do
+        schema '$ref' => '#/components/schemas/history_response'
+
+        before do
+          create(:order, :submitted, user_id: 42, personal_data_consent_at: 2.hours.ago)
+          create(:order, :submitted, user_id: 42, own_number: 'NEWER00001', personal_data_consent_at: 1.hour.ago)
+          create(:order, :submitted, user_id: 7)
+        end
+
+        run_test! do
+          expect(response.parsed_body).to include(
+            'orders' => [
+              include('own_number' => 'NEWER00001', 'state' => 'submitted'),
+              include('state' => 'submitted')
+            ],
+            'has_more' => false
+          )
+        end
+      end
+
+      response '401', 'unauthorized: no session — a guest has no history' do
+        schema '$ref' => '#/components/schemas/error'
+
+        let(:Authorization) { nil }
+
+        run_test! { expect(error_code).to eq('unauthorized') }
+      end
+
+      response '422', 'invalid_page: a page below one or a page size above the maximum' do
+        schema '$ref' => '#/components/schemas/error'
+
+        let(:page) { 0 }
+
+        run_test! { expect(error_code).to eq('invalid_page') }
+      end
+    end
+
     post 'Makes the cart with its first SKU' do
       tags 'Cart'
       description 'A cart is an order in the cart state, bound to the drugstore its first SKU is put in. The answer ' \
@@ -146,6 +198,25 @@ RSpec.describe 'The cart', :partner_calls do
         schema '$ref' => '#/components/schemas/cart_response'
 
         run_test! { expect(cart_body).to include('prices_available' => true, 'total' => '162.50', 'removed' => []) }
+      end
+
+      response '200', 'a booked cart: the order, its stale status asked of the partner first' do
+        schema '$ref' => '#/components/schemas/order_response'
+
+        let(:token) { create(:order, :submitted, provider:, provider_order_number: 'PB-35-PT-H5').token }
+
+        before do
+          stub_request(:get, pharmapoint_url('order/PB-35-PT-H5')).to_return(pharmapoint_answer('partner_order'))
+        end
+
+        run_test! do
+          expect(response.parsed_body['order'])
+            .to include(
+              'state' => 'submitted',
+              'status' => include('comment' => 'Передан в обработку'),
+              'customer' => be_present
+            )
+        end
       end
 
       response '200', 'the provider did not answer: the items without prices' do

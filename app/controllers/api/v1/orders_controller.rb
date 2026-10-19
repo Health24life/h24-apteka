@@ -6,7 +6,28 @@
 class Api::V1::OrdersController < ApiController
   include CartActions
 
-  def show = render_cart(Orders::Carts::Show.call(cart_owner(params[:token])))
+  # The bookings of the signed-in user's account; a guest's bookings have no history.
+  def index
+    user_id = current_user_id
+    return render_error(:unauthorized, status: :unauthorized) unless user_id
+
+    history = Orders::Bookings::History.call(user_id:, page: params[:page], per_page: params[:per_page])
+    render json: {
+      orders: Orders::Bookings::HistoryBlueprint.render_as_hash(history.orders),
+      page: history.page,
+      per_page: history.per_page,
+      has_more: history.has_more
+    }
+  end
+
+  # The cart, or the order it became once booked.
+  def show
+    owner = cart_owner(params[:token])
+    order = Orders::Bookings::Open.owned(owner)
+    return render_cart(Orders::Carts::Show.call(owner)) unless order
+
+    render json: { order: Orders::Bookings::OrderBlueprint.render_as_hash(order) }
+  end
 
   def create
     body = params.to_unsafe_h
