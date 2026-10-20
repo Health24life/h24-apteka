@@ -4,7 +4,7 @@ info:
   title: Health24 Apteka API
   version: v1
 paths:
-  "/api/v1/goods/{id}/drugstores":
+  "/api/v1/goods/{goods_id}/drugstores":
     post:
       summary: Lists the drugstores around that have a SKU, with its price there
       tags:
@@ -17,7 +17,7 @@ paths:
         week schedule; one closed now is listed too, with the time it opens. The same
         for a guest and a signed-in user.'
       parameters:
-      - name: id
+      - name: goods_id
         in: path
         required: true
         schema:
