@@ -85,17 +85,19 @@ class Catalog::Sync::Pulls::Runner
   end
 
   def close(provider, tracker, error)
-    # Another worker spent the limit after it was checked: the fetch is only put off, so it leaves no failed run.
-    return tracker&.discard! if error.is_a?(Pharmapoint::RateLimited)
+    # Another worker spent the limit after it was checked: the fetch is only put off, so it leaves no failed run. A run
+    # whose request the partner itself refused keeps it, failed, so the log entry stays tied to the record.
+    return tracker&.discard! if error.is_a?(Pharmapoint::RateLimited) && !tracker&.requested?
 
     tracker&.fail!(error.message)
-    # A missing setting is no fault of the record: once it is fixed the record is to be fetched at once.
     pause(provider) if lost?(error)
   end
 
   # The provider will not give the record; another try would not change that, so the journal has the last word.
   def lost?(error) = Catalog::Sync::StepRunner::LOST_STEP_ERRORS.any? { error.is_a?(it) }
 
+  # A missing setting is neither tried again nor paused: it is no fault of the record, which is to be fetched as soon as
+  # the setting is fixed.
   def retried?(error) = !lost?(error) && !error.is_a?(Pharmapoint::ConfigurationError)
 
   def pause(provider) = Catalog::Sync::Pulls::Cooldown.pause!(provider.id, @type, @external_id)

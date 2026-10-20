@@ -23,5 +23,6 @@ class Catalog::Sync::RunTracker
   def partial?: () -> bool
   def finish!: () -> void
   def discard!: () -> void
+  def requested?: () -> bool
   def fail!: (String message) -> void
 end

@@ -5,4 +5,6 @@ end
 
 class Catalog::Sync::PullWorker
   def self.perform_async: (String type, String external_id, Integer? user_id, ?Integer? provider_id, ?String? stash_key) -> String?
+  # A job the unique lock drops has no id in the answer.
+  def self.perform_bulk: (Array[[ String, String, Integer?, Integer, String? ]] args) -> Array[String?]
 end

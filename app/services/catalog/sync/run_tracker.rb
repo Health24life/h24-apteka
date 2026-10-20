@@ -82,6 +82,9 @@ class Catalog::Sync::RunTracker
   # The run is dropped as if it never began, for a fetch that is only put off.
   def discard! = run.destroy!
 
+  # Whether the run has sent the partner anything.
+  def requested? = run.request_logs.exists?
+
   def fail!(message)
     run.update!(status: 'failed', finished_at: Time.current, error_message: Pharmapoint::Logging::Masker.new.text(message))
   end

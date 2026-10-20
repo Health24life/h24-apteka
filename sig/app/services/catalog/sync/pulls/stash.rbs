@@ -3,6 +3,8 @@ class Catalog::Sync::Pulls::Stash
 
   def self.key: (Integer provider_id, Pharmapoint::json external_id) -> String
   def self.write: (provider: Provider, records: Array[Pharmapoint::json], ?config: Catalog::Sync::Config) -> Hash[String, String]
+  def self.stashable: (Provider provider, Pharmapoint::json record)
+                     -> [ String, String, Pharmapoint::Readers::Base::record ]?
   def self.store: (Hash[String, Pharmapoint::Readers::Base::record] stashed, ActiveSupport::Duration ttl) -> void
   def self.read: (String key) -> Pharmapoint::Readers::Base::record?
 end

@@ -133,6 +133,15 @@ RSpec.describe Catalog::Sync::PullWorker do
     end
   end
 
+  it 'keeps the failed run of a request the partner itself refused, tied to its log entry', :aggregate_failures do
+    stub_pharmapoint('goods-group/get-by-id', body: '{}', status: 429, query: { id: group_id })
+
+    expect { described_class.new.perform('goods_group', group_id, nil, provider.id) }
+      .to raise_error(Pharmapoint::RateLimited)
+    expect(run).to have_attributes(status: 'failed')
+    expect(Provider::RequestLog.where(path: '/api/goods-group/get-by-id').sole).to have_attributes(sync_run_id: run.id)
+  end
+
   describe 'when the request limit is used up' do
     before { Pharmapoint::RateLimiter.new.block!(42) }
 
