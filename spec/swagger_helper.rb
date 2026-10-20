@@ -219,7 +219,7 @@ RSpec.configure do |config|
               { '$ref' => '#/components/schemas/drugstore' },
               {
                 type: :object,
-                required: %w[goods],
+                required: %w[price available_quantity],
                 properties: {
                   distance: { type: :integer, nullable: true, description: 'Metres from the place asked about' },
                   open_now: { type: :boolean, nullable: true, description: 'Null when the provider did not tell' },
@@ -231,18 +231,12 @@ RSpec.configure do |config|
                                  'zone of Kyiv; null when it is open, closed within its hours, as for a break, or ' \
                                  'the hours are unknown'
                   },
-                  goods: {
-                    type: :object,
-                    required: %w[price available_quantity],
-                    properties: {
-                      price: {
-                        type: :string,
-                        pattern: '^[0-9]+\\.[0-9]{2}$',
-                        description: 'Price in the drugstore, hryvnias'
-                      },
-                      available_quantity: { type: :integer, description: 'Whole packs the drugstore has' }
-                    }
-                  }
+                  price: {
+                    type: :string,
+                    pattern: '^[0-9]+\\.[0-9]{2}$',
+                    description: 'Price of the SKU in the drugstore, hryvnias'
+                  },
+                  available_quantity: { type: :integer, description: 'Whole packs of the SKU the drugstore has' }
                 }
               }
             ]

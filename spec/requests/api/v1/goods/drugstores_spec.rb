@@ -73,7 +73,8 @@ RSpec.describe 'Drugstores with the price of a SKU', :partner_calls do
             'distance' => 2216,
             'open_now' => true,
             'opens_at' => nil,
-            'goods' => { 'price' => '162.50', 'available_quantity' => 3 }
+            'price' => '162.50',
+            'available_quantity' => 3
           )
         end
       end
