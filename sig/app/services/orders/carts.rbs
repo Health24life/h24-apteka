@@ -1,4 +1,5 @@
 module Orders::Carts
   def self.config: () -> Orders::Carts::Config
   def self.config=: (Orders::Carts::Config config) -> Orders::Carts::Config
+  def self.offer: (Order cart, Integer? user_id) -> (Orders::Offers::DrugstoreOffer | Orders::Offers::Failure | nil)
 end

@@ -132,4 +132,16 @@ RSpec.describe 'The items of the cart', :partner_calls do
       end
     end
   end
+
+  describe 'taking out an item that has just become unusable' do
+    it 'takes it out as asked', :aggregate_failures do
+      item = cart.items.sole
+      item.goods.update!(hidden: true)
+
+      delete "/api/v1/orders/#{cart.token}/items/#{item.id}"
+
+      expect(response).to have_http_status(:no_content)
+      expect(Order.exists?(cart.id)).to be(false)
+    end
+  end
 end

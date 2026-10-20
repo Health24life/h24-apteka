@@ -14,21 +14,18 @@ class Orders::Carts::Check
   end
 
   def call
-    offer = known(ask)
+    offer = known(Orders::Carts.offer(@cart, @user_id))
     line = offer.line_for(@goods.id)
-    refuse(:goods_not_in_drugstore, :unprocessable_content) unless line&.fulfilled
-    available = line.available_quantity
-    return offer if available >= @quantity
+    available = line&.available_quantity.to_i
+    return offer if line&.fulfilled && available >= @quantity
+
+    # The partner may mark a line not fulfilled when it has fewer packs than asked, so the packs it has decide.
+    refuse(:goods_not_in_drugstore, :unprocessable_content) unless available.positive? && available < @quantity
 
     refuse(:quantity_exceeds_stock, :unprocessable_content, details: { available_quantity: available })
   end
 
   private
-
-  def ask
-    adapter = Orders::Offers::Adapters.for(@cart.provider, user_id: @user_id)
-    adapter&.in_drugstore(@cart.drugstore, @cart.items.to_a)
-  end
 
   def known(offer)
     case offer

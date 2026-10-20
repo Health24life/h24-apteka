@@ -2,8 +2,9 @@
 
 # Puts a SKU in the cart of the one who asks. Without a token, the first one makes the cart, bound to the drugstore
 # picked and to a provider that serves both, unless the signed-in user has a cart already; with the token of a cart,
-# the SKU goes to that cart, and only for its drugstore. A SKU already in the cart adds to its item. Every
-# change is checked live against what the drugstore has, and nothing is saved when the check refuses or cannot be made.
+# the SKU goes to that cart, and only for its drugstore, which may then be left out. A SKU already in the cart adds to
+# its item. Every change is checked live against what the drugstore has, and nothing is saved when the check refuses or
+# cannot be made.
 class Orders::Carts::AddItem
   Result = Data.define(:view, :created)
 
@@ -20,7 +21,7 @@ class Orders::Carts::AddItem
     goods = Orders::Offers::Nearby.find_goods(@goods_id) || refuse(:goods_not_found, :not_found)
     cart = Orders::Carts::Find.call(@owner)
     return add(Orders::Carts::Opening.tidy(cart), goods) if cart
-    return create(goods) unless @owner.token
+    return first(goods) unless @owner.token
 
     Orders::Carts::Opening.not_found
   end
@@ -29,7 +30,8 @@ class Orders::Carts::AddItem
 
   def add(opened, goods)
     cart = opened.cart
-    refuse(:cart_drugstore_mismatch, :conflict) unless cart.drugstore_id == @drugstore_id.to_i
+    refuse(:cart_drugstore_mismatch, :conflict) if other_drugstore?(cart)
+    refuse(:goods_not_in_drugstore, :unprocessable_content) unless goods.provider_links.exists?(provider: cart.provider)
 
     item = bumped(cart, goods)
     offer = check(cart, goods, item.quantity)
@@ -48,12 +50,28 @@ class Orders::Carts::AddItem
     Result.new(view: Orders::Carts::View.of(cart, offer), created: true)
   end
 
+  # Another request of the same user may make their cart first; the SKU then goes there.
+  def first(goods)
+    create(goods)
+  rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
+    raise unless @owner.user_id && cart_taken?(e)
+
+    add(Orders::Carts::Opening.call(@owner), goods)
+  end
+
+  def cart_taken?(error)
+    !error.is_a?(ActiveRecord::RecordInvalid) || error.record.errors.of_kind?(:user_id, :taken)
+  end
+
   # The item of the SKU with the packs added, a new one when the cart has none; not saved yet.
   def bumped(cart, goods)
     item = cart.items.to_a.find { it.goods_id == goods.id } || cart.items.build(goods:, quantity: 0)
     item.quantity += @quantity
+    refuse(:invalid_quantity, :unprocessable_content) if item.quantity >= Order::Item::MAX_QUANTITY
     item
   end
+
+  def other_drugstore?(cart) = !@drugstore_id.nil? && cart.drugstore_id.to_s != @drugstore_id.to_s
 
   # An enabled provider with an adapter that serves both the drugstore and the SKU.
   def provider_of(drugstore, goods)

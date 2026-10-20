@@ -20,6 +20,9 @@ class Orders::Carts::AddItem
 
   def add: (Orders::Carts::Opened opened, Catalog::Goods goods) -> Result
   def create: (Catalog::Goods goods) -> Result
+  def first: (Catalog::Goods goods) -> Result
+  def cart_taken?: (ActiveRecord::RecordNotUnique | ActiveRecord::RecordInvalid error) -> bool
+  def other_drugstore?: (Order cart) -> bool
   def bumped: (Order cart, Catalog::Goods goods) -> Order::Item
   def provider_of: (Catalog::Drugstore drugstore, Catalog::Goods goods) -> Provider?
   def check: (Order cart, Catalog::Goods goods, Integer | BigDecimal quantity) -> Orders::Offers::DrugstoreOffer

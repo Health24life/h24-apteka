@@ -2,7 +2,6 @@ class Orders::Carts::Show
   @owner: Orders::Carts::Owner
 
   def self.call: (Orders::Carts::Owner owner) -> Orders::Carts::View
-  def self.offer: (Order cart, Integer? user_id) -> (Orders::Offers::DrugstoreOffer | Orders::Offers::Failure | nil)
 
   def initialize: (Orders::Carts::Owner owner) -> void
   def call: () -> Orders::Carts::View

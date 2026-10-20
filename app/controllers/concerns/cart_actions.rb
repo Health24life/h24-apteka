@@ -5,7 +5,7 @@
 module CartActions
   extend ActiveSupport::Concern
 
-  QUANTITY = 1..Order::Item::MAX_QUANTITY
+  QUANTITY = 1...Order::Item::MAX_QUANTITY
 
   included do
     before_action :no_store

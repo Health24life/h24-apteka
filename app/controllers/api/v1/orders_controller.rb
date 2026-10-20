@@ -40,13 +40,13 @@ class Api::V1::OrdersController < ApiController
     render_cart(result.view, status: result.created ? :created : :ok)
   end
 
-  # A cart is cleared for good; a booking is cancelled at the drugstore and stays, with the partner's status. The reason
-  # of a cancellation comes in the body.
+  # A cart is cleared for good, with no tidying, as it goes whole anyway; a booking is cancelled at the drugstore and
+  # stays, with the partner's status. The reason of a cancellation comes in the body.
   def destroy
     owner = cart_owner(params[:token])
     return cancel(owner) if Order.where.not(state: 'cart').exists?(token: owner.token)
 
-    Orders::Carts::Clear.call(Orders::Carts::Opening.call(owner).cart)
+    Orders::Carts::Clear.call(Orders::Carts::Find.call(owner) || Orders::Carts::Opening.not_found)
     head :no_content
   end
 

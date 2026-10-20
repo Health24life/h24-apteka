@@ -9,11 +9,10 @@ RSpec.describe Orders::Carts::Tidy do
     expect(described_class.call(cart)).to have_attributes(cart:, removed: [], reason: nil)
   end
 
-  it 'ends the cart of a disabled provider', :aggregate_failures do
+  it 'keeps the cart of a disabled provider, which may come back' do
     cart.provider.update!(active: false)
 
-    expect(described_class.call(cart)).to have_attributes(cart: nil, reason: :provider_disabled)
-    expect(Order.exists?(cart.id)).to be(false)
+    expect(described_class.call(cart)).to have_attributes(cart:, removed: [], reason: nil)
   end
 
   it 'ends the cart of a hidden or withdrawn drugstore', :aggregate_failures do
