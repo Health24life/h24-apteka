@@ -105,13 +105,21 @@ RSpec.describe Pharmapoint::Offers do
       expect(offers.in_drugstore(drugstore, [ item ])).not_to be_known
     end
 
-    it 'asks for whole packs, one line per SKU however many items hold it' do
+    it 'asks one line per SKU however many items hold it' do
       stub = stub_offers('order/get-drugstore-for-order-goods', body: answer(goods_id: 1_750_321))
 
-      offers.in_drugstore(drugstore, [ item, Order::Item.new(goods:, quantity: BigDecimal('0.5')) ])
+      offers.in_drugstore(drugstore, [ item, Order::Item.new(goods:, quantity: 1) ])
 
       expect(stub.with(body: hash_including('goods' => [ { 'goods_id' => '1750321', 'quantity' => 3 } ])))
         .to have_been_requested
+    end
+
+    it 'raises on a part of a pack rather than asking the partner', :aggregate_failures do
+      stub = stub_offers('order/get-drugstore-for-order-goods', body: answer(goods_id: 1_750_321))
+
+      expect { offers.in_drugstore(drugstore, [ item, Order::Item.new(goods:, quantity: BigDecimal('0.5')) ]) }
+        .to raise_error(ArgumentError, /part of a pack/)
+      expect(stub).not_to have_been_requested
     end
 
     it 'is unavailable and not reported for a drugstore the provider does not have', :aggregate_failures do

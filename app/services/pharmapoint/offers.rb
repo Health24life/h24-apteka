@@ -44,11 +44,15 @@ class Pharmapoint::Offers
   end
 
   # One line per SKU, however many items of the cart hold it, so that the partner checks the stock against all of them.
-  # The partner counts whole packs: a part of a pack is asked as a whole one.
+  # The partner counts whole packs and the cart lets in only them: a part of a pack here is a bug, not a quantity.
   def order_lines(items, refs)
     items.group_by { sku(it).id }.map do |goods_id, same|
-      quantity = same.sum(BigDecimal(0), &:quantity).ceil.to_i
-      Pharmapoint::OrderLine.new(external_id: refs.fetch(goods_id), quantity:)
+      quantity = same.sum(BigDecimal(0), &:quantity)
+      if quantity.frac.nonzero?
+        raise ArgumentError, "goods #{goods_id} are asked in a part of a pack: #{quantity.to_s('F')}"
+      end
+
+      Pharmapoint::OrderLine.new(external_id: refs.fetch(goods_id), quantity: quantity.to_i)
     end
   end
 
