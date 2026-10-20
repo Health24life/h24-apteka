@@ -772,7 +772,8 @@ components:
         code and the working hours
       required:
       - id
-      - legal_entity
+      - drugstore_legal_entity_name
+      - drugstore_legal_entity_code
       - week_working_hours
       - work_with_reimbursement
       properties:
@@ -784,31 +785,32 @@ components:
         brand:
           type: object
           nullable: true
-          properties:
-            name:
-              type: string
-        legal_entity:
-          type: object
           required:
           - name
-          - code
           properties:
             name:
               type: string
-              description: Full name of the legal entity
-            code:
-              type: string
-              pattern: "^[0-9]{8}([0-9]{2})?$"
-              description: EDRPOU code
-        address:
+        drugstore_legal_entity_name:
           type: string
+          description: Full name of the legal entity
+        drugstore_legal_entity_code:
+          type: string
+          pattern: "^[0-9]{8}([0-9]{2})?$"
+          description: EDRPOU code of the legal entity
+        address:
+          type: object
           nullable: true
-        latitude:
-          type: number
-          nullable: true
-        longitude:
-          type: number
-          nullable: true
+          required:
+          - address
+          - latitude
+          - longitude
+          properties:
+            address:
+              type: string
+            latitude:
+              type: number
+            longitude:
+              type: number
         phone:
           type: string
           nullable: true

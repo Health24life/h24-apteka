@@ -182,22 +182,29 @@ RSpec.configure do |config|
           drugstore: {
             type: :object,
             description: 'A drugstore of the directory, with the legal entity, its EDRPOU code and the working hours',
-            required: %w[id legal_entity week_working_hours work_with_reimbursement],
+            required: %w[
+              id drugstore_legal_entity_name drugstore_legal_entity_code week_working_hours work_with_reimbursement
+            ],
             properties: {
               id: { type: :integer },
               name: { type: :string, nullable: true },
-              brand: { type: :object, nullable: true, properties: { name: { type: :string } } },
-              legal_entity: {
+              brand: { type: :object, nullable: true, required: %w[name], properties: { name: { type: :string } } },
+              drugstore_legal_entity_name: { type: :string, description: 'Full name of the legal entity' },
+              drugstore_legal_entity_code: {
+                type: :string,
+                pattern: '^[0-9]{8}([0-9]{2})?$',
+                description: 'EDRPOU code of the legal entity'
+              },
+              address: {
                 type: :object,
-                required: %w[name code],
+                nullable: true,
+                required: %w[address latitude longitude],
                 properties: {
-                  name: { type: :string, description: 'Full name of the legal entity' },
-                  code: { type: :string, pattern: '^[0-9]{8}([0-9]{2})?$', description: 'EDRPOU code' }
+                  address: { type: :string },
+                  latitude: { type: :number },
+                  longitude: { type: :number }
                 }
               },
-              address: { type: :string, nullable: true },
-              latitude: { type: :number, nullable: true },
-              longitude: { type: :number, nullable: true },
               phone: { type: :string, nullable: true },
               booking_available: { type: :boolean, description: 'Whether booking is open in this drugstore' },
               week_working_hours: {
