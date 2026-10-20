@@ -12,6 +12,7 @@ class Pharmapoint::Config
   # Keys of a request or response body that hold a client's phone number or the code that redeems a prescription.
   SECRET_BODY_KEYS = %w[customer_phone_number repayment_code].freeze
   INTEGER = ->(value) { Integer(value) }
+  FLOAT = ->(value) { Float(value) }
   # An empty value in the environment means none.
   PRESENT = ->(value) { value.presence }
 
@@ -34,8 +35,9 @@ class Pharmapoint::Config
   # The live search: a user waits for it, so its timeouts are short, and it spends only its share of the request limit
   # so the sync keeps a budget of its own.
   setting :search, reader: true do
-    setting :open_timeout, default: 1, constructor: INTEGER
-    setting :read_timeout, default: 3, constructor: INTEGER
+    # Seconds, fractions allowed.
+    setting :open_timeout, default: 1.0, constructor: FLOAT
+    setting :read_timeout, default: 3.0, constructor: FLOAT
     setting :per_page, default: 20, constructor: INTEGER
     setting :rate_limit_per_minute, default: 40, constructor: INTEGER
   end
@@ -43,8 +45,9 @@ class Pharmapoint::Config
   # Live prices and stock of drugstores, asked for the cart and the pharmacy list while a user waits; like the search,
   # with short timeouts and a share of the limit of its own.
   setting :cart, reader: true do
-    setting :open_timeout, default: 1, constructor: INTEGER
-    setting :read_timeout, default: 3, constructor: INTEGER
+    # Seconds, fractions allowed.
+    setting :open_timeout, default: 1.0, constructor: FLOAT
+    setting :read_timeout, default: 3.0, constructor: FLOAT
     setting :rate_limit_per_minute, default: 15, constructor: INTEGER
   end
 
@@ -60,6 +63,7 @@ class Pharmapoint::Config
   setting :log_retention_days, reader: true do
     setting :booking, default: 14, constructor: INTEGER
     setting :search, default: 1, constructor: INTEGER
+    setting :offers, default: 1, constructor: INTEGER
     setting :refresh, default: 7, constructor: INTEGER
     setting :other, default: 7, constructor: INTEGER
   end

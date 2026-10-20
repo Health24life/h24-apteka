@@ -18,13 +18,8 @@ class Pharmapoint::Search
 
     groups, records = search(query, time_left)
     page(groups, records)
-  rescue Pharmapoint::RateLimited => e
-    failure(:rate_limited, e.retry_after)
-  rescue Pharmapoint::TransientError
-    failure(:unavailable)
   rescue StandardError => e
-    Rails.error.report(e, handled: true, context: { source: 'catalog_search', provider: @provider.code })
-    failure(:unavailable)
+    failed(e)
   end
 
   private
@@ -46,14 +41,16 @@ class Pharmapoint::Search
     end
   end
 
-  # The time of the call and what is left of the share after it, whether it answered or not.
+  # The time of the call and what is left of the share after it, whether it answered or not. The share is the one the
+  # limiter counted for this call; a call it never counted leaves the gauge as it was.
   def measured
     started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     yield
   ensure
     code = @provider.code
     Catalog::Search::Metrics.duration(code, (Process.clock_gettime(Process::CLOCK_MONOTONIC) - started).to_f) if started
-    Catalog::Search::Metrics.share_left(code) { @rate_limiter.remaining(share: :search) }
+    share_left = @rate_limiter.share_left
+    Catalog::Search::Metrics.share_left(code, share_left) if share_left
   end
 
   def page(groups, records)
@@ -103,6 +100,20 @@ class Pharmapoint::Search
       quantity_unit_in_pack: pack.quantity_unit_in_pack,
       quantity_in_unit: pack.quantity_in_unit
     }
+  end
+
+  # A missing key is a state of the environment, not an event: reporting it would repeat on every search.
+  def failed(error)
+    case error
+    when Pharmapoint::RateLimited then failure(:rate_limited, error.retry_after)
+    when Pharmapoint::TransientError then failure(:unavailable)
+    when Pharmapoint::ConfigurationError
+      Rails.logger.warn("Pharmapoint search is off: #{error.message}")
+      failure(:unavailable)
+    else
+      Rails.error.report(error, handled: true, context: { source: 'catalog_search', provider: @provider.code })
+      failure(:unavailable)
+    end
   end
 
   def failure(reason, retry_after = nil)

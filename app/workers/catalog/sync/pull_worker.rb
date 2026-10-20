@@ -16,7 +16,7 @@ class Catalog::Sync::PullWorker < ApplicationWorker
                   lock_args_method: :lock_args
 
   sidekiq_retry_in { |count, error| error.is_a?(Pharmapoint::RateLimited) ? error.retry_after : BACKOFF.call(count) }
-  sidekiq_retries_exhausted { |job, _error| Catalog::Sync::Pulls::Runner.give_up(*job['args'].first(4)) }
+  sidekiq_retries_exhausted { |job, error| Catalog::Sync::Pulls::Runner.give_up(error, *job['args'].first(4)) }
 
   def self.lock_args(args) = [ args[0], args[1], args[3] ]
 

@@ -5,32 +5,29 @@ class Pharmapoint::RateLimiter
   KEY = 'pharmapoint:rate_limit'
   MINUTE = 60
 
+  # What was left of the share in its minute after the last request with a share this limiter counted; nil before one.
+  attr_reader :share_left
+
   def initialize(config: Pharmapoint.config, clock: Time)
     @config = config
     @clock = clock
+    @share_left = nil
   end
 
   # Raises RateLimited when the partner asked us to wait or our own per-minute budget is spent. A request with a share
-  # is counted against its share first: one the share refuses does not spend the budget the others live on.
+  # is counted against its share first: one the share refuses does not spend the budget the others live on, and one the
+  # budget refuses gives its place in the share back.
   def guard!(share: nil)
     now = @clock.now.to_i
     wait = blocked_for(now)
     raise Pharmapoint::RateLimited, wait if wait.positive?
 
-    if share
-      wait = spend(now, share_key(share), share_limit(share))
-      raise Pharmapoint::RateLimited, wait if wait.positive?
-    end
+    spend_share(now, share) if share
+    used = spend(now, KEY)
+    return if used <= @config.rate_limit.per_minute
 
-    wait = spend(now, KEY, @config.rate_limit.per_minute)
-    raise Pharmapoint::RateLimited, wait if wait.positive?
-  end
-
-  # What is left of a share in the current minute.
-  def remaining(share:)
-    window = @clock.now.to_i / MINUTE
-    used = redis { it.call('GET', window_key(window, share_key(share))) }.to_i
-    [ share_limit(share) - used, 0 ].max
+    give_back(now, share) if share
+    raise Pharmapoint::RateLimited, wait_for_window(now)
   end
 
   # The seconds to wait before a request would get through, zero when it would; nothing is spent. A worker that can
@@ -62,18 +59,31 @@ class Pharmapoint::RateLimiter
     [ until_time - now, 0 ].max
   end
 
-  # Counts a request in the current minute; returns the seconds to wait when the minute's budget is already spent.
-  def spend(now, prefix, limit)
-    window = now / MINUTE
-    key = window_key(window, prefix)
+  # Counts a request in the current minute and returns how many the minute has counted.
+  def spend(now, prefix)
+    key = window_key(now / MINUTE, prefix)
     used = redis do |connection|
       connection.pipelined do |pipeline|
         pipeline.call('INCR', key)
         pipeline.call('EXPIRE', key, MINUTE * 2)
       end.first
     end
-    used.to_i > limit ? ((window + 1) * MINUTE) - now : 0
+    used.to_i
   end
+
+  def spend_share(now, share)
+    limit = share_limit(share)
+    used = spend(now, share_key(share))
+    @share_left = [ limit - used, 0 ].max
+    raise Pharmapoint::RateLimited, wait_for_window(now) if used > limit
+  end
+
+  def give_back(now, share)
+    redis { it.call('DECR', window_key(now / MINUTE, share_key(share))) }
+    @share_left = @share_left.to_i + 1
+  end
+
+  def wait_for_window(now) = (((now / MINUTE) + 1) * MINUTE) - now
 
   def window_key(window, prefix = KEY) = "#{prefix}:window:#{window}"
 

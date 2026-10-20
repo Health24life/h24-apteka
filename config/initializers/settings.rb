@@ -28,10 +28,9 @@ Rails.application.config.to_prepare do
     booking.read_timeout = ENV.fetch('PHARMAPOINT_BOOKING_READ_TIMEOUT', booking.read_timeout)
 
     retention = config.log_retention_days
-    retention.booking = ENV.fetch('PHARMAPOINT_LOG_RETENTION_BOOKING_DAYS', retention.booking)
-    retention.search = ENV.fetch('PHARMAPOINT_LOG_RETENTION_SEARCH_DAYS', retention.search)
-    retention.refresh = ENV.fetch('PHARMAPOINT_LOG_RETENTION_REFRESH_DAYS', retention.refresh)
-    retention.other = ENV.fetch('PHARMAPOINT_LOG_RETENTION_OTHER_DAYS', retention.other)
+    retention.to_h.each do |category, days|
+      retention.public_send(:"#{category}=", ENV.fetch("PHARMAPOINT_LOG_RETENTION_#{category.upcase}_DAYS", days))
+    end
   end.finalize!
 end
 

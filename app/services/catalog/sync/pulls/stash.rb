@@ -8,15 +8,21 @@ class Catalog::Sync::Pulls::Stash
 
   def self.key(provider_id, external_id) = "#{PREFIX}:#{provider_id}:goods_group:#{external_id}"
 
-  # Keeps the groups that are complete enough to be saved from; returns their keys by the provider's id of the group.
+  # Keeps the groups that are complete enough to be saved from; returns their keys by the provider's id of the group,
+  # read the way the rest of the sync reads it.
   def self.write(provider:, records:, config: Catalog::Sync.config)
-    stashed = records.filter_map { Pharmapoint::Readers::StashableGoodsGroup.call(it) }
-      .index_by { key(provider.id, it['id']) }
-    store(stashed, config.pull.stash_ttl)
-    stashed.to_h { |key, record| [ record['id'].to_s, key ] }
+    stashed = records.filter_map { stashable(provider, it) }
+    store(stashed.to_h { |_id, key, record| [ key, record ] }, config.pull.stash_ttl)
+    stashed.to_h { |id, key, _record| [ id, key ] }
   rescue StandardError => e
     Rails.error.report(e, handled: true, context: { source: 'catalog_sync_stash' })
     {}
+  end
+
+  def self.stashable(provider, record)
+    group = Pharmapoint::Readers::StashableGoodsGroup.call(record)
+    id = group && Pharmapoint::Readers::Base.id_at(group, 'id')
+    [ id, key(provider.id, id), group ] if group && id
   end
 
   def self.store(stashed, ttl)

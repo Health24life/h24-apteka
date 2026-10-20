@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_19_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_20_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -405,7 +405,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_19_180000) do
     t.index ["user_id", "created_at"], name: "index_provider_request_logs_on_user_id_and_created_at"
     t.check_constraint "(outcome::text = ANY (ARRAY['timeout'::character varying, 'connection_error'::character varying]::text[])) = (response_status IS NULL)", name: "provider_request_logs_status_check"
     t.check_constraint "attempt >= 1", name: "provider_request_logs_attempt_check"
-    t.check_constraint "category::text = ANY (ARRAY['booking'::character varying, 'search'::character varying, 'refresh'::character varying, 'other'::character varying]::text[])", name: "provider_request_logs_category_check"
+    t.check_constraint "category::text = ANY (ARRAY['booking'::character varying, 'search'::character varying, 'offers'::character varying, 'refresh'::character varying, 'other'::character varying]::text[])", name: "provider_request_logs_category_check"
     t.check_constraint "duration_ms >= 0", name: "provider_request_logs_duration_check"
     t.check_constraint "outcome::text = ANY (ARRAY['success'::character varying, 'http_error'::character varying, 'timeout'::character varying, 'connection_error'::character varying, 'invalid_response'::character varying]::text[])", name: "provider_request_logs_outcome_check"
   end

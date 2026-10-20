@@ -68,24 +68,9 @@ RSpec.describe Pharmapoint::Offers do
   describe '#in_drugstore' do
     let(:item) { Order::Item.new(goods:, quantity: 2) }
 
-    def answer(goods_id:, quantity: 1, fulfilled: true, drugstore_id: 510)
-      {
-        data: [
-          {
-            id: drugstore_id,
-            order: {
-              goods: [
-                {
-                  goods_id:,
-                  is_fulfilled: fulfilled,
-                  drugstore_price: 162.5,
-                  quantity:
-                }
-              ]
-            }
-          }
-        ]
-      }.to_json
+    def answer(goods_id:, quantity: 1, fulfilled: true, drugstore_id: 510, more: [])
+      line = { goods_id:, is_fulfilled: fulfilled, drugstore_price: 162.5, quantity: }
+      { data: [ { id: drugstore_id, order: { goods: [ line, *more ] } } ] }.to_json
     end
 
     it 'gives what the drugstore has of the items', :aggregate_failures do
@@ -104,10 +89,44 @@ RSpec.describe Pharmapoint::Offers do
       ).to have_been_requested
     end
 
-    it 'reads a line of an id it did not ask about as not covered' do
-      stub_offers('order/get-drugstore-for-order-goods', body: answer(goods_id: 999))
+    it 'reads a SKU missing from an answer that has the other SKUs as not covered', :aggregate_failures do
+      other = create(:provider_link, provider:, linkable: create(:catalog_goods), external_id: '42').linkable
+      stub_offers('order/get-drugstore-for-order-goods', body: answer(goods_id: 42, more: [ { goods_id: 999 } ]))
 
-      expect(offers.in_drugstore(drugstore, [ item ]).line_for(goods.id)).to be_nil
+      offer = offers.in_drugstore(drugstore, [ item, Order::Item.new(goods: other, quantity: 1) ])
+
+      expect(offer.line_for(other.id)).to be_present
+      expect(offer.line_for(goods.id)).to be_nil
+    end
+
+    it 'has no data when no line of the answer is one it asked about' do
+      stub_offers('order/get-drugstore-for-order-goods', body: answer(goods_id: '7592415d-7896-11e4-881f-001d60d868ae'))
+
+      expect(offers.in_drugstore(drugstore, [ item ])).not_to be_known
+    end
+
+    it 'asks one line per SKU however many items hold it' do
+      stub = stub_offers('order/get-drugstore-for-order-goods', body: answer(goods_id: 1_750_321))
+
+      offers.in_drugstore(drugstore, [ item, Order::Item.new(goods:, quantity: 1) ])
+
+      expect(stub.with(body: hash_including('goods' => [ { 'goods_id' => '1750321', 'quantity' => 3 } ])))
+        .to have_been_requested
+    end
+
+    it 'raises on a part of a pack rather than asking the partner', :aggregate_failures do
+      stub = stub_offers('order/get-drugstore-for-order-goods', body: answer(goods_id: 1_750_321))
+
+      expect { offers.in_drugstore(drugstore, [ item, Order::Item.new(goods:, quantity: BigDecimal('0.5')) ]) }
+        .to raise_error(ArgumentError, /part of a pack/)
+      expect(stub).not_to have_been_requested
+    end
+
+    it 'is unavailable and not reported for a drugstore the provider does not have', :aggregate_failures do
+      allow(Rails.error).to receive(:report)
+
+      expect(offers.in_drugstore(create(:catalog_drugstore), [ item ]).reason).to eq(:unavailable)
+      expect(Rails.error).not_to have_received(:report)
     end
 
     it 'has no data when the answer does not have the drugstore', :aggregate_failures do
@@ -143,11 +162,27 @@ RSpec.describe Pharmapoint::Offers do
       expect(Rails.error).to have_received(:report).with(Pharmapoint::PermanentError, hash_including(handled: true))
     end
 
-    it 'is unavailable and reported for a SKU the provider does not have, with no call', :aggregate_failures do
+    it 'is unavailable and not reported for a SKU the provider does not have, with no call', :aggregate_failures do
       allow(Rails.error).to receive(:report)
 
       expect(offers.nearby(create(:catalog_goods), location).reason).to eq(:unavailable)
+      expect(Rails.error).not_to have_received(:report)
       expect(a_request(:post, pharmapoint_url(path)).with(query: hash_including({}))).not_to have_been_requested
+    end
+
+    it 'raises an error of its own rather than calling it the partner being unavailable' do
+      allow(Pharmapoint::Readers::Offers).to receive(:call).and_raise(NoMethodError)
+      stub_offers(path, fixture: 'offers_nearby')
+
+      expect { offers.nearby(goods, location) }.to raise_error(NoMethodError)
+    end
+
+    it 'logs the call as one for offers' do
+      stub_offers(path, fixture: 'offers_nearby')
+
+      offers.nearby(goods, location)
+
+      expect(Provider::RequestLog.last.category).to eq('offers')
     end
 
     it 'is unavailable without a key, with no call' do

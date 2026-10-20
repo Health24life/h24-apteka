@@ -10,6 +10,8 @@ class Catalog::Search::LocalGoods
 
   @provider: Provider
 
+  attr_reader goods_links: Hash[String, bool]
+
   def self.call: (Provider provider, Array[Catalog::Search::Hit] hits) -> Array[Catalog::Search::Hit]
 
   def initialize: (Provider provider) -> void
