@@ -218,9 +218,11 @@ RSpec.configure do |config|
                   open_now: { type: :boolean, nullable: true, description: 'Null when the provider did not tell' },
                   opens_at: {
                     type: :string,
+                    format: 'date-time',
                     nullable: true,
-                    description: '`HH:MM` the drugstore next opens at, today or on its next working day; null when ' \
-                                 'it is open or the hours are unknown'
+                    description: 'The moment the drugstore next opens, today or on its next working day, in the time ' \
+                                 'zone of Kyiv; null when it is open, closed within its hours, as for a break, or ' \
+                                 'the hours are unknown'
                   },
                   goods: {
                     type: :object,

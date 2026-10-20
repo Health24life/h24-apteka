@@ -70,36 +70,37 @@ class Orders::Offers::Nearby
     unknown = offers.count { it.drugstore_id.nil? }
     Rails.logger.info("Pharmacy offers: #{unknown} drugstores missing from the directory") if unknown.positive?
 
-    listed = offers.select { priced?(it) }
-    drugstores = shown_drugstores(listed.filter_map(&:drugstore_id))
-    listed.filter_map { row(it, drugstores) }
+    priced = offers.filter_map { priced_offer(it) }
+    drugstores = shown_drugstores(priced.map(&:first))
+    priced.filter_map do |drugstore_id, offer, line|
+      drugstore = drugstores[drugstore_id]
+      row(drugstore, offer, line) if drugstore
+    end
   end
 
-  def priced?(offer)
-    line = offer.line_for(@goods.id)
-    (offer.drugstore_id && line&.fulfilled && line.price.present?) || false
-  end
-
-  def row(offer, drugstores)
-    drugstore_id = offer.drugstore_id
-    drugstore = drugstores[drugstore_id] if drugstore_id
-    line = offer.line_for(@goods.id)
-    return unless drugstore && line && (!@reimbursement || drugstore.work_with_reimbursement)
-
+  def row(drugstore, offer, line)
     Row.new(drugstore:, offer:, line:, opens_at: Orders::Offers::OpeningTime.call(offer, drugstore.week_working_hours))
   end
 
+  def priced_offer(offer)
+    drugstore_id = offer.drugstore_id
+    line = offer.line_for(@goods.id)
+    [ drugstore_id, offer, line ] if drugstore_id && line&.fulfilled && line.price.present?
+  end
+
   def shown_drugstores(ids)
-    Catalog::Drugstore.where(id: ids, hidden: false, withdrawn: false).includes(:address, :brand).index_by(&:id)
+    drugstores = Catalog::Drugstore.where(id: ids, hidden: false, withdrawn: false)
+    drugstores = drugstores.where(work_with_reimbursement: true) if @reimbursement
+    drugstores.includes(:address, :brand).index_by(&:id)
   end
 
   # By price, the nearer first among equal prices; or by distance, the cheaper first among equal ones. An unknown
-  # distance goes last.
+  # distance goes last. A drugstore more than one provider answered for is listed once, at its cheapest.
   def sorted(rows)
     far = Float::INFINITY
     rows.sort_by do |row|
       distance = row.distance || far
       @sort == 'distance' ? [ distance, row.price ] : [ row.price, distance ]
-    end
+    end.uniq(&:id)
   end
 end

@@ -25,13 +25,20 @@ class Api::V1::Goods::DrugstoresController < ApiController
     {
       location: Catalog::Search::Locations::Build.call(body['location'], code: :invalid_location),
       sort: sort(body['sort']),
-      reimbursement: body['work_with_reimbursement'] == true
+      reimbursement: reimbursement(body['work_with_reimbursement'])
     }
   end
 
   def sort(value)
     return 'price' if value.nil?
     raise Catalog::Search::Invalid, :invalid_sort unless Orders::Offers::Nearby::SORTS.include?(value)
+
+    value
+  end
+
+  def reimbursement(value)
+    return false if value.nil?
+    raise Catalog::Search::Invalid, :invalid_reimbursement unless [ true, false ].include?(value)
 
     value
   end
