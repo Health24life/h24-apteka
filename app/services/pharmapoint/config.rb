@@ -12,6 +12,7 @@ class Pharmapoint::Config
   # Keys of a request or response body that hold a client's phone number or the code that redeems a prescription.
   SECRET_BODY_KEYS = %w[customer_phone_number repayment_code].freeze
   INTEGER = ->(value) { Integer(value) }
+  FLOAT = ->(value) { Float(value) }
   # An empty value in the environment means none.
   PRESENT = ->(value) { value.presence }
 
@@ -34,8 +35,9 @@ class Pharmapoint::Config
   # The live search: a user waits for it, so its timeouts are short, and it spends only its share of the request limit
   # so the sync keeps a budget of its own.
   setting :search, reader: true do
-    setting :open_timeout, default: 1, constructor: INTEGER
-    setting :read_timeout, default: 3, constructor: INTEGER
+    # Seconds, fractions allowed.
+    setting :open_timeout, default: 1.0, constructor: FLOAT
+    setting :read_timeout, default: 3.0, constructor: FLOAT
     setting :per_page, default: 20, constructor: INTEGER
     setting :rate_limit_per_minute, default: 40, constructor: INTEGER
   end

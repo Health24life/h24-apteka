@@ -129,8 +129,18 @@ RSpec.describe Catalog::Search::Run do
     run(adapter(first, page(first, 'a', records: [ { 'id' => 'g1' } ])), adapter(second, page(second, records: [])))
 
     expect(Catalog::Sync::Pulls::EnqueueFound).to have_received(:call)
-      .with(provider: first, found: [ { 'id' => 'g1' } ], user_id: 7).once
+      .with(provider: first, found: [ { 'id' => 'g1' } ], user_id: 7, goods_links: { 'a' => false }).once
     expect(Catalog::Sync::Pulls::EnqueueFound).to have_received(:call).once
+  end
+
+  it 'asks every provider before it hands anything to the sync', :aggregate_failures do
+    asked = []
+    allow(Catalog::Sync::Pulls::EnqueueFound).to receive(:call) { asked << :hand_off and {} }
+    answering = ->(provider, id) { adapter(provider) { asked << provider.code and page(provider, id) } }
+
+    run(answering.call(first, 'a'), answering.call(second, 'b'))
+
+    expect(asked).to eq([ 'first', 'second', :hand_off, :hand_off ])
   end
 
   it 'answers the same when the hand-off to the sync fails' do

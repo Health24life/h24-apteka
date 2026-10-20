@@ -25,6 +25,12 @@ RSpec.describe Catalog::Sync::Pulls::Stash do
     expect(stashed).not_to have_key('online_price')
   end
 
+  it 'gives the key by the id as the sync reads it, whatever spacing the provider sent' do
+    complete['id'] = " #{group_id} "
+
+    expect(write.keys).to eq([ group_id ])
+  end
+
   it 'does not keep a group that lacks what a save needs' do
     expect(write([ complete, records.last ]).keys).to eq([ group_id ])
   end

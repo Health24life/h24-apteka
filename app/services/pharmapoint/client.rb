@@ -97,9 +97,9 @@ class Pharmapoint::Client
   # The key is checked first: a call that cannot be sent does not spend the request limit. A call with a body is sent
   # as a POST of JSON.
   def fetch(path, params = {}, body: nil, share: nil, timeouts: nil)
-    @config.credentials!
+    credentials = @config.credentials!
     @rate_limiter.guard!(share:)
-    response = request(path, params, body, timeouts)
+    response = request(path, params, body, credentials, timeouts)
     @rate_limiter.record(response.headers)
     check_status!(response)
     yield parse(response.body)
@@ -108,8 +108,9 @@ class Pharmapoint::Client
     raise
   end
 
-  def request(path, params, body, timeouts)
-    connection = connection(timeouts)
+  def request(path, params, body, credentials, timeouts)
+    api_key, domain_name = credentials
+    connection = connection(api_key, domain_name, timeouts)
     return connection.get(path, params) unless body
 
     url = params.empty? ? path : "#{path}?#{params.to_query}"
@@ -142,8 +143,7 @@ class Pharmapoint::Client
     Pharmapoint::RateLimited.new(wait)
   end
 
-  def connection(timeouts = nil)
-    api_key, domain_name = @config.credentials!
+  def connection(api_key, domain_name, timeouts = nil)
     settings = @config.connection
     Faraday.new(
       url: settings.base_url,

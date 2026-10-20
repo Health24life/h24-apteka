@@ -21,9 +21,8 @@ module Catalog::Search::Metrics
     measure { Yabeda.apteka_search.provider_duration_seconds.measure({ provider: }, seconds) }
   end
 
-  # The block reads what is left; it is not asked when counting fails.
-  def share_left(provider)
-    measure { Yabeda.apteka_search.rate_limit_share_left.set({ provider: }, yield) }
+  def share_left(provider, left)
+    measure { Yabeda.apteka_search.rate_limit_share_left.set({ provider: }, left) }
   end
 
   # The on-demand fetches of goods groups saved in the last hour, by provider and by where the record came from. Asked
