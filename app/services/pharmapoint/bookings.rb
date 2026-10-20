@@ -39,6 +39,12 @@ class Pharmapoint::Bookings
     failure(e)
   end
 
+  def cancel(order, reason:)
+    @client.cancel_order(number: order.provider_order_number.to_s, phone: order.customer_phone_number.to_s, reason:)
+  rescue StandardError => e
+    failure(e)
+  end
+
   private
 
   def body(order)

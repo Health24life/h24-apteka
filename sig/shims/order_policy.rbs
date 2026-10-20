@@ -4,4 +4,5 @@ class OrderPolicy
   def open?: () -> bool
   def show?: () -> bool
   def personal_data?: () -> bool
+  def cancel?: () -> bool
 end

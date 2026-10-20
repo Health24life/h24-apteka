@@ -12,4 +12,7 @@ class OrderPolicy < ApplicationPolicy
 
   # The client's name, phone and email, only to the signed-in user of the account the order is in.
   def personal_data? = !record.user_id.nil? && record.user_id == user.user_id
+
+  # Cancel a booking: the token is also the link it is shared by, so only the user of the account may.
+  def cancel? = personal_data?
 end

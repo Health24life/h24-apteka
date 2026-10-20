@@ -60,6 +60,16 @@ Turnstile ─► Request.from ─► Find (token + OrderPolicy; cart | submissio
   гостю й тому, хто відкрив посилання, вони не віддаються. Статус, старший за `APTEKA_BOOKING_STATUS_STALE_MINUTES` (5),
   спершу оновлюється від партнера; партнер не відповів — показується збережений із `status.updated_at`.
 
+## Скасування
+
+`DELETE /api/v1/orders/:token` для броні (`Orders::Bookings::Cancel`; для кошика — очищення, як і раніше). Лише
+користувач із сесією акаунта броні (`OrderPolicy#cancel?`): токен — це й посилання «Поділитися», тож самого токена
+замало (`403 cancellation_needs_account`). Скасувати можна передану бронь із нефінальним статусом
+(`409 order_not_cancellable`). Причина — необов'язкова, в тілі (`reason`, до 255 символів); без неї партнер отримує
+«Скасовано клієнтом». `POST order/cancel` з `Customer-Phone`; відповідь партнера не задокументована, тож після неї статус
+перечитується. Відмова партнера — `409 cancellation_refused`, недоступність — `503 cancellation_unavailable` /
+`cancellation_busy`. Бронь лишається записом зі статусом партнера (`200`).
+
 ## Історія
 
 `GET /api/v1/orders` (`Orders::Bookings::History`, `HistoryBlueprint`) — лише із сесією (`401` гостю): броні акаунта в

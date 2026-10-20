@@ -78,6 +78,30 @@ RSpec.describe Pharmapoint::Bookings do
     end
   end
 
+  describe '#cancel' do
+    before { order.update!(state: 'submitted', provider_order_number: 'PB-35-PT-H5') }
+
+    it "asks the partner to cancel by its number, with the client's phone and the reason", :aggregate_failures do
+      stub = stub_request(:post, pharmapoint_url('order/cancel')).to_return(status: 200, body: '')
+
+      expect(bookings.cancel(order, reason: 'Передумала')).to be(true)
+      expect(
+        stub.with(
+          body: { order_number: 'PB-35-PT-H5', cancel_reason: 'Передумала' },
+          headers: { 'Customer-Phone' => '380501234567' }
+        )
+      ).to have_been_requested
+    end
+
+    it 'is refused when the partner refuses, and unavailable when it does not answer', :aggregate_failures do
+      allow(Rails.error).to receive(:report)
+      stub_request(:post, pharmapoint_url('order/cancel')).to_return(status: 422, body: '{}').then.to_timeout
+
+      expect(bookings.cancel(order, reason: 'x').reason).to eq(:refused)
+      expect(bookings.cancel(order, reason: 'x').reason).to eq(:unavailable)
+    end
+  end
+
   describe '#find_submitted' do
     def history(drugstore_id: 34_494, created_at: '2026-10-19 12:00:00', goods_id: 1_990_718, quantity: 2)
       body = { data: [ { order_number: 'PB-35', drugstore_id:, created_at:, goods: [ { goods_id:, quantity: } ] } ] }

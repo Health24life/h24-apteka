@@ -6,6 +6,7 @@ module Orders::Bookings::Adapters
     def find_submitted: (Order order, since: ActiveSupport::TimeWithZone?)
                       -> (Pharmapoint::PartnerOrder | Orders::Bookings::Failure | nil)
     def status: (Order order) -> (Pharmapoint::PartnerOrder | Orders::Bookings::Failure)
+    def cancel: (Order order, reason: String) -> (true | Orders::Bookings::Failure)
   end
 
   interface _AdapterClass

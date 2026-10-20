@@ -11,6 +11,7 @@ class Pharmapoint::Client
   ORDER_PATH: String
   ORDER_HISTORY_PATH: String
   ORDER_HISTORY_PER_PAGE: Integer
+  CANCEL_ORDER_PATH: String
   ERROR_BODY_LIMIT: Integer
 
   @config: Pharmapoint::Config
@@ -34,6 +35,7 @@ class Pharmapoint::Client
   def store_pick_up_order: (body body) -> Pharmapoint::PartnerOrder
   def order: (String number) -> Pharmapoint::PartnerOrder
   def order_history: (phone: String) -> Array[Pharmapoint::PartnerOrder]
+  def cancel_order: (number: String, phone: String, reason: String) -> true
 
   private
 

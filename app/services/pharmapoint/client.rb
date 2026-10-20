@@ -17,6 +17,7 @@ class Pharmapoint::Client
   ORDER_PATH = 'order/%<number>s'
   ORDER_HISTORY_PATH = 'order/history'
   ORDER_HISTORY_PER_PAGE = 50
+  CANCEL_ORDER_PATH = 'order/cancel'
   ERROR_BODY_LIMIT = 500
 
   # rubocop:disable-next Metrics/ParameterLists -- who asks, why and which attempt it is are the log's context.
@@ -105,6 +106,13 @@ class Pharmapoint::Client
     ordering(ORDER_HISTORY_PATH, params, headers:) { Pharmapoint::Readers::PartnerOrders.many(it) }
   end
 
+  # Asks the partner to cancel an order; the partner checks the client's phone. What it answers is not documented, so
+  # any successful answer is taken as done.
+  def cancel_order(number:, phone:, reason:)
+    body = { order_number: number, cancel_reason: reason }
+    ordering(CANCEL_ORDER_PATH, {}, body:, headers: { 'Customer-Phone' => phone }) { true }
+  end
+
   private
 
   # Orders spend no share of the limit and have the booking's timeouts.
@@ -148,8 +156,12 @@ class Pharmapoint::Client
   end
 
   # Only a successful answer is read as JSON: an error page of a gateway has no reason to be.
+  # An empty answer reads as an empty object, which a reader that needs data refuses on its own.
   def parse(body)
-    JSON.parse(body.to_s)
+    text = body.to_s
+    return {} if text.strip.empty?
+
+    JSON.parse(text)
   rescue JSON::ParserError => e
     raise Pharmapoint::InvalidResponse, @masker.text(e.message)
   end

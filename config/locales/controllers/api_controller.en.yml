@@ -34,3 +34,9 @@ en:
       turnstile_failed: We could not confirm you are not a robot. Reload the page and try again.
       order_not_found: No booking has this link.
       invalid_page: The page must be a whole number from 1, and the page size no larger than allowed.
+      cancellation_needs_account: Only the user of the account the booking was made from can cancel it. Sign in.
+      order_not_cancellable: This booking can no longer be cancelled.
+      invalid_cancel_reason: The reason must be no longer than 255 characters.
+      cancellation_refused: The drugstore did not accept the cancellation; the order may be ready already. Contact the drugstore.
+      cancellation_unavailable: The booking could not be cancelled. Try again later.
+      cancellation_busy: The booking service is busy now. Try again a little later.

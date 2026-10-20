@@ -431,16 +431,50 @@ paths:
               schema:
                 "$ref": "#/components/schemas/error"
     delete:
-      summary: Clears the cart for good
+      summary: Clears the cart, or cancels the booking it became
       tags:
       - Cart
-      description: Removes the cart with its items, so a cart can be started in another
-        drugstore.
+      description: 'A cart is removed with its items, so a cart can be started in
+        another drugstore (204). A booking is cancelled at the drugstore and stays,
+        with the status the partner gives after it (200). Only the signed-in user
+        of the booking''s account can cancel it: the token is also the link the booking
+        is shared by. Only a booking the drugstore took, with a status that is not
+        final, can be cancelled. The reason is optional and comes in the body.'
+      parameters: []
       responses:
         '204':
           description: the cart is gone
+        '200':
+          description: the booking is cancelled; its status read again from the partner
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/order_response"
+        '403':
+          description: 'cancellation_needs_account: only the user of the booking''s
+            account can cancel it'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '409':
+          description: order_not_cancellable, or cancellation_refused when the drugstore
+            did not accept it
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
         '404':
           description: cart_not_found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/cancellation_request"
   "/api/v1/search":
     post:
       summary: Searches the providers live for goods by name
@@ -1175,6 +1209,13 @@ components:
           type: integer
         total:
           type: string
+    cancellation_request:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 255
+          description: Optional; without it the drugstore gets «Скасовано клієнтом»
     error:
       type: object
       required:

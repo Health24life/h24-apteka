@@ -5,7 +5,7 @@ module BookingsHelpers
   # holds (a value, or a block given the time it looks since). The own numbers it was sent are kept in `submitted`.
   class FakeBookings
     class << self
-      attr_accessor :answers, :submitted
+      attr_accessor :answers, :submitted, :cancelled
     end
 
     attr_reader :provider
@@ -19,16 +19,22 @@ module BookingsHelpers
 
     def status(_order) = self.class.answers[:submit]
 
+    def cancel(_order, reason:)
+      self.class.cancelled << reason
+      self.class.answers.fetch(:cancel, true)
+    end
+
     def find_submitted(_order, since:)
       found = self.class.answers[:found]
       found.respond_to?(:call) ? found.call(since) : found
     end
   end
 
-  def stub_bookings_adapter(submit: nil, found: nil)
+  def stub_bookings_adapter(submit: nil, found: nil, cancel: true)
     adapter = Class.new(FakeBookings)
-    adapter.answers = { submit: submit || partner_order, found: }
+    adapter.answers = { submit: submit || partner_order, found:, cancel: }
     adapter.submitted = []
+    adapter.cancelled = []
     stub_const('Orders::Bookings::Adapters::BY_CODE', { 'pharmapoint' => adapter })
     adapter
   end

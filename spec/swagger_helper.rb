@@ -453,6 +453,16 @@ RSpec.configure do |config|
               total: { type: :string }
             }
           },
+          cancellation_request: {
+            type: :object,
+            properties: {
+              reason: {
+                type: :string,
+                maxLength: 255,
+                description: 'Optional; without it the drugstore gets «Скасовано клієнтом»'
+              }
+            }
+          },
           error: {
             type: :object,
             required: %w[error],
