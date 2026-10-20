@@ -387,6 +387,8 @@ components:
         brand:
           type: object
           nullable: true
+          required:
+          - name
           properties:
             name:
               type: string
@@ -404,14 +406,19 @@ components:
               pattern: "^[0-9]{8}([0-9]{2})?$"
               description: EDRPOU code
         address:
-          type: string
+          type: object
           nullable: true
-        latitude:
-          type: number
-          nullable: true
-        longitude:
-          type: number
-          nullable: true
+          required:
+          - address
+          - latitude
+          - longitude
+          properties:
+            address:
+              type: string
+            latitude:
+              type: number
+            longitude:
+              type: number
         phone:
           type: string
           nullable: true

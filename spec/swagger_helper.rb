@@ -186,7 +186,7 @@ RSpec.configure do |config|
             properties: {
               id: { type: :integer },
               name: { type: :string, nullable: true },
-              brand: { type: :object, nullable: true, properties: { name: { type: :string } } },
+              brand: { type: :object, nullable: true, required: %w[name], properties: { name: { type: :string } } },
               legal_entity: {
                 type: :object,
                 required: %w[name code],
@@ -195,9 +195,16 @@ RSpec.configure do |config|
                   code: { type: :string, pattern: '^[0-9]{8}([0-9]{2})?$', description: 'EDRPOU code' }
                 }
               },
-              address: { type: :string, nullable: true },
-              latitude: { type: :number, nullable: true },
-              longitude: { type: :number, nullable: true },
+              address: {
+                type: :object,
+                nullable: true,
+                required: %w[address latitude longitude],
+                properties: {
+                  address: { type: :string },
+                  latitude: { type: :number },
+                  longitude: { type: :number }
+                }
+              },
               phone: { type: :string, nullable: true },
               week_working_hours: {
                 type: :array,
