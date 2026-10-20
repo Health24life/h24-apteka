@@ -5,7 +5,7 @@ require 'swagger_helper'
 RSpec.describe 'Drugstores with the price of a SKU', :partner_calls do
   let(:Authorization) { nil }
   let!(:provider) { create(:provider, code: 'pharmapoint') }
-  let(:id) { linked_goods.id }
+  let(:goods_id) { linked_goods.id }
   let(:body) { {} }
   let!(:tas) { linked_drugstore('510', name: 'Аптека TAS №118', work_with_reimbursement: true) }
 
@@ -37,7 +37,7 @@ RSpec.describe 'Drugstores with the price of a SKU', :partner_calls do
 
   def drugstores = response.parsed_body['drugstores']
 
-  path '/api/v1/goods/{id}/drugstores' do
+  path '/api/v1/goods/{goods_id}/drugstores' do
     post 'Lists the drugstores around that have a SKU, with its price there' do
       tags 'Drugstores'
       description 'The step that picks the drugstore of the cart: the drugstores around the place that have the ' \
@@ -48,7 +48,11 @@ RSpec.describe 'Drugstores with the price of a SKU', :partner_calls do
                   'signed-in user.'
       consumes 'application/json'
       produces 'application/json'
-      parameter name: :id, in: :path, required: true, schema: { type: :integer }, description: 'SKU of the catalog'
+      parameter name: :goods_id,
+                in: :path,
+                required: true,
+                schema: { type: :integer },
+                description: 'SKU of the catalog'
       parameter name: :Authorization,
                 in: :header,
                 required: false,
@@ -111,7 +115,7 @@ RSpec.describe 'Drugstores with the price of a SKU', :partner_calls do
       response '404', 'goods_not_found: no such SKU, or it or its group is hidden or withdrawn' do
         schema '$ref' => '#/components/schemas/error'
 
-        let(:id) { create(:catalog_goods, hidden: true).id }
+        let(:goods_id) { create(:catalog_goods, hidden: true).id }
 
         run_test! { expect(error_code).to eq('goods_not_found') }
       end

@@ -4,7 +4,9 @@
 namespace :api do
   namespace :v1 do
     post 'search', to: 'search#create'
-    post 'goods/:id/drugstores', to: 'goods/drugstores#create', as: :goods_drugstores
+    resources :goods, only: [] do
+      resources :drugstores, only: :create, module: :goods
+    end
     # A cart is an order in the cart state; its owner reaches it by the token in the path.
     resources :orders, only: %i[index create show destroy], param: :token do
       get :current, on: :collection
