@@ -243,13 +243,14 @@ RSpec.configure do |config|
           },
           cart_item_request: {
             type: :object,
-            required: %w[goods_id drugstore_id quantity],
+            required: %w[goods_id quantity],
             properties: {
               goods_id: { type: :integer, description: 'SKU of the catalog' },
               drugstore_id: {
                 type: :integer,
-                description: 'The drugstore picked from the list of drugstores with the price of the SKU; the ' \
-                             'drugstore of the cart when the SKU goes to a cart'
+                description: 'The drugstore picked from the list of drugstores with the price of the SKU, needed ' \
+                             'for the first SKU. When the SKU goes to a cart it may be left out; given, it must be ' \
+                             'the drugstore of the cart'
               },
               quantity: { type: :integer, minimum: 1, description: 'Whole packs, added to those already in the cart' }
             }

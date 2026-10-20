@@ -698,7 +698,6 @@ components:
       type: object
       required:
       - goods_id
-      - drugstore_id
       - quantity
       properties:
         goods_id:
@@ -707,7 +706,8 @@ components:
         drugstore_id:
           type: integer
           description: The drugstore picked from the list of drugstores with the price
-            of the SKU; the drugstore of the cart when the SKU goes to a cart
+            of the SKU, needed for the first SKU. When the SKU goes to a cart it may
+            be left out; given, it must be the drugstore of the cart
         quantity:
           type: integer
           minimum: 1

@@ -18,9 +18,10 @@ class Api::V1::Orders::ItemsController < ApiController
 
   def update = render_cart(Orders::Carts::ChangeQuantity.call(owner, item_id: params[:id], quantity:))
 
-  # The cart goes with its last item; the front reads the cart again for the rest.
+  # The cart goes with its last item; the front reads the cart again for the rest. Taking an item out needs no tidying,
+  # so an item that has just become unusable is taken out as asked rather than refused as missing.
   def destroy
-    cart = Orders::Carts::Opening.call(owner).cart
+    cart = Orders::Carts::Find.call(owner) || Orders::Carts::Opening.not_found
     item = cart.items.find_by(id: params[:id]) ||
            raise(Orders::Carts::Refused.new(:cart_item_not_found, status: :not_found))
     Orders::Carts::RemoveItem.call(item)

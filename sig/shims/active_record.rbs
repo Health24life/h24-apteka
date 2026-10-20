@@ -28,3 +28,10 @@ module ActiveRecord
     end
   end
 end
+
+# The collected signatures leave out the public constructor and `call` of the preloader.
+class ActiveRecord::Associations::Preloader
+  def initialize: (records: Array[ActiveRecord::Base], associations: untyped, ?scope: untyped,
+                   ?available_records: Array[ActiveRecord::Base], ?associate_by_default: bool) -> void
+  def call: () -> Array[untyped]
+end

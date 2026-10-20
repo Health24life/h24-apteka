@@ -12,7 +12,6 @@ class Orders::Carts::Check
 
   private
 
-  def ask: () -> (Orders::Offers::DrugstoreOffer | Orders::Offers::Failure | nil)
   def known: ((Orders::Offers::DrugstoreOffer | Orders::Offers::Failure | nil) offer) -> Orders::Offers::DrugstoreOffer
   def busy: (Integer? retry_after) -> bot
   def unavailable: () -> bot

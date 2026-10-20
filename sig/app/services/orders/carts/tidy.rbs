@@ -8,7 +8,7 @@ class Orders::Carts::Tidy
 
   private
 
-  def cart_reason: () -> Symbol?
+  def drugstore_gone?: () -> bool
   def remove: (Order::Item item) -> Orders::Carts::Removed?
   def goods_reason: (Catalog::Goods goods) -> Symbol?
   def gone: (Symbol reason, Array[Orders::Carts::Removed] removed) -> Orders::Carts::Tidied

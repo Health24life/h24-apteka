@@ -3,6 +3,4 @@ class Orders::Carts::Owner < Data
   attr_reader token: String?
 
   def self.new: (user_id: Integer?, token: String?) -> instance
-
-  def guest?: () -> bool
 end

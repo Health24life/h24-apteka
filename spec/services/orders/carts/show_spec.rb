@@ -36,6 +36,16 @@ RSpec.describe Orders::Carts::Show do
     expect(view.items.map(&:available?)).to eq([ false, false ])
   end
 
+  it 'shows the cart of a disabled provider without prices, not asking it', :aggregate_failures do
+    stub_offers_adapter { raise 'a disabled provider is asked' }
+    cart.provider.update!(active: false)
+
+    view = described_class.call(owner)
+
+    expect(view).to have_attributes(prices_available: false)
+    expect(view.items.size).to eq(2)
+  end
+
   it 'tells what it took out' do
     stub_offers_adapter { |drugstore, items| offer_for(drugstore, items) }
     first_item.goods.update!(hidden: true)

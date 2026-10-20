@@ -19,8 +19,9 @@ class Api::V1::OrdersController < ApiController
     render_cart(result.view, status: result.created ? :created : :ok)
   end
 
+  # Clearing needs no tidying: the cart goes whole whatever became unusable in it.
   def destroy
-    Orders::Carts::Clear.call(Orders::Carts::Opening.call(cart_owner(params[:token])).cart)
+    Orders::Carts::Clear.call(Orders::Carts::Find.call(cart_owner(params[:token])) || Orders::Carts::Opening.not_found)
     head :no_content
   end
 

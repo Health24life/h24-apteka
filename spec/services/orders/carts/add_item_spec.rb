@@ -19,6 +19,14 @@ RSpec.describe Orders::Carts::AddItem do
     described_class.call(by, goods_id:, drugstore_id:, quantity:)
   end
 
+  # The first look for the cart finds nothing, as if another request made it right after.
+  def missed_once
+    calls = 0
+    allow(Orders::Carts::Find).to receive(:call).and_wrap_original do |original, *args|
+      (calls += 1) == 1 ? nil : original.call(*args)
+    end
+  end
+
   def linked_drugstore = ProviderLinking.link(provider, create(:catalog_drugstore)).linkable
 
   describe 'the first item' do
@@ -62,6 +70,34 @@ RSpec.describe Orders::Carts::AddItem do
       expect(cart.items.reload.size).to eq(1)
     end
 
+    it 'takes the drugstore of the cart when the request leaves it out' do
+      add(owner(token: cart.token), drugstore_id: nil)
+
+      expect(cart.items.reload.map(&:quantity)).to eq([ 2 ])
+    end
+
+    it 'refuses a SKU the provider of the cart does not serve, not asking it' do
+      unlinked = create(:catalog_goods)
+
+      expect { add(owner(token: cart.token), goods_id: unlinked.id) }
+        .to be_refused(code: :goods_not_in_drugstore, status: :unprocessable_content)
+    end
+
+    it 'refuses packs that would not fit the item', :aggregate_failures do
+      cart.items.sole.update!(quantity: Order::Item::MAX_QUANTITY - 1)
+
+      expect { add(owner(token: cart.token)) }.to be_refused(code: :invalid_quantity)
+      expect(cart.items.reload.sole.quantity).to eq(Order::Item::MAX_QUANTITY - 1)
+    end
+
+    it "puts the SKU in the user's cart that another request made meanwhile", :aggregate_failures do
+      made = add(owner(user_id: 9)).view.cart
+      missed_once
+
+      expect(add(owner(user_id: 9))).to have_attributes(created: false)
+      expect(made.items.reload.map(&:quantity)).to eq([ 2 ])
+    end
+
     it 'puts a second SKU in an item of its own' do
       second = create(:catalog_goods)
       ProviderLinking.link(provider, second)
@@ -74,9 +110,15 @@ RSpec.describe Orders::Carts::AddItem do
 
   describe 'the live check' do
     it 'refuses a SKU the drugstore does not have' do
-      stub_offers_adapter { |store, items| offer_for(store, items, fulfilled: false) }
+      stub_offers_adapter { |store, items| offer_for(store, items, fulfilled: false, available: 0) }
 
       expect { add }.to be_refused(code: :goods_not_in_drugstore, status: :unprocessable_content)
+    end
+
+    it 'tells how many packs the drugstore has when it does not cover all those asked' do
+      stub_offers_adapter { |store, items| offer_for(store, items, fulfilled: false, available: 2) }
+
+      expect { add(quantity: 4) }.to be_refused(code: :quantity_exceeds_stock, details: { available_quantity: 2 })
     end
 
     it 'refuses more packs than the drugstore has, telling how many it has, and saves nothing', :aggregate_failures do
