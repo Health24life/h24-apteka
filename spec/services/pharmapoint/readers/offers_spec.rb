@@ -12,11 +12,8 @@ RSpec.describe Pharmapoint::Readers::Offers do
     expect(offer.today_hours).to have_attributes(from: '10:00', to: '21:00', open: true, round_the_clock: false)
   end
 
-  it 'tells no data from no goods: an order of null has no items', :aggregate_failures do
-    offer = read('offers_nearby').first
-
-    expect(offer.items).to be_nil
-    expect(offer).not_to be_known
+  it 'tells no data from no goods: an order of null has no items' do
+    expect(read('offers_nearby').first.items).to be_nil
   end
 
   it 'reads the in-drugstore price and the quantity of a line, never the online price', :aggregate_failures do

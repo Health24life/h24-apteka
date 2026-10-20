@@ -23,14 +23,15 @@ class Pharmapoint::Config
   end
 
   interface _Cart
-    def open_timeout: () -> Integer
-    def read_timeout: () -> Integer
+    def open_timeout: () -> Float
+    def read_timeout: () -> Float
     def rate_limit_per_minute: () -> Integer
   end
 
   interface _LogRetentionDays
     def booking: () -> Integer
     def search: () -> Integer
+    def offers: () -> Integer
     def refresh: () -> Integer
     def other: () -> Integer
     def to_h: () -> Hash[Symbol, Integer]

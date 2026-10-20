@@ -1,4 +1,7 @@
 class Pharmapoint::Offers
+  class NotLinked < StandardError
+  end
+
   attr_reader provider: Provider
 
   @client: Pharmapoint::Client
@@ -20,5 +23,5 @@ class Pharmapoint::Offers
   def drugstore_ids: (Array[String] external_ids) -> Hash[String, Integer]
   def offer: (Pharmapoint::Offer offer, Integer? drugstore_id, Hash[Integer, String] refs) -> Orders::Offers::DrugstoreOffer
   def lines: (Array[Pharmapoint::OfferItem]? items, Hash[String, Integer] goods_ids) -> Array[Orders::Offers::Line]?
-  def failure: (StandardError error) -> Orders::Offers::Failure
+  def failure: (Pharmapoint::Error | NotLinked error) -> Orders::Offers::Failure
 end

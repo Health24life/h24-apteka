@@ -26,6 +26,7 @@ Rails.application.config.to_prepare do
     retention = config.log_retention_days
     retention.booking = ENV.fetch('PHARMAPOINT_LOG_RETENTION_BOOKING_DAYS', retention.booking)
     retention.search = ENV.fetch('PHARMAPOINT_LOG_RETENTION_SEARCH_DAYS', retention.search)
+    retention.offers = ENV.fetch('PHARMAPOINT_LOG_RETENTION_OFFERS_DAYS', retention.offers)
     retention.refresh = ENV.fetch('PHARMAPOINT_LOG_RETENTION_REFRESH_DAYS', retention.refresh)
     retention.other = ENV.fetch('PHARMAPOINT_LOG_RETENTION_OTHER_DAYS', retention.other)
   end.finalize!
