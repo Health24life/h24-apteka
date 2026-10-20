@@ -78,13 +78,13 @@ class Catalog::Sync::Pulls::EnqueueFound
       .pluck(:external_id).to_set
   end
 
+  # One push for the page: the unique lock still sees every job and leaves no id for the one it drops.
   def queue(groups)
     keys = Catalog::Sync::Pulls::Stash.write(provider: @provider, records: groups.map(&:record), config: @config)
-    groups.to_h do |group|
-      id = group.external_id
-      queued = Catalog::Sync::PullWorker.perform_async('goods_group', id, @user_id, @provider.id, keys[id])
-      [ id, queued ? :enqueued : :queued_already ]
-    end
+    # @type var args: Array[[ String, String, Integer?, Integer, String? ]]
+    args = groups.map { [ 'goods_group', it.external_id, @user_id, @provider.id, keys[it.external_id] ] }
+    jids = Catalog::Sync::PullWorker.perform_bulk(args)
+    groups.zip(jids).to_h { |group, jid| [ group.external_id, jid ? :enqueued : :queued_already ] }
   end
 
   def report(error)

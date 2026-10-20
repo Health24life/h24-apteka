@@ -29,9 +29,10 @@ class Pharmapoint::Client
 
   def fetch: [T] (String path, ?Hash[Symbol, String | Integer | Float] params, ?share: Symbol?, ?timeouts: timeouts?)
                { (Pharmapoint::json) -> T } -> T
-  def request: (String path, Hash[Symbol, String | Integer | Float] params, timeouts? timeouts) -> Faraday::Response
+  def request: (String path, Hash[Symbol, String | Integer | Float] params, [String, String] credentials, timeouts? timeouts)
+             -> Faraday::Response
   def parse: (String? body) -> Pharmapoint::json
   def check_status!: (Faraday::Response response) -> void
   def rate_limited: (Faraday::Response response) -> Pharmapoint::RateLimited
-  def connection: (?timeouts? timeouts) -> Faraday::Connection
+  def connection: (String api_key, String domain_name, ?timeouts? timeouts) -> Faraday::Connection
 end

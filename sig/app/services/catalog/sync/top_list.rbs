@@ -20,4 +20,5 @@ class Catalog::Sync::TopList
   private
 
   def queue: (String id, Integer number, Array[String] messages) -> (:enqueued | :present | :failed)
+  def skip_paused: (String id, Integer number, Array[String] messages) -> :failed
 end

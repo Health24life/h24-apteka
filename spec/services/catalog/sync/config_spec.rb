@@ -29,4 +29,13 @@ RSpec.describe Catalog::Sync::Config do
 
     expect(config.pull).to have_attributes(stash_ttl: 1.minute, cooldown: 2.minutes, run_retention: 30.days)
   end
+
+  it 'keeps the periods of the pull when they are given back their own defaults, as for an unset variable' do
+    config.configure do |settings|
+      pull = settings.pull
+      pull.update(stash_ttl: pull.stash_ttl, cooldown: pull.cooldown, run_retention: pull.run_retention)
+    end
+
+    expect(config.pull).to have_attributes(stash_ttl: 10.minutes, cooldown: 15.minutes, run_retention: 90.days)
+  end
 end
