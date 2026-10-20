@@ -22,5 +22,6 @@ class Pharmapoint::Search
                                                     dosage: String?, pack: Catalog::Search::Hit::pack, is_recipe: bool,
                                                     is_strict_recipe: bool }
   def pack: (Pharmapoint::Pack pack) -> Catalog::Search::Hit::pack
+  def failed: (StandardError error) -> Catalog::Search::Failure
   def failure: (Catalog::Search::Failure::reason reason, ?Integer? retry_after) -> Catalog::Search::Failure
 end

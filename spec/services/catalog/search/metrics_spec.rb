@@ -77,7 +77,7 @@ RSpec.describe Catalog::Search::Metrics do
   end
 
   it 'keeps what is left of the share of the search' do
-    described_class.share_left('pharmapoint') { 17 }
+    described_class.share_left('pharmapoint', 17)
 
     expect(counted(:rate_limit_share_left, provider: 'pharmapoint')).to eq(17)
   end
@@ -85,7 +85,9 @@ RSpec.describe Catalog::Search::Metrics do
   it 'never lets a failure to count reach the search' do
     allow(Rails.error).to receive(:report)
 
-    expect { described_class.share_left('pharmapoint') { raise Redis::CannotConnectError } }.not_to raise_error
+    allow(Yabeda.apteka_search.rate_limit_share_left).to receive(:set).and_raise(ArgumentError)
+
+    expect { described_class.share_left('pharmapoint', 17) }.not_to raise_error
   end
 
   it 'counts the fetches of the last hour saved from the stash and from the provider' do

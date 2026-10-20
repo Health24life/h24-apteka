@@ -6,6 +6,4 @@ class Pharmapoint::Offer < Data
 
   def self.new: (drugstore_external_id: String, distance: Integer?, today_hours: Pharmapoint::TodayHours,
                  items: Array[Pharmapoint::OfferItem]?) -> instance
-
-  def known?: () -> bool
 end

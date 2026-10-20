@@ -137,6 +137,31 @@ RSpec.describe Catalog::Sync::Pulls::EnqueueFound do
     expect(statements.count { it.start_with?('SELECT') }).to eq(2)
   end
 
+  describe 'with the SKU links the search has already looked up' do
+    def found_with(goods_links) = described_class.call(provider:, found: [ record ], goods_links:)
+
+    it 'trusts them and asks the catalog for the group only', :aggregate_failures do
+      link_group
+      statements = QueryLog.capture { expect(found_with(goods_ids.index_with(true))).to eq(group_id => :present) }
+
+      expect(statements.count { it.start_with?('SELECT') }).to eq(1)
+    end
+
+    it 'queues a fresh group whose SKU they say is not linked' do
+      link_group
+      link_goods
+
+      expect(found_with(goods_ids.index_with(true).merge(goods_ids.first => false))).to eq(group_id => :enqueued)
+    end
+
+    it 'looks up the SKU they leave out' do
+      link_group
+      link_goods
+
+      expect(found_with(goods_ids.first => true)).to eq(group_id => :present)
+    end
+  end
+
   it 'reports a failure instead of breaking the search', :aggregate_failures do
     allow(Sidekiq).to receive(:redis).and_raise(Redis::CannotConnectError)
     allow(Rails.error).to receive(:report)

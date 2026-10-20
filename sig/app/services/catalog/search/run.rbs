@@ -14,13 +14,15 @@ class Catalog::Search::Run
 
   private
 
-  def search: (Catalog::Search::Query query, Float deadline) -> Catalog::Search::Result
+  def ask_all: (Catalog::Search::Query query, Float deadline) -> Array[[ Catalog::Search::Adapters::_Adapter, answer ]]
   def ask: (Catalog::Search::Adapters::_Adapter adapter, Catalog::Search::Query query, Float deadline) -> answer
-  def result: (Catalog::Search::Query query,
-               Array[[ Catalog::Search::Adapters::_Adapter, Catalog::Search::ProviderPage ]] pages,
-               Array[Catalog::Search::Failure] failures) -> Catalog::Search::Result
+  def result: (Catalog::Search::Query query, Array[[ Catalog::Search::Adapters::_Adapter, answer ]] answers)
+            -> Catalog::Search::Result
+  def split: (Array[[ Catalog::Search::Adapters::_Adapter, answer ]] answers)
+           -> [ Array[[ Catalog::Search::Adapters::_Adapter, Catalog::Search::ProviderPage ]], Array[Catalog::Search::Failure] ]
   def status: (Array[[ Catalog::Search::Adapters::_Adapter, Catalog::Search::ProviderPage ]] pages,
                Array[Catalog::Search::Failure] failures) -> String
-  def hand_off: (Provider provider, Catalog::Search::ProviderPage page) -> void
+  def goods: (Provider provider, Catalog::Search::ProviderPage page) -> Array[Catalog::Search::Hit]
+  def hand_off: (Provider provider, Catalog::Search::ProviderPage page, Hash[String, bool] goods_links) -> void
   def now: () -> Float
 end
