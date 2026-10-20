@@ -23,6 +23,12 @@ RSpec.describe Pharmapoint::Config do
     expect(config.goods_groups_per_page).to eq(20)
   end
 
+  it 'reads the timeouts of the live offers in fractions of a second' do
+    config.configure { it.cart.update(open_timeout: '0.5', read_timeout: '1.5') }
+
+    expect(config.cart).to have_attributes(open_timeout: 0.5, read_timeout: 1.5)
+  end
+
   it 'refuses a number that is not one' do
     expect { config.configure { it.rate_limit.per_minute = 'many' } }.to raise_error(ArgumentError)
   end

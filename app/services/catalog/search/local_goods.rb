@@ -7,16 +7,21 @@ class Catalog::Search::LocalGoods
   # What the catalog knows of a SKU or a goods group of the provider.
   class Known < Data.define(:id, :slug, :hidden, :withdrawn); end
 
+  # Whether each SKU of the last page has a link to the catalog, by the provider's id: what the sync would ask again.
+  attr_reader :goods_links
+
   def self.call(provider, hits) = new(provider).call(hits)
 
   def initialize(provider)
     @provider = provider
+    @goods_links = {}
   end
 
   def call(hits)
     return [] if hits.empty?
 
     goods, hidden_groups = known(hits)
+    @goods_links = hits.to_h { [ it.external_id, goods.key?(it.external_id) ] }
     hits.filter_map { shown(it, goods[it.external_id]) unless hidden_groups.include?(it.group_external_id) }
   end
 

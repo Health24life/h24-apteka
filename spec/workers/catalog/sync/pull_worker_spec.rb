@@ -133,8 +133,28 @@ RSpec.describe Catalog::Sync::PullWorker do
     end
   end
 
+  it 'keeps the failed run of a request the partner itself refused, tied to its log entry', :aggregate_failures do
+    stub_pharmapoint('goods-group/get-by-id', body: '{}', status: 429, query: { id: group_id })
+
+    expect { described_class.new.perform('goods_group', group_id, nil, provider.id) }
+      .to raise_error(Pharmapoint::RateLimited)
+    expect(run).to have_attributes(status: 'failed')
+    expect(Provider::RequestLog.where(path: '/api/goods-group/get-by-id').sole).to have_attributes(sync_run_id: run.id)
+  end
+
   describe 'when the request limit is used up' do
     before { Pharmapoint::RateLimiter.new.block!(42) }
+
+    it 'puts the fetch off without a failed run when another worker spends the limit after the check',
+       :aggregate_failures do
+      allow(Pharmapoint::RateLimiter).to receive(:new).and_wrap_original do |original, **options|
+        original.call(**options).tap { allow(it).to receive(:wait_time).and_return(0) }
+      end
+
+      expect { described_class.new.perform('goods_group', group_id, nil, provider.id) }
+        .to raise_error(Pharmapoint::RateLimited)
+      expect(SyncRun.where(progress: { 'mode' => 'pull' })).to be_empty
+    end
 
     it 'puts the fetch off without a failed run in the journal', :aggregate_failures do
       expect { described_class.new.perform('goods_group', group_id, nil, provider.id) }
@@ -206,6 +226,21 @@ RSpec.describe Catalog::Sync::PullWorker do
       described_class.sidekiq_retries_exhausted_block.call(job, Pharmapoint::TransientError.new('down'))
 
       expect(paused?).to be(true)
+    end
+
+    it 'does not pause a record whose retries were spent waiting for the request limit' do
+      job = { 'args' => [ 'goods_group', group_id, nil, provider.id, nil ] }
+      described_class.sidekiq_retries_exhausted_block.call(job, Pharmapoint::RateLimited.new(60))
+
+      expect(paused?).to be(false)
+    end
+
+    it 'does not pause a record that could not be fetched for a missing setting', :aggregate_failures do
+      use_pharmapoint_config(connection: { api_key: nil })
+      described_class.new.perform('goods_group', group_id, nil, provider.id)
+
+      expect(run).to have_attributes(status: 'failed', error_message: /PHARMAPOINT_API_KEY/)
+      expect(paused?).to be(false)
     end
 
     it 'does not pause a record that was saved' do

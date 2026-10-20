@@ -6,8 +6,9 @@
 class Catalog::Sync::Config
   include Dry::Configurable
 
-  SECONDS = ->(value) { Integer(value).seconds }
-  DAYS = ->(value) { Integer(value).days }
+  # The initializer hands an unset variable's default back in, already a duration, so one passes through as it is.
+  SECONDS = ->(value) { value.is_a?(ActiveSupport::Duration) ? value : Integer(value).seconds }
+  DAYS = ->(value) { value.is_a?(ActiveSupport::Duration) ? value : Integer(value).days }
 
   # The environment gives the points as a JSON array of objects with all three keys: latitude and longitude in decimal
   # degrees, radius in whole metres, e.g. [{"latitude": 50.4501, "longitude": 30.5234, "radius": 50000}]. A missing key

@@ -11,13 +11,13 @@ RSpec.describe Catalog::Sync::Pulls::Enqueue do
 
   it 'queues a goods group the catalog does not have, without waiting for it', :aggregate_failures do
     expect(described_class.call(:goods_group, group_id)).to eq(:enqueued)
-    expect(queued).to eq([ [ 'goods_group', group_id, nil ] ])
+    expect(queued).to eq([ [ 'goods_group', group_id, nil, provider.id ] ])
   end
 
   it 'passes on the user whose request found the gap' do
     described_class.call(:goods_group, group_id, user_id: 7)
 
-    expect(queued).to eq([ [ 'goods_group', group_id, 7 ] ])
+    expect(queued).to eq([ [ 'goods_group', group_id, 7, provider.id ] ])
   end
 
   describe 'a record asked for twice' do
@@ -47,6 +47,15 @@ RSpec.describe Catalog::Sync::Pulls::Enqueue do
       expect(with_unique_jobs { described_class.call(:goods_group, group_id) }).to eq(:enqueued)
     end
 
+    it 'is queued once when the live search has queued it already' do
+      results = with_unique_jobs do
+        found = Catalog::Sync::Pulls::EnqueueFound.call(provider:, found: [ { 'id' => group_id } ])
+        [ found[group_id], described_class.call(:goods_group, group_id) ]
+      end
+
+      expect(results).to eq(%i[enqueued queued_already])
+    end
+
     it 'does not hold two different records against each other' do
       results = with_unique_jobs { [ group_id, 'f' * 32 ].map { described_class.call(:goods_group, it) } }
 
@@ -70,6 +79,15 @@ RSpec.describe Catalog::Sync::Pulls::Enqueue do
       link(3.days.ago)
 
       expect(described_class.call(:goods_group, group_id)).to eq(:enqueued)
+    end
+  end
+
+  describe 'a record whose fetch failed for good a moment ago' do
+    it 'is not queued while it is paused', :aggregate_failures do
+      Catalog::Sync::Pulls::Cooldown.pause!(provider.id, :drugstore, '38628')
+
+      expect(described_class.call(:drugstore, '38628')).to eq(:paused)
+      expect(queued).to be_empty
     end
   end
 

@@ -11,14 +11,16 @@ class Catalog::Sync::Pulls::EnqueueFound
   # A goods group the catalog already has, as far as the decision to fetch it needs.
   class Known < Data.define(:synced_at, :withdrawn, :hidden); end
 
-  # Returns what became of each group by its id: :enqueued, :queued_already, :present, :hidden or :paused.
-  def self.call(provider:, found:, user_id: nil, config: Catalog::Sync.config)
-    new(provider, user_id, config).call(found)
+  # Returns what became of each group by its id: :enqueued, :queued_already, :present, :hidden or :paused. The links of
+  # SKU the caller has already looked up, linked or not by the provider's id, are not looked up again.
+  def self.call(provider:, found:, user_id: nil, goods_links: {}, config: Catalog::Sync.config)
+    new(provider, user_id, goods_links, config).call(found)
   end
 
-  def initialize(provider, user_id, config)
+  def initialize(provider, user_id, goods_links, config)
     @provider = provider
     @user_id = user_id
+    @goods_links = goods_links
     @config = config
   end
 
@@ -72,19 +74,21 @@ class Catalog::Sync::Pulls::EnqueueFound
   end
 
   def linked_goods(ids)
-    return Set.new if ids.empty?
+    linked = ids.select { @goods_links[it] }.to_set
+    unknown = ids.reject { @goods_links.key?(it) }
+    return linked if unknown.empty?
 
-    Provider::Link.where(provider: @provider, linkable_type: Catalog::Goods.name, external_id: ids)
-      .pluck(:external_id).to_set
+    linked | Provider::Link.where(provider: @provider, linkable_type: Catalog::Goods.name, external_id: unknown)
+      .pluck(:external_id)
   end
 
+  # One push for the page: the unique lock still sees every job and leaves no id for the one it drops.
   def queue(groups)
     keys = Catalog::Sync::Pulls::Stash.write(provider: @provider, records: groups.map(&:record), config: @config)
-    groups.to_h do |group|
-      id = group.external_id
-      queued = Catalog::Sync::PullWorker.perform_async('goods_group', id, @user_id, @provider.id, keys[id])
-      [ id, queued ? :enqueued : :queued_already ]
-    end
+    # @type var args: Array[[ String, String, Integer?, Integer, String? ]]
+    args = groups.map { [ 'goods_group', it.external_id, @user_id, @provider.id, keys[it.external_id] ] }
+    jids = Catalog::Sync::PullWorker.perform_bulk(args)
+    groups.zip(jids).to_h { |group, jid| [ group.external_id, jid ? :enqueued : :queued_already ] }
   end
 
   def report(error)

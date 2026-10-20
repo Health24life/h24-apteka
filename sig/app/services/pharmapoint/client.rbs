@@ -7,12 +7,9 @@ class Pharmapoint::Client
   DRUGSTORE_PATH: String
   OFFERS_NEARBY_PATH: String
   OFFERS_IN_DRUGSTORE_PATH: String
-  ERROR_BODY_LIMIT: Integer
 
   @config: Pharmapoint::Config
-  @rate_limiter: Pharmapoint::RateLimiter
-  @masker: Pharmapoint::Logging::Masker
-  @logger: Pharmapoint::Logging::RequestLogger
+  @transport: Pharmapoint::Transport
 
   def initialize: (provider: Provider, ?config: Pharmapoint::Config, ?purpose: Symbol | String, ?user_id: Integer?,
                    ?sync_run: SyncRun?, ?attempt: Integer, ?rate_limiter: Pharmapoint::RateLimiter) -> void
@@ -30,18 +27,9 @@ class Pharmapoint::Client
 
   private
 
-  type timeouts = Hash[Symbol, Integer | Float]
-  type params = Hash[Symbol, String | Integer | Float]
-  type body = Hash[Symbol, untyped]
-
   def offer_line: (Pharmapoint::OrderLine line) -> { goods_id: String, quantity: Integer }
-  def deliver: [T] (String path, body body, params params) { (Pharmapoint::json) -> T } -> T
-
-  def fetch: [T] (String path, ?params params, ?body: body?, ?share: Symbol?, ?timeouts: timeouts?)
-               { (Pharmapoint::json) -> T } -> T
-  def request: (String path, params params, body? body, timeouts? timeouts) -> Faraday::Response
-  def parse: (String? body) -> Pharmapoint::json
-  def check_status!: (Faraday::Response response) -> void
-  def rate_limited: (Faraday::Response response) -> Pharmapoint::RateLimited
-  def connection: (?timeouts? timeouts) -> Faraday::Connection
+  def deliver: [T] (String path, Pharmapoint::Transport::body body, Pharmapoint::Transport::params params)
+                 { (Pharmapoint::json) -> T } -> T
+  def fetch: [T] (String path, ?Pharmapoint::Transport::params params, ?body: Pharmapoint::Transport::body?,
+                  ?share: Symbol?, ?timeouts: Pharmapoint::Transport::timeouts?) { (Pharmapoint::json) -> T } -> T
 end
