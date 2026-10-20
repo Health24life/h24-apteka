@@ -53,7 +53,7 @@ client.drugstore('38628')           # => запис однієї аптеки
 | `PHARMAPOINT_RATE_LIMIT_PER_MINUTE` | `60` | Власна межа запитів на хвилину на весь сервіс |
 | `PHARMAPOINT_GOODS_GROUPS_PER_PAGE` | `50` | Розмір сторінки груп товарів |
 | `PHARMAPOINT_SEARCH_RATE_LIMIT_PER_MINUTE` | `40` | Частка пошуку в ліміті: пошук перевіряє спершу її, потім спільний; відмова в частці не витрачає спільного бюджету, тож синхронізації лишається решта |
-| `PHARMAPOINT_SEARCH_OPEN_TIMEOUT`, `PHARMAPOINT_SEARCH_READ_TIMEOUT` | `1`, `3` | Таймаути пошуку в секундах, коротші за таймаути синхронізації |
+| `PHARMAPOINT_SEARCH_OPEN_TIMEOUT`, `PHARMAPOINT_SEARCH_READ_TIMEOUT` | `1`, `3` | Таймаути пошуку в секундах (можна дробові, напр. `0.5`), коротші за таймаути синхронізації |
 | `PHARMAPOINT_SEARCH_PER_PAGE` | `20` | Розмір сторінки груп у пошуку |
 | `PHARMAPOINT_DRUGSTORE_SEARCH_POINTS` | один пункт у Києві | JSON-масив об'єктів `{"latitude": градуси, "longitude": градуси, "radius": метри}`: навколо цих точок збирається довідник аптек. Читає `Catalog::Sync::Config`; формат і приклад — у [README синхронізації](../catalog/sync/README.md) |
 | `PHARMAPOINT_LOG_RETENTION_<КАТЕГОРІЯ>_DAYS` | бронювання 14, пошук 1, оновлення даних 7, інші 7 | Строк зберігання журналу по категоріях |

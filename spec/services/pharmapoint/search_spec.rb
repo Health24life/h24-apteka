@@ -121,19 +121,19 @@ RSpec.describe Pharmapoint::Search do
       expect(Rails.error).to have_received(:report).with(instance_of(Pharmapoint::InvalidResponse), any_args)
     end
 
-    it 'is unavailable and reported without a key, with no call', :aggregate_failures do
+    it 'is unavailable without a key, with no call and nothing reported', :aggregate_failures do
       allow(Rails.error).to receive(:report)
       keyless = described_class.new(provider:, config: pharmapoint_config(connection: { api_key: '' }))
 
       expect(keyless.call(query, time_left: 4.0).reason).to eq(:unavailable)
-      expect(Rails.error).to have_received(:report).with(instance_of(Pharmapoint::ConfigurationError), any_args)
+      expect(Rails.error).not_to have_received(:report)
       expect(a_request(:get, url).with(query: hash_including({}))).not_to have_been_requested
     end
 
     it 'is unavailable when the limiter cannot reach Redis' do
       limiter = instance_double(Pharmapoint::RateLimiter)
       allow(limiter).to receive(:guard!).and_raise(RedisClient::CannotConnectError)
-      allow(limiter).to receive(:remaining).and_raise(RedisClient::CannotConnectError)
+      allow(limiter).to receive(:share_left).and_return(nil)
       allow(Rails.error).to receive(:report)
 
       expect(described_class.new(provider:, config:, rate_limiter: limiter).call(query, time_left: 4.0).reason)

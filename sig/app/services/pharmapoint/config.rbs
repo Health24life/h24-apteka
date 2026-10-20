@@ -16,8 +16,8 @@ class Pharmapoint::Config
   end
 
   interface _Search
-    def open_timeout: () -> Integer
-    def read_timeout: () -> Integer
+    def open_timeout: () -> Float
+    def read_timeout: () -> Float
     def per_page: () -> Integer
     def rate_limit_per_minute: () -> Integer
   end
@@ -34,6 +34,7 @@ class Pharmapoint::Config
   SECRET_HEADERS: Array[String]
   SECRET_BODY_KEYS: Array[String]
   INTEGER: ^(untyped) -> Integer
+  FLOAT: ^(untyped) -> Float
   PRESENT: ^(untyped) -> untyped
 
   def connection: () -> _Connection

@@ -87,11 +87,19 @@ RSpec.describe Pharmapoint::RateLimiter do
       expect { subject.guard!(share: :search) }.to raise_error(Pharmapoint::RateLimited)
     end
 
-    it 'counts what is left of the share in the current minute', :aggregate_failures do
+    it 'gives its place in the share back when the budget of all refuses', :aggregate_failures do
+      subject = limiter(rate_limit: { per_minute: 1 }, search: { rate_limit_per_minute: 2 })
+      subject.guard!
+
+      expect { subject.guard!(share: :search) }.to raise_error(Pharmapoint::RateLimited) { expect(it.retry_after).to eq(30) }
+      expect(subject.share_left).to eq(2)
+    end
+
+    it 'keeps what was left of the share after the request it counted', :aggregate_failures do
       subject = limiter(search: { rate_limit_per_minute: 3 })
 
-      expect { subject.guard!(share: :search) }.to change { subject.remaining(share: :search) }.from(3).to(2)
-      expect { subject.guard! }.not_to(change { subject.remaining(share: :search) })
+      expect { subject.guard!(share: :search) }.to change(subject, :share_left).from(nil).to(2)
+      expect { subject.guard! }.not_to change(subject, :share_left)
     end
   end
 end
