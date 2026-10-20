@@ -4,10 +4,8 @@
 # EDRPOU code and the working hours. The week schedule starts on Monday.
 class Catalog::DrugstoreBlueprint < Blueprinter::Base
   fields :id, :name, :week_working_hours, :work_with_reimbursement
+  fields :drugstore_legal_entity_name, :drugstore_legal_entity_code
 
-  field(:legal_entity) do |drugstore|
-    { name: drugstore.drugstore_legal_entity_name, code: drugstore.drugstore_legal_entity_code }
-  end
   field(:phone) { |drugstore| drugstore.phone || drugstore.mobile_phone }
 
   association :brand, blueprint: Catalog::Drugstore::BrandBlueprint
