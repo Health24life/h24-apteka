@@ -67,6 +67,24 @@ RSpec.describe Pharmapoint::Bookings do
       expect(bookings.submit(order).reason).to eq(:refused)
       expect(Rails.error).to have_received(:report).once
     end
+
+    it 'raises an error of its own rather than calling it the partner being unavailable' do
+      stub_request(
+        :post,
+        pharmapoint_url('order/store-pick-up-order')
+      ).to_return(pharmapoint_answer('partner_order_created'))
+      allow(Pharmapoint::Readers::PartnerOrders).to receive(:one).and_raise(NoMethodError)
+
+      expect { bookings.submit(order) }.to raise_error(NoMethodError)
+    end
+
+    it 'raises on a part of a pack rather than sending it', :aggregate_failures do
+      stub = stub_request(:post, pharmapoint_url('order/store-pick-up-order'))
+      order.items.first.update!(quantity: BigDecimal('1.5'))
+
+      expect { bookings.submit(order.reload) }.to raise_error(ArgumentError, /part of a pack/)
+      expect(stub).not_to have_been_requested
+    end
   end
 
   describe '#status' do

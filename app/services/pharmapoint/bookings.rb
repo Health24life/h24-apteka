@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # Makes an order of the catalog at Pharmapoint and finds it there again. An order goes as a pick-up paid in the
-# drugstore, with our own number, so the partner can tell its orders from the site's. A failure becomes an answer of its
-# own; nothing is repeated.
+# drugstore, with our own number, so the partner can tell its orders from the site's. A failure of the partner becomes
+# an answer of its own; any other error is a bug and is raised. Nothing is repeated.
 class Pharmapoint::Bookings
   # The ways of receiving and paying of Health24 in the codes of the partner, which uses more than one notation.
   DELIVERY_TYPE_CODES = { 'pick_up' => 'pick_up' }.freeze
@@ -19,7 +19,7 @@ class Pharmapoint::Bookings
 
   def submit(order)
     @client.store_pick_up_order(body(order))
-  rescue StandardError => e
+  rescue Pharmapoint::Error => e
     failure(e)
   end
 
@@ -28,20 +28,20 @@ class Pharmapoint::Bookings
   # no earlier than the first attempt and has the same goods in the same quantities.
   def find_submitted(order, since:)
     @client.order_history(phone: order.customer_phone_number.to_s).find { same?(it, order, since) }
-  rescue StandardError => e
+  rescue Pharmapoint::Error => e
     failure(e)
   end
 
   # The order as the partner keeps it now, read by the partner's number.
   def status(order)
     @client.order(order.provider_order_number.to_s)
-  rescue StandardError => e
+  rescue Pharmapoint::Error => e
     failure(e)
   end
 
   def cancel(order, reason:)
     @client.cancel_order(number: order.provider_order_number.to_s, phone: order.customer_phone_number.to_s, reason:)
-  rescue StandardError => e
+  rescue Pharmapoint::Error => e
     failure(e)
   end
 
@@ -77,7 +77,15 @@ class Pharmapoint::Bookings
   end
 
   def line(item)
-    { goods_id: item.provider_goods_external_id, quantity: item.quantity.to_i, price: money(item.price&.to_d || 0) }
+    { goods_id: item.provider_goods_external_id, quantity: packs(item), price: money(item.price&.to_d || 0) }
+  end
+
+  # The partner counts whole packs and the cart lets in only them: a part of a pack here is a bug, not a quantity.
+  def packs(item)
+    quantity = item.quantity
+    raise ArgumentError, "item #{item.id} is a part of a pack: #{quantity.to_s('F')}" if quantity.frac.nonzero?
+
+    quantity.to_i
   end
 
   # The partner takes amounts as strings with two places.

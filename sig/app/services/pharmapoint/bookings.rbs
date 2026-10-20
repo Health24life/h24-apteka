@@ -21,8 +21,9 @@ class Pharmapoint::Bookings
   def receiving: (Order order) -> Hash[Symbol, Hash[Symbol, String]]
   def customer: (Order order) -> Hash[Symbol, String]
   def line: (Order::Item item) -> Hash[Symbol, untyped]
+  def packs: (Order::Item item) -> Integer
   def money: (Numeric amount) -> String
   def same?: (Pharmapoint::PartnerOrder partner_order, Order order, ActiveSupport::TimeWithZone? since) -> bool
   def quantities: (Array[[ String?, BigDecimal ]] pairs) -> Hash[String?, BigDecimal]
-  def failure: (StandardError error) -> Orders::Bookings::Failure
+  def failure: (Pharmapoint::Error error) -> Orders::Bookings::Failure
 end
