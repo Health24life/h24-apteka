@@ -40,13 +40,19 @@ class Orders::Bookings::Book
   end
 
   def confirmed(order)
-    adapter = Orders::Offers::Adapters.for(order.provider, user_id: @owner.user_id)
-    offer = adapter&.in_drugstore(order.drugstore, order.items.includes(:goods).to_a, share: nil)
-    case offer
+    case (offer = live_offer(order))
     when Orders::Offers::DrugstoreOffer then offer.known? ? offer : unavailable
     when Orders::Offers::Failure then offer.rate_limited? ? busy(offer.retry_after) : unavailable
     else unavailable
     end
+  end
+
+  # A disabled provider keeps its carts but takes no orders until it comes back.
+  def live_offer(order)
+    provider = order.provider
+    unavailable unless provider.active?
+    adapter = Orders::Offers::Adapters.for(provider, user_id: @owner.user_id)
+    adapter&.in_drugstore(order.drugstore, order.items.includes(:goods).to_a, share: nil)
   end
 
   # The moment of the first consent stays: an order made from that attempt is looked for since then.

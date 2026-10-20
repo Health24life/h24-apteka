@@ -18,6 +18,7 @@ class Orders::Bookings::Book
 
   def bookable: () -> Order
   def confirmed: (Order order) -> Orders::Offers::DrugstoreOffer
+  def live_offer: (Order order) -> (Orders::Offers::DrugstoreOffer | Orders::Offers::Failure | nil)
   def take_client: (Order order) -> void
   def sent_before: (Order order) -> Pharmapoint::PartnerOrder?
   def send_to_provider: (Order order, Orders::Offers::DrugstoreOffer offer) -> Result

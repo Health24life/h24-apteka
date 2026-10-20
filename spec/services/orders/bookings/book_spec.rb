@@ -84,6 +84,15 @@ RSpec.describe Orders::Bookings::Book do
     expect(adapter.submitted).to eq([])
   end
 
+  it 'refuses the cart of a disabled provider without asking or sending it', :aggregate_failures do
+    adapter = stub_bookings_adapter
+    stub_offers_adapter { raise 'a disabled provider is asked' }
+    provider.update!(active: false)
+
+    expect { book }.to be_refused(code: :booking_check_unavailable, status: :service_unavailable)
+    expect([ adapter.submitted, cart.reload.state ]).to eq([ [], 'cart' ])
+  end
+
   describe 'a provider that did not take the order' do
     before { stub_bookings_adapter(submit: Orders::Bookings::Failure.new(reason: :unavailable, retry_after: nil)) }
 
