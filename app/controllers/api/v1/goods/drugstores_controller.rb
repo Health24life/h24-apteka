@@ -9,7 +9,7 @@ class Api::V1::Goods::DrugstoresController < ApiController
   rescue_from Catalog::Search::Invalid, with: ->(error) { render_error(error.code, status: :unprocessable_content) }
 
   def create
-    goods = Orders::Offers::Nearby.find_goods(params[:id])
+    goods = Orders::Offers::Nearby.find_goods(params[:goods_id])
     return render_error(:goods_not_found, status: :not_found) unless goods
 
     result = Orders::Offers::Nearby.call(goods, **choice(params.to_unsafe_h), user_id: current_user_id)
