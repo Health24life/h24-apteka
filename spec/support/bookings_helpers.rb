@@ -2,10 +2,11 @@
 
 module BookingsHelpers
   # A provider that takes orders with what `answers[:submit]` holds and finds earlier ones with what `answers[:found]`
-  # holds (a value, or a block given the time it looks since). The own numbers it was sent are kept in `submitted`.
+  # holds (a value, or a block given the time it looks since). The own numbers it was sent are kept in `submitted`, the
+  # phones it looked earlier orders up by in `looked_up`.
   class FakeBookings
     class << self
-      attr_accessor :answers, :submitted, :cancelled
+      attr_accessor :answers, :submitted, :cancelled, :looked_up
     end
 
     attr_reader :provider
@@ -24,7 +25,8 @@ module BookingsHelpers
       self.class.answers.fetch(:cancel, true)
     end
 
-    def find_submitted(_order, since:)
+    def find_submitted(_order, since:, phone:)
+      self.class.looked_up << phone
       found = self.class.answers[:found]
       found.respond_to?(:call) ? found.call(since) : found
     end
@@ -35,6 +37,7 @@ module BookingsHelpers
     adapter.answers = { submit: submit || partner_order, found:, cancel: }
     adapter.submitted = []
     adapter.cancelled = []
+    adapter.looked_up = []
     stub_const('Orders::Bookings::Adapters::BY_CODE', { 'pharmapoint' => adapter })
     adapter
   end

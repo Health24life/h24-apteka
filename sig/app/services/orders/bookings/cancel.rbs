@@ -1,14 +1,21 @@
 class Orders::Bookings::Cancel
+  class Result < Data
+    attr_reader order: Order
+    attr_reader confirmed: bool
+
+    def self.new: (order: Order, confirmed: bool) -> instance
+  end
+
   REASON_LENGTH: Integer
   DEFAULT_REASON: String
 
   @owner: Orders::Carts::Owner
   @reason: untyped
 
-  def self.call: (Orders::Carts::Owner owner, ?reason: untyped) -> Order
+  def self.call: (Orders::Carts::Owner owner, ?reason: untyped) -> Result
 
   def initialize: (Orders::Carts::Owner owner, untyped reason) -> void
-  def call: () -> Order
+  def call: () -> Result
 
   private
 

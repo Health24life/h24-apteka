@@ -70,10 +70,11 @@ module PharmapointHelpers
     }
   end
 
-  # The limiter's counters and the pauses of the on-demand fetch live in Redis, which outlives an example.
+  # The limiter's counters, the pauses of the on-demand fetch and the claims of booking live in Redis, which outlives
+  # an example.
   def reset_pharmapoint_redis
     Sidekiq.redis do |redis|
-      %w[pharmapoint:* catalog_sync_pull_cooldown:*].each do |pattern|
+      %w[pharmapoint:* catalog_sync_pull_cooldown:* orders_bookings_lease:*].each do |pattern|
         redis.scan('MATCH', pattern) { |key| redis.call('DEL', key) }
       end
     end

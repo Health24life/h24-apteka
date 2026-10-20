@@ -12,8 +12,20 @@ RSpec.describe Orders::Bookings::Cancel do
   it 'cancels at the provider and reads the status again', :aggregate_failures do
     adapter = stub_bookings_adapter(submit: partner_order(status_name: 'canceled'))
 
-    expect(described_class.call(owner, reason: 'Передумала').status_name).to eq('canceled')
+    expect(described_class.call(owner, reason: 'Передумала')).to have_attributes(
+      order: have_attributes(status_name: 'canceled'),
+      confirmed: true
+    )
     expect(adapter.cancelled).to eq([ 'Передумала' ])
+  end
+
+  it 'queues a refresh when the status cannot be read after the provider took the cancellation', :aggregate_failures do
+    stub_bookings_adapter(submit: Orders::Bookings::Failure.new(reason: :unavailable, retry_after: nil))
+
+    result = described_class.call(owner)
+
+    expect(result).to have_attributes(confirmed: false, order: have_attributes(status_name: 'created'))
+    expect(Orders::Bookings::StatusRefreshWorker.jobs.pluck('args')).to eq([ [ order.id ] ])
   end
 
   it 'sends a reason of its own when the user gives none' do
@@ -27,9 +39,8 @@ RSpec.describe Orders::Bookings::Cancel do
   it 'lets only the user of the account cancel, not whoever holds the link or a guest', :aggregate_failures do
     stub_bookings_adapter
 
-    expect do
- described_class.call(owner(user_id: nil))
-    end.to be_refused(code: :cancellation_needs_account, status: :forbidden)
+    expect { described_class.call(owner(user_id: nil)) }
+      .to be_refused(code: :cancellation_needs_account, status: :forbidden)
     expect { described_class.call(owner(user_id: 8)) }.to be_refused(code: :cancellation_needs_account)
   end
 

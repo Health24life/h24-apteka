@@ -4,6 +4,10 @@
 # also the link a booking is shared by, so holding it is not enough. Only an order the provider took and whose status
 # is not final can be cancelled. The partner's answer is not documented, so the status is read again after it.
 class Orders::Bookings::Cancel
+  # The order after the cancellation and whether its status was read again. When it was not, the provider took the
+  # cancellation but the kept status is from before it, and a refresh is queued.
+  Result = Data.define(:order, :confirmed)
+
   REASON_LENGTH = 255
   DEFAULT_REASON = 'Скасовано клієнтом'
 
@@ -19,8 +23,11 @@ class Orders::Bookings::Cancel
     answer = adapter(order).cancel(order, reason:)
     refused(answer) if answer.is_a?(Orders::Bookings::Failure)
 
-    Orders::Bookings::RefreshStatus.call(order)
-    order.reload
+    read = Orders::Bookings::RefreshStatus.call(order)
+    return Result.new(order:, confirmed: true) unless read.is_a?(Orders::Bookings::Failure)
+
+    Orders::Bookings::StatusRefreshWorker.perform_async(order.id)
+    Result.new(order:, confirmed: false)
   end
 
   private

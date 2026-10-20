@@ -129,6 +129,15 @@ RSpec.describe Orders::Bookings::Book do
       expect(adapter.submitted).to eq([ own_number ])
     end
 
+    it 'looks for the order by the phone the first attempt went with, though another one is given now' do
+      failed
+      adapter = stub_bookings_adapter
+
+      book(booking_body(cart, customer: { 'phone_number' => '+380 50 765 43 21' }))
+
+      expect(adapter.looked_up).to eq([ '380671234567' ])
+    end
+
     it 'looks for the order since the first consent' do
       consent_at = failed.personal_data_consent_at
       seen = []
@@ -138,6 +147,15 @@ RSpec.describe Orders::Bookings::Book do
 
       expect(seen).to eq([ consent_at ])
     end
+  end
+
+  it 'refuses a booking of a cart that is being booked, sending nothing', :aggregate_failures do
+    adapter = stub_bookings_adapter
+
+    Orders::Bookings::Lease.hold("booking:#{cart.token}", 60) do
+      expect { book }.to be_refused(code: :booking_in_progress, status: :conflict)
+    end
+    expect(adapter.submitted).to eq([])
   end
 
   it 'refuses an order already with the provider' do

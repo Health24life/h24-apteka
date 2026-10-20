@@ -131,7 +131,8 @@ paths:
               schema:
                 "$ref": "#/components/schemas/error"
         '409':
-          description: 'cart_changed: the goods sent are not those of the cart'
+          description: booking_in_progress (another call books the cart), cart_changed
+            or booking_prices_changed
           content:
             application/json:
               schema:
@@ -437,16 +438,24 @@ paths:
       - Cart
       description: 'A cart is removed with its items, so a cart can be started in
         another drugstore (204). A booking is cancelled at the drugstore and stays,
-        with the status the partner gives after it (200). Only the signed-in user
-        of the booking''s account can cancel it: the token is also the link the booking
-        is shared by. Only a booking the drugstore took, with a status that is not
-        final, can be cancelled. The reason is optional and comes in the body.'
+        with the status the partner gives after it (200), or with the status from
+        before when the partner could not be asked again (202). Only the signed-in
+        user of the booking''s account can cancel it: the token is also the link the
+        booking is shared by. Only a booking the drugstore took, with a status that
+        is not final, can be cancelled. The reason is optional and comes in the body.'
       parameters: []
       responses:
         '204':
           description: the cart is gone
         '200':
           description: the booking is cancelled; its status read again from the partner
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/order_response"
+        '202':
+          description: 'cancelled, but the partner did not answer for the status:
+            the one from before is shown'
           content:
             application/json:
               schema:

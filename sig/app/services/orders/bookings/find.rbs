@@ -1,5 +1,6 @@
 class Orders::Bookings::Find
   BOOKABLE: Array[String]
+  ITEMS: Hash[Symbol, Hash[Symbol, Array[Symbol]]]
 
   def self.call: (Orders::Carts::Owner owner) -> Order
 end

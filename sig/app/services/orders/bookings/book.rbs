@@ -6,6 +6,8 @@ class Orders::Bookings::Book
     def self.new: (order: Order, submitted: bool) -> instance
   end
 
+  LEASE_SECONDS: Integer
+
   @owner: Orders::Carts::Owner
   @request: Orders::Bookings::Request
 
@@ -16,13 +18,15 @@ class Orders::Bookings::Book
 
   private
 
+  def book: () -> Result
+  def prepare: (Order order, Orders::Offers::DrugstoreOffer offer) -> void
   def bookable: () -> Order
   def confirmed: (Order order) -> Orders::Offers::DrugstoreOffer
   def live_offer: (Order order) -> (Orders::Offers::DrugstoreOffer | Orders::Offers::Failure | nil)
   def take_client: (Order order) -> void
-  def sent_before: (Order order) -> Pharmapoint::PartnerOrder?
-  def send_to_provider: (Order order, Orders::Offers::DrugstoreOffer offer) -> Result
-  def accepted: (Order order, Orders::Offers::DrugstoreOffer offer, Pharmapoint::PartnerOrder partner_order) -> Result
+  def sent_before: (Order order, String phone) -> Pharmapoint::PartnerOrder?
+  def send_to_provider: (Order order) -> Result
+  def accepted: (Order order, Pharmapoint::PartnerOrder partner_order) -> Result
   def partner_state: (Pharmapoint::PartnerOrder partner_order) -> Hash[Symbol, untyped]
   def keep: (Order order) -> void
   def adapter: (Order order) -> Orders::Bookings::Adapters::_Adapter

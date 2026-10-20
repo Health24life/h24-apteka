@@ -255,7 +255,8 @@ RSpec.describe 'The cart', :partner_calls do
       tags 'Cart'
       description 'A cart is removed with its items, so a cart can be started in another drugstore (204). A ' \
                   'booking is cancelled at the drugstore and stays, with the status the partner gives after it ' \
-                  "(200). Only the signed-in user of the booking's account can cancel it: the token is also the " \
+                  '(200), or with the status from before when the partner could not be asked again (202). ' \
+                  "Only the signed-in user of the booking's account can cancel it: the token is also the " \
                   'link the booking is shared by. Only a booking the drugstore took, with a status that is not ' \
                   'final, can be cancelled. The reason is optional and comes in the body.'
       consumes 'application/json'
@@ -297,6 +298,22 @@ RSpec.describe 'The cart', :partner_calls do
         end
 
         run_test! { expect(response.parsed_body.dig('order', 'state')).to eq('submitted') }
+      end
+
+      response '202', 'cancelled, but the partner did not answer for the status: the one from before is shown' do
+        schema '$ref' => '#/components/schemas/order_response'
+
+        let(:Authorization) { "Bearer #{generate_jwt_token(nameid: 42)}" }
+        let(:token) do
+          create(:order, :submitted, provider:, user_id: 42, provider_order_number: 'PB-35-PT-H5').token
+        end
+
+        before do
+          stub_request(:post, pharmapoint_url('order/cancel')).to_return(status: 200, body: '')
+          stub_request(:get, pharmapoint_url('order/PB-35-PT-H5')).to_timeout
+        end
+
+        run_test! { expect(response.parsed_body.dig('order', 'token')).to eq(token) }
       end
 
       response '403', "cancellation_needs_account: only the user of the booking's account can cancel it" do

@@ -23,11 +23,14 @@ class Pharmapoint::Bookings
     failure(e)
   end
 
-  # The order the partner may have made from an earlier attempt that gave no answer. The partner's history does not
-  # give our own number back, so an order of the client counts as this one when it is in the same drugstore, was made
-  # no earlier than the first attempt and has the same goods in the same quantities.
-  def find_submitted(order, since:)
-    @client.order_history(phone: order.customer_phone_number.to_s).find { same?(it, order, since) }
+  # The order the partner may have made from an earlier attempt that gave no answer, looked for by the phone that
+  # attempt went with. The partner's history does not give our own number back, so an order of the client counts as
+  # this one when it is in the same drugstore, was made no earlier than the first attempt, has the same goods in the
+  # same quantities and is not already kept with another of our orders.
+  def find_submitted(order, since:, phone:)
+    found = @client.order_history(phone:).select { same?(it, order, since) }
+    taken = taken_numbers(order, found.map(&:number))
+    found.find { taken.exclude?(it.number) }
   rescue Pharmapoint::Error => e
     failure(e)
   end
@@ -99,6 +102,13 @@ class Pharmapoint::Bookings
       created_at >= since - CLOCK_SKEW &&
       quantities(partner_order.lines.map { [ it.goods_external_id, it.quantity ] }) ==
         quantities(order.items.map { [ it.provider_goods_external_id.to_s, it.quantity ] })
+  end
+
+  def taken_numbers(order, numbers)
+    return [] if numbers.empty?
+
+    Order.where(provider: @provider, provider_order_number: numbers).where.not(id: order.id)
+      .pluck(:provider_order_number)
   end
 
   def quantities(pairs) = pairs.group_by(&:first).transform_values { |same| same.sum { it.last.to_d } }

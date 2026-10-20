@@ -41,7 +41,8 @@ class Api::V1::OrdersController < ApiController
   end
 
   # A cart is cleared for good, with no tidying, as it goes whole anyway; a booking is cancelled at the drugstore and
-  # stays, with the partner's status. The reason of a cancellation comes in the body.
+  # stays, with the partner's status, or with the status from before when the partner was not asked again in time. The
+  # reason of a cancellation comes in the body.
   def destroy
     owner = cart_owner(params[:token])
     return cancel(owner) if Order.where.not(state: 'cart').exists?(token: owner.token)
@@ -55,6 +56,7 @@ class Api::V1::OrdersController < ApiController
   private
 
   def cancel(owner)
-    render_order(Orders::Bookings::Cancel.call(owner, reason: params.to_unsafe_h['reason']), owner)
+    result = Orders::Bookings::Cancel.call(owner, reason: params.to_unsafe_h['reason'])
+    render_order(result.order, owner, status: result.confirmed ? :ok : :accepted)
   end
 end

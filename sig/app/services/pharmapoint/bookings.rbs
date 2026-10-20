@@ -10,7 +10,7 @@ class Pharmapoint::Bookings
   def initialize: (provider: Provider, ?user_id: Integer?, ?config: Pharmapoint::Config,
                    ?rate_limiter: Pharmapoint::RateLimiter) -> void
   def submit: (Order order) -> (Pharmapoint::PartnerOrder | Orders::Bookings::Failure)
-  def find_submitted: (Order order, since: ActiveSupport::TimeWithZone?)
+  def find_submitted: (Order order, since: ActiveSupport::TimeWithZone?, phone: String)
                     -> (Pharmapoint::PartnerOrder | Orders::Bookings::Failure | nil)
   def status: (Order order) -> (Pharmapoint::PartnerOrder | Orders::Bookings::Failure)
   def cancel: (Order order, reason: String) -> (true | Orders::Bookings::Failure)
@@ -24,6 +24,7 @@ class Pharmapoint::Bookings
   def packs: (Order::Item item) -> Integer
   def money: (Numeric amount) -> String
   def same?: (Pharmapoint::PartnerOrder partner_order, Order order, ActiveSupport::TimeWithZone? since) -> bool
+  def taken_numbers: (Order order, Array[String] numbers) -> Array[String?]
   def quantities: (Array[[ String?, BigDecimal ]] pairs) -> Hash[String?, BigDecimal]
   def failure: (Pharmapoint::Error error) -> Orders::Bookings::Failure
 end

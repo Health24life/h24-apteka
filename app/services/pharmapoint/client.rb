@@ -106,10 +106,12 @@ class Pharmapoint::Client
   end
 
   # Asks the partner to cancel an order; the partner checks the client's phone. What it answers is not documented, so
-  # any successful answer is taken as done.
+  # any successful answer is taken as done, even one that is not JSON: only a successful answer is read.
   def cancel_order(number:, phone:, reason:)
     body = { order_number: number, cancel_reason: reason }
     ordering(CANCEL_ORDER_PATH, {}, body:, headers: { 'Customer-Phone' => phone }) { true }
+  rescue Pharmapoint::InvalidResponse
+    true
   end
 
   private

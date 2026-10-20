@@ -127,6 +127,14 @@ RSpec.describe 'Booking the cart', :partner_calls do
         run_test! { expect(error_code).to eq('cart_changed') }
       end
 
+      response '409', 'booking_in_progress (another call books the cart), cart_changed or booking_prices_changed' do
+        schema '$ref' => '#/components/schemas/error'
+
+        before { Orders::Bookings::Lease.take("booking:#{cart.token}", 60) }
+
+        run_test! { expect([ error_code, cart.reload.state ]).to eq(%w[booking_in_progress cart]) }
+      end
+
       response '422', 'personal_data_consent_required: no consent to the processing of personal data' do
         schema '$ref' => '#/components/schemas/error'
 

@@ -111,6 +111,12 @@ RSpec.describe Pharmapoint::Bookings do
       ).to have_been_requested
     end
 
+    it 'takes a successful answer that is not JSON as done' do
+      stub_request(:post, pharmapoint_url('order/cancel')).to_return(status: 200, body: 'OK')
+
+      expect(bookings.cancel(order, reason: 'x')).to be(true)
+    end
+
     it 'is refused when the partner refuses, and unavailable when it does not answer', :aggregate_failures do
       allow(Rails.error).to receive(:report)
       stub_request(:post, pharmapoint_url('order/cancel')).to_return(status: 422, body: '{}').then.to_timeout
@@ -133,26 +139,33 @@ RSpec.describe Pharmapoint::Bookings do
        :aggregate_failures do
       stub = history
 
-      expect(bookings.find_submitted(order, since:).number).to eq('PB-35')
+      expect(bookings.find_submitted(order, since:, phone: '380501234567').number).to eq('PB-35')
       expect(stub.with(headers: { 'Customer-Phone' => '380501234567' })).to have_been_requested
     end
 
     it 'does not take an order of another drugstore, an earlier one or one with other quantities',
        :aggregate_failures do
       history(drugstore_id: 1)
-      expect(bookings.find_submitted(order, since:)).to be_nil
+      expect(bookings.find_submitted(order, since:, phone: '380501234567')).to be_nil
 
       history(created_at: '2026-10-19 11:00:00')
-      expect(bookings.find_submitted(order, since:)).to be_nil
+      expect(bookings.find_submitted(order, since:, phone: '380501234567')).to be_nil
 
       history(quantity: 1)
-      expect(bookings.find_submitted(order, since:)).to be_nil
+      expect(bookings.find_submitted(order, since:, phone: '380501234567')).to be_nil
+    end
+
+    it 'does not take an order already kept with another of our orders' do
+      history
+      create(:order, :submitted, provider:, provider_order_number: 'PB-35')
+
+      expect(bookings.find_submitted(order, since:, phone: '380501234567')).to be_nil
     end
 
     it 'is unavailable when the history does not answer' do
       stub_request(:get, pharmapoint_url('order/history')).with(query: hash_including({})).to_timeout
 
-      expect(bookings.find_submitted(order, since:).reason).to eq(:unavailable)
+      expect(bookings.find_submitted(order, since:, phone: '380501234567').reason).to eq(:unavailable)
     end
   end
 end

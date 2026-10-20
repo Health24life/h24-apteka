@@ -1,0 +1,4 @@
+# Own code queues this worker by name only.
+class Orders::Bookings::StatusRefreshWorker
+  def self.perform_async: (Integer order_id) -> String?
+end

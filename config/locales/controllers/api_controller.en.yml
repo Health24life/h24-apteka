@@ -25,6 +25,7 @@ en:
       cart_check_busy: The price service is busy now. Try again a little later.
       cart_changed: The cart has changed. Refresh it and confirm the booking again.
       order_already_submitted: This booking has already been sent to the drugstore.
+      booking_in_progress: This cart is being booked right now. Wait for the answer.
       personal_data_consent_required: Booking needs the consent to the processing of personal data.
       invalid_customer: Check the name, the phone and the email.
       booking_not_allowed_in_drugstore: Booking is not available in this drugstore yet.

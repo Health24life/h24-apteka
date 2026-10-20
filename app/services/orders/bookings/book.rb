@@ -6,6 +6,8 @@
 # and whether the provider took it.
 class Orders::Bookings::Book
   Result = Data.define(:order, :submitted)
+  # Longer than a booking takes within the provider's timeouts, so the claim of a process that died runs out by then.
+  LEASE_SECONDS = 60
 
   def self.call(owner, request) = new(owner, request).call
 
@@ -14,20 +16,31 @@ class Orders::Bookings::Book
     @request = request
   end
 
+  # One booking of a token at a time: two at once would both send the cart and make two orders at the provider.
   def call
-    order = bookable
-    offer = confirmed(order)
-    take_client(order)
-    sent = order.own_number && sent_before(order)
-    return accepted(order, offer, sent) if sent
-
-    Orders::Bookings::PriceCheck.call(order, offer, @request)
-    Orders::OwnNumbers::Assign.call(order)
-    order.save!
-    send_to_provider(order, offer)
+    Orders::Bookings::Lease.hold("booking:#{@owner.token}", LEASE_SECONDS) { book } ||
+      refuse(:booking_in_progress, :conflict)
   end
 
   private
+
+  def book
+    order = bookable
+    offer = confirmed(order)
+    sent_phone = order.customer_phone_number
+    take_client(order)
+    sent = order.own_number && sent_before(order, sent_phone || order.customer_phone_number.to_s)
+    prepare(order, offer) unless sent
+    Orders::Bookings::Snapshot.call(order, offer)
+    sent ? accepted(order, sent) : send_to_provider(order)
+  end
+
+  # A new sending: the prices agreed checked, and our own number kept before the provider is asked.
+  def prepare(order, offer)
+    Orders::Bookings::PriceCheck.call(order, offer, @request)
+    Orders::OwnNumbers::Assign.call(order)
+    order.save!
+  end
 
   def bookable
     order = Orders::Bookings::Find.call(@owner)
@@ -52,7 +65,7 @@ class Orders::Bookings::Book
     provider = order.provider
     unavailable unless provider.active?
     adapter = Orders::Offers::Adapters.for(provider, user_id: @owner.user_id)
-    adapter&.in_drugstore(order.drugstore, order.items.includes(:goods).to_a, share: nil)
+    adapter&.in_drugstore(order.drugstore, order.items.to_a, share: nil)
   end
 
   # The moment of the first consent stays: an order made from that attempt is looked for since then.
@@ -70,25 +83,24 @@ class Orders::Bookings::Book
     order.personal_data_consent_at ||= Time.current
   end
 
-  def sent_before(order)
-    found = adapter(order).find_submitted(order, since: order.personal_data_consent_at)
+  # Looked for by the phone the earlier attempt went with: the user may have given another one since.
+  def sent_before(order, phone)
+    found = adapter(order).find_submitted(order, since: order.personal_data_consent_at, phone:)
     return found unless found.is_a?(Orders::Bookings::Failure)
 
     found.rate_limited? ? busy(found.retry_after) : unavailable
   end
 
-  def send_to_provider(order, offer)
-    Orders::Bookings::Snapshot.call(order, offer)
+  def send_to_provider(order)
     answer = adapter(order).submit(order)
-    return accepted(order, offer, answer) if answer.is_a?(Pharmapoint::PartnerOrder)
+    return accepted(order, answer) if answer.is_a?(Pharmapoint::PartnerOrder)
 
     order.state = 'submission_failed'
     keep(order)
     Result.new(order:, submitted: false)
   end
 
-  def accepted(order, offer, partner_order)
-    Orders::Bookings::Snapshot.call(order, offer)
+  def accepted(order, partner_order)
     order.assign_attributes(state: 'submitted', **partner_state(partner_order))
     keep(order)
     Result.new(order:, submitted: true)

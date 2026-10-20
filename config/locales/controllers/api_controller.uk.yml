@@ -25,6 +25,7 @@ uk:
       cart_check_busy: Сервіс цін зараз перевантажений. Спробуйте трохи згодом.
       cart_changed: Кошик змінився. Оновіть його й підтвердьте бронь ще раз.
       order_already_submitted: Цю бронь уже передано в аптеку.
+      booking_in_progress: Цей кошик саме зараз бронюється. Дочекайтеся відповіді.
       personal_data_consent_required: Без згоди на обробку персональних даних забронювати не можна.
       invalid_customer: Перевірте ім'я, телефон та email.
       booking_not_allowed_in_drugstore: У цій аптеці бронювання поки недоступне.

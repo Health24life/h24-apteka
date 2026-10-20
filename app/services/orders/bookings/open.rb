@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # A sent order opened by its token to be shown: to its owner, or to whoever the owner shared the link with, as
-# OrderPolicy lets them. A status older than the configured minutes is asked of the provider first; when it does not
-# answer, the kept status is shown.
+# OrderPolicy lets them. A status older than the configured minutes is asked of the provider first, once in those
+# minutes whoever opens the link and whatever the provider answers; when it does not answer, the kept status is shown.
 module Orders::Bookings::Open
   # Nil for a token of a cart, which the cart shows.
   def self.owned(owner)
@@ -13,8 +13,11 @@ module Orders::Bookings::Open
     fresh(order)
   end
 
-  def self.fresh(order)
-    Orders::Bookings::RefreshStatus.call(order) if Orders::Bookings::RefreshStatus.stale?(order)
+  def self.fresh(order, config: Orders::Bookings.config)
+    if Orders::Bookings::RefreshStatus.stale?(order, config:) &&
+       Orders::Bookings::Lease.take("status:#{order.token}", config.status_stale_minutes.minutes.to_i)
+      Orders::Bookings::RefreshStatus.call(order)
+    end
     order
   end
 end
