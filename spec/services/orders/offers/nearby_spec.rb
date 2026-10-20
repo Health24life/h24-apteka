@@ -81,6 +81,22 @@ RSpec.describe Orders::Offers::Nearby do
     expect(call(reimbursement: true).map(&:drugstore)).to eq([ member ])
   end
 
+  context 'with a drugstore more than one provider answered for' do
+    let(:shared) { drugstore }
+
+    before do
+      other = create(:provider, code: 'other')
+      ProviderLinking.link(other, goods)
+      stub_const('Orders::Offers::Adapters::BY_CODE', { 'pharmapoint' => fake_adapter, 'other' => fake_adapter })
+      answers['pharmapoint'] = [ offer(shared.id, price: '120') ]
+      answers['other'] = [ offer(shared.id, price: '90') ]
+    end
+
+    it 'lists it once, at its cheapest' do
+      expect(call).to contain_exactly(have_attributes(drugstore: shared, price: BigDecimal('90')))
+    end
+  end
+
   it 'is an empty list when no drugstore around has the SKU' do
     answers['pharmapoint'] = []
 

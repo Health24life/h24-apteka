@@ -5,10 +5,10 @@ class Orders::Offers::Nearby
     attr_reader drugstore: Catalog::Drugstore
     attr_reader offer: Orders::Offers::DrugstoreOffer
     attr_reader line: Orders::Offers::Line
-    attr_reader opens_at: String?
+    attr_reader opens_at: ActiveSupport::TimeWithZone?
 
     def self.new: (drugstore: Catalog::Drugstore, offer: Orders::Offers::DrugstoreOffer, line: Orders::Offers::Line,
-                   opens_at: String?) -> instance
+                   opens_at: ActiveSupport::TimeWithZone?) -> instance
 
     def id: () -> Integer
     def name: () -> String?
@@ -45,8 +45,8 @@ class Orders::Offers::Nearby
   def adapters: () -> Array[Orders::Offers::Adapters::_Adapter]
   def failure: (Array[Orders::Offers::Failure] failures) -> Orders::Offers::Failure
   def rows: (Array[Orders::Offers::DrugstoreOffer] offers) -> Array[Row]
-  def priced?: (Orders::Offers::DrugstoreOffer offer) -> bool
-  def row: (Orders::Offers::DrugstoreOffer offer, Hash[Integer, Catalog::Drugstore] drugstores) -> Row?
+  def priced_offer: (Orders::Offers::DrugstoreOffer offer) -> [Integer, Orders::Offers::DrugstoreOffer, Orders::Offers::Line]?
+  def row: (Catalog::Drugstore drugstore, Orders::Offers::DrugstoreOffer offer, Orders::Offers::Line line) -> Row
   def shown_drugstores: (Array[Integer] ids) -> Hash[Integer, Catalog::Drugstore]
   def sorted: (Array[Row] rows) -> Array[Row]
 end

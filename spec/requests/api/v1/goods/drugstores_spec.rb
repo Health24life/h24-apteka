@@ -129,6 +129,14 @@ RSpec.describe 'Drugstores with the price of a SKU', :partner_calls do
         run_test! { expect(error_code).to eq('invalid_sort') }
       end
 
+      response '422', 'invalid_reimbursement: work_with_reimbursement other than true or false' do
+        schema '$ref' => '#/components/schemas/error'
+
+        let(:body) { { work_with_reimbursement: 'true' } }
+
+        run_test! { expect(error_code).to eq('invalid_reimbursement') }
+      end
+
       response '503', 'drugstores_unavailable: the provider did not answer, answered an error or has no key' do
         schema '$ref' => '#/components/schemas/error'
 
