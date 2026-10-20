@@ -8,8 +8,11 @@ class Catalog::Sync::Pulls::Runner
     new(type, external_id, user_id, provider_id, stash_key).call
   end
 
-  # The retries are spent: the record is not queued again for a while.
-  def self.give_up(type, external_id, _user_id = nil, provider_id = nil)
+  # The retries are spent: the record is not queued again for a while. Retries spent waiting for the request limit say
+  # nothing about the record, so it is left free to be queued.
+  def self.give_up(error, type, external_id, _user_id = nil, provider_id = nil)
+    return if error.is_a?(Pharmapoint::RateLimited)
+
     provider = find_provider(provider_id)
     Catalog::Sync::Pulls::Cooldown.pause!(provider.id, type, external_id) if provider
   end
@@ -76,14 +79,24 @@ class Catalog::Sync::Pulls::Runner
     yield tracker
     tracker.finish!
     pause(provider) unless tracker.run.succeeded?
-  rescue *Catalog::Sync::StepRunner::LOST_STEP_ERRORS, Pharmapoint::ConfigurationError => e
-    # The provider will not give the record; another try would not change that, so the journal has the last word.
-    tracker&.fail!(e.message)
-    pause(provider)
   rescue StandardError => e
-    tracker&.fail!(e.message)
-    raise
+    close(provider, tracker, e)
+    raise if retried?(e)
   end
+
+  def close(provider, tracker, error)
+    # Another worker spent the limit after it was checked: the fetch is only put off, so it leaves no failed run.
+    return tracker&.discard! if error.is_a?(Pharmapoint::RateLimited)
+
+    tracker&.fail!(error.message)
+    # A missing setting is no fault of the record: once it is fixed the record is to be fetched at once.
+    pause(provider) if lost?(error)
+  end
+
+  # The provider will not give the record; another try would not change that, so the journal has the last word.
+  def lost?(error) = Catalog::Sync::StepRunner::LOST_STEP_ERRORS.any? { error.is_a?(it) }
+
+  def retried?(error) = !lost?(error) && !error.is_a?(Pharmapoint::ConfigurationError)
 
   def pause(provider) = Catalog::Sync::Pulls::Cooldown.pause!(provider.id, @type, @external_id)
 

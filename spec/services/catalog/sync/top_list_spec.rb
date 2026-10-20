@@ -45,6 +45,17 @@ RSpec.describe Catalog::Sync::TopList do
     )
   end
 
+  it 'skips with a message a group whose fetch failed a moment ago', :aggregate_failures do
+    Catalog::Sync::Pulls::Cooldown.pause!(provider.id, :goods_group, ids.second)
+
+    result = list(ids.first, ids.second)
+
+    expect(result).to have_attributes(enqueued: 1, failed: 1)
+    expect(result.messages).to eq(
+      [ "line 2: '#{ids.second}' failed to be fetched a moment ago and is paused, skipped" ]
+    )
+  end
+
   it 'queues a group once when the list names it twice' do
     result = with_unique_jobs { list(ids.first, ids.first) }
 

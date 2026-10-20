@@ -209,15 +209,17 @@ sidekiq-cron ──► StartWorker(kind) ──► Starter ──► RunTracker.
 
 ```ruby
 Catalog::Sync::Pulls::Enqueue.call(:goods_group, '122c4abff4ae26d0068e7b4cfce236a6', user_id: current_user&.id)
-# => :enqueued | :queued_already | :present
+# => :enqueued | :queued_already | :present | :paused
 
 Catalog::Sync::Pulls::EnqueueFound.call(provider:, found: records, user_id: current_user&.id)
 # => { '122c…' => :enqueued | :queued_already | :present | :hidden | :paused }
 ```
 
 `Enqueue` — для одного запису, якого немає в БД (аптека з неповними даними, первинне наповнення). Відповідь користувачу не
-чекає. Запис, що вже є й не застарів (`stale_record_after`), не дотягується; неповну аптеку дотягують завжди. Без
-`provider:` завдання йде без провайдера, і воркер бере типового (`Catalog::Sync::PROVIDER_CODE`).
+чекає. Запис, що вже є й не застарів (`stale_record_after`), не дотягується; неповну аптеку дотягують завжди; запис на паузі
+після збою (`:paused`) не ставиться. Без `provider:` береться типовий (`Catalog::Sync::PROVIDER_CODE`), але завдання
+завжди несе id провайдера, тож замок той самий, хто б не поставив запис. `TopList` пропускає запис на паузі з
+повідомленням.
 
 `EnqueueFound` — для сторінки живого пошуку: `found` — сирі записи груп товарів із відповіді провайдера. Сторінка
 перевіряється двома запитами (посилання груп і посилання SKU цього провайдера), а не двома на групу. Група ставиться в
@@ -235,7 +237,8 @@ Catalog::Sync::Pulls::EnqueueFound.call(provider:, found: records, user_id: curr
 два необов'язкові, тож завдання зі старої черги працюють через типового провайдера. Вимкнений чи відсутній провайдер — вихід
 із `Rails.error.report` без запису в журналі. Спершу сховище: попадання зберігає групу без `Pharmapoint::Client` і не чіпає
 ліміт. На промаху `RateLimiter#wait_time` (читання без витрати бюджету) перевіряється ще до відкриття запису журналу:
-вичерпаний ліміт — `RateLimited`, Sidekiq повторює через `retry_after`, а збійного запису в журналі не лишається. Кожне
+вичерпаний ліміт — `RateLimited`, Sidekiq повторює через `retry_after`, а збійного запису в журналі не лишається. Якщо
+інший воркер витратив ліміт уже після перевірки, відкритий запис журналу видаляється, а не закривається як `failed`. Кожне
 дотягування має власний короткий запис у журналі прогонів із `progress.mode = 'pull'` і `progress.source` (`stash` чи
 `provider`); такі записи не враховує `SyncRun.last_successful`.
 
@@ -245,7 +248,9 @@ Catalog::Sync::Pulls::EnqueueFound.call(provider:, found: records, user_id: curr
 
 **Пауза після збою (`Cooldown`).** Коли запис не вдалося отримати чи зберегти (провайдер відмовив, запис не зберігся,
 спроби вичерпано), у Redis ставиться `catalog_sync_pull_cooldown:<provider_id>:<type>:<external_id>` на
-`CATALOG_SYNC_PULL_COOLDOWN` секунд (типово 900), і `EnqueueFound` цей запис не ставить. Інакше група з постійним
+`CATALOG_SYNC_PULL_COOLDOWN` секунд (типово 900), і ні `Enqueue`, ні `EnqueueFound` цей запис не ставлять. Паузи
+немає, коли спроби пішли на очікування ліміту запитів (`RateLimited`), і коли бракує налаштувань (`ConfigurationError`):
+у цих випадках проблема не в самому записі. Інакше група з постійним
 `MissingReference` журналювалася б на кожному пошуку.
 
 **Очистка журналу дотягувань (`Retention`).** `PullRunCleanupWorker` за розкладом видаляє записи з

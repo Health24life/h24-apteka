@@ -22,5 +22,6 @@ class Catalog::Sync::RunTracker
   def page_failed!: (Integer? cursor, StandardError error) -> void
   def partial?: () -> bool
   def finish!: () -> void
+  def discard!: () -> void
   def fail!: (String message) -> void
 end

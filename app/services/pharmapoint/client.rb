@@ -59,9 +59,9 @@ class Pharmapoint::Client
 
   # The key is checked first: a call that cannot be sent does not spend the request limit.
   def fetch(path, params = {})
-    @config.credentials!
+    credentials = @config.credentials!
     @rate_limiter.guard!
-    response = request(path, params)
+    response = request(path, params, credentials)
     @rate_limiter.record(response.headers)
     check_status!(response)
     yield parse(response.body)
@@ -70,8 +70,9 @@ class Pharmapoint::Client
     raise
   end
 
-  def request(path, params)
-    connection.get(path, params)
+  def request(path, params, credentials)
+    api_key, domain_name = credentials
+    connection(api_key, domain_name).get(path, params)
   rescue Faraday::Error => e
     raise Pharmapoint::TransientError, @masker.text(e.message)
   end
@@ -100,8 +101,7 @@ class Pharmapoint::Client
     Pharmapoint::RateLimited.new(wait)
   end
 
-  def connection
-    api_key, domain_name = @config.credentials!
+  def connection(api_key, domain_name)
     settings = @config.connection
     Faraday.new(
       url: settings.base_url,
