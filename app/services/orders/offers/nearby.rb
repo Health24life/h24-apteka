@@ -2,13 +2,14 @@
 
 # The drugstores around a place that have a SKU, with its price there and the packs they have, for the user to pick the
 # drugstore of the cart. Asked live of every enabled provider that knows the SKU; only drugstores of the directory that
-# are shown and have a price for the SKU are listed, with their static data from the directory. When no provider
-# answers, the answer is the failure.
+# are shown and have a price for the SKU are listed, with their static data from the directory. The drugstores of the
+# user's «Мої аптеки» come first. When no provider answers, the answer is the failure.
 class Orders::Offers::Nearby
   SORTS = %w[price distance].freeze
 
-  # A drugstore of the list: the directory's record, the provider's live answer and what it has of the SKU.
-  class Row < Data.define(:drugstore, :offer, :line, :opens_at)
+  # A drugstore of the list: the directory's record, the provider's live answer, what it has of the SKU and whether it
+  # is in the user's «Мої аптеки».
+  class Row < Data.define(:drugstore, :offer, :line, :opens_at, :favorite)
     delegate :id,
              :name,
              :brand,
@@ -26,10 +27,7 @@ class Orders::Offers::Nearby
 
   # The SKU the list is asked for: neither it nor its group hidden by an operator or withdrawn by the sync.
   def self.find_goods(id)
-    Catalog::Goods
-      .joins(:goods_group)
-      .where(hidden: false, withdrawn: false, goods_group: { hidden: false, withdrawn: false })
-      .find_by(id:)
+    Catalog::Goods.shown.find_by(id:)
   end
 
   def self.call(goods, location:, sort: 'price', reimbursement: false, user_id: nil)
@@ -67,19 +65,31 @@ class Orders::Offers::Nearby
   end
 
   def rows(offers)
-    unknown = offers.count { it.drugstore_id.nil? }
-    Rails.logger.info("Pharmacy offers: #{unknown} drugstores missing from the directory") if unknown.positive?
-
+    log_unknown(offers)
     priced = offers.filter_map { priced_offer(it) }
     drugstores = shown_drugstores(priced.map(&:first))
+    favorites = favorite_ids(drugstores.keys)
     priced.filter_map do |drugstore_id, offer, line|
       drugstore = drugstores[drugstore_id]
-      row(drugstore, offer, line) if drugstore
+      row(drugstore, offer, line, favorites) if drugstore
     end
   end
 
-  def row(drugstore, offer, line)
-    Row.new(drugstore:, offer:, line:, opens_at: Orders::Offers::OpeningTime.call(offer, drugstore.week_working_hours))
+  def log_unknown(offers)
+    unknown = offers.count { it.drugstore_id.nil? }
+    Rails.logger.info("Pharmacy offers: #{unknown} drugstores missing from the directory") if unknown.positive?
+  end
+
+  def row(drugstore, offer, line, favorites)
+    opens_at = Orders::Offers::OpeningTime.call(offer, drugstore.week_working_hours)
+    Row.new(drugstore:, offer:, line:, opens_at:, favorite: favorites.include?(drugstore.id))
+  end
+
+  # A guest has no «Мої аптеки».
+  def favorite_ids(ids)
+    return Set.new if @user_id.nil? || ids.empty?
+
+    Favorite::Drugstore.where(user_id: @user_id, drugstore_id: ids).pluck(:drugstore_id).to_set
   end
 
   def priced_offer(offer)
@@ -89,18 +99,19 @@ class Orders::Offers::Nearby
   end
 
   def shown_drugstores(ids)
-    drugstores = Catalog::Drugstore.where(id: ids, hidden: false, withdrawn: false)
+    drugstores = Catalog::Drugstore.shown.where(id: ids)
     drugstores = drugstores.where(work_with_reimbursement: true) if @reimbursement
     drugstores.includes(:address, :brand).index_by(&:id)
   end
 
-  # By price, the nearer first among equal prices; or by distance, the cheaper first among equal ones. An unknown
-  # distance goes last. A drugstore more than one provider answered for is listed once, at its cheapest.
+  # The user's drugstores first, then the rest, each part by price, the nearer first among equal prices, or by
+  # distance, the cheaper first among equal ones. An unknown distance goes last. A drugstore more than one provider
+  # answered for is listed once, at its cheapest.
   def sorted(rows)
     far = Float::INFINITY
     rows.sort_by do |row|
       distance = row.distance || far
-      @sort == 'distance' ? [ distance, row.price ] : [ row.price, distance ]
+      [ row.favorite ? 0 : 1, *(@sort == 'distance' ? [ distance, row.price ] : [ row.price, distance ]) ]
     end.uniq(&:id)
   end
 end

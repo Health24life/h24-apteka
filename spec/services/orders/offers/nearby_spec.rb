@@ -97,6 +97,39 @@ RSpec.describe Orders::Offers::Nearby do
     end
   end
 
+  describe '«Мої аптеки»' do
+    let(:stores) { { mine: drugstore, cheap: drugstore, near: drugstore } }
+
+    before do
+      create(:favorite_drugstore, user_id: 42, drugstore: stores[:mine])
+      create(:favorite_drugstore, user_id: 7, drugstore: stores[:cheap])
+      answers['pharmapoint'] = [
+        offer(stores[:near].id, price: '120', distance: 300),
+        offer(stores[:cheap].id, price: '80', distance: 5000),
+        offer(stores[:mine].id, price: '150', distance: 9000)
+      ]
+    end
+
+    def listed(**) = call(**).map { stores.key(it.drugstore) }
+
+    it 'puts the drugstores of the user first, then the rest by price' do
+      expect(listed(user_id: 42)).to eq(%i[mine cheap near])
+    end
+
+    it 'puts them first when sorted by distance too' do
+      expect(listed(user_id: 42, sort: 'distance')).to eq(%i[mine near cheap])
+    end
+
+    it 'marks the drugstores of the user' do
+      expect(call(user_id: 42).map(&:favorite)).to eq([ true, false, false ])
+    end
+
+    it 'marks none and keeps the order of prices for a guest', :aggregate_failures do
+      expect(listed).to eq(%i[cheap near mine])
+      expect(call.map(&:favorite)).to all(be(false))
+    end
+  end
+
   it 'is an empty list when no drugstore around has the SKU' do
     answers['pharmapoint'] = []
 

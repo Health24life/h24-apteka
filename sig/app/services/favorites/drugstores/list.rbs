@@ -1,0 +1,22 @@
+class Favorites::Drugstores::List
+  class Row < Data
+    attr_reader drugstore: Catalog::Drugstore
+    attr_reader added_at: ActiveSupport::TimeWithZone
+
+    def self.new: (drugstore: Catalog::Drugstore, added_at: ActiveSupport::TimeWithZone) -> instance
+
+    def id: () -> Integer
+    def name: () -> String?
+    def brand: () -> Catalog::Drugstore::Brand?
+    def address: () -> Catalog::Drugstore::Address?
+    def drugstore_legal_entity_name: () -> String
+    def drugstore_legal_entity_code: () -> String
+    def phone: () -> String?
+    def mobile_phone: () -> String?
+    def week_working_hours: () -> Array[String?]
+    def work_with_reimbursement: () -> bool
+    def available?: () -> bool
+  end
+
+  def self.call: (user_id: Integer) -> Array[Row]
+end

@@ -108,6 +108,20 @@ RSpec.describe Catalog::Drugstore do
 
     expect { drugstore.destroy }.to change(Catalog::Drugstore::Address, :count).by(-1)
   end
+
+  describe 'shown' do
+    let!(:shown) { create(:catalog_drugstore) }
+    let!(:not_shown) { [ create(:catalog_drugstore, hidden: true), create(:catalog_drugstore, withdrawn: true) ] }
+
+    it 'leaves out a drugstore hidden or withdrawn' do
+      expect(described_class.shown).to eq([ shown ])
+    end
+
+    it 'is told by the record the same way', :aggregate_failures do
+      expect(shown.shown?).to be(true)
+      expect(not_shown.map(&:shown?)).to all(be(false))
+    end
+  end
 end
 
 # == Schema Information

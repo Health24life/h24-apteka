@@ -1,0 +1,12 @@
+class Favorites::Goods::List
+  class Row < Data
+    attr_reader goods: Catalog::Goods
+    attr_reader added_at: ActiveSupport::TimeWithZone
+
+    def self.new: (goods: Catalog::Goods, added_at: ActiveSupport::TimeWithZone) -> instance
+
+    def available?: () -> bool
+  end
+
+  def self.call: (user_id: Integer) -> Array[Row]
+end

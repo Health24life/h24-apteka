@@ -146,6 +146,71 @@ RSpec.configure do |config|
               }
             }
           },
+          favorite_goods: {
+            type: :object,
+            description: 'A SKU of «Мої товари» with the static data of its card: no prices or stock, as a price ' \
+                         'belongs to a drugstore',
+            required: %w[
+              id slug name release_form dosage pack is_recipe is_strict_recipe trade_name producer available added_at
+            ],
+            properties: {
+              id: { type: :integer },
+              slug: { type: :string, description: 'Address of the card' },
+              name: { type: :string, nullable: true },
+              release_form: { type: :string, nullable: true },
+              dosage: { type: :string, nullable: true },
+              pack: { '$ref' => '#/components/schemas/search_goods/properties/pack' },
+              is_recipe: { type: :boolean },
+              is_strict_recipe: { type: :boolean },
+              trade_name: { type: :string, nullable: true },
+              producer: { '$ref' => '#/components/schemas/search_goods/properties/producer' },
+              available: {
+                type: :boolean,
+                description: 'False while an operator hides the SKU or its group or the sync withdraws it; the ' \
+                             'record stays in the list'
+              },
+              added_at: { type: :string, format: 'date-time' }
+            }
+          },
+          favorite_goods_response: {
+            type: :object,
+            required: %w[goods],
+            properties: {
+              goods: {
+                type: :array,
+                description: 'The last added first, all of them: a list holds up to 100',
+                items: { '$ref' => '#/components/schemas/favorite_goods' }
+              }
+            }
+          },
+          favorite_drugstore: {
+            allOf: [
+              { '$ref' => '#/components/schemas/drugstore' },
+              {
+                type: :object,
+                required: %w[available added_at],
+                properties: {
+                  available: {
+                    type: :boolean,
+                    description: 'False while an operator hides the drugstore or the sync withdraws it; the record ' \
+                                 'stays in the list'
+                  },
+                  added_at: { type: :string, format: 'date-time' }
+                }
+              }
+            ]
+          },
+          favorite_drugstores_response: {
+            type: :object,
+            required: %w[drugstores],
+            properties: {
+              drugstores: {
+                type: :array,
+                description: 'The last added first, all of them: a list holds up to 100',
+                items: { '$ref' => '#/components/schemas/favorite_drugstore' }
+              }
+            }
+          },
           drugstores_request: {
             type: :object,
             properties: {
@@ -169,6 +234,12 @@ RSpec.configure do |config|
               work_with_reimbursement: {
                 type: :boolean,
                 description: 'Only drugstores of the program «Доступні ліки»'
+              },
+              only_favorites: {
+                type: :boolean,
+                default: false,
+                description: 'Only the drugstores of the user\'s «Мої аптеки», with the other filters and the sort; ' \
+                             'needs a signed-in user'
               }
             }
           },
@@ -176,7 +247,16 @@ RSpec.configure do |config|
             type: :object,
             required: %w[drugstores],
             properties: {
-              drugstores: { type: :array, items: { '$ref' => '#/components/schemas/nearby_drugstore' } }
+              drugstores: {
+                type: :array,
+                description: 'The drugstores of the user\'s «Мої аптеки» first, then the rest, each part in the sort',
+                items: { '$ref' => '#/components/schemas/nearby_drugstore' }
+              },
+              hidden_by_favorites: {
+                type: :integer,
+                description: 'With `only_favorites` only: drugstores that have the SKU but are not in «Мої аптеки». ' \
+                             'An empty list with 0 means none around has it'
+              }
             }
           },
           drugstore: {
@@ -220,8 +300,9 @@ RSpec.configure do |config|
               { '$ref' => '#/components/schemas/drugstore' },
               {
                 type: :object,
-                required: %w[price available_quantity],
+                required: %w[price available_quantity favorite],
                 properties: {
+                  favorite: { type: :boolean, description: 'In the user\'s «Мої аптеки»; always false for a guest' },
                   distance: { type: :integer, nullable: true, description: 'Metres from the place asked about' },
                   open_now: { type: :boolean, nullable: true, description: 'Null when the provider did not tell' },
                   opens_at: {
@@ -480,7 +561,8 @@ RSpec.configure do |config|
                   details: {
                     type: :object,
                     description: 'What the front acts on, for some codes only: `available_quantity` for ' \
-                                 '`quantity_exceeds_stock`, `reason` for a cart that went whole'
+                                 '`quantity_exceeds_stock`, `reason` for a cart that went whole, `limit` for ' \
+                                 '`favorites_limit_reached`'
                   }
                 }
               }

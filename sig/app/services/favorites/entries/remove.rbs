@@ -1,0 +1,3 @@
+class Favorites::Entries::Remove
+  def self.call: (Favorites::Kind kind, user_id: Integer, target_id: String | Integer | nil) -> Integer
+end

@@ -14,6 +14,11 @@ class Catalog::Drugstore < ApplicationRecord
   validates :drugstore_legal_entity_name, presence: true
   validates :drugstore_legal_entity_code, presence: true, format: { with: LEGAL_ENTITY_CODE_FORMAT }
   validates :week_working_hours, week_working_hours: true
+
+  # Neither hidden by an operator nor withdrawn by the sync.
+  scope :shown, -> { where(hidden: false, withdrawn: false) }
+
+  def shown? = !hidden && !withdrawn
 end
 
 # == Schema Information

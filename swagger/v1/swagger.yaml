@@ -4,6 +4,149 @@ info:
   title: Health24 Apteka API
   version: v1
 paths:
+  "/api/v1/favorites/drugstores":
+    get:
+      summary: Lists «Мої аптеки» of the signed-in user
+      tags:
+      - Favorites
+      description: 'The drugstores the user keeps, the last added first, with the
+        legal entity, its EDRPOU code and the working hours, as a drugstore is shown
+        everywhere. A drugstore hidden or withdrawn later stays, with `available:
+        false`. The provider is not asked.'
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Bearer token of the signed-in user
+      responses:
+        '200':
+          description: the drugstores of the list, the last added first, the withdrawn
+            one marked unavailable
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/favorite_drugstores_response"
+        '401':
+          description: 'unauthorized: no session, as the list belongs to an account'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+  "/api/v1/favorites/drugstores/{drugstore_id}":
+    parameters:
+    - name: drugstore_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    - name: Authorization
+      in: header
+      required: true
+      schema:
+        type: string
+      description: Bearer token of the signed-in user
+    put:
+      summary: Puts a drugstore in «Мої аптеки»
+      tags:
+      - Favorites
+      description: Adding a drugstore already in the list is no error and keeps its
+        place, even in a full list. A list holds up to 100 drugstores.
+      responses:
+        '204':
+          description: the drugstore is in the list
+        '404':
+          description: 'drugstore_not_found: no such drugstore, or it is hidden or
+            withdrawn'
+        '422':
+          description: 'favorites_limit_reached: the list holds the most it may; details.limit
+            tells how many'
+        '401':
+          description: 'unauthorized: no session, as the list belongs to an account'
+    delete:
+      summary: Takes a drugstore out of «Мої аптеки»
+      tags:
+      - Favorites
+      description: Also a drugstore the directory no longer shows. Taking out one
+        that is not in the list is no error.
+      responses:
+        '204':
+          description: the drugstore is out of the list
+        '401':
+          description: 'unauthorized: no session, as the list belongs to an account'
+  "/api/v1/favorites/goods":
+    get:
+      summary: Lists «Мої товари» of the signed-in user
+      tags:
+      - Favorites
+      description: 'The SKU the user keeps, the last added first, with the static
+        data of their cards and no prices: a price belongs to a drugstore. A SKU hidden
+        or withdrawn later stays, with `available: false`. The provider is not asked.'
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Bearer token of the signed-in user
+      responses:
+        '200':
+          description: the SKU of the list, the last added first, the hidden one marked
+            unavailable
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/favorite_goods_response"
+        '401':
+          description: 'unauthorized: no session, as the list belongs to an account'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+  "/api/v1/favorites/goods/{goods_id}":
+    parameters:
+    - name: goods_id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: SKU of the catalog
+    - name: Authorization
+      in: header
+      required: true
+      schema:
+        type: string
+      description: Bearer token of the signed-in user
+    put:
+      summary: Puts a SKU in «Мої товари»
+      tags:
+      - Favorites
+      description: A release form, dosage and pack, not a trade name. Adding a SKU
+        already in the list is no error and keeps its place, even in a full list.
+        A list holds up to 100 SKU.
+      responses:
+        '204':
+          description: the SKU was in the list already and is kept once
+        '404':
+          description: 'goods_not_found: no such SKU, or it or its group is hidden
+            or withdrawn'
+        '422':
+          description: 'favorites_limit_reached: the list holds the most it may; details.limit
+            tells how many'
+        '401':
+          description: 'unauthorized: no session, as the list belongs to an account'
+    delete:
+      summary: Takes a SKU out of «Мої товари»
+      tags:
+      - Favorites
+      description: Also a SKU the catalog no longer shows. Taking out a SKU that is
+        not in the list is no error.
+      responses:
+        '204':
+          description: the SKU was not in the list
+        '401':
+          description: 'unauthorized: no session, as the list belongs to an account'
   "/api/v1/goods/{goods_id}/drugstores":
     post:
       summary: Lists the drugstores around that have a SKU, with its price there
@@ -14,8 +157,11 @@ paths:
         the whole packs it has, asked of the providers live and never cached. A provider
         that does not answer gives 503 rather than an empty list. Only drugstores
         of the directory are listed, with the legal entity, its EDRPOU code and the
-        week schedule; one closed now is listed too, with the time it opens. The same
-        for a guest and a signed-in user.'
+        week schedule; one closed now is listed too, with the time it opens. The drugstores
+        of the user''s «Мої аптеки» come first, marked `favorite`; `only_favorites`
+        keeps only them and tells in `hidden_by_favorites` how many others have the
+        SKU. A guest is served as a signed-in user, with no drugstore marked, and
+        may not ask for `only_favorites`.'
       parameters:
       - name: goods_id
         in: path
@@ -32,7 +178,8 @@ paths:
           as a guest
       responses:
         '200':
-          description: only the drugstores of the program «Доступні ліки», by distance
+          description: 'only «Мої аптеки»: none of them has the SKU, hidden_by_favorites
+            tells how many others do'
           headers:
             Cache-Control:
               schema:
@@ -56,8 +203,8 @@ paths:
               schema:
                 "$ref": "#/components/schemas/error"
         '422':
-          description: 'invalid_reimbursement: work_with_reimbursement other than
-            true or false'
+          description: 'invalid_only_favorites: only_favorites other than true or
+            false'
           content:
             application/json:
               schema:
@@ -733,6 +880,91 @@ components:
             name:
               type: string
               nullable: true
+    favorite_goods:
+      type: object
+      description: 'A SKU of «Мої товари» with the static data of its card: no prices
+        or stock, as a price belongs to a drugstore'
+      required:
+      - id
+      - slug
+      - name
+      - release_form
+      - dosage
+      - pack
+      - is_recipe
+      - is_strict_recipe
+      - trade_name
+      - producer
+      - available
+      - added_at
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+          description: Address of the card
+        name:
+          type: string
+          nullable: true
+        release_form:
+          type: string
+          nullable: true
+        dosage:
+          type: string
+          nullable: true
+        pack:
+          "$ref": "#/components/schemas/search_goods/properties/pack"
+        is_recipe:
+          type: boolean
+        is_strict_recipe:
+          type: boolean
+        trade_name:
+          type: string
+          nullable: true
+        producer:
+          "$ref": "#/components/schemas/search_goods/properties/producer"
+        available:
+          type: boolean
+          description: False while an operator hides the SKU or its group or the sync
+            withdraws it; the record stays in the list
+        added_at:
+          type: string
+          format: date-time
+    favorite_goods_response:
+      type: object
+      required:
+      - goods
+      properties:
+        goods:
+          type: array
+          description: 'The last added first, all of them: a list holds up to 100'
+          items:
+            "$ref": "#/components/schemas/favorite_goods"
+    favorite_drugstore:
+      allOf:
+      - "$ref": "#/components/schemas/drugstore"
+      - type: object
+        required:
+        - available
+        - added_at
+        properties:
+          available:
+            type: boolean
+            description: False while an operator hides the drugstore or the sync withdraws
+              it; the record stays in the list
+          added_at:
+            type: string
+            format: date-time
+    favorite_drugstores_response:
+      type: object
+      required:
+      - drugstores
+      properties:
+        drugstores:
+          type: array
+          description: 'The last added first, all of them: a list holds up to 100'
+          items:
+            "$ref": "#/components/schemas/favorite_drugstore"
     drugstores_request:
       type: object
       properties:
@@ -766,6 +998,11 @@ components:
         work_with_reimbursement:
           type: boolean
           description: Only drugstores of the program «Доступні ліки»
+        only_favorites:
+          type: boolean
+          default: false
+          description: Only the drugstores of the user's «Мої аптеки», with the other
+            filters and the sort; needs a signed-in user
     drugstores_response:
       type: object
       required:
@@ -773,8 +1010,14 @@ components:
       properties:
         drugstores:
           type: array
+          description: The drugstores of the user's «Мої аптеки» first, then the rest,
+            each part in the sort
           items:
             "$ref": "#/components/schemas/nearby_drugstore"
+        hidden_by_favorites:
+          type: integer
+          description: 'With `only_favorites` only: drugstores that have the SKU but
+            are not in «Мої аптеки». An empty list with 0 means none around has it'
     drugstore:
       type: object
       description: A drugstore of the directory, with the legal entity, its EDRPOU
@@ -843,7 +1086,11 @@ components:
         required:
         - price
         - available_quantity
+        - favorite
         properties:
+          favorite:
+            type: boolean
+            description: In the user's «Мої аптеки»; always false for a guest
           distance:
             type: integer
             nullable: true
@@ -1245,7 +1492,8 @@ components:
             details:
               type: object
               description: 'What the front acts on, for some codes only: `available_quantity`
-                for `quantity_exceeds_stock`, `reason` for a cart that went whole'
+                for `quantity_exceeds_stock`, `reason` for a cart that went whole,
+                `limit` for `favorites_limit_reached`'
   parameters:
     header_lang:
       name: Accept-Language

@@ -40,7 +40,7 @@ class Orders::Carts::AddItem
   end
 
   def create(goods)
-    drugstore = Catalog::Drugstore.find_by(id: @drugstore_id, hidden: false, withdrawn: false) ||
+    drugstore = Catalog::Drugstore.shown.find_by(id: @drugstore_id) ||
                 refuse(:drugstore_not_found, :not_found)
     provider = provider_of(drugstore, goods) || refuse(:goods_not_in_drugstore, :unprocessable_content)
     cart = Order.new(drugstore:, provider:, user_id: @owner.user_id)

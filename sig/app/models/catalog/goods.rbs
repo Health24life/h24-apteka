@@ -14,6 +14,7 @@ class Catalog::Goods
 
   def name_uk: () -> String?
   def name: () -> String?
+  def shown?: () -> bool
 
   private
 

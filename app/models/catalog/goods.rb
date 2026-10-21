@@ -53,7 +53,18 @@ class Catalog::Goods < ApplicationRecord
           joins(:translations).where('catalog_goods_translations.name ILIKE ?', "%#{sanitize_sql_like(text.to_s)}%")
         }
 
+  # Neither the SKU nor its group hidden by an operator or withdrawn by the sync.
+  scope :shown,
+        lambda {
+          joins(:goods_group).where(hidden: false, withdrawn: false, goods_group: { hidden: false, withdrawn: false })
+        }
+
   def self.ransackable_scopes(_auth_object = nil) = %i[name_cont]
+
+  def shown?
+    group = goods_group
+    !hidden && !withdrawn && !group.hidden && !group.withdrawn
+  end
 
   private
 
