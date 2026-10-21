@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_20_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_21_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -274,6 +274,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_20_120000) do
     t.check_constraint "country_code IS NULL OR country_code::text ~ '^[A-Z]{2}$'::text", name: "catalog_producers_country_code_check"
   end
 
+  create_table "favorite_drugstores", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.bigint "drugstore_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["drugstore_id"], name: "index_favorite_drugstores_on_drugstore_id"
+    t.index ["user_id", "drugstore_id"], name: "index_favorite_drugstores_on_user_id_and_drugstore_id", unique: true
+  end
+
+  create_table "favorite_goods", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.bigint "goods_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["goods_id"], name: "index_favorite_goods_on_goods_id"
+    t.index ["user_id", "goods_id"], name: "index_favorite_goods_on_user_id_and_goods_id", unique: true
+  end
+
   create_table "order_deliveries", force: :cascade do |t|
     t.bigint "order_id", null: false
     t.string "delivery_type_code", default: "pick_up", null: false
@@ -478,6 +494,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_20_120000) do
   add_foreign_key "catalog_goods_instruction_section_translations", "catalog_goods_instruction_sections", on_delete: :cascade
   add_foreign_key "catalog_goods_instruction_sections", "catalog_goods", column: "goods_id"
   add_foreign_key "catalog_goods_translations", "catalog_goods", on_delete: :cascade
+  add_foreign_key "favorite_drugstores", "catalog_drugstores", column: "drugstore_id", on_delete: :cascade
+  add_foreign_key "favorite_goods", "catalog_goods", column: "goods_id", on_delete: :cascade
   add_foreign_key "order_deliveries", "orders", on_delete: :cascade
   add_foreign_key "order_delivery_addresses", "order_deliveries", column: "delivery_id", on_delete: :cascade
   add_foreign_key "order_items", "catalog_goods", column: "goods_id"

@@ -10,10 +10,17 @@ class Catalog::Drugstore < ApplicationRecord
 
   has_one :address, class_name: 'Catalog::Drugstore::Address', inverse_of: :drugstore, dependent: :delete
   has_many :orders, class_name: '::Order', inverse_of: :drugstore, dependent: :restrict_with_exception
+  # The database drops the favorites with the drugstore.
+  has_many :favorites, class_name: 'Favorite::Drugstore', inverse_of: :drugstore, dependent: nil
 
   validates :drugstore_legal_entity_name, presence: true
   validates :drugstore_legal_entity_code, presence: true, format: { with: LEGAL_ENTITY_CODE_FORMAT }
   validates :week_working_hours, week_working_hours: true
+
+  # Neither hidden by an operator nor withdrawn by the sync.
+  scope :shown, -> { where(hidden: false, withdrawn: false) }
+
+  def shown? = !hidden && !withdrawn
 end
 
 # == Schema Information

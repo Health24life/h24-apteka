@@ -1,0 +1,8 @@
+class Refused < StandardError
+  attr_reader code: Symbol
+  attr_reader status: Symbol
+  attr_reader details: Hash[Symbol, untyped]?
+  attr_reader retry_after: Integer?
+
+  def initialize: (Symbol code, status: Symbol, ?details: Hash[Symbol, untyped]?, ?retry_after: Integer?) -> void
+end

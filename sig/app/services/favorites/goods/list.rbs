@@ -1,0 +1,3 @@
+class Favorites::Goods::List
+  def self.call: (user_id: Integer) -> Catalog::Goods::ActiveRecord_Relation
+end

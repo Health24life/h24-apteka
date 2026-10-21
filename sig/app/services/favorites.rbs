@@ -1,0 +1,17 @@
+module Favorites
+  LIMIT: Integer
+
+  class Kind < Data
+    attr_reader model: singleton(Favorite::Goods) | singleton(Favorite::Drugstore)
+    attr_reader target: singleton(Catalog::Goods) | singleton(Catalog::Drugstore)
+    attr_reader key: Symbol
+    attr_reader not_found: Symbol
+
+    def self.new: (model: singleton(Favorite::Goods) | singleton(Favorite::Drugstore),
+                   target: singleton(Catalog::Goods) | singleton(Catalog::Drugstore), key: Symbol,
+                   not_found: Symbol) -> instance
+  end
+
+  GOODS: Kind
+  DRUGSTORES: Kind
+end

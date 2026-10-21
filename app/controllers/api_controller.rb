@@ -6,6 +6,12 @@
 class ApiController < ActionController::API
   include H24Auth::SessionContext
 
+  rescue_from Refused do |refused|
+    retry_after = refused.retry_after
+    response.headers['Retry-After'] = retry_after.to_s if retry_after
+    render_error(refused.code, status: refused.status, details: refused.details)
+  end
+
   private
 
   def h24_require_session

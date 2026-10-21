@@ -1,0 +1,39 @@
+# frozen_string_literal: true
+
+require 'rails_helper'
+
+RSpec.describe Favorite::Goods do
+  it 'keeps a SKU once per user' do
+    favorite = create(:favorite_goods)
+
+    duplicate = -> { create(:favorite_goods, user_id: favorite.user_id, goods: favorite.goods) }
+
+    expect(&duplicate).to raise_error(ActiveRecord::RecordNotUnique)
+  end
+
+  it 'lets other users keep the same SKU' do
+    favorite = create(:favorite_goods)
+
+    expect(create(:favorite_goods, goods: favorite.goods)).to be_persisted
+  end
+
+  it 'needs a user the core has' do
+    expect(build(:favorite_goods, user_id: 0)).not_to be_valid
+  end
+
+  it 'goes with the SKU when the SKU is deleted' do
+    favorite = create(:favorite_goods)
+
+    favorite.goods.delete
+
+    expect(described_class.exists?(favorite.id)).to be(false)
+  end
+
+  it 'belongs to a core user, reached from both sides without a foreign key', :aggregate_failures do
+    user = create(:h24_core_user)
+    favorite = create(:favorite_goods, user_id: user.id)
+
+    expect(favorite.user).to eq(user)
+    expect(user.favorite_goods).to eq([ favorite ])
+  end
+end

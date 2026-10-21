@@ -4,6 +4,11 @@
 namespace :api do
   namespace :v1 do
     post 'search', to: 'search#create'
+    # «Мої товари» and «Мої аптеки» of the signed-in user; the id of the SKU or the drugstore names the record.
+    namespace :favorites do
+      resources :goods, only: %i[index update destroy], param: :goods_id
+      resources :drugstores, only: %i[index update destroy], param: :drugstore_id
+    end
     resources :goods, only: [] do
       resources :drugstores, only: :create, module: :goods
     end

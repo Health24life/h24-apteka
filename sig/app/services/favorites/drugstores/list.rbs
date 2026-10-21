@@ -1,0 +1,3 @@
+class Favorites::Drugstores::List
+  def self.call: (user_id: Integer) -> Catalog::Drugstore::ActiveRecord_Relation
+end

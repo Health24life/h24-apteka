@@ -1,0 +1,28 @@
+# frozen_string_literal: true
+
+# A drugstore a user keeps in «Мої аптеки». It stays when the drugstore is hidden or withdrawn later; the database drops
+# it with the drugstore.
+class Favorite::Drugstore < ApplicationRecord
+  # The core lives in another database, so there is no foreign key; the validation asks the core for the user.
+  belongs_to :user, class_name: 'H24Core::User', inverse_of: :favorite_drugstores
+  belongs_to :drugstore, class_name: 'Catalog::Drugstore', inverse_of: :favorites
+end
+
+# == Schema Information
+#
+# Table name: favorite_drugstores
+#
+#  id           :bigint           not null, primary key
+#  created_at   :datetime         not null
+#  drugstore_id :bigint           not null
+#  user_id      :integer          not null
+#
+# Indexes
+#
+#  index_favorite_drugstores_on_drugstore_id              (drugstore_id)
+#  index_favorite_drugstores_on_user_id_and_drugstore_id  (user_id,drugstore_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (drugstore_id => catalog_drugstores.id) ON DELETE => cascade
+#

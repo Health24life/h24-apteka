@@ -11,6 +11,7 @@ en:
       goods_not_found: The goods are not found or not available.
       invalid_location: Send the latitude and the longitude together, and the radius as a positive whole number of metres no larger than allowed.
       invalid_reimbursement: Send work_with_reimbursement as true or false.
+      invalid_only_favorites: Pass only_favorites as true or false.
       invalid_sort: Sort by price or by distance only.
       drugstores_unavailable: Prices in drugstores are unavailable for now. Try again later.
       drugstores_busy: The price service is busy now. Try again a little later.
@@ -42,3 +43,4 @@ en:
       cancellation_refused: The drugstore did not accept the cancellation; the order may be ready already. Contact the drugstore.
       cancellation_unavailable: The booking could not be cancelled. Try again later.
       cancellation_busy: The booking service is busy now. Try again a little later.
+      favorites_limit_reached: The list is full. Remove something to add a new one.

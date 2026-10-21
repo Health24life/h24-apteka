@@ -44,8 +44,10 @@ RSpec.describe 'Drugstores with the price of a SKU', :partner_calls do
                   'SKU, each with the price in the drugstore and the whole packs it has, asked of the providers ' \
                   'live and never cached. A provider that does not answer gives 503 rather than an empty list. ' \
                   'Only drugstores of the directory are listed, with the legal entity, its EDRPOU code and the week ' \
-                  'schedule; one closed now is listed too, with the time it opens. The same for a guest and a ' \
-                  'signed-in user.'
+                  'schedule; one closed now is listed too, with the time it opens. The drugstores of the user\'s ' \
+                  '«Мої аптеки» come first, marked `favorite`; `only_favorites` keeps only them and tells in ' \
+                  '`hidden_by_favorites` how many others have the SKU. A guest is served as a signed-in user, ' \
+                  'with no drugstore marked, and may not ask for `only_favorites`.'
       consumes 'application/json'
       produces 'application/json'
       parameter name: :goods_id,
@@ -104,6 +106,37 @@ RSpec.describe 'Drugstores with the price of a SKU', :partner_calls do
         run_test! { expect(drugstores).to eq([]) }
       end
 
+      response '200', 'the drugstores of «Мої аптеки» first, each marked' do
+        schema '$ref' => '#/components/schemas/drugstores_response'
+
+        let(:Authorization) do
+          "Bearer #{generate_jwt_token(nameid: create(:favorite_drugstore, drugstore: tas).user_id)}"
+        end
+
+        before { stub_offers }
+
+        run_test! { expect(drugstores.sole).to include('id' => tas.id, 'favorite' => true) }
+      end
+
+      response '200', 'only «Мої аптеки»: none of them has the SKU, hidden_by_favorites tells how many others do' do
+        schema '$ref' => '#/components/schemas/drugstores_response'
+
+        let(:Authorization) { "Bearer #{generate_jwt_token(nameid: 42)}" }
+        let(:body) { { only_favorites: true } }
+
+        before { stub_offers }
+
+        run_test! { expect(response.parsed_body).to eq('drugstores' => [], 'hidden_by_favorites' => 1) }
+      end
+
+      response '401', 'unauthorized: only_favorites from a guest, who has no «Мої аптеки»; the provider is not asked' do
+        schema '$ref' => '#/components/schemas/error'
+
+        let(:body) { { only_favorites: true } }
+
+        run_test! { expect(error_code).to eq('unauthorized') }
+      end
+
       response '401', 'an expired or invalid token' do
         schema '$ref' => '#/components/schemas/error'
 
@@ -142,6 +175,14 @@ RSpec.describe 'Drugstores with the price of a SKU', :partner_calls do
         let(:body) { { work_with_reimbursement: 'true' } }
 
         run_test! { expect(error_code).to eq('invalid_reimbursement') }
+      end
+
+      response '422', 'invalid_only_favorites: only_favorites other than true or false' do
+        schema '$ref' => '#/components/schemas/error'
+
+        let(:body) { { only_favorites: 'yes' } }
+
+        run_test! { expect(error_code).to eq('invalid_only_favorites') }
       end
 
       response '503', 'drugstores_unavailable: the provider did not answer, answered an error or has no key' do

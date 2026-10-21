@@ -8,6 +8,8 @@ class H24Core::User < H24Core::ApplicationRecord
 
   has_many :orders, class_name: '::Order', inverse_of: :user, dependent: nil
   has_one :cart_order, -> { merge(::Order.cart) }, class_name: '::Order', inverse_of: false, dependent: nil
+  has_many :favorite_goods, class_name: '::Favorite::Goods', inverse_of: :user, dependent: nil
+  has_many :favorite_drugstores, class_name: '::Favorite::Drugstore', inverse_of: :user, dependent: nil
 
   def contact_email
     email.presence unless email.to_s.start_with?(TEMP_EMAIL_PREFIX)

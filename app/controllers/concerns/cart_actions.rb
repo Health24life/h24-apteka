@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# What the endpoints of the cart share: the owner of the request, the refusals of the cart and how a cart is answered.
+# What the endpoints of the cart share: the owner of the request and how a cart is answered.
 # The owner reaches the cart by its token in the path; who may open it is OrderPolicy's call. The API takes no cookies.
 module CartActions
   extend ActiveSupport::Concern
@@ -9,12 +9,6 @@ module CartActions
 
   included do
     before_action :no_store
-
-    rescue_from Orders::Carts::Refused do |refused|
-      retry_after = refused.retry_after
-      response.headers['Retry-After'] = retry_after.to_s if retry_after
-      render_error(refused.code, status: refused.status, details: refused.details)
-    end
   end
 
   private

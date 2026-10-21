@@ -34,6 +34,8 @@ class Catalog::Goods < ApplicationRecord
            inverse_of: :goods,
            dependent: :destroy
   has_many :order_items, class_name: '::Order::Item', inverse_of: :goods, dependent: :restrict_with_exception
+  # The database drops the favorites with the SKU.
+  has_many :favorites, class_name: 'Favorite::Goods', inverse_of: :goods, dependent: nil
 
   has_one :producer, through: :goods_group
   has_one :goods_name, through: :goods_group
@@ -53,7 +55,18 @@ class Catalog::Goods < ApplicationRecord
           joins(:translations).where('catalog_goods_translations.name ILIKE ?', "%#{sanitize_sql_like(text.to_s)}%")
         }
 
+  # Neither the SKU nor its group hidden by an operator or withdrawn by the sync.
+  scope :shown,
+        lambda {
+          joins(:goods_group).where(hidden: false, withdrawn: false, goods_group: { hidden: false, withdrawn: false })
+        }
+
   def self.ransackable_scopes(_auth_object = nil) = %i[name_cont]
+
+  def shown?
+    group = goods_group
+    !hidden && !withdrawn && !group.hidden && !group.withdrawn
+  end
 
   private
 

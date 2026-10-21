@@ -5,4 +5,6 @@ class Catalog::Drugstore
   def self.find_linked: (Provider provider, String | Integer external_id) -> Catalog::Drugstore?
 
   LEGAL_ENTITY_CODE_FORMAT: Regexp
+
+  def shown?: () -> bool
 end

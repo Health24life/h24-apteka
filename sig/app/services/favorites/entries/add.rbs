@@ -1,0 +1,14 @@
+class Favorites::Entries::Add
+  @kind: Favorites::Kind
+  @user_id: Integer
+
+  def self.call: (Favorites::Kind kind, user_id: Integer, target_id: String | Integer | nil) -> void
+
+  def initialize: (Favorites::Kind kind, Integer user_id) -> void
+  def call: (String | Integer | nil target_id) -> void
+
+  private
+
+  def refuse_when_full: (Favorite::Goods::ActiveRecord_Relation | Favorite::Drugstore::ActiveRecord_Relation entries) -> void
+  def refuse: (Symbol code, Symbol status, ?details: Hash[Symbol, untyped]?) -> bot
+end
