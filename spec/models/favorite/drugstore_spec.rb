@@ -11,6 +11,10 @@ RSpec.describe Favorite::Drugstore do
     expect(&duplicate).to raise_error(ActiveRecord::RecordNotUnique)
   end
 
+  it 'needs a user the core has' do
+    expect(build(:favorite_drugstore, user_id: 0)).not_to be_valid
+  end
+
   it 'goes with the drugstore when the drugstore is deleted' do
     favorite = create(:favorite_drugstore)
 

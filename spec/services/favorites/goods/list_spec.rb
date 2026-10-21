@@ -3,12 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Favorites::Goods::List do
-  let(:user_id) { 42 }
+  let(:user_id) { create(:h24_core_user).id }
 
   it 'lists the SKU of the user, the last added first' do
     older = create(:favorite_goods, user_id:, created_at: 2.days.ago)
     newer = create(:favorite_goods, user_id:, created_at: 1.day.ago)
-    create(:favorite_goods, user_id: 7)
+    create(:favorite_goods)
 
     expect(described_class.call(user_id:)).to eq([ newer.goods, older.goods ])
   end

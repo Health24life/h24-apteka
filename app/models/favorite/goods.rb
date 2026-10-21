@@ -3,9 +3,8 @@
 # A SKU a user keeps in «Мої товари». It stays when the SKU is hidden or withdrawn later; the database drops it with the
 # SKU.
 class Favorite::Goods < ApplicationRecord
-  # The core lives in another database, so there is no foreign key. The user always comes from a checked session and
-  # the column is NOT NULL, so the record does not ask the core whether the user exists.
-  belongs_to :user, class_name: 'H24Core::User', optional: true, inverse_of: :favorite_goods
+  # The core lives in another database, so there is no foreign key; the validation asks the core for the user.
+  belongs_to :user, class_name: 'H24Core::User', inverse_of: :favorite_goods
   belongs_to :goods, class_name: 'Catalog::Goods', inverse_of: :favorites
 end
 

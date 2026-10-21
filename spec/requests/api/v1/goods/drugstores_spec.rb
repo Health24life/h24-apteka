@@ -109,12 +109,11 @@ RSpec.describe 'Drugstores with the price of a SKU', :partner_calls do
       response '200', 'the drugstores of «Мої аптеки» first, each marked' do
         schema '$ref' => '#/components/schemas/drugstores_response'
 
-        let(:Authorization) { "Bearer #{generate_jwt_token(nameid: 42)}" }
-
-        before do
-          create(:favorite_drugstore, user_id: 42, drugstore: tas)
-          stub_offers
+        let(:Authorization) do
+          "Bearer #{generate_jwt_token(nameid: create(:favorite_drugstore, drugstore: tas).user_id)}"
         end
+
+        before { stub_offers }
 
         run_test! { expect(drugstores.sole).to include('id' => tas.id, 'favorite' => true) }
       end

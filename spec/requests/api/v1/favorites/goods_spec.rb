@@ -3,7 +3,7 @@
 require 'swagger_helper'
 
 RSpec.describe '«Мої товари»' do
-  let(:user_id) { 42 }
+  let(:user_id) { create(:h24_core_user).id }
   let(:Authorization) { "Bearer #{generate_jwt_token(nameid: user_id)}" }
   let(:goods) { create(:catalog_goods, dosage: '400 мг', release_form: 'таблетки') }
   let(:goods_id) { goods.id }
@@ -43,7 +43,7 @@ RSpec.describe '«Мої товари»' do
         before do
           create(:favorite_goods, user_id:, goods:, created_at: 2.days.ago)
           create(:favorite_goods, user_id:, goods: hidden, created_at: 1.day.ago)
-          create(:favorite_goods, user_id: 7)
+          create(:favorite_goods)
         end
 
         run_test! do

@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Favorites::Entries::Add do
-  let(:user_id) { 42 }
+  let(:user_id) { create(:h24_core_user).id }
 
   def add(target, kind: Favorites::GOODS) = described_class.call(kind, user_id:, target_id: target.id)
 
@@ -122,7 +122,7 @@ RSpec.describe Favorites::Entries::Add do
     end
 
     it 'counts the records of the user only' do
-      create_list(:favorite_goods, 3, user_id: 7)
+      create_list(:favorite_goods, 3)
 
       expect { add(create(:catalog_goods)) }.not_to raise_error
     end

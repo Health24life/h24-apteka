@@ -3,10 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Favorites::DrugstoreBlueprint do
-  def render_list = QueryLog.capture { described_class.render_as_hash(Favorites::Drugstores::List.call(user_id: 42)) }
+  let(:user_id) { create(:h24_core_user).id }
+
+  def render_list = QueryLog.capture { described_class.render_as_hash(Favorites::Drugstores::List.call(user_id:)) }
 
   def favorite
-    create(:favorite_drugstore, user_id: 42).tap { create(:catalog_drugstore_address, drugstore: it.drugstore) }
+    create(:favorite_drugstore, user_id:).tap { create(:catalog_drugstore_address, drugstore: it.drugstore) }
   end
 
   it 'reads a list in the same number of statements however long it is' do

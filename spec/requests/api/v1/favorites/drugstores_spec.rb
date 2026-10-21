@@ -3,7 +3,7 @@
 require 'swagger_helper'
 
 RSpec.describe '«Мої аптеки»' do
-  let(:user_id) { 42 }
+  let(:user_id) { create(:h24_core_user).id }
   let(:Authorization) { "Bearer #{generate_jwt_token(nameid: user_id)}" }
   let(:drugstore) do
     create(:catalog_drugstore, name: 'Аптека TAS №118').tap { create(:catalog_drugstore_address, drugstore: it) }

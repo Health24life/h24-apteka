@@ -14,7 +14,11 @@ RSpec.describe Favorite::Goods do
   it 'lets other users keep the same SKU' do
     favorite = create(:favorite_goods)
 
-    expect(create(:favorite_goods, user_id: 7, goods: favorite.goods)).to be_persisted
+    expect(create(:favorite_goods, goods: favorite.goods)).to be_persisted
+  end
+
+  it 'needs a user the core has' do
+    expect(build(:favorite_goods, user_id: 0)).not_to be_valid
   end
 
   it 'goes with the SKU when the SKU is deleted' do

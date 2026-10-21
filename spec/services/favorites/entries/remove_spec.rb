@@ -3,11 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Favorites::Entries::Remove do
-  let(:user_id) { 42 }
+  let(:user_id) { create(:h24_core_user).id }
 
   it 'takes a SKU out of the list of the user only', :aggregate_failures do
     favorite = create(:favorite_goods, user_id:)
-    others = create(:favorite_goods, user_id: 7, goods: favorite.goods)
+    others = create(:favorite_goods, goods: favorite.goods)
 
     described_class.call(Favorites::GOODS, user_id:, target_id: favorite.goods_id)
 
