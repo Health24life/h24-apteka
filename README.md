@@ -50,10 +50,10 @@ mise run typecheck
 потрібний Ruby, навіть коли git запущено з IDE.
 
 ```bash
-mise run hooks   # один раз після клону, і ще раз після зміни .overcommit.yml чи хуків
+mise run hooks   # один раз після клонування, і ще раз після зміни .overcommit.yml чи хуків
 ```
 
-- Steep читає згенеровані сигнатури моделей з `.rbs_rails/`. Якщо її ще немає (свіжий клон), хук лише попереджає:
+- Steep читає згенеровані сигнатури моделей з `.rbs_rails/`. Якщо її ще немає (щойно клонований репозиторій), хук лише попереджає:
   згенеруй її командою `mise run rbs`.
 - Пропустити хуки одноразово: `OVERCOMMIT_DISABLE=1 git commit …`. Це виняток, а не звичка.
 
@@ -61,7 +61,7 @@ mise run hooks   # один раз після клону, і ще раз піс�
 
 Steep перевіряє власний код і моделі: `app/models`, `app/models_readonly`, `app/lib`, `app/services`,
 `app/service_objects`, `app/value_objects`, `app/validators`, `lib` (перелік — у `Steepfile`). Контролери й політики
-Steep-ом не перевіряються.
+Steep не перевіряє.
 
 - **Згенероване для моделей і роутів** — сигнатури (атрибути, асоціації, скоупи, `enum`) генерує rbs_rails у заігнорену
   теку `.rbs_rails/`, у git вони не потрапляють. `mise run typecheck` перегенеровує їх сам, окремо — `mise run rbs`.
