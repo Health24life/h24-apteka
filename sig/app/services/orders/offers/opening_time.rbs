@@ -1,0 +1,22 @@
+class Orders::Offers::OpeningTime
+  DAYS: Integer
+  HOURS: Regexp
+
+  @offer: Orders::Offers::DrugstoreOffer
+  @week_hours: Array[String?]
+  @now: ActiveSupport::TimeWithZone
+
+  def self.call: (Orders::Offers::DrugstoreOffer offer, Array[String?] week_hours, ?now: ActiveSupport::TimeWithZone)
+               -> ActiveSupport::TimeWithZone?
+
+  def initialize: (Orders::Offers::DrugstoreOffer offer, Array[String?] week_hours, ActiveSupport::TimeWithZone now) -> void
+  def call: () -> ActiveSupport::TimeWithZone?
+
+  private
+
+  def today_hours: () -> Array[ActiveSupport::TimeWithZone?]
+  def next_day_opening: () -> ActiveSupport::TimeWithZone?
+  def scheduled: (ActiveSupport::TimeWithZone day) -> Array[ActiveSupport::TimeWithZone?]
+  def closing: (ActiveSupport::TimeWithZone from, ActiveSupport::TimeWithZone? to) -> ActiveSupport::TimeWithZone?
+  def at: (ActiveSupport::TimeWithZone day, String? text) -> ActiveSupport::TimeWithZone?
+end

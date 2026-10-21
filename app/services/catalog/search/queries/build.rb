@@ -6,8 +6,6 @@
 class Catalog::Search::Queries::Build
   TEXT_LENGTH = 3..100
   PAGES = 1..50
-  LATITUDE_LIMIT = 90
-  LONGITUDE_LIMIT = 180
 
   def self.call(queries, config: Catalog::Search.config) = new(config).call(queries)
 
@@ -48,33 +46,7 @@ class Catalog::Search::Queries::Build
     value
   end
 
-  def location(value)
-    return Catalog::Search::Location.around(config: @config) if value.nil?
-
-    invalid!(:invalid_search_location) unless value.is_a?(Hash)
-
-    latitude = coordinate(value['latitude'], LATITUDE_LIMIT)
-    longitude = coordinate(value['longitude'], LONGITUDE_LIMIT)
-    invalid!(:invalid_search_location) if latitude.nil? != longitude.nil?
-
-    Catalog::Search::Location.around(latitude:, longitude:, radius: radius(value['radius']), config: @config)
-  end
-
-  def coordinate(value, limit)
-    return if value.nil?
-
-    invalid!(:invalid_search_location) unless value.is_a?(Numeric) && value.abs <= limit
-
-    value.to_f
-  end
-
-  def radius(value)
-    return if value.nil?
-
-    invalid!(:invalid_search_location) unless value.is_a?(Integer) && value.between?(1, @config.location.max_radius)
-
-    value
-  end
+  def location(value) = Catalog::Search::Locations::Build.call(value, code: :invalid_search_location, config: @config)
 
   def invalid!(code) = raise(Catalog::Search::Invalid, code)
 end
