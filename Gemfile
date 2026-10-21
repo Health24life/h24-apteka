@@ -43,6 +43,8 @@ gem 'activeadmin', '4.0.0.beta23'
 gem 'activeadmin-tom_select'
 # Per-action authorization for the admin panel, via ActiveAdmin's built-in PunditAdapter. Policies live in app/policies.
 gem 'pundit'
+# Cloudflare Turnstile checked on the server, as in system_ruby, so bots do not book.
+gem 'rails_cloudflare_turnstile', '~> 0.4'
 # Authentication backing ActiveAdmin's AdminUser model [https://github.com/heartcombo/devise]
 gem 'devise'
 # Standalone Tailwind CSS CLI binary (no Node) to build ActiveAdmin's stylesheet.
@@ -85,6 +87,8 @@ gem 'activerecord-import', '~> 2.3'
 
 # Serializes the API responses.
 gem 'blueprinter', '~> 1.3'
+# Preloads the associations a blueprint declares with `preload:` on its fields, as in system_ruby.
+gem 'blueprinter-activerecord', '~> 1.3'
 
 # HTTP client for the Pharmapoint partner API; Typhoeus is the adapter the ecosystem uses (libcurl, no GET-body quirks).
 gem 'faraday', '~> 2.14'

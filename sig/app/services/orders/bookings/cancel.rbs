@@ -1,0 +1,27 @@
+class Orders::Bookings::Cancel
+  class Result < Data
+    attr_reader order: Order
+    attr_reader confirmed: bool
+
+    def self.new: (order: Order, confirmed: bool) -> instance
+  end
+
+  REASON_LENGTH: Integer
+  DEFAULT_REASON: String
+
+  @owner: Orders::Carts::Owner
+  @reason: untyped
+
+  def self.call: (Orders::Carts::Owner owner, ?reason: untyped) -> Result
+
+  def initialize: (Orders::Carts::Owner owner, untyped reason) -> void
+  def call: () -> Result
+
+  private
+
+  def cancellable: () -> Order
+  def reason: () -> String
+  def refused: (Orders::Bookings::Failure failure) -> bot
+  def adapter: (Order order) -> Orders::Bookings::Adapters::_Adapter
+  def refuse: (Symbol code, Symbol status) -> bot
+end

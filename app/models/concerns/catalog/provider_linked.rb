@@ -20,7 +20,10 @@ module Catalog::ProviderLinked
     end
   end
 
+  # Read from the links when they are preloaded, so a list of records asks nothing per record.
   def provider_ref(provider)
-    provider_links.find_by(provider:)&.external_id
+    links = provider_links
+    link = links.loaded? ? links.to_a.find { it.provider_id == provider.id } : links.find_by(provider:)
+    link&.external_id
   end
 end

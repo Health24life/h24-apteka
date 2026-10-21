@@ -27,6 +27,12 @@ module CartActions
     render json: { cart: Orders::Carts::CartBlueprint.render_as_hash(view) }, status:
   end
 
+  # A sent order, with the client's data only for the user of its account.
+  def render_order(order, owner, status: :ok)
+    personal_data = OrderPolicy.new(owner, order).personal_data?
+    render json: { order: Orders::Bookings::OrderBlueprint.render_as_hash(order, personal_data:) }, status:
+  end
+
   # Whole packs only, so a fraction or a string is refused before the provider is asked.
   def quantity
     value = params.to_unsafe_h['quantity']

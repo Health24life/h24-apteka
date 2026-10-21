@@ -6,7 +6,28 @@
 class Api::V1::OrdersController < ApiController
   include CartActions
 
-  def show = render_cart(Orders::Carts::Show.call(cart_owner(params[:token])))
+  # The bookings of the signed-in user's account; a guest's bookings have no history.
+  def index
+    user_id = current_user_id
+    return render_error(:unauthorized, status: :unauthorized) unless user_id
+
+    history = Orders::Bookings::History.call(user_id:, page: params[:page], per_page: params[:per_page])
+    render json: {
+      orders: Orders::Bookings::HistoryBlueprint.render_as_hash(history.orders),
+      page: history.page,
+      per_page: history.per_page,
+      has_more: history.has_more
+    }
+  end
+
+  # The cart, or the order it became once booked.
+  def show
+    owner = cart_owner(params[:token])
+    order = Orders::Bookings::Open.owned(owner)
+    return render_cart(Orders::Carts::Show.call(owner)) unless order
+
+    render_order(order, owner)
+  end
 
   def create
     body = params.to_unsafe_h
@@ -19,11 +40,23 @@ class Api::V1::OrdersController < ApiController
     render_cart(result.view, status: result.created ? :created : :ok)
   end
 
-  # Clearing needs no tidying: the cart goes whole whatever became unusable in it.
+  # A cart is cleared for good, with no tidying, as it goes whole anyway; a booking is cancelled at the drugstore and
+  # stays, with the partner's status, or with the status from before when the partner was not asked again in time. The
+  # reason of a cancellation comes in the body.
   def destroy
-    Orders::Carts::Clear.call(Orders::Carts::Find.call(cart_owner(params[:token])) || Orders::Carts::Opening.not_found)
+    owner = cart_owner(params[:token])
+    return cancel(owner) if Order.where.not(state: 'cart').exists?(token: owner.token)
+
+    Orders::Carts::Clear.call(Orders::Carts::Find.call(owner) || Orders::Carts::Opening.not_found)
     head :no_content
   end
 
   def current = render_cart(Orders::Carts::Show.call(cart_owner))
+
+  private
+
+  def cancel(owner)
+    result = Orders::Bookings::Cancel.call(owner, reason: params.to_unsafe_h['reason'])
+    render_order(result.order, owner, status: result.confirmed ? :ok : :accepted)
+  end
 end

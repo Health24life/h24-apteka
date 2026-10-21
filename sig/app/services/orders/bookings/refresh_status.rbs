@@ -1,0 +1,9 @@
+class Orders::Bookings::RefreshStatus
+  @order: Order
+
+  def self.call: (Order order) -> (Order | Orders::Bookings::Failure)
+  def self.stale?: (Order order, ?config: Orders::Bookings::Config) -> bool
+
+  def initialize: (Order order) -> void
+  def call: () -> (Order | Orders::Bookings::Failure)
+end

@@ -1,0 +1,4 @@
+module Orders::Bookings::Open
+  def self.owned: (Orders::Carts::Owner owner) -> Order?
+  def self.fresh: (Order order, ?config: Orders::Bookings::Config) -> Order
+end

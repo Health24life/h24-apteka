@@ -1,0 +1,58 @@
+{
+  "data": {
+    "order_number": "PB-35-PT-H5",
+    "order_delivery": {
+      "delivery_type_code": "PickUp",
+      "ttn": "123456"
+    },
+    "order_payment": {
+      "payment_method_code": "LiqPay"
+    },
+    "order_number_for_customer": "123456",
+    "drugstore_order_id": null,
+    "created_at": "2023-01-26 14:20:29",
+    "updated_at": "2023-01-26 14:20:29",
+    "export_expired": true,
+    "delivery_type": "DTC_PICKUP",
+    "customer_phone_number": "380000000000",
+    "customer_last_name": "TEST",
+    "customer_first_name": "TEST",
+    "customer_middle_name": null,
+    "comment": "ЭТО ТЕСТОВЫЙ ЗАКАЗ - ОТМЕНИТЕ",
+    "drugstore_id": 34494,
+    "ext_drugstore_id": "5aea4747-43ec-11ed-84af-ecf4bbd48b9a",
+    "drugstore_name": "Аптека №1633, \"Ощад аптека\"",
+    "address": "м.Кам'янець-Подільський, вул.пр. Грушевського М,25",
+    "drugstore_phone": "380000000000",
+    "drugstore_mobile_phone": "380000000000",
+    "drugstore_email": "drugstore@example.ua",
+    "latitude": "48.67853",
+    "longitude": "26.59297",
+    "total": 265.99,
+    "status_comment": "Передан в обработку",
+    "status_name": "created",
+    "cancel_reason": null,
+    "progress": {
+      "step": 1,
+      "completed": null,
+      "label": "Передан в обработку"
+    },
+    "goods": [
+      {
+        "goods_id": 1990718,
+        "ext_goods_id": "8b470a26-202e-11ec-8aeb-ecf4bbd549ca",
+        "image_url": [],
+        "morion_id": 769560,
+        "name": "Натхелс мультивітаміни д/діт. №24 жув.паст.полуниця",
+        "producer": "NatHealth Sp.z.o.o",
+        "country": "Польша",
+        "country_code": "pl",
+        "release_form": "пастилки жев., со вкусом клубники",
+        "quantity": 1,
+        "price": 265.99,
+        "total": 265.99,
+        "comment": null
+      }
+    ]
+  }
+}

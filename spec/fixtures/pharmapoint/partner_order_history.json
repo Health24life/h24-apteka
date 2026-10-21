@@ -1,0 +1,156 @@
+{
+  "data": [
+    {
+      "order_number": "4T-3X-BK-96",
+      "order_delivery": {
+        "delivery_type_code": "PickUp",
+        "ttn": "123456",
+        "ettn": "12345667"
+      },
+      "order_payment": {
+        "payment_method_code": "LiqPay",
+        "total_paid": 123.09
+      },
+      "source": {
+        "name": "telegram.org",
+        "code": "telegram"
+      },
+      "order_number_for_customer": "123456",
+      "created_at": "2020-12-01 15:49:51",
+      "updated_at": "2020-12-01 16:23:56",
+      "call_center_order_id": "609596",
+      "delivery_type": "DTC_PICKUP",
+      "customer_phone_number": "380000000000",
+      "customer_last_name": "TEST",
+      "customer_first_name": "TEST",
+      "customer_middle_name": null,
+      "comment": null,
+      "drugstore_id": 497,
+      "address": "ТАС-ФАРМА ТОВ, Аптека TAS №93, м.Київ Київська обл., м. Київ, вул. Довженко 1Т",
+      "drugstore_phone": null,
+      "drugstore_mobile_phone": "380000000000",
+      "drugstore_email": null,
+      "latitude": "50.4578113927",
+      "longitude": "30.446527004242",
+      "total": 211.77,
+      "total_include_franchising_percentage": 0,
+      "customer_insurance_card_number": "0000",
+      "customer_franchising_percentage": 0,
+      "insurance": "Страхова компанія",
+      "insurance_code": "00000000",
+      "sales_agent_first_name": "оператор",
+      "sales_agent_last_name": "Тестовый",
+      "sales_agent_middle_name": "кол ценра",
+      "sales_agent_phone": "380000000113",
+      "status_comment": "Обработано в аптеке",
+      "status_name": "processed_by_pharmacy",
+      "cancel_reason": null,
+      "progress": {
+        "step": 6,
+        "completed": null,
+        "label": "Обработано в аптеке"
+      },
+      "goods": [
+        {
+          "goods_id": 1707247,
+          "image_url": [],
+          "morion_id": 174705,
+          "name": "Декатилен табл. д/сос. №40",
+          "producer": "Mepha",
+          "country": "Швейцария",
+          "country_code": "ch",
+          "release_form": "табл. д/сос.",
+          "quantity": 1,
+          "total": 211.77
+        }
+      ]
+    },
+    {
+      "order_number": "5E-64-49-96",
+      "created_at": "2020-12-01 15:15:47",
+      "updated_at": "2020-12-02 11:10:32",
+      "call_center_order_id": "609441",
+      "delivery_type": "DTC_PICKUP",
+      "customer_phone_number": "380000000000",
+      "customer_last_name": "TEST",
+      "customer_first_name": "TEST",
+      "customer_middle_name": null,
+      "comment": null,
+      "drugstore_id": 2055,
+      "address": "Арніка ТОВ, Аптека №1, м.Киев Київська обл., м. Київ, Щусева 3",
+      "drugstore_phone": "380000000000",
+      "drugstore_mobile_phone": null,
+      "drugstore_email": null,
+      "latitude": "50.473880765073",
+      "longitude": "30.445696427933",
+      "total": 7,
+      "status_comment": "Отмена",
+      "status_name": "canceled",
+      "cancel_reason": "Скасовано",
+      "progress": {
+        "step": 1,
+        "completed": false,
+        "label": "Отмена"
+      },
+      "goods": [
+        {
+          "goods_id": 1751047,
+          "image_url": [
+            "goods_profile_photo/1751047/LewIRZxnlSKJXjaK.jpg"
+          ],
+          "morion_id": 4844,
+          "name": "Анальгин табл. 500 мг №10",
+          "producer": "Монфарм",
+          "country": "Украина",
+          "country_code": "ua",
+          "release_form": "табл. 500 мг",
+          "quantity": 1,
+          "total": 7
+        }
+      ]
+    },
+    {
+      "order_number": "9K-28-37-72",
+      "created_at": "2020-11-25 13:18:14",
+      "updated_at": "2020-11-26 13:25:51",
+      "delivery_type": "DTC_PICKUP",
+      "customer_phone_number": "380000000000",
+      "customer_last_name": "TEST",
+      "customer_first_name": "TEST",
+      "customer_middle_name": null,
+      "comment": null,
+      "drugstore_id": 2697,
+      "address": "Аптека №11 м. Київ, вул. Вишгородська, 56/2",
+      "drugstore_phone": "380000000000",
+      "drugstore_mobile_phone": null,
+      "drugstore_email": null,
+      "latitude": "50.520247",
+      "longitude": "30.449666",
+      "total": 9.9,
+      "status_comment": "Отмена",
+      "status_name": "canceled",
+      "cancel_reason": "Отмененная бронь",
+      "progress": {
+        "step": 1,
+        "completed": false,
+        "label": "Отмена"
+      },
+      "goods": [
+        {
+          "goods_id": 1751047,
+          "image_url": [
+            "goods_profile_photo/1751047/LewIRZxnlSKJXjaK.jpg"
+          ],
+          "morion_id": 4844,
+          "name": "Анальгин табл. 500 мг №10",
+          "producer": "Монфарм",
+          "country": "Украина",
+          "country_code": "ua",
+          "release_form": "табл. 500 мг",
+          "quantity": 1,
+          "total": 9.9
+        }
+      ]
+    }
+  ]
+}

@@ -79,6 +79,91 @@ paths:
           application/json:
             schema:
               "$ref": "#/components/schemas/drugstores_request"
+  "/api/v1/orders/{order_token}/booking":
+    parameters:
+    - name: order_token
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Token of the cart
+    - name: Authorization
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Bearer token of a signed-in user; the cart of an account books
+        only with it
+    post:
+      summary: Books the cart for pick-up
+      tags:
+      - Booking
+      description: 'Sends the cart to the drugstore as a pick-up paid there, with
+        no prepayment. The goods must be those of the cart, with the prices the user
+        saw: prices and stock are confirmed live first, a higher price or a missing
+        item stops the booking for a new consent, a lower price is taken. The consent
+        to the processing of personal data is checked by the server. The same call
+        tries again a booking whose sending failed, after looking for it at the partner
+        so no second order is made. The order keeps the token of the cart, which is
+        also the link it is shared by; the client data comes back only to the signed-in
+        user of the order''s account.'
+      parameters: []
+      responses:
+        '201':
+          description: the share of the cart in the request limit is used up, the
+            booking still goes
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/order_response"
+        '403':
+          description: 'turnstile_failed: the check of Cloudflare Turnstile did not
+            pass'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '404':
+          description: 'cart_not_found: no such cart, or an account''s cart without
+            its session'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '409':
+          description: booking_in_progress (another call books the cart), cart_changed
+            or booking_prices_changed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '422':
+          description: 'booking_not_allowed_in_drugstore: booking is not open in this
+            drugstore yet'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '502':
+          description: 'booking_submission_failed: the partner did not take the order;
+            the same call tries again'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '503':
+          description: 'booking_check_unavailable, or booking_check_busy with Retry-After:
+            prices could not be confirmed'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/booking_request"
+        required: true
   "/api/v1/orders/{order_token}/items":
     parameters:
     - name: order_token
@@ -185,6 +270,48 @@ paths:
         type: string
       description: Bearer token of a signed-in user; the cart of an account opens
         only with it
+    get:
+      summary: Lists the bookings of the signed-in user's account
+      tags:
+      - Booking
+      description: 'Newest first by the moment of booking, a page at a time, from
+        what Health24 keeps of each booking: the partner is not asked, and the statuses
+        are those the poll kept. A guest''s bookings have no history. `has_more` tells
+        whether there is a next page. Open one booking by its `token`.'
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+        description: Up to the configured maximum, 20 by default
+      responses:
+        '200':
+          description: the bookings of the account, newest first
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/history_response"
+        '401':
+          description: 'unauthorized: no session — a guest has no history'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '422':
+          description: 'invalid_page: a page below one or a page size above the maximum'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
     post:
       summary: Makes the cart with its first SKU
       tags:
@@ -306,16 +433,58 @@ paths:
               schema:
                 "$ref": "#/components/schemas/error"
     delete:
-      summary: Clears the cart for good
+      summary: Clears the cart, or cancels the booking it became
       tags:
       - Cart
-      description: Removes the cart with its items, so a cart can be started in another
-        drugstore.
+      description: 'A cart is removed with its items, so a cart can be started in
+        another drugstore (204). A booking is cancelled at the drugstore and stays,
+        with the status the partner gives after it (200), or with the status from
+        before when the partner could not be asked again (202). Only the signed-in
+        user of the booking''s account can cancel it: the token is also the link the
+        booking is shared by. Only a booking the drugstore took, with a status that
+        is not final, can be cancelled. The reason is optional and comes in the body.'
+      parameters: []
       responses:
         '204':
           description: the cart is gone
+        '200':
+          description: the booking is cancelled; its status read again from the partner
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/order_response"
+        '202':
+          description: 'cancelled, but the partner did not answer for the status:
+            the one from before is shown'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/order_response"
+        '403':
+          description: 'cancellation_needs_account: only the user of the booking''s
+            account can cancel it'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '409':
+          description: order_not_cancellable, or cancellation_refused when the drugstore
+            did not accept it
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
         '404':
           description: cart_not_found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/cancellation_request"
   "/api/v1/search":
     post:
       summary: Searches the providers live for goods by name
@@ -654,6 +823,9 @@ components:
         phone:
           type: string
           nullable: true
+        booking_available:
+          type: boolean
+          description: Whether booking is open in this drugstore
         week_working_hours:
           type: array
           description: Seven days from Monday, `HH:MM-HH:MM` or null for a day off;
@@ -808,6 +980,251 @@ components:
                     type: integer
                   name:
                     type: string
+    booking_request:
+      type: object
+      required:
+      - goods
+      - customer
+      - personal_data_consent
+      - cf-turnstile-response
+      properties:
+        goods:
+          type: array
+          description: The goods of the cart, all of them, with the prices the user
+            saw and agreed to
+          items:
+            type: object
+            required:
+            - goods_id
+            - quantity
+            - price
+            properties:
+              goods_id:
+                type: integer
+              quantity:
+                type: integer
+                minimum: 1
+              price:
+                type: string
+                description: Hryvnias, as the cart showed it
+        customer:
+          type: object
+          required:
+          - first_name
+          - phone_number
+          properties:
+            first_name:
+              type: string
+              maxLength: 100
+            last_name:
+              type: string
+              maxLength: 100
+            middle_name:
+              type: string
+              maxLength: 100
+            phone_number:
+              type: string
+              description: Any Ukrainian form; kept as 380XXXXXXXXX
+            email:
+              type: string
+        personal_data_consent:
+          type: boolean
+          enum:
+          - true
+          description: Checked by the server
+        register_account:
+          type: boolean
+          description: The wish to register; no account is made yet
+        cf-turnstile-response:
+          type: string
+          description: Token of the Cloudflare Turnstile widget
+    order_response:
+      type: object
+      required:
+      - order
+      properties:
+        order:
+          "$ref": "#/components/schemas/order"
+    order:
+      type: object
+      description: A sent order, as it was when it was sent
+      required:
+      - token
+      - own_number
+      - state
+      - status
+      - drugstore
+      - items
+      - total
+      properties:
+        token:
+          type: string
+          description: The one key, the same as the cart's; also the link the booking
+            is shared by
+        own_number:
+          type: string
+          description: Number of Health24
+        customer_number:
+          type: string
+          nullable: true
+          description: The partner's number for the client
+        state:
+          type: string
+          enum:
+          - submitted
+          - submission_failed
+        status:
+          type: object
+          properties:
+            title:
+              type: string
+              nullable: true
+              description: The partner's status, translated when known
+            comment:
+              type: string
+              nullable: true
+            known:
+              type: boolean
+            updated_at:
+              type: string
+              format: date-time
+              nullable: true
+        customer:
+          type: object
+          description: Only for the signed-in user of the order's account; not given
+            to a guest or by the link
+          properties:
+            first_name:
+              type: string
+            last_name:
+              type: string
+              nullable: true
+            middle_name:
+              type: string
+              nullable: true
+            phone_number:
+              type: string
+            email:
+              type: string
+              nullable: true
+        drugstore:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+              nullable: true
+            address:
+              type: string
+              nullable: true
+            phone:
+              type: string
+              nullable: true
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              goods_id:
+                type: integer
+                nullable: true
+              name:
+                type: string
+              quantity:
+                type: integer
+              price:
+                type: string
+                nullable: true
+              total:
+                type: string
+                nullable: true
+        total:
+          type: string
+    history_response:
+      type: object
+      required:
+      - orders
+      - page
+      - per_page
+      - has_more
+      properties:
+        orders:
+          type: array
+          items:
+            "$ref": "#/components/schemas/history_order"
+        page:
+          type: integer
+        per_page:
+          type: integer
+        has_more:
+          type: boolean
+          description: Whether there is a next page
+    history_order:
+      type: object
+      description: A booking of the account, without the client's data and the items
+      required:
+      - token
+      - own_number
+      - state
+      - status
+      - drugstore
+      - items_count
+      - total
+      properties:
+        token:
+          type: string
+        own_number:
+          type: string
+        customer_number:
+          type: string
+          nullable: true
+        state:
+          type: string
+          enum:
+          - submitted
+          - submission_failed
+        status:
+          type: object
+          properties:
+            title:
+              type: string
+              nullable: true
+            comment:
+              type: string
+              nullable: true
+            known:
+              type: boolean
+            updated_at:
+              type: string
+              format: date-time
+              nullable: true
+        booked_at:
+          type: string
+          format: date-time
+          description: The first attempt to book
+        drugstore:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+              nullable: true
+            address:
+              type: string
+              nullable: true
+        items_count:
+          type: integer
+        total:
+          type: string
+    cancellation_request:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 255
+          description: Optional; without it the drugstore gets «Скасовано клієнтом»
     error:
       type: object
       required:

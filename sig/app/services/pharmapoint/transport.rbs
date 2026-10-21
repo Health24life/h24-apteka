@@ -2,6 +2,8 @@ class Pharmapoint::Transport
   type timeouts = Hash[Symbol, Integer | Float]
   type params = Hash[Symbol, String | Integer | Float]
   type body = Hash[Symbol, untyped]
+  type headers = Hash[String, String]
+  type sending = { body: body?, headers: headers? }
 
   ERROR_BODY_LIMIT: Integer
 
@@ -12,12 +14,12 @@ class Pharmapoint::Transport
 
   def initialize: (config: Pharmapoint::Config, rate_limiter: Pharmapoint::RateLimiter,
                    masker: Pharmapoint::Logging::Masker, logger: Pharmapoint::Logging::RequestLogger) -> void
-  def call: [T] (String path, ?params params, ?body: body?, ?share: Symbol?, ?timeouts: timeouts?)
+  def call: [T] (String path, ?params params, ?body: body?, ?headers: headers?, ?share: Symbol?, ?timeouts: timeouts?)
               { (Pharmapoint::json) -> T } -> T
 
   private
 
-  def request: (String path, params params, body? body, [String, String] credentials, timeouts? timeouts)
+  def request: (String path, params params, sending sending, [String, String] credentials, timeouts? timeouts)
              -> Faraday::Response
   def parse: (String? body) -> Pharmapoint::json
   def check_status!: (Faraday::Response response) -> void

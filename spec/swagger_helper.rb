@@ -206,6 +206,7 @@ RSpec.configure do |config|
                 }
               },
               phone: { type: :string, nullable: true },
+              booking_available: { type: :boolean, description: 'Whether booking is open in this drugstore' },
               week_working_hours: {
                 type: :array,
                 description: 'Seven days from Monday, `HH:MM-HH:MM` or null for a day off; empty when unknown',
@@ -317,6 +318,152 @@ RSpec.configure do |config|
                     goods: { type: :object, properties: { id: { type: :integer }, name: { type: :string } } }
                   }
                 }
+              }
+            }
+          },
+          booking_request: {
+            type: :object,
+            required: %w[goods customer personal_data_consent cf-turnstile-response],
+            properties: {
+              goods: {
+                type: :array,
+                description: 'The goods of the cart, all of them, with the prices the user saw and agreed to',
+                items: {
+                  type: :object,
+                  required: %w[goods_id quantity price],
+                  properties: {
+                    goods_id: { type: :integer },
+                    quantity: { type: :integer, minimum: 1 },
+                    price: { type: :string, description: 'Hryvnias, as the cart showed it' }
+                  }
+                }
+              },
+              customer: {
+                type: :object,
+                required: %w[first_name phone_number],
+                properties: {
+                  first_name: { type: :string, maxLength: 100 },
+                  last_name: { type: :string, maxLength: 100 },
+                  middle_name: { type: :string, maxLength: 100 },
+                  phone_number: { type: :string, description: 'Any Ukrainian form; kept as 380XXXXXXXXX' },
+                  email: { type: :string }
+                }
+              },
+              personal_data_consent: { type: :boolean, enum: [ true ], description: 'Checked by the server' },
+              register_account: { type: :boolean, description: 'The wish to register; no account is made yet' },
+              'cf-turnstile-response': { type: :string, description: 'Token of the Cloudflare Turnstile widget' }
+            }
+          },
+          order_response: {
+            type: :object,
+            required: %w[order],
+            properties: { order: { '$ref' => '#/components/schemas/order' } }
+          },
+          order: {
+            type: :object,
+            description: 'A sent order, as it was when it was sent',
+            required: %w[token own_number state status drugstore items total],
+            properties: {
+              token: {
+                type: :string,
+                description: "The one key, the same as the cart's; also the link the booking is shared by"
+              },
+              own_number: { type: :string, description: 'Number of Health24' },
+              customer_number: { type: :string, nullable: true, description: "The partner's number for the client" },
+              state: { type: :string, enum: %w[submitted submission_failed] },
+              status: {
+                type: :object,
+                properties: {
+                  title: { type: :string, nullable: true, description: "The partner's status, translated when known" },
+                  comment: { type: :string, nullable: true },
+                  known: { type: :boolean },
+                  updated_at: { type: :string, format: 'date-time', nullable: true }
+                }
+              },
+              customer: {
+                type: :object,
+                description: "Only for the signed-in user of the order's account; not given to a guest or by the link",
+                properties: {
+                  first_name: { type: :string },
+                  last_name: { type: :string, nullable: true },
+                  middle_name: { type: :string, nullable: true },
+                  phone_number: { type: :string },
+                  email: { type: :string, nullable: true }
+                }
+              },
+              drugstore: {
+                type: :object,
+                properties: {
+                  id: { type: :integer },
+                  name: { type: :string, nullable: true },
+                  address: { type: :string, nullable: true },
+                  phone: { type: :string, nullable: true }
+                }
+              },
+              items: {
+                type: :array,
+                items: {
+                  type: :object,
+                  properties: {
+                    goods_id: { type: :integer, nullable: true },
+                    name: { type: :string },
+                    quantity: { type: :integer },
+                    price: { type: :string, nullable: true },
+                    total: { type: :string, nullable: true }
+                  }
+                }
+              },
+              total: { type: :string }
+            }
+          },
+          history_response: {
+            type: :object,
+            required: %w[orders page per_page has_more],
+            properties: {
+              orders: { type: :array, items: { '$ref' => '#/components/schemas/history_order' } },
+              page: { type: :integer },
+              per_page: { type: :integer },
+              has_more: { type: :boolean, description: 'Whether there is a next page' }
+            }
+          },
+          history_order: {
+            type: :object,
+            description: "A booking of the account, without the client's data and the items",
+            required: %w[token own_number state status drugstore items_count total],
+            properties: {
+              token: { type: :string },
+              own_number: { type: :string },
+              customer_number: { type: :string, nullable: true },
+              state: { type: :string, enum: %w[submitted submission_failed] },
+              status: {
+                type: :object,
+                properties: {
+                  title: { type: :string, nullable: true },
+                  comment: { type: :string, nullable: true },
+                  known: { type: :boolean },
+                  updated_at: { type: :string, format: 'date-time', nullable: true }
+                }
+              },
+              booked_at: { type: :string, format: 'date-time', description: 'The first attempt to book' },
+              drugstore: {
+                type: :object,
+                properties: {
+                  id: { type: :integer },
+                  name: { type: :string, nullable: true },
+                  address: { type: :string, nullable: true }
+                }
+              },
+              items_count: { type: :integer },
+              total: { type: :string }
+            }
+          },
+          cancellation_request: {
+            type: :object,
+            properties: {
+              reason: {
+                type: :string,
+                maxLength: 255,
+                description: 'Optional; without it the drugstore gets «Скасовано клієнтом»'
               }
             }
           },

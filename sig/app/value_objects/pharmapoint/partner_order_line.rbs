@@ -1,0 +1,6 @@
+class Pharmapoint::PartnerOrderLine < Data
+  attr_reader goods_external_id: String
+  attr_reader quantity: BigDecimal
+
+  def self.new: (goods_external_id: String, quantity: BigDecimal) -> instance
+end

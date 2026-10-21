@@ -1,0 +1,14 @@
+class Orders::Bookings::Snapshot
+  @order: Order
+  @offer: Orders::Offers::DrugstoreOffer
+
+  def self.call: (Order order, Orders::Offers::DrugstoreOffer offer) -> Order
+
+  def initialize: (Order order, Orders::Offers::DrugstoreOffer offer) -> void
+  def call: () -> Order
+
+  private
+
+  def drugstore: (Catalog::Drugstore drugstore) -> void
+  def item: (Order::Item item) -> void
+end

@@ -1,0 +1,16 @@
+class Orders::Bookings::PriceCheck
+  @order: Order
+  @offer: Orders::Offers::DrugstoreOffer
+  @request: Orders::Bookings::Request
+
+  def self.call: (Order order, Orders::Offers::DrugstoreOffer offer, Orders::Bookings::Request request) -> void
+
+  def initialize: (Order order, Orders::Offers::DrugstoreOffer offer, Orders::Bookings::Request request) -> void
+  def call: () -> void
+
+  private
+
+  def agreed?: (Order::Item item) -> bool
+  def available?: (Orders::Offers::Line? line, Order::Item item) -> bool
+  def current: (Order::Item item) -> Hash[Symbol, untyped]
+end

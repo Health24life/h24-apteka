@@ -7,6 +7,11 @@ class Pharmapoint::Client
   DRUGSTORE_PATH: String
   OFFERS_NEARBY_PATH: String
   OFFERS_IN_DRUGSTORE_PATH: String
+  STORE_PICK_UP_ORDER_PATH: String
+  ORDER_PATH: String
+  ORDER_HISTORY_PATH: String
+  ORDER_HISTORY_PER_PAGE: Integer
+  CANCEL_ORDER_PATH: String
 
   @config: Pharmapoint::Config
   @transport: Pharmapoint::Transport
@@ -22,14 +27,21 @@ class Pharmapoint::Client
   def drugstores: (Pharmapoint::SearchPoint point) -> Array[Pharmapoint::Drugstore]
   def drugstore: (String external_id) -> Pharmapoint::Drugstore
   def offers_nearby: (goods: Array[Pharmapoint::OrderLine], location: Pharmapoint::SearchPoint) -> Array[Pharmapoint::Offer]
-  def offers_in_drugstore: (goods: Array[Pharmapoint::OrderLine], drugstore_external_id: String)
+  def offers_in_drugstore: (goods: Array[Pharmapoint::OrderLine], drugstore_external_id: String, ?share: Symbol?)
                          -> Array[Pharmapoint::Offer]
+  def store_pick_up_order: (Pharmapoint::Transport::body body) -> Pharmapoint::PartnerOrder
+  def order: (String number) -> Pharmapoint::PartnerOrder
+  def order_history: (phone: String) -> Array[Pharmapoint::PartnerOrder]
+  def cancel_order: (number: String, phone: String, reason: String) -> true
 
   private
 
   def offer_line: (Pharmapoint::OrderLine line) -> { goods_id: String, quantity: Integer }
-  def deliver: [T] (String path, Pharmapoint::Transport::body body, Pharmapoint::Transport::params params)
+  def deliver: [T] (String path, Pharmapoint::Transport::body body, Pharmapoint::Transport::params params, ?share: Symbol?)
                  { (Pharmapoint::json) -> T } -> T
+  def ordering: [T] (String path, Pharmapoint::Transport::params params, ?body: Pharmapoint::Transport::body?,
+                     ?headers: Pharmapoint::Transport::headers?) { (Pharmapoint::json) -> T } -> T
   def fetch: [T] (String path, ?Pharmapoint::Transport::params params, ?body: Pharmapoint::Transport::body?,
-                  ?share: Symbol?, ?timeouts: Pharmapoint::Transport::timeouts?) { (Pharmapoint::json) -> T } -> T
+                  ?headers: Pharmapoint::Transport::headers?, ?share: Symbol?, ?timeouts: Pharmapoint::Transport::timeouts?)
+               { (Pharmapoint::json) -> T } -> T
 end

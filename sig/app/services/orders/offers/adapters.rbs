@@ -16,7 +16,7 @@ module Orders::Offers::Adapters
     def provider: () -> Provider
     def nearby: (Catalog::Goods goods, _Location location)
               -> (Array[Orders::Offers::DrugstoreOffer] | Orders::Offers::Failure)
-    def in_drugstore: (Catalog::Drugstore drugstore, Array[_Item] items)
+    def in_drugstore: (Catalog::Drugstore drugstore, Array[_Item] items, ?share: Symbol?)
                     -> (Orders::Offers::DrugstoreOffer | Orders::Offers::Failure)
   end
 

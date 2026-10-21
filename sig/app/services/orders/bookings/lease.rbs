@@ -1,0 +1,8 @@
+module Orders::Bookings::Lease
+  PREFIX: String
+  RELEASE: String
+
+  def self.take: (String name, Integer seconds, ?String holder) -> String?
+  def self.hold: [T] (String name, Integer seconds) { () -> T } -> T?
+  def self.key: (String name) -> String
+end

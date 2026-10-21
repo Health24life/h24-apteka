@@ -7,6 +7,8 @@ class Catalog::DrugstoreBlueprint < Blueprinter::Base
   fields :drugstore_legal_entity_name, :drugstore_legal_entity_code
 
   field(:phone) { |drugstore| drugstore.phone || drugstore.mobile_phone }
+  # Booking goes only to the drugstores of the pilot.
+  field(:booking_available) { |drugstore| Orders::Bookings.config.allowed?(drugstore.id) }
 
   association :brand, blueprint: Catalog::Drugstore::BrandBlueprint
   association :address, blueprint: Catalog::Drugstore::AddressBlueprint

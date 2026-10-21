@@ -13,7 +13,7 @@ module OffersHelpers
 
       def initialize(provider:, **) = @provider = provider
 
-      def in_drugstore(drugstore, items) = self.class.answer.call(drugstore, items)
+      def in_drugstore(drugstore, items, **) = self.class.answer.call(drugstore, items)
     end
     adapter.answer = answer
     stub_const('Orders::Offers::Adapters::BY_CODE', { 'pharmapoint' => adapter })

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # One call to the partner API: paced against the request limit, logged, checked and read as JSON. A call with a body is
-# sent as a POST of JSON, any other as a GET.
+# sent as a POST of JSON, any other as a GET; `headers:` go with either.
 class Pharmapoint::Transport
   ERROR_BODY_LIMIT = 500
 
@@ -13,10 +13,11 @@ class Pharmapoint::Transport
   end
 
   # The key is checked first: a call that cannot be sent does not spend the request limit.
-  def call(path, params = {}, body: nil, share: nil, timeouts: nil)
+  # rubocop:disable-next Metrics/ParameterLists -- what is sent, and the share and timeouts it is sent within.
+  def call(path, params = {}, body: nil, headers: nil, share: nil, timeouts: nil)
     credentials = @config.credentials!
     @rate_limiter.guard!(share:)
-    response = request(path, params, body, credentials, timeouts)
+    response = request(path, params, { body:, headers: }, credentials, timeouts)
     @rate_limiter.record(response.headers)
     check_status!(response)
     yield parse(response.body)
@@ -27,20 +28,26 @@ class Pharmapoint::Transport
 
   private
 
-  def request(path, params, body, credentials, timeouts)
+  def request(path, params, sending, credentials, timeouts)
     api_key, domain_name = credentials
     connection = connection(api_key, domain_name, timeouts)
-    return connection.get(path, params) unless body
+    body = sending[:body]
+    headers = sending[:headers].to_h
+    return connection.get(path, params, headers) unless body
 
     url = params.empty? ? path : "#{path}?#{params.to_query}"
-    connection.post(url, JSON.generate(body), 'Content-Type' => 'application/json')
+    connection.post(url, JSON.generate(body), { 'Content-Type' => 'application/json', **headers })
   rescue Faraday::Error => e
     raise Pharmapoint::TransientError, @masker.text(e.message)
   end
 
   # Only a successful answer is read as JSON: an error page of a gateway has no reason to be.
+  # An empty answer reads as an empty object, which a reader that needs data refuses on its own.
   def parse(body)
-    JSON.parse(body.to_s)
+    text = body.to_s
+    return {} if text.strip.empty?
+
+    JSON.parse(text)
   rescue JSON::ParserError => e
     raise Pharmapoint::InvalidResponse, @masker.text(e.message)
   end

@@ -10,7 +10,7 @@ class Pharmapoint::Offers
                    ?rate_limiter: Pharmapoint::RateLimiter) -> void
   def nearby: (Catalog::Goods goods, Orders::Offers::Adapters::_Location location)
             -> (Array[Orders::Offers::DrugstoreOffer] | Orders::Offers::Failure)
-  def in_drugstore: (Catalog::Drugstore drugstore, Array[Orders::Offers::Adapters::_Item] items)
+  def in_drugstore: (Catalog::Drugstore drugstore, Array[Orders::Offers::Adapters::_Item] items, ?share: Symbol?)
                   -> (Orders::Offers::DrugstoreOffer | Orders::Offers::Failure)
 
   private

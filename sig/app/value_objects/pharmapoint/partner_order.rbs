@@ -1,0 +1,19 @@
+class Pharmapoint::PartnerOrder < Data
+  attr_reader number: String
+  attr_reader customer_number: String?
+  attr_reader status_name: String?
+  attr_reader status_comment: String?
+  attr_reader cancel_reason: String?
+  attr_reader progress: Hash[String, Pharmapoint::json]
+  attr_reader created_at: ActiveSupport::TimeWithZone?
+  attr_reader updated_at: ActiveSupport::TimeWithZone?
+  attr_reader drugstore_external_id: String?
+  attr_reader lines: Array[Pharmapoint::PartnerOrderLine]
+  attr_reader record: Hash[String, Pharmapoint::json]
+
+  def self.new: (number: String, customer_number: String?, status_name: String?, status_comment: String?,
+                 cancel_reason: String?, progress: Hash[String, Pharmapoint::json],
+                 created_at: ActiveSupport::TimeWithZone?, updated_at: ActiveSupport::TimeWithZone?,
+                 drugstore_external_id: String?, lines: Array[Pharmapoint::PartnerOrderLine],
+                 record: Hash[String, Pharmapoint::json]) -> instance
+end

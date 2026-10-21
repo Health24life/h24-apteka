@@ -13,6 +13,11 @@ class Pharmapoint::Client
   # The two differ by one letter: the plural one looks around a point, the singular one in the drugstores named.
   OFFERS_NEARBY_PATH = 'order/get-drugstores-for-order-goods'
   OFFERS_IN_DRUGSTORE_PATH = 'order/get-drugstore-for-order-goods'
+  STORE_PICK_UP_ORDER_PATH = 'order/store-pick-up-order'
+  ORDER_PATH = 'order/%<number>s'
+  ORDER_HISTORY_PATH = 'order/history'
+  ORDER_HISTORY_PER_PAGE = 50
+  CANCEL_ORDER_PATH = 'order/cancel'
 
   # rubocop:disable-next Metrics/ParameterLists -- who asks, why and which attempt it is are the log's context.
   def initialize(
@@ -77,20 +82,54 @@ class Pharmapoint::Client
 
   # What one drugstore has of the goods. Drugstores without stock are asked for too, so that a missing item comes back
   # as such rather than as no drugstore at all.
-  def offers_in_drugstore(goods:, drugstore_external_id:)
+  # The cart spends its share of the limit; a booking confirming its prices spends none.
+  def offers_in_drugstore(goods:, drugstore_external_id:, share: :cart)
     body = { goods: goods.map { offer_line(it) }, drugstore_id: drugstore_external_id }
-    deliver(OFFERS_IN_DRUGSTORE_PATH, body, { with_empty_stock: 1 }) { Pharmapoint::Readers::Offers.call(it) }
+    deliver(OFFERS_IN_DRUGSTORE_PATH, body, { with_empty_stock: 1 }, share:) { Pharmapoint::Readers::Offers.call(it) }
+  end
+
+  # Makes a pick-up order at the partner and gives it back as the partner saved it.
+  def store_pick_up_order(body)
+    ordering(STORE_PICK_UP_ORDER_PATH, {}, body:) { Pharmapoint::Readers::PartnerOrders.one(it) }
+  end
+
+  def order(number)
+    path = format(ORDER_PATH, number: ERB::Util.url_encode(number))
+    ordering(path, {}) { Pharmapoint::Readers::PartnerOrders.one(it) }
+  end
+
+  # The latest orders of a client, known to the partner by the phone; the phone goes in a header the log masks.
+  def order_history(phone:)
+    params = { page: 1, per_page: ORDER_HISTORY_PER_PAGE, sort_by: 'created_at', sort_direction: 'desc' }
+    headers = { 'Customer-Phone' => phone }
+    ordering(ORDER_HISTORY_PATH, params, headers:) { Pharmapoint::Readers::PartnerOrders.many(it) }
+  end
+
+  # Asks the partner to cancel an order; the partner checks the client's phone. What it answers is not documented, so
+  # any successful answer is taken as done, even one that is not JSON: only a successful answer is read.
+  def cancel_order(number:, phone:, reason:)
+    body = { order_number: number, cancel_reason: reason }
+    ordering(CANCEL_ORDER_PATH, {}, body:, headers: { 'Customer-Phone' => phone }) { true }
+  rescue Pharmapoint::InvalidResponse
+    true
   end
 
   private
 
+  # Orders spend no share of the limit and have the booking's timeouts.
+  def ordering(path, params, body: nil, headers: nil, &)
+    booking = @config.booking
+    timeouts = { open_timeout: booking.open_timeout, timeout: booking.read_timeout }
+    fetch(path, params, body:, headers:, timeouts:, &)
+  end
+
   def offer_line(line) = { goods_id: line.external_id, quantity: line.quantity }
 
-  # The live offers spend the cart's share of the limit and have its short timeouts.
-  def deliver(path, body, params, &)
+  # The live offers have the cart's short timeouts and spend its share of the limit unless told otherwise.
+  def deliver(path, body, params, share: :cart, &)
     cart = @config.cart
     timeouts = { open_timeout: cart.open_timeout, timeout: cart.read_timeout }
-    fetch(path, params, body:, share: :cart, timeouts:, &)
+    fetch(path, params, body:, share:, timeouts:, &)
   end
 
   def fetch(path, params = {}, **, &) = @transport.call(path, params, **, &)

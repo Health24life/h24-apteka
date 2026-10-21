@@ -9,9 +9,10 @@
 |---|---|
 | `../pharmapoint.rb` | Простір імен і всі помилки інтеграції (`Error`, `ConfigurationError`, `TransientError`, `PermanentError`, `InvalidResponse`, `RateLimited`) |
 | `config.rb` | Налаштування партнера (`dry-configurable`): з'єднання, ліміт, розмір сторінки груп, строки зберігання журналу. Пункти пошуку аптек — у `Catalog::Sync::Config` |
-| `client.rb` | Клієнт: `dictionaries`, `category_tree`, `goods_groups`, `search_goods_groups`, `goods_group`, `drugstores`, `drugstore`, `offers_nearby`, `offers_in_drugstore` |
-| `transport.rb` | Одне звернення до партнера: ліміт, журнал, перевірка статусу й розбір JSON; запит із тілом надсилається методом `POST` |
+| `client.rb` | Клієнт: `dictionaries`, `category_tree`, `goods_groups`, `search_goods_groups`, `goods_group`, `drugstores`, `drugstore`, `offers_nearby`, `offers_in_drugstore`, `store_pick_up_order`, `order`, `order_history` |
+| `transport.rb` | Одне звернення до партнера: ліміт, журнал, перевірка статусу й розбір JSON; запит із тілом надсилається методом `POST`, заголовки передаються з будь-яким методом |
 | `search.rb` | Адаптер пошуку в реальному часі для [`Catalog::Search`](../catalog/search/README.md) |
+| `bookings.rb` | Адаптер замовлень для `Orders::Bookings::Adapters`: створення самовивозу, статус за номером, пошук уже створеного в історії клієнта |
 | `offers.rb` | Адаптер цін і залишків аптек у реальному часі для `Orders::Offers::Adapters`: аптеки поруч для SKU і одна аптека для позицій кошика, з ідентифікаторами каталогу |
 | `readers/` | По читачу на оболонку відповіді; повертають прості значення з символьними ключами |
 | `rate_limiter.rb` | Ліміт запитів, спільний для всіх воркерів (стан у Redis), і частки пошуку й кошика в ньому |
@@ -41,6 +42,9 @@ client.drugstore('38628')           # => запис однієї аптеки
   власні короткі таймаути; телефон клієнта не передається. Адаптер зводить позиції кошика з тим самим SKU в один рядок.
   Партнер працює з цілими упаковками, і кошик приймає лише їх, тож частина упаковки в адаптері — помилка (`ArgumentError`), а
   не кількість, яку можна округлити.
+- `store_pick_up_order(body)`, `order(number)`, `order_history(phone:)` — `POST order/store-pick-up-order`,
+  `GET order/:order_number`, `GET order/history` (телефон клієнта — заголовком `Customer-Phone`, у журналі маскується).
+  Без частки ліміту, з таймаутами `config.booking`; час партнера без таймзони читається як київський.
 - `purpose` — категорія звернення в журналі: `refresh` (оновлення даних), `search`, `offers` (ціни й
   залишки аптек у реальному часі), `booking`, `other`.
 - `user_id` — користувач Health24, чия дія викликала звернення; для системних звернень (розклад) лишається порожнім.
@@ -68,6 +72,7 @@ client.drugstore('38628')           # => запис однієї аптеки
 | `PHARMAPOINT_SEARCH_PER_PAGE` | `20` | Розмір сторінки груп у пошуку |
 | `PHARMAPOINT_CART_RATE_LIMIT_PER_MINUTE` | `15` | Частка запитів цін і залишків аптек (кошик і список аптек) у ліміті — так само, як частка пошуку |
 | `PHARMAPOINT_CART_OPEN_TIMEOUT`, `PHARMAPOINT_CART_READ_TIMEOUT` | `1`, `3` | Таймаути цих звернень у секундах (можна дробові) |
+| `PHARMAPOINT_BOOKING_OPEN_TIMEOUT`, `PHARMAPOINT_BOOKING_READ_TIMEOUT` | `1`, `10` | Таймаути створення й читання замовлень; частки ліміту немає, тож пошук і кошик не залишать бронь без бюджету |
 | `PHARMAPOINT_DRUGSTORE_SEARCH_POINTS` | один пункт у Києві | JSON-масив об'єктів `{"latitude": градуси, "longitude": градуси, "radius": метри}`: навколо цих точок збирається довідник аптек. Читає `Catalog::Sync::Config`; формат і приклад — у [README синхронізації](../catalog/sync/README.md) |
 | `PHARMAPOINT_LOG_RETENTION_<КАТЕГОРІЯ>_DAYS` | бронювання 14, пошук 1, ціни й залишки 1, оновлення даних 7, інші 7 | Строк зберігання журналу по категоріях |
 | `SYNC_CRON_DICTIONARIES`, `SYNC_CRON_CATEGORIES`, `SYNC_CRON_GOODS_GROUPS`, `SYNC_CRON_DRUGSTORES` | див. `schedule.rb` | Cron кожного прогону; **порожнє значення вимикає задачу**. Прогін груп товарів за замовчуванням вимкнений |

@@ -44,6 +44,58 @@ RSpec.describe 'The cart', :partner_calls do
   path '/api/v1/orders' do
     include_context 'with the session of a user'
 
+    get "Lists the bookings of the signed-in user's account" do
+      tags 'Booking'
+      description 'Newest first by the moment of booking, a page at a time, from what Health24 keeps of each ' \
+                  "booking: the partner is not asked, and the statuses are those the poll kept. A guest's bookings " \
+                  'have no history. `has_more` tells whether there is a next page. Open one booking by its `token`.'
+      produces 'application/json'
+      parameter name: :page, in: :query, required: false, schema: { type: :integer, minimum: 1, default: 1 }
+      parameter name: :per_page,
+                in: :query,
+                required: false,
+                schema: { type: :integer, minimum: 1 },
+                description: 'Up to the configured maximum, 20 by default'
+
+      let(:Authorization) { "Bearer #{generate_jwt_token(nameid: 42)}" }
+
+      response '200', 'the bookings of the account, newest first' do
+        schema '$ref' => '#/components/schemas/history_response'
+
+        before do
+          create(:order, :submitted, user_id: 42, personal_data_consent_at: 2.hours.ago)
+          create(:order, :submitted, user_id: 42, own_number: 'NEWER00001', personal_data_consent_at: 1.hour.ago)
+          create(:order, :submitted, user_id: 7)
+        end
+
+        run_test! do
+          expect(response.parsed_body).to include(
+            'orders' => [
+              include('own_number' => 'NEWER00001', 'state' => 'submitted'),
+              include('state' => 'submitted')
+            ],
+            'has_more' => false
+          )
+        end
+      end
+
+      response '401', 'unauthorized: no session — a guest has no history' do
+        schema '$ref' => '#/components/schemas/error'
+
+        let(:Authorization) { nil }
+
+        run_test! { expect(error_code).to eq('unauthorized') }
+      end
+
+      response '422', 'invalid_page: a page below one or a page size above the maximum' do
+        schema '$ref' => '#/components/schemas/error'
+
+        let(:page) { 0 }
+
+        run_test! { expect(error_code).to eq('invalid_page') }
+      end
+    end
+
     post 'Makes the cart with its first SKU' do
       tags 'Cart'
       description 'A cart is an order in the cart state, bound to the drugstore its first SKU is put in. The answer ' \
@@ -148,6 +200,32 @@ RSpec.describe 'The cart', :partner_calls do
         run_test! { expect(cart_body).to include('prices_available' => true, 'total' => '162.50', 'removed' => []) }
       end
 
+      response '200', "a booked cart by its token, which is also the link: the order without the client's data" do
+        schema '$ref' => '#/components/schemas/order_response'
+
+        let(:token) { create(:order, :submitted, provider:, provider_order_number: 'PB-35-PT-H5', user_id: 42).token }
+
+        before do
+          stub_request(:get, pharmapoint_url('order/PB-35-PT-H5')).to_return(pharmapoint_answer('partner_order'))
+        end
+
+        run_test! do
+          order = response.parsed_body['order']
+          expect([ order['status']['comment'], order.key?('customer') ]).to eq([ 'Передан в обработку', false ])
+        end
+      end
+
+      response '200', "the signed-in user of the order's account: the order with the client's data" do
+        schema '$ref' => '#/components/schemas/order_response'
+
+        let(:Authorization) { "Bearer #{generate_jwt_token(nameid: 42)}" }
+        let(:token) do
+          create(:order, :submitted, provider:, user_id: 42, status_synced_at: Time.current).token
+        end
+
+        run_test! { expect(response.parsed_body.dig('order', 'customer', 'first_name')).to eq('Anna') }
+      end
+
       response '200', 'the provider did not answer: the items without prices' do
         schema '$ref' => '#/components/schemas/cart_response'
 
@@ -173,12 +251,86 @@ RSpec.describe 'The cart', :partner_calls do
       end
     end
 
-    delete 'Clears the cart for good' do
+    delete 'Clears the cart, or cancels the booking it became' do
       tags 'Cart'
-      description 'Removes the cart with its items, so a cart can be started in another drugstore.'
+      description 'A cart is removed with its items, so a cart can be started in another drugstore (204). A ' \
+                  'booking is cancelled at the drugstore and stays, with the status the partner gives after it ' \
+                  '(200), or with the status from before when the partner could not be asked again (202). ' \
+                  "Only the signed-in user of the booking's account can cancel it: the token is also the " \
+                  'link the booking is shared by. Only a booking the drugstore took, with a status that is not ' \
+                  'final, can be cancelled. The reason is optional and comes in the body.'
+      consumes 'application/json'
+      produces 'application/json'
+      parameter name: :body,
+                in: :body,
+                required: false,
+                schema: { '$ref' => '#/components/schemas/cancellation_request' }
+
+      let(:body) { {} }
 
       response '204', 'the cart is gone' do
         run_test! { expect(Order.exists?(cart.id)).to be(false) }
+      end
+
+      response '200', 'the booking is cancelled; its status read again from the partner' do
+        schema '$ref' => '#/components/schemas/order_response'
+
+        let(:Authorization) { "Bearer #{generate_jwt_token(nameid: 42)}" }
+        let(:token) { booked.token }
+        let(:body) { { reason: 'Передумала' } }
+
+        def booked
+          @booked ||= create(:order, :submitted, provider:, user_id: 42, provider_order_number: 'PB-35-PT-H5')
+        end
+
+        before do
+          stub_request(:post, pharmapoint_url('order/cancel')).to_return(status: 200, body: '')
+          stub_request(:get, pharmapoint_url('order/PB-35-PT-H5'))
+            .to_return(pharmapoint_answer(
+                         nil,
+                         body: {
+                           data: {
+                             order_number: 'PB-35-PT-H5',
+                             status_name: 'canceled'
+                           }
+                         }.to_json
+                       ))
+        end
+
+        run_test! { expect(response.parsed_body.dig('order', 'state')).to eq('submitted') }
+      end
+
+      response '202', 'cancelled, but the partner did not answer for the status: the one from before is shown' do
+        schema '$ref' => '#/components/schemas/order_response'
+
+        let(:Authorization) { "Bearer #{generate_jwt_token(nameid: 42)}" }
+        let(:token) do
+          create(:order, :submitted, provider:, user_id: 42, provider_order_number: 'PB-35-PT-H5').token
+        end
+
+        before do
+          stub_request(:post, pharmapoint_url('order/cancel')).to_return(status: 200, body: '')
+          stub_request(:get, pharmapoint_url('order/PB-35-PT-H5')).to_timeout
+        end
+
+        run_test! { expect(response.parsed_body.dig('order', 'token')).to eq(token) }
+      end
+
+      response '403', "cancellation_needs_account: only the user of the booking's account can cancel it" do
+        schema '$ref' => '#/components/schemas/error'
+
+        let(:token) { create(:order, :submitted, provider:).token }
+
+        run_test! { expect(error_code).to eq('cancellation_needs_account') }
+      end
+
+      response '409', 'order_not_cancellable, or cancellation_refused when the drugstore did not accept it' do
+        schema '$ref' => '#/components/schemas/error'
+
+        let(:Authorization) { "Bearer #{generate_jwt_token(nameid: 42)}" }
+        let(:token) { create(:order, :submitted, provider:, user_id: 42, status_name: 'canceled').token }
+
+        run_test! { expect(error_code).to eq('order_not_cancellable') }
       end
 
       response '404', 'cart_not_found' do

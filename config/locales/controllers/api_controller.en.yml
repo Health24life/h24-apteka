@@ -23,3 +23,22 @@ en:
       invalid_quantity: The quantity must be a whole number of packs, from 1.
       cart_check_unavailable: The stock of the drugstore could not be checked. Try again later.
       cart_check_busy: The price service is busy now. Try again a little later.
+      cart_changed: The cart has changed. Refresh it and confirm the booking again.
+      order_already_submitted: This booking has already been sent to the drugstore.
+      booking_in_progress: This cart is being booked right now. Wait for the answer.
+      personal_data_consent_required: Booking needs the consent to the processing of personal data.
+      invalid_customer: Check the name, the phone and the email.
+      booking_not_allowed_in_drugstore: Booking is not available in this drugstore yet.
+      booking_prices_changed: Prices or stock have changed. Review the cart and confirm the booking again.
+      booking_check_unavailable: The prices of the drugstore could not be checked. Try again later.
+      booking_check_busy: The booking service is busy now. Try again a little later.
+      booking_submission_failed: The booking could not be sent to the drugstore. Try again a little later.
+      turnstile_failed: We could not confirm you are not a robot. Reload the page and try again.
+      order_not_found: No booking has this link.
+      invalid_page: The page must be a whole number from 1, and the page size no larger than allowed.
+      cancellation_needs_account: Only the user of the account the booking was made from can cancel it. Sign in.
+      order_not_cancellable: This booking can no longer be cancelled.
+      invalid_cancel_reason: The reason must be no longer than 255 characters.
+      cancellation_refused: The drugstore did not accept the cancellation; the order may be ready already. Contact the drugstore.
+      cancellation_unavailable: The booking could not be cancelled. Try again later.
+      cancellation_busy: The booking service is busy now. Try again a little later.
