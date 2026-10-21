@@ -9,10 +9,6 @@ module FavoriteActions
   included do
     before_action :no_store
     before_action :require_user
-
-    rescue_from Favorites::Refused do |refused|
-      render_error(refused.code, status: refused.status, details: refused.details)
-    end
   end
 
   def update

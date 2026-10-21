@@ -78,12 +78,8 @@ RSpec.describe '«Мої товари»' do
       description 'A release form, dosage and pack, not a trade name. Adding a SKU already in the list is no error ' \
                   'and keeps its place, even in a full list. A list holds up to 100 SKU.'
 
-      response '204', 'the SKU is in the list' do
-        run_test! { expect(kept).to eq([ goods.id ]) }
-      end
-
-      response '204', 'the SKU was in the list already and is kept once' do
-        before { create(:favorite_goods, user_id:, goods:) }
+      response '204', 'the SKU is in the list, once, also when it was there already' do
+        before { create(:favorite_goods, user_id:, goods:, created_at: 1.day.ago) }
 
         run_test! { expect(kept).to eq([ goods.id ]) }
       end
@@ -119,14 +115,10 @@ RSpec.describe '«Мої товари»' do
       tags 'Favorites'
       description 'Also a SKU the catalog no longer shows. Taking out a SKU that is not in the list is no error.'
 
-      response '204', 'the SKU is out of the list' do
+      response '204', 'the SKU is out of the list, also when it was not there' do
         before { create(:favorite_goods, user_id:, goods:) }
 
         run_test! { expect(kept).to eq([]) }
-      end
-
-      response '204', 'the SKU was not in the list' do
-        run_test!
       end
 
       it_behaves_like 'a guest is refused'

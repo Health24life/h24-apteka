@@ -3,8 +3,8 @@
 # «Мої товари» and «Мої аптеки» of an account. A list keeps SKU or drugstores of the catalog; one that an operator hides
 # or the sync withdraws later stays in it, marked unavailable.
 module Favorites
-  # Records each list holds. It keeps the tables from growing without end rather than being a rule of the business, so
-  # two additions at the same moment may pass it by one.
+  # Records each list holds. It is counted before the insert, with no lock: additions sent at the same moment may each
+  # see room and pass it together, by as many as were sent at once. A soft bound, not a rule of the business.
   LIMIT = 100
 
   # A list: the model of its records, the catalog model it keeps, the column that points there and the code of the

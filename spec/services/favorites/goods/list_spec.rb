@@ -10,7 +10,7 @@ RSpec.describe Favorites::Goods::List do
     newer = create(:favorite_goods, user_id:, created_at: 1.day.ago)
     create(:favorite_goods, user_id: 7)
 
-    expect(described_class.call(user_id:).map(&:goods)).to eq([ newer.goods, older.goods ])
+    expect(described_class.call(user_id:)).to eq([ newer.goods, older.goods ])
   end
 
   it 'tells when each was added' do
@@ -19,14 +19,14 @@ RSpec.describe Favorites::Goods::List do
     expect(described_class.call(user_id:).sole.added_at).to eq(favorite.created_at)
   end
 
-  it 'keeps a SKU hidden later, marked unavailable, and marks it available once shown again', :aggregate_failures do
+  it 'keeps a SKU withdrawn later and tells once it is shown again', :aggregate_failures do
     goods = create(:favorite_goods, user_id:).goods
 
     goods.goods_group.update!(withdrawn: true)
-    expect(described_class.call(user_id:).sole.available?).to be(false)
+    expect(described_class.call(user_id:).sole.shown?).to be(false)
 
     goods.goods_group.update!(withdrawn: false)
-    expect(described_class.call(user_id:).sole.available?).to be(true)
+    expect(described_class.call(user_id:).sole.shown?).to be(true)
   end
 
   it 'is empty for a user who added nothing' do

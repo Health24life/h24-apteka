@@ -3,7 +3,7 @@
 # A drugstore a user keeps in «Мої аптеки». It stays when the drugstore is hidden or withdrawn later; the database drops
 # it with the drugstore. The core lives in another database, so the user has no foreign key.
 class Favorite::Drugstore < ApplicationRecord
-  belongs_to :drugstore, class_name: 'Catalog::Drugstore', inverse_of: false
+  belongs_to :drugstore, class_name: 'Catalog::Drugstore', inverse_of: :favorites
 end
 
 # == Schema Information

@@ -87,7 +87,7 @@ RSpec.describe '«Мої аптеки»' do
       description 'Adding a drugstore already in the list is no error and keeps its place, even in a full list. A ' \
                   'list holds up to 100 drugstores.'
 
-      response '204', 'the drugstore is in the list' do
+      response '204', 'the drugstore is in the list, once, also when it was there already' do
         run_test! { expect(kept).to eq([ drugstore.id ]) }
       end
 
@@ -117,7 +117,7 @@ RSpec.describe '«Мої аптеки»' do
       tags 'Favorites'
       description 'Also a drugstore the directory no longer shows. Taking out one that is not in the list is no error.'
 
-      response '204', 'the drugstore is out of the list' do
+      response '204', 'the drugstore is out of the list, also when it was not there' do
         before { create(:favorite_drugstore, user_id:, drugstore:) }
 
         run_test! { expect(kept).to eq([]) }

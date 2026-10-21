@@ -5,7 +5,8 @@ class Api::V1::Favorites::GoodsController < ApiController
   include FavoriteActions
 
   def index
-    render json: { goods: Favorites::GoodsBlueprint.render_as_hash(Favorites::Goods::List.call(user_id: current_user_id)) }
+    goods = Favorites::Goods::List.call(user_id: current_user_id)
+    render json: { goods: Favorites::GoodsBlueprint.render_as_hash(goods) }
   end
 
   private

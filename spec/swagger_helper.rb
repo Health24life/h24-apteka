@@ -118,25 +118,11 @@ RSpec.configure do |config|
               name: { type: :string, nullable: true },
               release_form: { type: :string, nullable: true },
               dosage: { type: :string, nullable: true },
-              pack: {
-                type: :object,
-                properties: {
-                  unit_name: { type: :string, nullable: true },
-                  quantity_in_pack: { type: :integer, nullable: true },
-                  quantity_unit_in_pack: { type: :integer, nullable: true },
-                  quantity_in_unit: { type: :integer, nullable: true }
-                }
-              },
+              pack: { '$ref' => '#/components/schemas/goods_pack' },
               is_recipe: { type: :boolean },
               is_strict_recipe: { type: :boolean },
               trade_name: { type: :string, nullable: true },
-              producer: {
-                type: :object,
-                properties: {
-                  name: { type: :string, nullable: true },
-                  country_code: { type: :string, nullable: true, description: 'Upper case; the country is not named' }
-                }
-              },
+              producer: { '$ref' => '#/components/schemas/goods_producer' },
               group: {
                 type: :object,
                 properties: {
@@ -144,6 +130,22 @@ RSpec.configure do |config|
                   name: { type: :string, nullable: true }
                 }
               }
+            }
+          },
+          goods_pack: {
+            type: :object,
+            properties: {
+              unit_name: { type: :string, nullable: true },
+              quantity_in_pack: { type: :integer, nullable: true },
+              quantity_unit_in_pack: { type: :integer, nullable: true },
+              quantity_in_unit: { type: :integer, nullable: true }
+            }
+          },
+          goods_producer: {
+            type: :object,
+            properties: {
+              name: { type: :string, nullable: true },
+              country_code: { type: :string, nullable: true, description: 'Upper case; the country is not named' }
             }
           },
           favorite_goods: {
@@ -159,11 +161,11 @@ RSpec.configure do |config|
               name: { type: :string, nullable: true },
               release_form: { type: :string, nullable: true },
               dosage: { type: :string, nullable: true },
-              pack: { '$ref' => '#/components/schemas/search_goods/properties/pack' },
+              pack: { '$ref' => '#/components/schemas/goods_pack' },
               is_recipe: { type: :boolean },
               is_strict_recipe: { type: :boolean },
               trade_name: { type: :string, nullable: true },
-              producer: { '$ref' => '#/components/schemas/search_goods/properties/producer' },
+              producer: { '$ref' => '#/components/schemas/goods_producer' },
               available: {
                 type: :boolean,
                 description: 'False while an operator hides the SKU or its group or the sync withdraws it; the ' \

@@ -29,6 +29,6 @@ class Favorites::Entries::Add
   end
 
   def refuse(code, status, details: nil)
-    raise Favorites::Refused.new(code, status:, details:)
+    raise Refused.new(code, status:, details:)
   end
 end

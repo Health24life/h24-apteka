@@ -55,7 +55,8 @@ paths:
         place, even in a full list. A list holds up to 100 drugstores.
       responses:
         '204':
-          description: the drugstore is in the list
+          description: the drugstore is in the list, once, also when it was there
+            already
         '404':
           description: 'drugstore_not_found: no such drugstore, or it is hidden or
             withdrawn'
@@ -72,7 +73,7 @@ paths:
         that is not in the list is no error.
       responses:
         '204':
-          description: the drugstore is out of the list
+          description: the drugstore is out of the list, also when it was not there
         '401':
           description: 'unauthorized: no session, as the list belongs to an account'
   "/api/v1/favorites/goods":
@@ -127,7 +128,7 @@ paths:
         A list holds up to 100 SKU.
       responses:
         '204':
-          description: the SKU was in the list already and is kept once
+          description: the SKU is in the list, once, also when it was there already
         '404':
           description: 'goods_not_found: no such SKU, or it or its group is hidden
             or withdrawn'
@@ -144,7 +145,7 @@ paths:
         not in the list is no error.
       responses:
         '204':
-          description: the SKU was not in the list
+          description: the SKU is out of the list, also when it was not there
         '401':
           description: 'unauthorized: no session, as the list belongs to an account'
   "/api/v1/goods/{goods_id}/drugstores":
@@ -839,20 +840,7 @@ components:
           type: string
           nullable: true
         pack:
-          type: object
-          properties:
-            unit_name:
-              type: string
-              nullable: true
-            quantity_in_pack:
-              type: integer
-              nullable: true
-            quantity_unit_in_pack:
-              type: integer
-              nullable: true
-            quantity_in_unit:
-              type: integer
-              nullable: true
+          "$ref": "#/components/schemas/goods_pack"
         is_recipe:
           type: boolean
         is_strict_recipe:
@@ -861,15 +849,7 @@ components:
           type: string
           nullable: true
         producer:
-          type: object
-          properties:
-            name:
-              type: string
-              nullable: true
-            country_code:
-              type: string
-              nullable: true
-              description: Upper case; the country is not named
+          "$ref": "#/components/schemas/goods_producer"
         group:
           type: object
           properties:
@@ -880,6 +860,31 @@ components:
             name:
               type: string
               nullable: true
+    goods_pack:
+      type: object
+      properties:
+        unit_name:
+          type: string
+          nullable: true
+        quantity_in_pack:
+          type: integer
+          nullable: true
+        quantity_unit_in_pack:
+          type: integer
+          nullable: true
+        quantity_in_unit:
+          type: integer
+          nullable: true
+    goods_producer:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        country_code:
+          type: string
+          nullable: true
+          description: Upper case; the country is not named
     favorite_goods:
       type: object
       description: 'A SKU of «Мої товари» with the static data of its card: no prices
@@ -913,7 +918,7 @@ components:
           type: string
           nullable: true
         pack:
-          "$ref": "#/components/schemas/search_goods/properties/pack"
+          "$ref": "#/components/schemas/goods_pack"
         is_recipe:
           type: boolean
         is_strict_recipe:
@@ -922,7 +927,7 @@ components:
           type: string
           nullable: true
         producer:
-          "$ref": "#/components/schemas/search_goods/properties/producer"
+          "$ref": "#/components/schemas/goods_producer"
         available:
           type: boolean
           description: False while an operator hides the SKU or its group or the sync

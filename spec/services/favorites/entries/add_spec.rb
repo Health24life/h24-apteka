@@ -8,7 +8,9 @@ RSpec.describe Favorites::Entries::Add do
   def add(target, kind: Favorites::GOODS) = described_class.call(kind, user_id:, target_id: target.id)
 
   def refused_with(code, status, details: nil)
-    raise_error(Favorites::Refused) { |error| expect([ error.code, error.status, error.details ]).to eq([ code, status, details ]) }
+    raise_error(Refused) do |error|
+      expect([ error.code, error.status, error.details ]).to eq([ code, status, details ])
+    end
   end
 
   def fill(kind, count)
@@ -37,6 +39,14 @@ RSpec.describe Favorites::Entries::Add do
     add(favorite.goods)
 
     expect(Favorite::Goods.where(user_id:).pluck(:id, :created_at)).to eq([ [ favorite.id, favorite.created_at ] ])
+  end
+
+  it 'takes the same record added by a request a moment earlier as done' do
+    allow(Favorite::Goods).to receive(:create!).and_wrap_original do |original, **attributes|
+      2.times { original.call(**attributes) }
+    end
+
+    expect { add(create(:catalog_goods)) }.not_to raise_error
   end
 
   it 'keeps another pack of the same trade name as a record of its own' do

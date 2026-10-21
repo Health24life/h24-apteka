@@ -10,16 +10,16 @@ RSpec.describe Favorites::Drugstores::List do
     newer = create(:favorite_drugstore, user_id:, created_at: 1.day.ago)
     create(:favorite_drugstore, user_id: 7)
 
-    expect(described_class.call(user_id:).map(&:id)).to eq([ newer.drugstore_id, older.drugstore_id ])
+    expect(described_class.call(user_id:)).to eq([ newer.drugstore, older.drugstore ])
   end
 
-  it 'keeps a drugstore withdrawn later, marked unavailable, and marks it available once back', :aggregate_failures do
+  it 'keeps a drugstore withdrawn later and tells once it is back', :aggregate_failures do
     drugstore = create(:favorite_drugstore, user_id:).drugstore
 
     drugstore.update!(withdrawn: true)
-    expect(described_class.call(user_id:).sole.available?).to be(false)
+    expect(described_class.call(user_id:).sole.shown?).to be(false)
 
     drugstore.update!(withdrawn: false)
-    expect(described_class.call(user_id:).sole.available?).to be(true)
+    expect(described_class.call(user_id:).sole.shown?).to be(true)
   end
 end

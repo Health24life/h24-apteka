@@ -1,7 +1,0 @@
-class Favorites::Refused < StandardError
-  attr_reader code: Symbol
-  attr_reader status: Symbol
-  attr_reader details: Hash[Symbol, untyped]?
-
-  def initialize: (Symbol code, status: Symbol, ?details: Hash[Symbol, untyped]?) -> void
-end

@@ -34,6 +34,8 @@ class Catalog::Goods < ApplicationRecord
            inverse_of: :goods,
            dependent: :destroy
   has_many :order_items, class_name: '::Order::Item', inverse_of: :goods, dependent: :restrict_with_exception
+  # The database drops the favorites with the SKU.
+  has_many :favorites, class_name: 'Favorite::Goods', inverse_of: :goods, dependent: nil
 
   has_one :producer, through: :goods_group
   has_one :goods_name, through: :goods_group

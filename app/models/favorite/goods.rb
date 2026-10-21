@@ -3,7 +3,7 @@
 # A SKU a user keeps in «Мої товари». It stays when the SKU is hidden or withdrawn later; the database drops it with the
 # SKU. The core lives in another database, so the user has no foreign key.
 class Favorite::Goods < ApplicationRecord
-  belongs_to :goods, class_name: 'Catalog::Goods', inverse_of: false
+  belongs_to :goods, class_name: 'Catalog::Goods', inverse_of: :favorites
 end
 
 # == Schema Information
