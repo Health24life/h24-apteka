@@ -10,7 +10,7 @@
 | `../pharmapoint.rb` | Простір імен і всі помилки інтеграції (`Error`, `ConfigurationError`, `TransientError`, `PermanentError`, `InvalidResponse`, `RateLimited`) |
 | `config.rb` | Налаштування партнера (`dry-configurable`): з'єднання, ліміт, розмір сторінки груп, строки зберігання журналу. Пункти пошуку аптек — у `Catalog::Sync::Config` |
 | `client.rb` | Клієнт: `dictionaries`, `category_tree`, `goods_groups`, `search_goods_groups`, `goods_group`, `drugstores`, `drugstore` |
-| `search.rb` | Адаптер живого пошуку для [`Catalog::Search`](../catalog/search/README.md) |
+| `search.rb` | Адаптер пошуку в реальному часі для [`Catalog::Search`](../catalog/search/README.md) |
 | `readers/` | По читачу на оболонку відповіді; повертають прості значення з символьними ключами |
 | `rate_limiter.rb` | Ліміт запитів, спільний для всіх воркерів (стан у Redis), і частка пошуку в ньому |
 | `logging/middleware.rb`, `logging/request_logger.rb` | Запис кожної спроби запиту в журнал звернень |
@@ -28,7 +28,7 @@ client.goods_groups(page: 1)        # => Pharmapoint::Page з групами т�
 client.drugstore('38628')           # => запис однієї аптеки
 ```
 
-- `search_goods_groups(query:, page:, location:, read_timeout:)` — живий пошук користувача: повертає сторінку груп і
+- `search_goods_groups(query:, page:, location:, read_timeout:)` — пошук користувача в реальному часі: повертає сторінку груп і
   сирі записи груп для збереження без повторного запиту. Витрачає частку пошуку в ліміті й має власні короткі таймаути;
   `read_timeout` урізається до залишку часу звернення. Телефон клієнта не передається.
 - `purpose` — категорія звернення в журналі: `refresh` (оновлення даних), `search`, `booking`, `other`.
@@ -95,8 +95,8 @@ client.drugstore('38628')           # => запис однієї аптеки
   ключа й стенду партнера ще немає. Коли ключ з'явиться, їх треба перезаписати справжніми відповідями й виправити
   розбіжності у читачах.
 - `goods_group_search_by_query.json` — відповідь `goods-group/search` із `query`, координатами й радіусом; теж складена
-  вручну, живим викликом не підтверджена.
-- Припущення, яке теж треба звірити: ключ іде заголовком `API-Key`, а ідентифікатор групи в `goods-group/get-by-id` — параметром `id`.
+  вручну, справжньою відповіддю не підтверджена.
+- Припущення, яке теж треба звірити: ключ передається заголовком `API-Key`, а ідентифікатор групи в `goods-group/get-by-id` — параметром `id`.
 
 ## Типи
 
