@@ -54,7 +54,7 @@ end
 # Check Constraints
 #
 #  provider_request_logs_attempt_check   (attempt >= 1)
-#  provider_request_logs_category_check  (category::text = ANY (ARRAY['booking'::character varying, 'search'::character varying, 'refresh'::character varying, 'other'::character varying]::text[]))
+#  provider_request_logs_category_check  (category::text = ANY (ARRAY['booking'::character varying, 'search'::character varying, 'offers'::character varying, 'refresh'::character varying, 'other'::character varying]::text[]))
 #  provider_request_logs_duration_check  (duration_ms >= 0)
 #  provider_request_logs_outcome_check   (outcome::text = ANY (ARRAY['success'::character varying, 'http_error'::character varying, 'timeout'::character varying, 'connection_error'::character varying, 'invalid_response'::character varying]::text[]))
 #  provider_request_logs_status_check    ((outcome::text = ANY (ARRAY['timeout'::character varying, 'connection_error'::character varying]::text[])) = (response_status IS NULL))

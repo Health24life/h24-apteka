@@ -1,0 +1,6 @@
+class Pharmapoint::OrderLine < Data
+  attr_reader external_id: String
+  attr_reader quantity: Integer
+
+  def self.new: (external_id: String, quantity: Integer) -> instance
+end

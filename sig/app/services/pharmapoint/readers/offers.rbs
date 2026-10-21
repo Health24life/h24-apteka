@@ -1,0 +1,16 @@
+class Pharmapoint::Readers::Offers
+  include Pharmapoint::Readers::Base
+
+  def self.call: (Pharmapoint::json body) -> Array[Pharmapoint::Offer]
+
+  def many: (Pharmapoint::json body) -> Array[Pharmapoint::Offer]
+
+  private
+
+  def offer: (Pharmapoint::json record) -> Pharmapoint::Offer?
+  def today_hours: (Pharmapoint::Readers::Base::record record) -> Pharmapoint::TodayHours
+  def items: (Pharmapoint::json order) -> Array[Pharmapoint::OfferItem]?
+  def item: (Pharmapoint::json record) -> Pharmapoint::OfferItem?
+  def money: (Pharmapoint::json value) -> BigDecimal?
+  def decimal: (Pharmapoint::json value) -> BigDecimal?
+end

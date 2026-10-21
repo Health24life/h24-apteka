@@ -89,11 +89,12 @@ class Pharmapoint::RateLimiter
 
   def share_key(share) = "#{KEY}:#{share}"
 
-  # The search is the only share so far.
   def share_limit(share)
-    raise ArgumentError, "Unknown share of the request limit: #{share}" unless share == :search
-
-    @config.search.rate_limit_per_minute
+    case share
+    when :search then @config.search.rate_limit_per_minute
+    when :cart then @config.cart.rate_limit_per_minute
+    else raise ArgumentError, "Unknown share of the request limit: #{share}"
+    end
   end
 
   def redis(&) = Sidekiq.redis(&)

@@ -6,7 +6,9 @@ class Provider::RequestLog < ApplicationRecord
   WITHOUT_RESPONSE = %w[timeout connection_error].freeze
   FILTERABLE = %w[id provider_id category outcome response_status sync_run_id user_id created_at].freeze
 
-  enum :category, { booking: 'booking', search: 'search', refresh: 'refresh', other: 'other' }, validate: true
+  enum :category,
+       { booking: 'booking', search: 'search', offers: 'offers', refresh: 'refresh', other: 'other' },
+       validate: true
   enum :outcome,
        {
          success: 'success',
@@ -82,7 +84,7 @@ end
 # Check Constraints
 #
 #  provider_request_logs_attempt_check   (attempt >= 1)
-#  provider_request_logs_category_check  (category::text = ANY (ARRAY['booking'::character varying, 'search'::character varying, 'refresh'::character varying, 'other'::character varying]::text[]))
+#  provider_request_logs_category_check  (category::text = ANY (ARRAY['booking'::character varying, 'search'::character varying, 'offers'::character varying, 'refresh'::character varying, 'other'::character varying]::text[]))
 #  provider_request_logs_duration_check  (duration_ms >= 0)
 #  provider_request_logs_outcome_check   (outcome::text = ANY (ARRAY['success'::character varying, 'http_error'::character varying, 'timeout'::character varying, 'connection_error'::character varying, 'invalid_response'::character varying]::text[]))
 #  provider_request_logs_status_check    ((outcome::text = ANY (ARRAY['timeout'::character varying, 'connection_error'::character varying]::text[])) = (response_status IS NULL))

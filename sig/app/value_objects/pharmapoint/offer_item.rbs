@@ -1,0 +1,8 @@
+class Pharmapoint::OfferItem < Data
+  attr_reader goods_external_id: String
+  attr_reader fulfilled: bool
+  attr_reader price: BigDecimal?
+  attr_reader quantity: BigDecimal?
+
+  def self.new: (goods_external_id: String, fulfilled: bool, price: BigDecimal?, quantity: BigDecimal?) -> instance
+end

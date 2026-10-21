@@ -1,0 +1,118 @@
+{
+  "data": [
+    {
+      "id": 510,
+      "state": "Київська",
+      "city": "Ірпінь",
+      "legal_entity_name": "ТАС-ФАРМА ТОВ, Офіс, м.Київ",
+      "legal_entity_code": "16280214",
+      "drugstore_brand": {
+        "name": "Аптека TAS",
+        "id": 1
+      },
+      "address": "ТАС-ФАРМА ТОВ, Аптека TAS №118, м.Ірпінь, Київська обл., м. Ірпінь, вул. Соборна 160б",
+      "coordinates": {
+        "latitude": 50.5374951,
+        "longitude": 30.2325471
+      },
+      "average_order_processing_time": 750,
+      "phone": "380000000000",
+      "mobile_phone": "380000000000",
+      "email": null,
+      "distance": 2216,
+      "working_hours": {
+        "from": "10:00",
+        "to": "21:00",
+        "is_open": true,
+        "is_24h": false
+      },
+      "week_working_hours": [
+        "10:00-21:00",
+        "10:00-21:00",
+        "10:00-21:00",
+        "10:00-21:00",
+        "10:00-21:00",
+        "10:00-21:00",
+        "10:00-21:00"
+      ],
+      "work_with_reimbursement": true,
+      "order": {
+        "goods": [
+          {
+            "goods_id": 1750321,
+            "ext_goods_id": "43797",
+            "is_fulfilled": true,
+            "online_price": 144.67,
+            "drugstore_price": 162.5,
+            "quantity": 3,
+            "online_total": 144.67,
+            "drugstore_total": 162.5
+          }
+        ],
+        "completeness": {
+          "complete": 1,
+          "total": 1
+        },
+        "online_total": 144.67,
+        "drugstore_total": 162.5
+      }
+    },
+    {
+      "id": 552,
+      "state": "Київська",
+      "city": "Ірпінь",
+      "legal_entity_name": "ТАС-ФАРМА ТОВ, Офіс, м.Київ",
+      "legal_entity_code": "16280214",
+      "drugstore_brand": {
+        "name": "Аптека TAS",
+        "id": 1
+      },
+      "address": "ТАС-ФАРМА ТОВ, Аптека TAS №162, м.Ірпінь, Київська обл., м. Ірпінь, вул. Котляревського 54",
+      "coordinates": {
+        "latitude": 50.536803,
+        "longitude": 30.25631
+      },
+      "average_order_processing_time": 5486,
+      "phone": "380000000000",
+      "mobile_phone": "380000000000",
+      "email": null,
+      "distance": 3539,
+      "working_hours": {
+        "from": "08:00",
+        "to": "21:00",
+        "is_open": true,
+        "is_24h": false
+      },
+      "week_working_hours": [
+        "08:00-21:00",
+        "08:00-21:00",
+        "08:00-21:00",
+        "08:00-21:00",
+        "08:00-21:00",
+        "08:00-21:00",
+        "08:00-21:00"
+      ],
+      "work_with_reimbursement": true,
+      "order": {
+        "goods": [
+          {
+            "goods_id": 1750321,
+            "ext_goods_id": "43797",
+            "is_fulfilled": false,
+            "online_price": 0,
+            "drugstore_price": 0,
+            "quantity": 0,
+            "online_total": 0,
+            "drugstore_total": 0
+          }
+        ],
+        "completeness": {
+          "complete": 0,
+          "total": 1
+        },
+        "online_total": 0,
+        "drugstore_total": 0
+      }
+    }
+  ]
+}

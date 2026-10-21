@@ -257,6 +257,71 @@ RSpec.describe Pharmapoint::Client do
     end
   end
 
+  describe 'live offers of drugstores' do
+    let(:lines) { [ Pharmapoint::OrderLine.new(external_id: '1750321', quantity: 2) ] }
+    let(:point) { Pharmapoint::SearchPoint.new(latitude: 50.45, longitude: 30.52, radius: 25_000) }
+
+    def stub_offers(path, fixture, with_empty_stock:)
+      stub_request(:post, pharmapoint_url(path))
+        .with(query: { with_empty_stock: })
+        .to_return(pharmapoint_answer(fixture))
+    end
+
+    it 'asks around the point for the drugstores with stock, the goods in the body', :aggregate_failures do
+      stub = stub_offers('order/get-drugstores-for-order-goods', 'offers_nearby', with_empty_stock: '0')
+
+      offers = build_client(purpose: :booking).offers_nearby(goods: lines, location: point)
+
+      expect(offers.map(&:drugstore_external_id)).to eq(%w[510 552])
+      body = { goods: [ { goods_id: '1750321', quantity: 2 } ], latitude: 50.45, longitude: 30.52, radius: 25_000 }
+      expect(stub.with(body:, headers: { 'Content-Type' => 'application/json' })).to have_been_requested
+    end
+
+    it 'asks one drugstore by its id, also when it has no stock', :aggregate_failures do
+      stub = stub_offers('order/get-drugstore-for-order-goods', 'offers_in_drugstore', with_empty_stock: '1')
+
+      offers = build_client.offers_in_drugstore(goods: lines, drugstore_external_id: '32953')
+
+      expect(offers.first.items.first.price).to eq(BigDecimal('162.5'))
+      expect(
+        stub.with(
+          body: {
+            goods: [ { goods_id: '1750321', quantity: 2 } ],
+            drugstore_id: '32953'
+          }
+        )
+      ).to have_been_requested
+    end
+
+    it 'logs the body sent and sends no phone of a client', :aggregate_failures do
+      stub_offers('order/get-drugstores-for-order-goods', 'offers_nearby', with_empty_stock: '0')
+
+      build_client(purpose: :booking).offers_nearby(goods: lines, location: point)
+
+      expect(log).to have_attributes(http_method: 'POST', category: 'booking')
+      expect(log.request_body).to include('goods' => [ { 'goods_id' => '1750321', 'quantity' => 2 } ])
+      expect(log.request_headers.keys).not_to include('customer-phone', 'insurance-code')
+    end
+
+    it 'spends the share of the cart', :aggregate_failures do
+      stub_offers('order/get-drugstores-for-order-goods', 'offers_nearby', with_empty_stock: '0')
+      config = pharmapoint_config(cart: { rate_limit_per_minute: 1 })
+      build_client(config:).offers_nearby(goods: lines, location: point)
+
+      expect { build_client(config:).offers_nearby(goods: lines, location: point) }
+        .to raise_error(Pharmapoint::RateLimited)
+    end
+
+    it 'treats a timeout as transient' do
+      stub_request(
+        :post,
+        pharmapoint_url('order/get-drugstores-for-order-goods')
+      ).with(query: hash_including({})).to_timeout
+
+      expect { build_client.offers_nearby(goods: lines, location: point) }.to raise_error(Pharmapoint::TransientError)
+    end
+  end
+
   it 'holds calls back once the per-minute budget of the whole service is spent' do
     stub_pharmapoint('dictionaries', fixture: 'dictionaries')
     limited = build_client(config: pharmapoint_config(rate_limit: { per_minute: 1 }))

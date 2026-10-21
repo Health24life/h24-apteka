@@ -1,0 +1,9 @@
+class Pharmapoint::Offer < Data
+  attr_reader drugstore_external_id: String
+  attr_reader distance: Integer?
+  attr_reader today_hours: Pharmapoint::TodayHours
+  attr_reader items: Array[Pharmapoint::OfferItem]?
+
+  def self.new: (drugstore_external_id: String, distance: Integer?, today_hours: Pharmapoint::TodayHours,
+                 items: Array[Pharmapoint::OfferItem]?) -> instance
+end

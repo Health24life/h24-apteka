@@ -102,4 +102,24 @@ RSpec.describe Pharmapoint::RateLimiter do
       expect { subject.guard! }.not_to change(subject, :share_left)
     end
   end
+
+  describe 'the share of the cart' do
+    it 'refuses the cart once its share is spent, leaving the search its own share', :aggregate_failures do
+      subject = limiter(cart: { rate_limit_per_minute: 1 }, search: { rate_limit_per_minute: 1 })
+      subject.guard!(share: :cart)
+
+      expect { subject.guard!(share: :cart) }.to raise_error(Pharmapoint::RateLimited)
+      expect { subject.guard!(share: :search) }.not_to raise_error
+    end
+
+    it 'counts what is left of the share in the current minute' do
+      subject = limiter(cart: { rate_limit_per_minute: 3 })
+
+      expect { subject.guard!(share: :cart) }.to change(subject, :share_left).from(nil).to(2)
+    end
+  end
+
+  it 'refuses a share it does not know' do
+    expect { limiter.guard!(share: :booking) }.to raise_error(ArgumentError)
+  end
 end
