@@ -39,11 +39,21 @@ class Pharmapoint::Client
   def category_tree = fetch(CATEGORY_TREE_PATH) { Pharmapoint::Readers::Categories.call(it) }
 
   def goods_groups(page:, per_page: @config.goods_groups_per_page)
-    fetch(GOODS_GROUPS_PATH, page:, per_page:) { Pharmapoint::Readers::GoodsGroups.page(it, page:, per_page:) }
+    fetch(GOODS_GROUPS_PATH, { page:, per_page: }) { Pharmapoint::Readers::GoodsGroups.page(it, page:, per_page:) }
+  end
+
+  # The live search of a user: the groups found by the text around a point, and the records of the groups as the
+  # partner gave them, for a save that need not ask again. It spends the search's share of the limit and has timeouts
+  # of its own; the read timeout may be cut to what is left of the user's request. No client's phone goes with it.
+  def search_goods_groups(query:, page:, location:, per_page: @config.search.per_page, read_timeout: nil)
+    search = @config.search
+    timeouts = { open_timeout: search.open_timeout, timeout: read_timeout || search.read_timeout }
+    params = { query:, page:, per_page:, **location.to_h }
+    fetch(GOODS_GROUPS_PATH, params, share: :search, timeouts:) { Pharmapoint::Readers::GoodsGroups.found(it, page:, per_page:) }
   end
 
   def goods_group(external_id)
-    fetch(GOODS_GROUP_PATH, id: external_id) { Pharmapoint::Readers::GoodsGroups.one(it) }
+    fetch(GOODS_GROUP_PATH, { id: external_id }) { Pharmapoint::Readers::GoodsGroups.one(it) }
   end
 
   def drugstores(point)
@@ -58,10 +68,10 @@ class Pharmapoint::Client
   private
 
   # The key is checked first: a call that cannot be sent does not spend the request limit.
-  def fetch(path, params = {})
+  def fetch(path, params = {}, share: nil, timeouts: nil)
     credentials = @config.credentials!
-    @rate_limiter.guard!
-    response = request(path, params, credentials)
+    @rate_limiter.guard!(share:)
+    response = request(path, params, credentials, timeouts)
     @rate_limiter.record(response.headers)
     check_status!(response)
     yield parse(response.body)
@@ -70,9 +80,9 @@ class Pharmapoint::Client
     raise
   end
 
-  def request(path, params, credentials)
+  def request(path, params, credentials, timeouts)
     api_key, domain_name = credentials
-    connection(api_key, domain_name).get(path, params)
+    connection(api_key, domain_name, timeouts).get(path, params)
   rescue Faraday::Error => e
     raise Pharmapoint::TransientError, @masker.text(e.message)
   end
@@ -101,7 +111,7 @@ class Pharmapoint::Client
     Pharmapoint::RateLimited.new(wait)
   end
 
-  def connection(api_key, domain_name)
+  def connection(api_key, domain_name, timeouts = nil)
     settings = @config.connection
     Faraday.new(
       url: settings.base_url,
@@ -110,7 +120,7 @@ class Pharmapoint::Client
         'Domain-Name' => domain_name,
         'Accept' => 'application/json'
       },
-      request: { open_timeout: settings.open_timeout, timeout: settings.read_timeout }
+      request: timeouts || { open_timeout: settings.open_timeout, timeout: settings.read_timeout }
     ) do |faraday|
       faraday.use Pharmapoint::Logging::Middleware, logger: @logger
       faraday.adapter :typhoeus

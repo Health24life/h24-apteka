@@ -1,0 +1,26 @@
+class Catalog::Search::Queries::Build
+  # A value of the request as the JSON of the front gave it.
+  type value = nil | bool | Integer | Float | String | Array[value] | Hash[String, value]
+
+  TEXT_LENGTH: Range[Integer]
+  PAGES: Range[Integer]
+  LATITUDE_LIMIT: Integer
+  LONGITUDE_LIMIT: Integer
+
+  @config: Catalog::Search::Config
+
+  def self.call: (value queries, ?config: Catalog::Search::Config) -> Array[Catalog::Search::Query]
+
+  def initialize: (Catalog::Search::Config config) -> void
+  def call: (value queries) -> Array[Catalog::Search::Query]
+
+  private
+
+  def query: (value value) -> Catalog::Search::Query
+  def text: (value value) -> String
+  def page: (value value) -> Integer
+  def location: (value value) -> Catalog::Search::Location
+  def coordinate: (value value, Integer limit) -> Float?
+  def radius: (value value) -> Integer?
+  def invalid!: (Symbol code) -> bot
+end

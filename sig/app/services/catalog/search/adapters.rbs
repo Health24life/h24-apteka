@@ -1,0 +1,15 @@
+module Catalog::Search::Adapters
+  # What the search asks of a provider's adapter: one query within the time left of the request.
+  interface _Adapter
+    def provider: () -> Provider
+    def call: (Catalog::Search::Query query, time_left: Float) -> (Catalog::Search::ProviderPage | Catalog::Search::Failure)
+  end
+
+  interface _AdapterClass
+    def new: (provider: Provider, ?user_id: Integer?) -> _Adapter
+  end
+
+  BY_CODE: Hash[String, _AdapterClass]
+
+  def self.build: (?user_id: Integer?, ?config: Catalog::Search::Config) -> Array[_Adapter]
+end

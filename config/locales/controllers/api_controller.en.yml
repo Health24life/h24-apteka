@@ -2,3 +2,9 @@ en:
   api_controller:
     errors:
       unauthorized: The session is invalid or has expired. Sign in again.
+      invalid_search_queries: Send queries as an array of one or more search queries, no more than allowed.
+      invalid_search_text: The search text must hold 3 to 100 characters.
+      invalid_search_page: The page must be a whole number from 1 to 50.
+      invalid_search_location: Send the latitude and the longitude together, and the radius as a positive whole number of metres no larger than allowed.
+      search_unavailable: The search is unavailable for now. Try again later.
+      search_busy: The search is busy right now. Try again a little later.

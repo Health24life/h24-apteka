@@ -27,6 +27,32 @@ Layout/LineLength:
 Style/DataInheritance:
   Enabled: false
 
+# The rswag DSL of the request specs: `path`, an HTTP verb and `response` open example groups, `run_test!` is an example.
+RSpec:
+  Language:
+    ExampleGroups:
+      Regular:
+        - path
+        - get
+        - post
+        - put
+        - patch
+        - delete
+        - response
+    Examples:
+      Regular:
+        - run_test!
+
+# An rswag spec nests describe, path, the HTTP verb and response by design.
+RSpec/NestedGroups:
+  Exclude:
+    - 'spec/requests/**/*'
+
+# rswag names a `let` after the header it fills.
+RSpec/VariableName:
+  AllowedPatterns:
+    - '\AAuthorization\z'
+
 # A multi-line call reads top-down: chained calls are indented one step under the receiver instead of aligned to its
 # first dot, and arguments that do not fit on one line each go on their own line, starting with the first.
 Layout/MultilineMethodCallIndentation:

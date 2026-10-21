@@ -1,0 +1,13 @@
+module Catalog::Search::Metrics
+  PULL_WINDOW: ActiveSupport::Duration
+  PULL_SOURCES: Array[String]
+
+  def self?.results: (Array[Catalog::Search::Result] results) -> void
+  def self?.answer: (String provider, Catalog::Search::Run::answer answer) -> void
+  def self?.duration: (String provider, Float seconds) -> void
+  def self?.share_left: (String provider, Integer left) -> void
+  def self?.collect_pulls: () -> void
+  def self?.outcome: (Catalog::Search::Result result) -> String
+  def self?.answer_status: (Catalog::Search::Run::answer answer) -> String
+  def self?.measure: () { () -> void } -> void
+end

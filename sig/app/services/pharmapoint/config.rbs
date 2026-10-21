@@ -15,6 +15,13 @@ class Pharmapoint::Config
     def window: () -> Integer
   end
 
+  interface _Search
+    def open_timeout: () -> Float
+    def read_timeout: () -> Float
+    def per_page: () -> Integer
+    def rate_limit_per_minute: () -> Integer
+  end
+
   interface _LogRetentionDays
     def booking: () -> Integer
     def search: () -> Integer
@@ -27,11 +34,13 @@ class Pharmapoint::Config
   SECRET_HEADERS: Array[String]
   SECRET_BODY_KEYS: Array[String]
   INTEGER: ^(untyped) -> Integer
+  FLOAT: ^(untyped) -> Float
   PRESENT: ^(untyped) -> untyped
 
   def connection: () -> _Connection
   def rate_limit: () -> _RateLimit
   def goods_groups_per_page: () -> Integer
+  def search: () -> _Search
   def log_retention_days: () -> _LogRetentionDays
   def credentials!: () -> [ String, String ]
   def retention_for: (String | Symbol category) -> ActiveSupport::Duration

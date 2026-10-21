@@ -1,0 +1,11 @@
+class Catalog::Search::ProviderPage < Data
+  attr_reader provider: String
+  attr_reader hits: Array[Catalog::Search::Hit]
+  attr_reader per_page: Integer
+  attr_reader total_groups: Integer
+  attr_reader has_more: bool
+  attr_reader records: Array[Pharmapoint::json]
+
+  def self.new: (provider: String, hits: Array[Catalog::Search::Hit], per_page: Integer, total_groups: Integer,
+                 has_more: bool, records: Array[Pharmapoint::json]) -> instance
+end

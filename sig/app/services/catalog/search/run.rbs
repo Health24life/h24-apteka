@@ -1,0 +1,28 @@
+class Catalog::Search::Run
+  type answer = Catalog::Search::ProviderPage | Catalog::Search::Failure
+
+  @user_id: Integer?
+  @config: Catalog::Search::Config
+  @adapters: Array[Catalog::Search::Adapters::_Adapter]
+
+  def self.call: (Array[Catalog::Search::Query] queries, ?user_id: Integer?, ?config: Catalog::Search::Config,
+                  ?adapters: Array[Catalog::Search::Adapters::_Adapter]?) -> Array[Catalog::Search::Result]
+
+  def initialize: (Integer? user_id, Catalog::Search::Config config,
+                   Array[Catalog::Search::Adapters::_Adapter] adapters) -> void
+  def call: (Array[Catalog::Search::Query] queries) -> Array[Catalog::Search::Result]
+
+  private
+
+  def ask_all: (Catalog::Search::Query query, Float deadline) -> Array[[ Catalog::Search::Adapters::_Adapter, answer ]]
+  def ask: (Catalog::Search::Adapters::_Adapter adapter, Catalog::Search::Query query, Float deadline) -> answer
+  def result: (Catalog::Search::Query query, Array[[ Catalog::Search::Adapters::_Adapter, answer ]] answers)
+            -> Catalog::Search::Result
+  def split: (Array[[ Catalog::Search::Adapters::_Adapter, answer ]] answers)
+           -> [ Array[[ Catalog::Search::Adapters::_Adapter, Catalog::Search::ProviderPage ]], Array[Catalog::Search::Failure] ]
+  def status: (Array[[ Catalog::Search::Adapters::_Adapter, Catalog::Search::ProviderPage ]] pages,
+               Array[Catalog::Search::Failure] failures) -> String
+  def goods: (Provider provider, Catalog::Search::ProviderPage page) -> Array[Catalog::Search::Hit]
+  def hand_off: (Provider provider, Catalog::Search::ProviderPage page, Hash[String, bool] goods_links) -> void
+  def now: () -> Float
+end

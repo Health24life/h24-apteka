@@ -1,0 +1,27 @@
+class Catalog::Search::LocalGoods
+  class Known < Data
+    attr_reader id: Integer?
+    attr_reader slug: String?
+    attr_reader hidden: bool
+    attr_reader withdrawn: bool
+
+    def self.new: (id: Integer?, slug: String?, hidden: bool, withdrawn: bool) -> instance
+  end
+
+  @provider: Provider
+
+  attr_reader goods_links: Hash[String, bool]
+
+  def self.call: (Provider provider, Array[Catalog::Search::Hit] hits) -> Array[Catalog::Search::Hit]
+
+  def initialize: (Provider provider) -> void
+  def call: (Array[Catalog::Search::Hit] hits) -> Array[Catalog::Search::Hit]
+
+  private
+
+  def shown: (Catalog::Search::Hit hit, Known? local) -> Catalog::Search::Hit?
+  def known: (Array[Catalog::Search::Hit] hits) -> [ Hash[String, Known], Set[String] ]
+  def goods_sql: (Array[Catalog::Search::Hit] hits) -> String
+  def hidden_groups_sql: (Array[Catalog::Search::Hit] hits) -> String
+  def links: (singleton(ActiveRecord::Base) model, Array[String] external_ids) -> Provider::Link::ActiveRecord_Relation
+end

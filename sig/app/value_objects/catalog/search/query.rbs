@@ -1,0 +1,9 @@
+class Catalog::Search::Query < Data
+  attr_reader text: String
+  attr_reader page: Integer
+  attr_reader location: Catalog::Search::Location
+
+  def self.new: (text: String, page: Integer, location: Catalog::Search::Location) -> instance
+
+  def with: (?text: String, ?page: Integer, ?location: Catalog::Search::Location) -> instance
+end
