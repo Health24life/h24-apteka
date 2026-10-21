@@ -10,7 +10,7 @@
 | `../pharmapoint.rb` | Простір імен і всі помилки інтеграції (`Error`, `ConfigurationError`, `TransientError`, `PermanentError`, `InvalidResponse`, `RateLimited`) |
 | `config.rb` | Налаштування партнера (`dry-configurable`): з'єднання, ліміт, розмір сторінки груп, строки зберігання журналу. Пункти пошуку аптек — у `Catalog::Sync::Config` |
 | `client.rb` | Клієнт: `dictionaries`, `category_tree`, `goods_groups`, `search_goods_groups`, `goods_group`, `drugstores`, `drugstore`, `offers_nearby`, `offers_in_drugstore`, `store_pick_up_order`, `order`, `order_history` |
-| `transport.rb` | Одне звернення до партнера: ліміт, журнал, перевірка статусу й розбір JSON; запит із тілом надсилається методом `POST`, заголовки — з будь-яким |
+| `transport.rb` | Одне звернення до партнера: ліміт, журнал, перевірка статусу й розбір JSON; запит із тілом надсилається методом `POST`, заголовки передаються з будь-яким методом |
 | `search.rb` | Адаптер пошуку в реальному часі для [`Catalog::Search`](../catalog/search/README.md) |
 | `bookings.rb` | Адаптер замовлень для `Orders::Bookings::Adapters`: створення самовивозу, статус за номером, пошук уже створеного в історії клієнта |
 | `offers.rb` | Адаптер цін і залишків аптек у реальному часі для `Orders::Offers::Adapters`: аптеки поруч для SKU і одна аптека для позицій кошика, з ідентифікаторами каталогу |
@@ -44,7 +44,7 @@ client.drugstore('38628')           # => запис однієї аптеки
   не кількість, яку можна округлити.
 - `store_pick_up_order(body)`, `order(number)`, `order_history(phone:)` — `POST order/store-pick-up-order`,
   `GET order/:order_number`, `GET order/history` (телефон клієнта — заголовком `Customer-Phone`, у журналі маскується).
-  Без частки ліміту, з таймаутами `config.booking`; час партнера без таймзони читається як Київ.
+  Без частки ліміту, з таймаутами `config.booking`; час партнера без таймзони читається як київський.
 - `purpose` — категорія звернення в журналі: `refresh` (оновлення даних), `search`, `offers` (ціни й
   залишки аптек у реальному часі), `booking`, `other`.
 - `user_id` — користувач Health24, чия дія викликала звернення; для системних звернень (розклад) лишається порожнім.

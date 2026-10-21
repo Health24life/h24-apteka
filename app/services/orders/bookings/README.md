@@ -20,8 +20,8 @@
 - Згода перевіряється сервером (`422 personal_data_consent_required`); телефон нормалізується до `380XXXXXXXXX`.
 - `register_account` лише зберігається; акаунт не створюється.
 - Той самий виклик повторює бронь у стані `submission_failed`; передана — `409 order_already_submitted`.
-- Одночасно бронюється лише один виклик на токен (`Orders::Bookings::Lease`, ключ у Redis на 60 с); другий, поки
-  перший чекає партнера, — `409 booking_in_progress`.
+- Для одного токена одночасно виконується лише один виклик бронювання (`Orders::Bookings::Lease`, ключ у Redis на
+  60 с); другий, поки перший чекає на відповідь партнера, — `409 booking_in_progress`.
 
 ## Потік
 
@@ -41,9 +41,9 @@ Turnstile ─► Request.from ─► Find (token + OrderPolicy; cart | submissio
   попередньої спроби, а не новий із запиту. Чи шукає `search` історії за нашим номером — відкрите питання до
   Pharmapoint.
 - **Без явної транзакції.** Дані клієнта й власний номер зберігаються до звернення; знімок і стан — після нього, спершу
-  замовлення, потім позиції. Збій посередині лишає кошик з власним номером, і наступний виклик іде через звірку.
+  замовлення, потім позиції. Збій посередині лишає кошик з власним номером, і наступний виклик проходить через звірку.
 - **Знімок** (`Snapshot`): назва, адреса й телефон аптеки; у позиціях — назва, виробник, форма, ідентифікатор товару в
-  провайдера, ціна з живої перевірки й сума; доставка `pick_up`, оплата `cash_in_store`.
+  провайдера, ціна з перевірки в реальному часі й сума; доставка `pick_up`, оплата `cash_in_store`.
 - **Пілот:** `APTEKA_BOOKING_DRUGSTORE_IDS` — ідентифікатори аптек довідника; порожнє значення вимикає бронювання. Аптека
   в списку аптек і в кошику має `booking_available`.
 - **Turnstile** — гем `rails_cloudflare_turnstile`, як у `system_ruby`: поле `cf-turnstile-response`, ключі
@@ -54,11 +54,11 @@ Turnstile ─► Request.from ─► Find (token + OrderPolicy; cart | submissio
 
 - **Опитування:** вебхуків у партнера немає. `Orders::Bookings::StatusPollWorker` (cron `APTEKA_BOOKING_STATUS_POLL_CRON`,
   за замовчуванням кожні 10 хв; порожнє значення вимикає) ставить `StatusRefreshWorker` на кожну передану бронь, чий
-  статус не фінальний (`APTEKA_BOOKING_FINAL_STATUSES`, `canceled`) і яку забронювали не раніше
-  `APTEKA_BOOKING_STATUS_POLL_DAYS` днів (3). Задача — `GET order/:order_number` без блокування рядка, один прогін на
+  статус не фінальний (`APTEKA_BOOKING_FINAL_STATUSES`, `canceled`) і яку забронювали не більше ніж
+  `APTEKA_BOOKING_STATUS_POLL_DAYS` днів (3) тому. Задача — `GET order/:order_number` без блокування рядка, один прогін на
   бронь (`until_and_while_executing`); ліміт — перенесення на `Retry-After`. Збій лишає збережений статус.
 - **`GET /api/v1/orders/:token`** віддає кошик, поки той не заброньований, а потім бронь (`Orders::Bookings::Open.owned`).
-  Токен один, і він же — посилання, яким бронь шарять, щоб її забрала інша людина: відправлену бронь бачить будь-хто з
+  Токен один, і він же — посилання, яким діляться бронню, щоб її забрала інша людина: відправлену бронь бачить будь-хто з
   токеном, а дані клієнта (ім'я, телефон, email) — лише користувач із сесією акаунта броні (`OrderPolicy#personal_data?`);
   гостю й тому, хто відкрив посилання, вони не віддаються. Статус, старший за `APTEKA_BOOKING_STATUS_STALE_MINUTES` (5),
   спершу оновлюється від партнера — не частіше одного разу за ці хвилини на бронь, хоч би скільки людей відкривало
@@ -73,14 +73,14 @@ Turnstile ─► Request.from ─► Find (token + OrderPolicy; cart | submissio
 «Скасовано клієнтом». `POST order/cancel` з `Customer-Phone`; відповідь партнера не задокументована, тож після неї статус
 перечитується. Відмова партнера — `409 cancellation_refused`, недоступність — `503 cancellation_unavailable` /
 `cancellation_busy`. Бронь лишається записом зі статусом партнера (`200`). Партнер прийняв скасування, але статус не
-перечитався — `202` зі статусом до скасування й оновлення статусу у фоні. Успішна відповідь партнера, що не є JSON, —
+вдалося перечитати — `202` зі статусом до скасування й оновлення статусу у фоні. Успішна відповідь партнера, що не є JSON, —
 теж прийняте скасування.
 
 ## Історія
 
 `GET /api/v1/orders` (`Orders::Bookings::History`, `HistoryBlueprint`) — лише із сесією (`401` гостю): броні акаунта в
 `submitted` і `submission_failed`, від нових до старих за моментом першої згоди, `page` / `per_page`
-(`APTEKA_ORDERS_PER_PAGE` 20, `APTEKA_ORDERS_MAX_PER_PAGE` 50), `has_more` без `COUNT`. Партнера не питає. Рендер
+(`APTEKA_ORDERS_PER_PAGE` 20, `APTEKA_ORDERS_MAX_PER_PAGE` 50), `has_more` без `COUNT`. До партнера не звертається. Рендер
 relation з `preload:` позицій; індекс `index_orders_on_user_id_booked` — `(user_id, personal_data_consent_at)` поза кошиком.
 
 ## Тести
@@ -91,4 +91,4 @@ relation з `preload:` позицій; індекс `index_orders_on_user_id_boo
   показ броні); після зміни — `mise run rswag`. Задачі —
   `spec/workers/orders/bookings/*`.
 - Фікстури `partner_order_created.json`, `partner_order.json`, `partner_order_history.json` — з публічної колекції
-  партнера, знеособлені; наживо не звірені.
+  партнера, знеособлені; зі справжніми відповідями не звірені.
