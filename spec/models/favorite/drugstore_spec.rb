@@ -18,4 +18,12 @@ RSpec.describe Favorite::Drugstore do
 
     expect(described_class.exists?(favorite.id)).to be(false)
   end
+
+  it 'belongs to a core user, reached from both sides without a foreign key', :aggregate_failures do
+    user = create(:h24_core_user)
+    favorite = create(:favorite_drugstore, user_id: user.id)
+
+    expect(favorite.user).to eq(user)
+    expect(user.favorite_drugstores).to eq([ favorite ])
+  end
 end

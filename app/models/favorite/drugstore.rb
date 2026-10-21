@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 # A drugstore a user keeps in «Мої аптеки». It stays when the drugstore is hidden or withdrawn later; the database drops
-# it with the drugstore. The core lives in another database, so the user has no foreign key.
+# it with the drugstore.
 class Favorite::Drugstore < ApplicationRecord
+  # The core lives in another database, so there is no foreign key. The user always comes from a checked session and
+  # the column is NOT NULL, so the record does not ask the core whether the user exists.
+  belongs_to :user, class_name: 'H24Core::User', optional: true, inverse_of: :favorite_drugstores
   belongs_to :drugstore, class_name: 'Catalog::Drugstore', inverse_of: :favorites
 end
 
