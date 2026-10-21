@@ -1,0 +1,7 @@
+class Pharmapoint::SearchPoint < Data
+  attr_reader latitude: Float
+  attr_reader longitude: Float
+  attr_reader radius: Integer
+
+  def self.new: (latitude: Float, longitude: Float, radius: Integer) -> instance
+end

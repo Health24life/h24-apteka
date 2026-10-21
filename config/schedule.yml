@@ -40,3 +40,10 @@ provider_request_log_cleanup:
   class: 'Pharmapoint::LogCleanupWorker'
   queue: default
 <% end %>
+
+<% if (cron = ENV.fetch('SYNC_PULL_RUN_CLEANUP_CRON', '20 4 * * *').strip.presence) %>
+catalog_sync_pull_run_cleanup:
+  cron: '<%= cron %>'
+  class: 'Catalog::Sync::PullRunCleanupWorker'
+  queue: default
+<% end %>

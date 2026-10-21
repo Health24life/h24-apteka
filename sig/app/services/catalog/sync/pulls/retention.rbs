@@ -1,0 +1,5 @@
+class Catalog::Sync::Pulls::Retention
+  BATCH: Integer
+
+  def self.call: (?config: Catalog::Sync::Config, ?now: ActiveSupport::TimeWithZone | Time) -> Integer
+end

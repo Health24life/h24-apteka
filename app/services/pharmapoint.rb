@@ -2,6 +2,12 @@
 
 # The partner API: the client, its readers, the request log and the limits it works within.
 module Pharmapoint
+  class << self
+    # The settings the partner API is called with, built from the environment at boot by
+    # config/initializers/settings.rb.
+    attr_accessor :config
+  end
+
   class Error < StandardError; end
 
   # The key or another required setting is missing: nothing is sent to the partner.

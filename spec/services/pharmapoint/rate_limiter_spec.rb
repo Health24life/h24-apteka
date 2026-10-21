@@ -9,20 +9,20 @@ RSpec.describe Pharmapoint::RateLimiter do
   def limiter(**config) = described_class.new(config: pharmapoint_config(**config), clock:)
 
   it 'lets requests through while the minute budget lasts' do
-    subject = limiter(rate_limit_per_minute: 2)
+    subject = limiter(rate_limit: { per_minute: 2 })
 
     expect { 2.times { subject.guard! } }.not_to raise_error
   end
 
   it 'asks to wait for the next minute once the budget is spent', :aggregate_failures do
-    subject = limiter(rate_limit_per_minute: 1)
+    subject = limiter(rate_limit: { per_minute: 1 })
     subject.guard!
 
     expect { subject.guard! }.to raise_error(Pharmapoint::RateLimited) { expect(it.retry_after).to eq(30) }
   end
 
   it 'holds requests back for the window when the partner reports nothing left', :aggregate_failures do
-    subject = limiter(rate_limit_window: 45)
+    subject = limiter(rate_limit: { window: 45 })
     subject.record('x-ratelimit-remaining' => '0')
 
     expect { subject.guard! }.to raise_error(Pharmapoint::RateLimited) { expect(it.retry_after).to eq(45) }
@@ -39,5 +39,28 @@ RSpec.describe Pharmapoint::RateLimiter do
     limiter.block!(20)
 
     expect { limiter.guard! }.to raise_error(Pharmapoint::RateLimited)
+  end
+
+  describe '#wait_time' do
+    it 'is zero while the minute budget lasts, and spends nothing', :aggregate_failures do
+      subject = limiter(rate_limit: { per_minute: 1 })
+
+      expect(subject.wait_time).to eq(0)
+      expect { subject.guard! }.not_to raise_error
+    end
+
+    it 'counts the seconds to the next minute once the budget is spent' do
+      subject = limiter(rate_limit: { per_minute: 1 })
+      subject.guard!
+
+      expect(subject.wait_time).to eq(30)
+    end
+
+    it 'counts the seconds the partner asked to wait' do
+      subject = limiter
+      subject.block!(20)
+
+      expect(subject.wait_time).to eq(20)
+    end
   end
 end

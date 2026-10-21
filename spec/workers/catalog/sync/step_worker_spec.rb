@@ -42,7 +42,7 @@ RSpec.describe Catalog::Sync::StepWorker do
     end
 
     it 'fails the run without a request when the key is missing', :aggregate_failures do
-      use_pharmapoint_config(api_key: nil)
+      use_pharmapoint_config(connection: { api_key: nil })
 
       sync('dictionaries')
 

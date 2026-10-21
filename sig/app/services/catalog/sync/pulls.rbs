@@ -1,0 +1,7 @@
+module Catalog::Sync::Pulls
+  type kind = :goods_group | :drugstore
+
+  type type_config = { model: singleton(Catalog::Goods::Group) | singleton(Catalog::Drugstore), kind: String }
+
+  TYPES: Hash[Symbol, type_config]
+end

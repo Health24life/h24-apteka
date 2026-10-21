@@ -31,6 +31,15 @@ class Catalog::Sync::TopList
       return :failed
     end
 
-    Catalog::Sync::Pull.enqueue(:goods_group, id) == :enqueued ? :enqueued : :present
+    case Catalog::Sync::Pulls::Enqueue.call(:goods_group, id)
+    in :enqueued then :enqueued
+    in :paused then skip_paused(id, number, messages)
+    else :present
+    end
+  end
+
+  def skip_paused(id, number, messages)
+    messages << "line #{number}: '#{id}' failed to be fetched a moment ago and is paused, skipped"
+    :failed
   end
 end

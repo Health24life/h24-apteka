@@ -2,6 +2,11 @@ module Pharmapoint
   # Any value of the partner's JSON, which is all the client knows about an answer until a reader looks at it.
   type json = nil | bool | Integer | Float | String | Array[json] | Hash[String, json]
   type headers = Hash[String, String]
+
+  self.@config: Pharmapoint::Config?
+
+  def self.config: () -> Pharmapoint::Config
+  def self.config=: (Pharmapoint::Config config) -> Pharmapoint::Config
 end
 
 module Pharmapoint::Readers

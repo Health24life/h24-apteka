@@ -1,0 +1,28 @@
+class Catalog::Sync::Pulls::Runner
+  @type: Catalog::Sync::Pulls::kind
+  @external_id: String
+  @user_id: Integer?
+  @provider_id: Integer?
+  @stash_key: String?
+
+  def self.call: (Catalog::Sync::Pulls::kind | String type, String external_id, ?user_id: Integer?,
+                  ?provider_id: Integer?, ?stash_key: String?) -> void
+  def self.give_up: (StandardError? error, String type, String external_id, ?Integer? user_id, ?Integer? provider_id) -> void
+  def self.find_provider: (Integer? provider_id) -> Provider?
+
+  def initialize: (Catalog::Sync::Pulls::kind | String type, String external_id, Integer? user_id, Integer? provider_id,
+                   String? stash_key) -> void
+  def call: () -> void
+
+  private
+
+  def save_stashed: (Provider provider, Pharmapoint::Readers::Base::record record) -> void
+  def fetch_and_save: (Provider provider) -> void
+  def track: (Provider provider, String source) { (Catalog::Sync::RunTracker tracker) -> void } -> void
+  def close: (Provider provider, Catalog::Sync::RunTracker? tracker, StandardError error) -> void
+  def lost?: (StandardError error) -> bool
+  def retried?: (StandardError error) -> bool
+  def pause: (Provider provider) -> void
+  def pull_goods_group: (Pharmapoint::Client client, Catalog::Sync::Linker linker, Catalog::Sync::RunTracker tracker) -> void
+  def pull_drugstore: (Pharmapoint::Client client, Catalog::Sync::Linker linker, Catalog::Sync::RunTracker tracker) -> void
+end

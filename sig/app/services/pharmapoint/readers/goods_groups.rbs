@@ -1,6 +1,7 @@
 class Pharmapoint::Readers::GoodsGroups
   include Pharmapoint::Readers::Base
 
+
   def self.page: (Pharmapoint::json body, page: Integer, per_page: Integer) -> Pharmapoint::Page
   def self.one: (Pharmapoint::json body) -> Pharmapoint::GoodsGroup
 
@@ -8,6 +9,7 @@ class Pharmapoint::Readers::GoodsGroups
   def one: (Pharmapoint::json body) -> Pharmapoint::GoodsGroup
 
   private
+
 
   def group: (Pharmapoint::json record) -> Pharmapoint::GoodsGroup?
   def build_group: (String external_id, Pharmapoint::Readers::Base::record record) -> Pharmapoint::GoodsGroup

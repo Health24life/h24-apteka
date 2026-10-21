@@ -14,7 +14,7 @@ class Pharmapoint::Client
   # rubocop:disable-next Metrics/ParameterLists -- who asks, why and which attempt it is are the log's context.
   def initialize(
     provider:,
-    config: Pharmapoint::Config.current,
+    config: Pharmapoint.config,
     purpose: :refresh,
     user_id: nil,
     sync_run: nil,
@@ -57,9 +57,11 @@ class Pharmapoint::Client
 
   private
 
+  # The key is checked first: a call that cannot be sent does not spend the request limit.
   def fetch(path, params = {})
+    credentials = @config.credentials!
     @rate_limiter.guard!
-    response = request(path, params)
+    response = request(path, params, credentials)
     @rate_limiter.record(response.headers)
     check_status!(response)
     yield parse(response.body)
@@ -68,8 +70,9 @@ class Pharmapoint::Client
     raise
   end
 
-  def request(path, params)
-    connection.get(path, params)
+  def request(path, params, credentials)
+    api_key, domain_name = credentials
+    connection(api_key, domain_name).get(path, params)
   rescue Faraday::Error => e
     raise Pharmapoint::TransientError, @masker.text(e.message)
   end
@@ -93,21 +96,21 @@ class Pharmapoint::Client
   end
 
   def rate_limited(response)
-    wait = Integer(response.headers['retry-after'], exception: false) || @config.rate_limit_window
+    wait = Integer(response.headers['retry-after'], exception: false) || @config.rate_limit.window
     @rate_limiter.block!(wait)
     Pharmapoint::RateLimited.new(wait)
   end
 
-  def connection
-    api_key, domain_name = @config.credentials!
+  def connection(api_key, domain_name)
+    settings = @config.connection
     Faraday.new(
-      url: @config.base_url,
+      url: settings.base_url,
       headers: {
         'API-Key' => api_key,
         'Domain-Name' => domain_name,
         'Accept' => 'application/json'
       },
-      request: { open_timeout: @config.open_timeout, timeout: @config.read_timeout }
+      request: { open_timeout: settings.open_timeout, timeout: settings.read_timeout }
     ) do |faraday|
       faraday.use Pharmapoint::Logging::Middleware, logger: @logger
       faraday.adapter :typhoeus

@@ -8,7 +8,7 @@
 | Файл | Навіщо |
 |---|---|
 | `../pharmapoint.rb` | Простір імен і всі помилки інтеграції (`Error`, `ConfigurationError`, `TransientError`, `PermanentError`, `InvalidResponse`, `RateLimited`) |
-| `config.rb` | Налаштування з середовища: адреса, ключ, ліміти, пункти пошуку аптек, строки зберігання журналу |
+| `config.rb` | Налаштування партнера (`dry-configurable`): з'єднання, ліміт, розмір сторінки груп, строки зберігання журналу. Пункти пошуку аптек — у `Catalog::Sync::Config` |
 | `client.rb` | Клієнт: `dictionaries`, `category_tree`, `goods_groups`, `goods_group`, `drugstores`, `drugstore` |
 | `readers/` | По читачу на оболонку відповіді; повертають прості значення з символьними ключами |
 | `rate_limiter.rb` | Ліміт запитів, спільний для всіх воркерів (стан у Redis) |
@@ -35,6 +35,11 @@ client.drugstore('38628')           # => запис однієї аптеки
 ## Налаштування
 
 Усе — змінні середовища; заглушки прописані в `mise.toml`, справжні значення йдуть у `mise.local.toml`, не в `.env`.
+Налаштування оголошені в `Pharmapoint::Config` (`dry-configurable`) з типовими значеннями й приведенням типу, а значення
+зі змінних бере `config/initializers/settings.rb` у блоці `configure`: `ENV.fetch('ЗМІННА', поточне значення)`, тож
+незадана змінна лишає типове значення. Порожня змінна для числа — помилка на старті; порожні ключ і домен означають
+«не задано», порожня адреса — типову. Ініціалізатор будує конфіг після
+кожного перезавантаження коду й заморожує його як `Pharmapoint.config`; спеки будують власний через `pharmapoint_config`.
 
 | Змінна | Значення за замовчуванням | Що задає |
 |---|---|---|
@@ -43,7 +48,7 @@ client.drugstore('38628')           # => запис однієї аптеки
 | `PHARMAPOINT_DOMAIN_NAME` | `h24.ua` | Заголовок `Domain-Name` |
 | `PHARMAPOINT_RATE_LIMIT_PER_MINUTE` | `60` | Власна межа запитів на хвилину на весь сервіс |
 | `PHARMAPOINT_GOODS_GROUPS_PER_PAGE` | `50` | Розмір сторінки груп товарів |
-| `PHARMAPOINT_DRUGSTORE_SEARCH_POINTS` | один пункт у Києві | JSON-масив `{latitude, longitude, radius}`: навколо цих точок збирається довідник аптек |
+| `PHARMAPOINT_DRUGSTORE_SEARCH_POINTS` | один пункт у Києві | JSON-масив об'єктів `{"latitude": градуси, "longitude": градуси, "radius": метри}`: навколо цих точок збирається довідник аптек. Читає `Catalog::Sync::Config`; формат і приклад — у [README синхронізації](../catalog/sync/README.md) |
 | `PHARMAPOINT_LOG_RETENTION_<КАТЕГОРІЯ>_DAYS` | бронювання 14, пошук 1, оновлення даних 7, інші 7 | Строк зберігання журналу по категоріях |
 | `SYNC_CRON_DICTIONARIES`, `SYNC_CRON_CATEGORIES`, `SYNC_CRON_GOODS_GROUPS`, `SYNC_CRON_DRUGSTORES` | див. `schedule.rb` | Cron кожного прогону; **порожнє значення вимикає задачу**. Прогін груп товарів за замовчуванням вимкнений |
 | `LOG_CLEANUP_CRON` | `0 4 * * *` | Коли чистити журнал |
@@ -73,8 +78,8 @@ client.drugstore('38628')           # => запис однієї аптеки
   `recipe_number`, `repayment_code`, `comment`, усе в `delivery` крім способу доставки, усе в `payment`) і за виглядом
   значення (телефон, e-mail, номер е-рецепта) в тілах, шляху, параметрах і заголовках. Вивантажень немає, фільтри — лише
   за метаданими (`Provider::RequestLog::FILTERABLE`).
-- Прострочені записи видаляє `Pharmapoint::LogCleanupWorker` за строком категорії; нову категорію чи інший строк задають
-  у `Config`/змінних середовища.
+- Прострочені записи видаляє `Pharmapoint::LogCleanupWorker` за строком категорії; нову категорію додають налаштуванням у
+  `Config#log_retention_days`, інший строк задають змінною середовища.
 
 ## Тести
 

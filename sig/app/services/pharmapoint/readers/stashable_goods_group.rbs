@@ -1,0 +1,13 @@
+class Pharmapoint::Readers::StashableGoodsGroup
+  include Pharmapoint::Readers::Base
+
+  LIVE_KEYS: Array[String]
+
+  def self.call: (Pharmapoint::json record) -> Pharmapoint::Readers::Base::record?
+
+  def call: (Pharmapoint::json record) -> Pharmapoint::Readers::Base::record?
+
+  private
+
+  def complete_forms: (Array[Pharmapoint::json] values) -> Array[Pharmapoint::Readers::Base::record]?
+end
