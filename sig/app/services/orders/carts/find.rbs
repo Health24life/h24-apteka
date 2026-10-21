@@ -1,0 +1,15 @@
+class Orders::Carts::Find
+  @owner: Orders::Carts::Owner
+
+  def self.call: (Orders::Carts::Owner owner) -> Order?
+
+  def initialize: (Orders::Carts::Owner owner) -> void
+  def call: () -> Order?
+
+  private
+
+  def account_cart: () -> Order?
+  def opened: (Order cart) -> Order?
+
+  def claim: (Order cart, Integer user_id) -> Order
+end

@@ -40,6 +40,10 @@ PHARMAPOINT_SEARCH_PER_PAGE = "20"
 PHARMAPOINT_CART_RATE_LIMIT_PER_MINUTE = "15"
 PHARMAPOINT_CART_OPEN_TIMEOUT = "1"
 PHARMAPOINT_CART_READ_TIMEOUT = "3"
+# Days a guest's cart lives after its last change; a daily job removes older ones. An account's cart has no end.
+APTEKA_GUEST_CART_TTL_DAYS = "7"
+# When the daily job removes the abandoned guest carts; an empty value turns it off.
+ORDERS_CART_CLEANUP_CRON = "40 4 * * *"
 # Codes of the providers the search asks, comma-separated; an empty value turns the search off and leaves the sync on.
 CATALOG_SEARCH_PROVIDERS = "pharmapoint"
 # Queries one search request may hold, and seconds the whole request may take.

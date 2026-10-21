@@ -56,3 +56,9 @@ Rails.application.config.to_prepare do
     location.max_radius = ENV.fetch('APTEKA_SEARCH_MAX_RADIUS', location.max_radius)
   end.finalize!
 end
+
+Rails.application.config.to_prepare do
+  Orders::Carts.config = Orders::Carts::Config.new.configure do |config|
+    config.guest_ttl_days = ENV.fetch('APTEKA_GUEST_CART_TTL_DAYS', config.guest_ttl_days)
+  end.finalize!
+end

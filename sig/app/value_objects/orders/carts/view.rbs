@@ -1,0 +1,13 @@
+class Orders::Carts::View < Data
+  attr_reader cart: Order
+  attr_reader prices_available: bool
+  attr_reader items: Array[Orders::Carts::ItemView]
+  attr_reader removed: Array[Orders::Carts::Removed]
+
+  def self.new: (cart: Order, prices_available: bool, items: Array[Orders::Carts::ItemView],
+                 removed: Array[Orders::Carts::Removed]) -> instance
+  def self.of: (Order cart, (Orders::Offers::DrugstoreOffer | Orders::Offers::Failure | nil) offer,
+                ?removed: Array[Orders::Carts::Removed]) -> instance
+
+  def total: () -> BigDecimal
+end

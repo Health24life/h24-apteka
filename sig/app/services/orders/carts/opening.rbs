@@ -1,0 +1,5 @@
+class Orders::Carts::Opening
+  def self.call: (Orders::Carts::Owner owner) -> Orders::Carts::Opened
+  def self.tidy: (Order cart) -> Orders::Carts::Opened
+  def self.not_found: (?Symbol? reason) -> bot
+end

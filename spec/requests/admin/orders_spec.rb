@@ -113,7 +113,7 @@ RSpec.describe 'Admin orders' do
     end
 
     it 'never shows the guest keys' do
-      expect(response.body).not_to include(sent.token, sent.share_token)
+      expect(response.body).not_to include(sent.token)
     end
   end
 
@@ -150,7 +150,7 @@ RSpec.describe 'Admin orders' do
         'гість',
         admin_sku_path(cart.items.first.goods)
       )
-      expect(response.body).not_to include(cart.token, cart.share_token, 'Ціна')
+      expect(response.body).not_to include(cart.token, 'Ціна')
     end
   end
 
@@ -177,7 +177,7 @@ RSpec.describe 'Admin orders' do
       expect(listed(sent, failed)).to eq([ true, false ])
     end
 
-    %w[customer_first_name_cont token_start share_token_eq provider_payload_cont].each do |filter|
+    %w[customer_first_name_cont token_start provider_payload_cont].each do |filter|
       it "ignores the filter #{filter}" do
         get admin_orders_path, params: { q: { filter => 'nothing' } }
 
@@ -187,11 +187,11 @@ RSpec.describe 'Admin orders' do
   end
 
   describe 'sorting' do
-    %w[token_asc share_token_desc].each do |order|
+    %w[token_asc].each do |order|
       it "ignores #{order}" do
         # Keys that put the older order first either way, against the default newest first.
-        older = create(:order, :submitted, token: 'a' * 24, share_token: 'z' * 24)
-        newer = create(:order, :submitted, token: 'b' * 24, share_token: 'y' * 24)
+        older = create(:order, :submitted, token: 'a' * 24)
+        newer = create(:order, :submitted, token: 'b' * 24)
 
         get admin_orders_path, params: { order: }
 

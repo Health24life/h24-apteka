@@ -1,0 +1,14 @@
+class Orders::Carts::ChangeQuantity
+  @owner: Orders::Carts::Owner
+  @item_id: Integer
+  @quantity: Integer
+
+  def self.call: (Orders::Carts::Owner owner, item_id: untyped, quantity: Integer) -> Orders::Carts::View
+
+  def initialize: (Orders::Carts::Owner owner, untyped item_id, Integer quantity) -> void
+  def call: () -> Orders::Carts::View
+
+  private
+
+  def item_of: (Order cart) -> Order::Item
+end

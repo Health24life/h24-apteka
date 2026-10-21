@@ -47,3 +47,10 @@ catalog_sync_pull_run_cleanup:
   class: 'Catalog::Sync::PullRunCleanupWorker'
   queue: default
 <% end %>
+
+<% if (cron = ENV.fetch('ORDERS_CART_CLEANUP_CRON', '40 4 * * *').strip.presence) %>
+orders_cart_abandoned_cleanup:
+  cron: '<%= cron %>'
+  class: 'Orders::Carts::AbandonedCleanupWorker'
+  queue: default
+<% end %>

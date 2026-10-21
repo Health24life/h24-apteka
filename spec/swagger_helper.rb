@@ -241,6 +241,85 @@ RSpec.configure do |config|
               }
             ]
           },
+          cart_item_request: {
+            type: :object,
+            required: %w[goods_id quantity],
+            properties: {
+              goods_id: { type: :integer, description: 'SKU of the catalog' },
+              drugstore_id: {
+                type: :integer,
+                description: 'The drugstore picked from the list of drugstores with the price of the SKU, needed ' \
+                             'for the first SKU. When the SKU goes to a cart it may be left out; given, it must be ' \
+                             'the drugstore of the cart'
+              },
+              quantity: { type: :integer, minimum: 1, description: 'Whole packs, added to those already in the cart' }
+            }
+          },
+          cart_quantity_request: {
+            type: :object,
+            required: %w[quantity],
+            properties: { quantity: { type: :integer, minimum: 1, description: 'Whole packs' } }
+          },
+          cart_response: {
+            type: :object,
+            required: %w[cart],
+            properties: { cart: { '$ref' => '#/components/schemas/cart' } }
+          },
+          cart: {
+            type: :object,
+            required: %w[drugstore prices_available items removed],
+            properties: {
+              token: {
+                type: :string,
+                description: "The owner's key to the cart, used in the path of every call on it"
+              },
+              drugstore: { '$ref' => '#/components/schemas/drugstore' },
+              prices_available: {
+                type: :boolean,
+                description: 'False when the provider did not answer: the items come without prices'
+              },
+              items: {
+                type: :array,
+                items: {
+                  type: :object,
+                  required: %w[id quantity available],
+                  properties: {
+                    id: { type: :integer },
+                    goods: {
+                      type: :object,
+                      nullable: true,
+                      properties: { id: { type: :integer }, slug: { type: :string }, name: { type: :string } }
+                    },
+                    quantity: { type: :integer },
+                    available: {
+                      type: :boolean,
+                      description: 'Whether the drugstore has the whole quantity now; an item it has not stays in ' \
+                                   'the cart'
+                    },
+                    available_quantity: { type: :integer, nullable: true, description: 'Whole packs it has' },
+                    price: { type: :string, nullable: true, description: 'Hryvnias; only when available' },
+                    total: { type: :string, nullable: true, description: 'Hryvnias; only when available' }
+                  }
+                }
+              },
+              total: {
+                type: :string,
+                nullable: true,
+                description: 'Hryvnias, of the available items; null without prices'
+              },
+              removed: {
+                type: :array,
+                description: 'What was taken out on the way: a SKU hidden or withdrawn, alone or with its group',
+                items: {
+                  type: :object,
+                  properties: {
+                    reason: { type: :string, enum: %w[goods_hidden goods_withdrawn] },
+                    goods: { type: :object, properties: { id: { type: :integer }, name: { type: :string } } }
+                  }
+                }
+              }
+            }
+          },
           error: {
             type: :object,
             required: %w[error],
@@ -250,7 +329,12 @@ RSpec.configure do |config|
                 required: %w[code message],
                 properties: {
                   code: { type: :string, description: 'Stable machine code' },
-                  message: { type: :string, description: 'Message in Ukrainian' }
+                  message: { type: :string, description: 'Message in Ukrainian' },
+                  details: {
+                    type: :object,
+                    description: 'What the front acts on, for some codes only: `available_quantity` for ' \
+                                 '`quantity_exceeds_stock`, `reason` for a cart that went whole'
+                  }
                 }
               }
             }

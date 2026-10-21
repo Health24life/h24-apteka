@@ -3,7 +3,13 @@
 require 'rails_helper'
 
 RSpec.describe 'the schedule of recurring jobs' do # rubocop:disable RSpec/DescribeClass
-  let(:cron_variables) { Catalog::Sync::Cron::KINDS.values.map(&:first) + %w[LOG_CLEANUP_CRON SYNC_PULL_RUN_CLEANUP_CRON] }
+  let(:cron_variables) do
+    Catalog::Sync::Cron::KINDS.values.map(&:first) + %w[
+      LOG_CLEANUP_CRON
+      SYNC_PULL_RUN_CLEANUP_CRON
+      ORDERS_CART_CLEANUP_CRON
+    ]
+  end
 
   # Renders the file as sidekiq-cron does, with the cron variables unset unless given, so their defaults apply.
   def jobs(env = {})
@@ -11,14 +17,21 @@ RSpec.describe 'the schedule of recurring jobs' do # rubocop:disable RSpec/Descr
     Sidekiq::Cron::Support.load_yaml(ERB.new(Rails.root.join('config/schedule.yml').read).result) || {}
   end
 
-  it 'schedules the dictionaries, the categories, the drugstores and both cleanups by default' do
+  it 'schedules the dictionaries, the categories, the drugstores and the cleanups by default' do
     expect(jobs.keys).to contain_exactly(
       'catalog_sync_dictionaries',
       'catalog_sync_categories',
       'catalog_sync_drugstores',
       'provider_request_log_cleanup',
-      'catalog_sync_pull_run_cleanup'
+      'catalog_sync_pull_run_cleanup',
+      'orders_cart_abandoned_cleanup'
     )
+  end
+
+  it 'takes the periodicity of the cleanup of abandoned guest carts from the environment', :aggregate_failures do
+    expect(jobs['orders_cart_abandoned_cleanup'])
+      .to include('cron' => '40 4 * * *', 'class' => 'Orders::Carts::AbandonedCleanupWorker')
+    expect(jobs('ORDERS_CART_CLEANUP_CRON' => '')).not_to have_key('orders_cart_abandoned_cleanup')
   end
 
   it 'takes the periodicity of the cleanup of on-demand fetches from the environment', :aggregate_failures do

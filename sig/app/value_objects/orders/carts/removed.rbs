@@ -1,0 +1,6 @@
+class Orders::Carts::Removed < Data
+  attr_reader reason: Symbol
+  attr_reader goods: Catalog::Goods
+
+  def self.new: (reason: Symbol, goods: Catalog::Goods) -> instance
+end

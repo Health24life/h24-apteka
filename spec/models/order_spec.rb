@@ -147,22 +147,13 @@ RSpec.describe Order do
     end
   end
 
-  describe 'tokens' do
-    it 'generates both tokens as soon as the cart is built', :aggregate_failures do
+  describe 'the token' do
+    it 'is generated as soon as the cart is built' do
       expect(cart.token).to be_present
-      expect(cart.share_token).to be_present
     end
 
-    it 'gives every cart its own secret token and link token' do
-      tokens = create_list(:order, 2).flat_map { [ it.token, it.share_token ] }
-
-      expect(tokens.uniq.size).to eq(4)
-    end
-
-    it 'keeps the link token fixed once saved' do
-      saved = create(:order)
-
-      expect { saved.update(share_token: 'another') }.to raise_error(ActiveRecord::ReadonlyAttributeError)
+    it 'is different for every cart' do
+      expect(create_list(:order, 2).map(&:token).uniq.size).to eq(2)
     end
   end
 
@@ -387,7 +378,6 @@ RSpec.describe Order do
         provider_id: saved.provider_id,
         state: 'submitted',
         token: SecureRandom.hex(12),
-        share_token: SecureRandom.hex(12),
         created_at: now,
         updated_at: now,
         personal_data_consent_at: now,
@@ -415,7 +405,7 @@ RSpec.describe Order do
     end
 
     it 'keeps a cart without any of them' do
-      expect { store_row(row.slice(:drugstore_id, :provider_id, :token, :share_token, :created_at, :updated_at)) }
+      expect { store_row(row.slice(:drugstore_id, :provider_id, :token, :created_at, :updated_at)) }
         .not_to raise_error
     end
 
@@ -433,13 +423,13 @@ RSpec.describe Order do
     it 'refuses a repeated own number' do
       store_row(row)
 
-      expect { store_row(row.merge(token: SecureRandom.hex(12), share_token: SecureRandom.hex(12))) }
+      expect { store_row(row.merge(token: SecureRandom.hex(12))) }
         .to raise_error(ActiveRecord::RecordNotUnique)
     end
 
     it 'refuses a repeated number of the provider within one provider' do
       store_row(row)
-      other = row.merge(own_number: 'H24-0000000002', token: SecureRandom.hex(12), share_token: SecureRandom.hex(12))
+      other = row.merge(own_number: 'H24-0000000002', token: SecureRandom.hex(12))
 
       expect { store_row(other) }.to raise_error(ActiveRecord::RecordNotUnique)
     end
@@ -454,7 +444,6 @@ RSpec.describe Order do
         provider_id: saved.provider_id,
         state: 'cart',
         token: SecureRandom.hex(12),
-        share_token: SecureRandom.hex(12),
         created_at: now,
         updated_at: now
       }
@@ -475,12 +464,8 @@ RSpec.describe Order do
       }
     end
 
-    it 'refuses a repeated secret token' do
+    it 'refuses a repeated token' do
       expect { store_row(row.merge(token: saved.token)) }.to raise_error(ActiveRecord::RecordNotUnique)
-    end
-
-    it 'refuses a repeated link token' do
-      expect { store_row(row.merge(share_token: saved.share_token)) }.to raise_error(ActiveRecord::RecordNotUnique)
     end
 
     it 'refuses a state outside the known list' do
@@ -490,7 +475,7 @@ RSpec.describe Order do
     it 'accepts every known state' do
       rows = described_class.states.values.map do |state|
         sent = state == 'cart' ? {} : sent_data(state)
-        row.merge(sent).merge(state:, token: SecureRandom.hex(12), share_token: SecureRandom.hex(12))
+        row.merge(sent).merge(state:, token: SecureRandom.hex(12))
       end
 
       expect { rows.each { |attributes| store_row(attributes) } }.not_to raise_error
@@ -503,7 +488,7 @@ RSpec.describe Order do
     end
 
     it 'allows any number of guest carts' do
-      other = row.merge(token: SecureRandom.hex(12), share_token: SecureRandom.hex(12))
+      other = row.merge(token: SecureRandom.hex(12))
 
       expect { [ row, other ].each { |attributes| store_row(attributes) } }.not_to raise_error
     end
@@ -535,7 +520,6 @@ RSpec.describe Order do
     it 'keeps the guest tokens and the personal data out of filters and sorting', :aggregate_failures do
       hidden = %w[
         token
-        share_token
         customer_first_name
         customer_last_name
         customer_middle_name
@@ -578,7 +562,6 @@ end
 #  provider_payload               :jsonb            not null
 #  provider_updated_at            :datetime
 #  register_account               :boolean          default(FALSE), not null
-#  share_token                    :string           not null
 #  state                          :string           default("cart"), not null
 #  status_comment                 :string
 #  status_name                    :string
@@ -595,7 +578,6 @@ end
 #
 #  index_orders_on_own_number                             (own_number) UNIQUE
 #  index_orders_on_provider_id_and_provider_order_number  (provider_id,provider_order_number) UNIQUE
-#  index_orders_on_share_token                            (share_token) UNIQUE
 #  index_orders_on_token                                  (token) UNIQUE
 #  index_orders_on_user_id_cart                           (user_id) UNIQUE WHERE (((state)::text = 'cart'::text) AND (user_id IS NOT NULL))
 #

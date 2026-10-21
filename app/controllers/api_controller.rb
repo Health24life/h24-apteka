@@ -15,9 +15,11 @@ class ApiController < ActionController::API
 
   def h24_request_token = request.headers['Authorization']
 
-  # Every error answers with a stable machine code and a message in Ukrainian.
-  def render_error(code, status:)
+  # Every error answers with a stable machine code and a message in Ukrainian, and some with details the front acts on.
+  def render_error(code, status:, details: nil)
     message = I18n.t(code, scope: 'api_controller.errors', locale: :uk)
-    render json: { error: { code: code.to_s, message: } }, status:
+    error = { code: code.to_s, message: }
+    error[:details] = details if details
+    render json: { error: }, status:
   end
 end

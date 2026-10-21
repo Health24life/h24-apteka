@@ -1,0 +1,5 @@
+# Policies are not type-checked; the services that ask a policy see only what they call on it.
+class OrderPolicy
+  def initialize: (Orders::Carts::Owner user, Order record) -> void
+  def open?: () -> bool
+end

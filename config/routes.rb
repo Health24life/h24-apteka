@@ -30,6 +30,13 @@ Rails.application.routes.draw do
       resources :goods, only: [] do
         resources :drugstores, only: :create, module: :goods
       end
+      # A cart is an order in the cart state; its owner reaches it by the token in the path.
+      resources :orders, only: %i[create show destroy], param: :token do
+        get :current, on: :collection
+        scope module: :orders do
+          resources :items, only: %i[create update destroy]
+        end
+      end
     end
   end
 
