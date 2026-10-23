@@ -1,0 +1,3 @@
+module Pillbox
+  def self.table_name_prefix: () -> String
+end

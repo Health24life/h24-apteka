@@ -550,6 +550,128 @@ RSpec.configure do |config|
               }
             }
           },
+          pillbox_plan_request: {
+            type: :object,
+            required: %w[title timezone items],
+            properties: {
+              title: { type: :string, maxLength: 50, description: 'Not blank once the spaces around it are cut' },
+              timezone: { type: :string, example: 'Europe/Kyiv', description: 'IANA time zone of the plan' },
+              start_date: {
+                type: :string,
+                format: :date,
+                description: 'The day the courses start; today in the time zone of the plan by default, not earlier'
+              },
+              source_order_id: {
+                type: :integer,
+                description: 'A booking of the user the client filled the plan from; the booking is not changed'
+              },
+              items: {
+                type: :array,
+                minItems: 1,
+                maxItems: 10,
+                items: { '$ref' => '#/components/schemas/pillbox_plan_item_request' }
+              }
+            }
+          },
+          pillbox_plan_item_request: {
+            type: :object,
+            description: 'A medicine with its whole schedule; the client keeps `source` and `goods_id` consistent',
+            required: %w[source every_unit times course_mode],
+            properties: {
+              source: { type: :string, enum: %w[order catalog manual] },
+              goods_id: { type: :integer, description: 'A SKU the catalog has, shown or not' },
+              name: { type: :string, maxLength: 255 },
+              dosage: { type: :string, maxLength: 100 },
+              position: { type: :integer, description: 'The place in the list of the request by default' },
+              every_unit: { type: :string, enum: %w[day week month] },
+              every_n: { type: :integer, minimum: 1, maximum: 99, default: 1, description: 'Every N units' },
+              weekdays: {
+                type: :array,
+                items: { type: :integer, minimum: 0, maximum: 6 },
+                description: 'Weekly only, 0 is Sunday; none means the weekday of the start date'
+              },
+              times: {
+                type: :array,
+                minItems: 1,
+                maxItems: 6,
+                items: { type: :string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' },
+                description: 'HH:MM in the time zone of the plan, no repeats'
+              },
+              reminder_mode: { type: :string, enum: %w[once until_marked], default: 'once' },
+              course_mode: { type: :string, enum: %w[days until open] },
+              course_days: { type: :integer, minimum: 1, maximum: 365, description: 'For days only' },
+              course_end_date: {
+                type: :string,
+                format: :date,
+                description: 'For until only: from the start date to 365 days after it'
+              }
+            }
+          },
+          pillbox_plan_response: {
+            type: :object,
+            required: %w[plan],
+            properties: { plan: { '$ref' => '#/components/schemas/pillbox_plan' } }
+          },
+          pillbox_plan: {
+            type: :object,
+            required: %w[id title timezone status source_order_id created_at items],
+            properties: {
+              id: { type: :integer },
+              title: { type: :string },
+              timezone: { type: :string },
+              status: { type: :string, enum: %w[active paused completed] },
+              source_order_id: { type: :integer, nullable: true },
+              created_at: { type: :string, format: 'date-time' },
+              items: {
+                type: :array,
+                description: 'By position',
+                items: { '$ref' => '#/components/schemas/pillbox_plan_item' }
+              }
+            }
+          },
+          pillbox_plan_item: {
+            type: :object,
+            required: %w[
+              id
+              source
+              goods_id
+              name
+              dosage
+              position
+              every_unit
+              every_n
+              weekdays
+              times
+              reminder_mode
+              course_mode
+              course_start_date
+              course_days
+              course_end_date
+            ],
+            properties: {
+              id: { type: :integer },
+              source: { type: :string, enum: %w[order catalog manual] },
+              goods_id: { type: :integer, nullable: true },
+              name: { type: :string, nullable: true },
+              dosage: { type: :string, nullable: true },
+              position: { type: :integer },
+              every_unit: { type: :string, enum: %w[day week month] },
+              every_n: { type: :integer },
+              weekdays: { type: :array, items: { type: :integer } },
+              times: { type: :array, items: { type: :string } },
+              reminder_mode: { type: :string, enum: %w[once until_marked] },
+              course_mode: { type: :string, enum: %w[days until open] },
+              course_start_date: { type: :string, format: :date },
+              course_days: { type: :integer, nullable: true, description: 'Null for an open course' },
+              course_end_date: { type: :string, format: :date, nullable: true, description: 'Null for an open course' }
+            }
+          },
+          validation_errors: {
+            type: :object,
+            description: 'The errors of the model as Rails gives them: a field, or `items[<index>].<field>` for a ' \
+                         'medicine by its place in the request, or `base`, with its messages',
+            additionalProperties: { type: :array, items: { type: :string } }
+          },
           error: {
             type: :object,
             required: %w[error],

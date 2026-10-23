@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_21_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_23_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -382,6 +382,65 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_21_120000) do
     t.check_constraint "state::text = ANY (ARRAY['cart'::character varying, 'submitted'::character varying, 'submission_failed'::character varying]::text[])", name: "orders_state_check"
   end
 
+  create_table "pillbox_intakes", force: :cascade do |t|
+    t.bigint "plan_id", null: false
+    t.bigint "plan_item_id", null: false
+    t.date "scheduled_date", null: false
+    t.string "scheduled_time", null: false
+    t.datetime "due_at", null: false
+    t.string "status", null: false
+    t.string "marked_via"
+    t.datetime "taken_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["plan_id", "scheduled_date"], name: "index_pillbox_intakes_on_plan_id_and_scheduled_date"
+    t.index ["plan_item_id", "scheduled_date"], name: "index_pillbox_intakes_on_plan_item_id_and_scheduled_date"
+  end
+
+  create_table "pillbox_plan_items", force: :cascade do |t|
+    t.bigint "plan_id", null: false
+    t.bigint "goods_id"
+    t.integer "user_id", null: false
+    t.string "source", null: false
+    t.string "name"
+    t.string "dosage"
+    t.integer "position", default: 0, null: false
+    t.jsonb "times", default: [], null: false
+    t.integer "every_n", default: 1, null: false
+    t.string "every_unit", null: false
+    t.jsonb "weekdays", default: [], null: false
+    t.date "anchor_date", null: false
+    t.string "course_mode", null: false
+    t.date "course_start_date", null: false
+    t.integer "course_days"
+    t.date "course_end_date"
+    t.string "reminder_mode", default: "once", null: false
+    t.datetime "missed_until", null: false
+    t.integer "schedule_version", default: 1, null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goods_id"], name: "index_pillbox_plan_items_on_goods_id"
+    t.index ["plan_id"], name: "index_pillbox_plan_items_on_plan_id"
+    t.index ["user_id"], name: "index_pillbox_plan_items_on_user_id"
+  end
+
+  create_table "pillbox_plans", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.bigint "source_order_id"
+    t.string "status", default: "active", null: false
+    t.string "timezone", null: false
+    t.string "title", null: false
+    t.integer "missed_days", default: 0, null: false
+    t.datetime "paused_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["source_order_id"], name: "index_pillbox_plans_on_source_order_id"
+    t.index ["timezone"], name: "index_pillbox_plans_on_timezone"
+    t.index ["user_id"], name: "index_pillbox_plans_on_user_id"
+  end
+
   create_table "provider_links", force: :cascade do |t|
     t.bigint "provider_id", null: false
     t.string "linkable_type", null: false
@@ -503,6 +562,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_21_120000) do
   add_foreign_key "order_payments", "orders", on_delete: :cascade
   add_foreign_key "orders", "catalog_drugstores", column: "drugstore_id"
   add_foreign_key "orders", "providers"
+  add_foreign_key "pillbox_intakes", "pillbox_plan_items", column: "plan_item_id", on_delete: :cascade
+  add_foreign_key "pillbox_intakes", "pillbox_plans", column: "plan_id", on_delete: :cascade
+  add_foreign_key "pillbox_plan_items", "catalog_goods", column: "goods_id", on_delete: :nullify
+  add_foreign_key "pillbox_plan_items", "pillbox_plans", column: "plan_id", on_delete: :cascade
+  add_foreign_key "pillbox_plans", "orders", column: "source_order_id", on_delete: :nullify
   add_foreign_key "provider_links", "providers"
   add_foreign_key "provider_request_logs", "providers"
   add_foreign_key "provider_request_logs", "sync_runs", on_delete: :nullify

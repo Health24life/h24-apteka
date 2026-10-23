@@ -51,6 +51,11 @@ en:
       hidden: is hidden by an administrator
       disabled: is disabled
       not_a_catalog_locale: "is stored in the catalog languages only, not in \"%{language}\""
+      too_many: "has too many entries (maximum is %{count})"
+      too_many_plans: "too many active and paused plans (maximum is %{count})"
+      in_past: cannot be in the past
+      before_start_date: cannot be earlier than the start date
+      too_far: "cannot be more than %{count} days after the start date"
   closure_tree:
     loop_error: cannot be its own descendant
   activerecord:

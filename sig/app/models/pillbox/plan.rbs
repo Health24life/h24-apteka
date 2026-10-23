@@ -1,0 +1,19 @@
+class Pillbox::Plan
+  TITLE_LENGTH: Integer
+  MAX_ITEMS: Integer
+  MAX_OPEN_PLANS: Integer
+  TIMEZONES: Set[String]
+
+  def start_date: () -> Date?
+  def start_date=: (untyped value) -> untyped
+  def start_date_before_type_cast: () -> untyped
+  def tz: () -> ActiveSupport::TimeZone?
+  def today: () -> Date?
+
+  private
+
+  def items_limit: () -> void
+  def open_plans_limit: () -> void
+  def start_date_not_in_past: () -> void
+  def source_order_of_user: () -> void
+end

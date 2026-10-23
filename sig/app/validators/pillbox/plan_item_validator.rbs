@@ -1,0 +1,11 @@
+class Pillbox::PlanItemValidator < ActiveModel::Validator
+  def validate: (Pillbox::PlanItem item) -> void
+
+  private
+
+  def goods_in_catalog: (Pillbox::PlanItem item) -> void
+  def times_count_valid: (Pillbox::PlanItem item) -> void
+  def times_valid: (Pillbox::PlanItem item) -> void
+  def weekdays_valid: (Pillbox::PlanItem item) -> void
+  def course_end_in_range: (Pillbox::PlanItem item) -> void
+end

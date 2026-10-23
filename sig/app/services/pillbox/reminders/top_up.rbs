@@ -1,0 +1,3 @@
+class Pillbox::Reminders::TopUp
+  def self.call: (untyped items, ActiveSupport::TimeWithZone now) -> nil
+end

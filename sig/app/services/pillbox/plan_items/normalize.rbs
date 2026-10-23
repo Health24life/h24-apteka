@@ -1,0 +1,14 @@
+class Pillbox::PlanItems::Normalize
+  @item: Pillbox::PlanItem
+
+  def self.call: (Pillbox::PlanItem item) -> Pillbox::PlanItem
+
+  def initialize: (Pillbox::PlanItem item) -> void
+  def call: () -> Pillbox::PlanItem
+
+  private
+
+  def weekdays: () -> Array[untyped]
+  def derive_course: () -> void
+  def derive_course_from: (Date start) -> void
+end

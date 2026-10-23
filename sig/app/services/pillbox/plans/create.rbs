@@ -1,0 +1,16 @@
+class Pillbox::Plans::Create
+  PLAN_ATTRIBUTES: Array[Symbol]
+  ITEM_ATTRIBUTES: Array[Symbol]
+
+  @user_id: Integer
+  @now: ActiveSupport::TimeWithZone
+
+  def self.call: (user_id: Integer, attributes: ActionController::Parameters | Hash[untyped, untyped], ?now: ActiveSupport::TimeWithZone) -> Pillbox::Plan
+
+  def initialize: (Integer user_id, ActiveSupport::TimeWithZone now) -> void
+  def call: (ActionController::Parameters | Hash[untyped, untyped] attributes) -> Pillbox::Plan
+
+  private
+
+  def build_item: (Pillbox::Plan plan, ActionController::Parameters | Hash[untyped, untyped] item, Integer index) -> Pillbox::PlanItem
+end

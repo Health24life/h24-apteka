@@ -1,0 +1,12 @@
+class Pillbox::PlanItem
+  NAME_LENGTH: Integer
+  DOSAGE_LENGTH: Integer
+  EVERY_N: Range[Integer]
+  WEEKDAYS: Range[Integer]
+  TIME_FORMAT: Regexp
+  MAX_TIMES: Integer
+  COURSE_DAYS: Range[Integer]
+  MAX_COURSE_END: Integer
+
+  def normalize!: () -> Pillbox::PlanItem
+end
