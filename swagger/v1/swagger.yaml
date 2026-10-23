@@ -633,6 +633,70 @@ paths:
           application/json:
             schema:
               "$ref": "#/components/schemas/cancellation_request"
+  "/api/v1/pillbox/plans/{id}":
+    patch:
+      summary: Changes a plan of the signed-in user at once
+      tags:
+      - Pillbox
+      description: 'The title and the medicines in one save: with `id` a medicine
+        changes, with `id` and `discard: true` it is taken out of the plan, without
+        `id` it is added and starts today. A change of the schedule or the course
+        works from now; the start of the course and the intakes stay. Only an active
+        or a paused plan changes. Invalid data is answered with the errors of every
+        field at once and nothing changes.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: The plan
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Bearer token of the signed-in user
+      responses:
+        '200':
+          description: 'the plan with the changes: a medicine changed, one taken out,
+            one added'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/pillbox_plan_response"
+        '401':
+          description: 'unauthorized: no session'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '403':
+          description: 'forbidden: the plan is completed'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '404':
+          description: 'pillbox_plan_item_not_found: a medicine already taken out,
+            or of another plan'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '422':
+          description: 'items[0].course_days: a changed course may not end before
+            today'
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/validation_errors"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/pillbox_plan_update_request"
+        required: true
   "/api/v1/pillbox/plans":
     post:
       summary: Creates a plan of taking medicines of the signed-in user
@@ -1553,14 +1617,46 @@ components:
           items:
             "$ref": "#/components/schemas/pillbox_plan_item_request"
     pillbox_plan_item_request:
-      type: object
       description: A medicine with its whole schedule; the client keeps `source` and
         `goods_id` consistent
-      required:
-      - source
-      - every_unit
-      - times
-      - course_mode
+      allOf:
+      - "$ref": "#/components/schemas/pillbox_plan_item_fields"
+      - type: object
+        required:
+        - source
+        - every_unit
+        - times
+        - course_mode
+    pillbox_plan_update_request:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 50
+          description: Not blank once the spaces around it are cut
+        items_attributes:
+          type: array
+          description: 'With `id` a medicine of the plan changes, with `id` and `discard:
+            true` it is taken out of the plan, without `id` it is added and starts
+            today; errors are keyed `items[<index>].<field>` and `items`'
+          items:
+            "$ref": "#/components/schemas/pillbox_plan_item_update_request"
+    pillbox_plan_item_update_request:
+      allOf:
+      - "$ref": "#/components/schemas/pillbox_plan_item_fields"
+      - type: object
+        properties:
+          id:
+            type: integer
+            description: A medicine still in the plan; without it the medicine is
+              new
+          discard:
+            type: boolean
+            default: false
+            description: Takes the medicine out of the plan from now; ignored for
+              a new one
+    pillbox_plan_item_fields:
+      type: object
       properties:
         source:
           type: string

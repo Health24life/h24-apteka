@@ -19,15 +19,14 @@ class Pillbox::Plan < ApplicationRecord
            class_name: 'Pillbox::PlanItem',
            inverse_of: :plan,
            autosave: true,
-           index_errors: true,
+           index_errors: :nested_attributes_order,
            dependent: nil
   has_many :all_items, class_name: 'Pillbox::PlanItem', inverse_of: false, dependent: nil
   has_many :intakes, class_name: 'Pillbox::Intake', inverse_of: :plan, dependent: nil
 
   validates :title, presence: true, length: { maximum: TITLE_LENGTH }
   validates :timezone, inclusion: { in: TIMEZONES }
-  validates :items, presence: true
-  validate :items_limit
+  validate :items_count
   validate :open_plans_limit, on: :create
   validate :start_date_not_in_past, on: :create
   validate :source_order_of_user, unless: -> { source_order_id.nil? }
@@ -47,8 +46,11 @@ class Pillbox::Plan < ApplicationRecord
 
   private
 
-  def items_limit
-    errors.add(:items, :too_many, count: MAX_ITEMS) if items.size > MAX_ITEMS
+  # Items discarded by the same save are still in the association until it is reloaded.
+  def items_count
+    count = items.count { it.discarded_at.nil? }
+    errors.add(:items, :blank) if count.zero?
+    errors.add(:items, :too_many, count: MAX_ITEMS) if count > MAX_ITEMS
   end
 
   def open_plans_limit

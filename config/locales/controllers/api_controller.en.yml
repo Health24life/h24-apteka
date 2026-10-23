@@ -44,3 +44,8 @@ en:
       cancellation_unavailable: The booking could not be cancelled. Try again later.
       cancellation_busy: The booking service is busy now. Try again a little later.
       favorites_limit_reached: The list is full. Remove something to add a new one.
+      not_found: The record was not found.
+      parameter_missing: A required parameter is missing from the request or has the wrong shape.
+      forbidden: This action cannot be done with this record now.
+      pillbox_plan_not_found: The plan was not found.
+      pillbox_plan_item_not_found: The medicine is not in this plan.

@@ -10,7 +10,7 @@ namespace :api do
       resources :drugstores, only: %i[index update destroy], param: :drugstore_id
     end
     namespace :pillbox do
-      resources :plans, only: :create
+      resources :plans, only: %i[create update]
     end
     resources :goods, only: [] do
       resources :drugstores, only: :create, module: :goods

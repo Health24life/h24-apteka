@@ -97,6 +97,40 @@ RSpec.describe Pillbox::PlanItem do
     it 'needs a mode' do
       expect(error?({ course_mode: nil }, :course_mode, :inclusion)).to be(true)
     end
+
+    describe 'a change of a saved course' do
+      let(:saved) { create(:pillbox_plan_item, plan:, course_start_date: 10.days.ago.to_date, course_days: 14).reload }
+
+      def changed(**attrs) = saved.tap { it.assign_attributes(attrs) }.normalize!.tap(&:validate)
+
+      it 'may not end a course in days before today', :aggregate_failures do
+        expect(changed(course_days: 5).errors.of_kind?(:course_days, :in_past)).to be(true)
+        expect(changed(course_days: 11).errors).to be_empty
+      end
+
+      it 'may not end a course until a date before today', :aggregate_failures do
+        ended = changed(course_mode: 'until', course_end_date: Date.yesterday)
+
+        expect(ended.errors.of_kind?(:course_end_date, :in_past)).to be(true)
+        expect(changed(course_mode: 'until', course_end_date: Date.current).errors).to be_empty
+      end
+
+      it 'does not stop a change of the dosage of a course that has ended' do
+        ended = create(
+          :pillbox_plan_item,
+          plan:,
+          course_start_date: 10.days.ago,
+          course_days: 3,
+          course_end_date: 8.days.ago
+        )
+
+        expect(ended.reload.tap { it.dosage = '1 капсула' }).to be_valid
+      end
+
+      it 'does not apply to a new item' do
+        expect(build(:pillbox_plan_item, plan:, course_start_date: 10.days.ago.to_date, course_days: 5)).to be_valid
+      end
+    end
   end
 
   it 'needs a unit of the schedule' do
@@ -105,6 +139,20 @@ RSpec.describe Pillbox::PlanItem do
 
   it 'starts at schedule version 1' do
     expect(create(:pillbox_plan_item).schedule_version).to eq(1)
+  end
+
+  it 'is not asked to be discarded unless told so' do
+    expect(build(:pillbox_plan_item).discard).to be(false)
+  end
+
+  describe '#start!' do
+    it 'starts the course and the count of the period on the date for the owner of the plan', :aggregate_failures do
+      now = Time.current
+      started = build(:pillbox_plan_item, plan:, user_id: nil, course_days: 7, course_end_date: nil).start!(start, now)
+
+      expect(started).to have_attributes(user_id: plan.user_id, course_start_date: start, anchor_date: start)
+      expect([ started.missed_until, started.course_end_date ]).to eq([ now, Date.new(2026, 11, 7) ])
+    end
   end
 end
 

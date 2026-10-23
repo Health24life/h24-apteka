@@ -7,6 +7,7 @@ class Pillbox::PlanItemValidator < ActiveModel::Validator
     times_valid(item)
     weekdays_valid(item)
     course_end_in_range(item) if item.term_until?
+    course_end_not_in_past(item) if course_changed?(item)
   end
 
   private
@@ -44,5 +45,18 @@ class Pillbox::PlanItemValidator < ActiveModel::Validator
     elsif last > start + Pillbox::PlanItem::MAX_COURSE_END
       item.errors.add(:course_end_date, :too_far, count: Pillbox::PlanItem::MAX_COURSE_END)
     end
+  end
+
+  # A change of a saved course works from now, so the course may not end before today; a new item starts today.
+  def course_changed?(item)
+    item.persisted? && !item.term_open? && item.changed.intersect?(%w[course_mode course_days course_end_date])
+  end
+
+  def course_end_not_in_past(item)
+    last = item.course_end_date
+    today = item.plan.today
+    return unless last && today && last < today
+
+    item.errors.add(item.term_days? ? :course_days : :course_end_date, :in_past)
   end
 end

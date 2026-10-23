@@ -1,0 +1,20 @@
+class Pillbox::Plans::Update
+  PLAN_ATTRIBUTES: Array[Symbol]
+
+  @plan: Pillbox::Plan
+  @now: ActiveSupport::TimeWithZone
+  @last_position: Integer
+
+  def self.call: (Pillbox::Plan plan, attributes: ActionController::Parameters | Hash[untyped, untyped], ?now: ActiveSupport::TimeWithZone) -> Pillbox::Plan
+
+  def initialize: (Pillbox::Plan plan, ActiveSupport::TimeWithZone now) -> void
+  def call: (ActionController::Parameters | Hash[untyped, untyped] attributes) -> Pillbox::Plan
+
+  private
+
+  def apply: (Pillbox::PlanItem item) -> Pillbox::PlanItem?
+  def start: (Pillbox::PlanItem item) -> Pillbox::PlanItem
+  def discard: (Pillbox::PlanItem item) -> nil
+  def restart: (Pillbox::PlanItem item) -> Pillbox::PlanItem
+  def close: (Pillbox::PlanItem item) -> void
+end

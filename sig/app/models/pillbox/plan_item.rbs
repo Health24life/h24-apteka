@@ -7,7 +7,12 @@ class Pillbox::PlanItem
   MAX_TIMES: Integer
   COURSE_DAYS: Range[Integer]
   MAX_COURSE_END: Integer
+  SCHEDULE_ATTRIBUTES: Array[String]
+  PERIOD_ATTRIBUTES: Array[String]
 
+  def discard: () -> bool
+  def discard=: (untyped value) -> untyped
   def normalize!: () -> Pillbox::PlanItem
+  def start!: (Date? date, ActiveSupport::TimeWithZone now) -> Pillbox::PlanItem
   def position_came_from_user?: () -> bool
 end

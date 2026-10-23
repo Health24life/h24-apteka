@@ -12,7 +12,7 @@ class Pillbox::Plan
 
   private
 
-  def items_limit: () -> void
+  def items_count: () -> void
   def open_plans_limit: () -> void
   def start_date_not_in_past: () -> void
   def source_order_of_user: () -> void

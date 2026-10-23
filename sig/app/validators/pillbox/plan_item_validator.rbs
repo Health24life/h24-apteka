@@ -8,4 +8,6 @@ class Pillbox::PlanItemValidator < ActiveModel::Validator
   def times_valid: (Pillbox::PlanItem item) -> void
   def weekdays_valid: (Pillbox::PlanItem item) -> void
   def course_end_in_range: (Pillbox::PlanItem item) -> void
+  def course_changed?: (Pillbox::PlanItem item) -> bool
+  def course_end_not_in_past: (Pillbox::PlanItem item) -> void
 end

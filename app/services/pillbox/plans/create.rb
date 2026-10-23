@@ -22,7 +22,6 @@ class Pillbox::Plans::Create
 
   def prepare_item(item, start, index)
     item.position = index unless item.position_came_from_user?
-    item.assign_attributes(user_id: @user_id, course_start_date: start, anchor_date: start, missed_until: @now)
-    item.normalize!
+    item.start!(start, @now)
   end
 end

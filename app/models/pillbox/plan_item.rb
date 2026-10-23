@@ -10,11 +10,26 @@ class Pillbox::PlanItem < ApplicationRecord
   MAX_TIMES = 6
   COURSE_DAYS = 1..365
   MAX_COURSE_END = 365
+  # A change of any of these starts the schedule anew from now; of the period ones, the count of every N from today.
+  SCHEDULE_ATTRIBUTES = %w[
+    times
+    every_n
+    every_unit
+    weekdays
+    reminder_mode
+    course_mode
+    course_days
+    course_end_date
+  ].freeze
+  PERIOD_ATTRIBUTES = %w[every_n every_unit weekdays].freeze
 
   enum :source, { order: 'order', catalog: 'catalog', manual: 'manual' }, prefix: true, validate: true
   enum :every_unit, { day: 'day', week: 'week', month: 'month' }, prefix: :every, validate: true
   enum :course_mode, { days: 'days', until: 'until', open: 'open' }, prefix: :term, validate: true
   enum :reminder_mode, { once: 'once', until_marked: 'until_marked' }, prefix: :remind, validate: true
+
+  # Asks the plan update to take the item out of the plan; not stored.
+  attribute :discard, :boolean, default: false
 
   belongs_to :plan, class_name: 'Pillbox::Plan', inverse_of: :items
   # The client keeps the source and the SKU consistent; only the SKU being in the catalog is checked.
@@ -33,6 +48,12 @@ class Pillbox::PlanItem < ApplicationRecord
   normalizes :times, with: ->(times) { Array.wrap(times).map { |time| time.to_s.strip }.sort }, apply_to_nil: true
 
   def normalize! = Pillbox::PlanItems::Normalize.call(self)
+
+  # A new item starts its course and the count of its period on the date, and nothing before now is due.
+  def start!(date, now)
+    assign_attributes(user_id: plan.user_id, course_start_date: date, anchor_date: date, missed_until: now)
+    normalize!
+  end
 end
 
 # == Schema Information

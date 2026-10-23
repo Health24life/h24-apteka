@@ -575,9 +575,43 @@ RSpec.configure do |config|
             }
           },
           pillbox_plan_item_request: {
-            type: :object,
             description: 'A medicine with its whole schedule; the client keeps `source` and `goods_id` consistent',
-            required: %w[source every_unit times course_mode],
+            allOf: [
+              { '$ref' => '#/components/schemas/pillbox_plan_item_fields' },
+              { type: :object, required: %w[source every_unit times course_mode] }
+            ]
+          },
+          pillbox_plan_update_request: {
+            type: :object,
+            properties: {
+              title: { type: :string, maxLength: 50, description: 'Not blank once the spaces around it are cut' },
+              items_attributes: {
+                type: :array,
+                description: 'With `id` a medicine of the plan changes, with `id` and `discard: true` it is taken ' \
+                             'out of the plan, without `id` it is added and starts today; errors are keyed ' \
+                             '`items[<index>].<field>` and `items`',
+                items: { '$ref' => '#/components/schemas/pillbox_plan_item_update_request' }
+              }
+            }
+          },
+          pillbox_plan_item_update_request: {
+            allOf: [
+              { '$ref' => '#/components/schemas/pillbox_plan_item_fields' },
+              {
+                type: :object,
+                properties: {
+                  id: { type: :integer, description: 'A medicine still in the plan; without it the medicine is new' },
+                  discard: {
+                    type: :boolean,
+                    default: false,
+                    description: 'Takes the medicine out of the plan from now; ignored for a new one'
+                  }
+                }
+              }
+            ]
+          },
+          pillbox_plan_item_fields: {
+            type: :object,
             properties: {
               source: { type: :string, enum: %w[order catalog manual] },
               goods_id: { type: :integer, description: 'A SKU the catalog has, shown or not' },

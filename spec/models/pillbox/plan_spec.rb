@@ -46,12 +46,37 @@ RSpec.describe Pillbox::Plan do
       expect(plan(items: Array.new(11) { item }).tap(&:validate).errors.of_kind?(:items, :too_many)).to be(true)
     end
 
-    it 'names the errors of an item by its place in the list' do
-      record = plan(items: [ item, item(times: []) ])
+    it 'names the errors of an item by its place in the items attributes' do
+      attributes = { source: 'manual', every_unit: 'day', course_mode: 'open' }
+      record = plan(items: [], items_attributes: [ attributes.merge(times: %w[08:00]), attributes.merge(times: []) ])
 
       record.validate
 
       expect(record.errors.of_kind?(:'items[1].times', :blank)).to be(true)
+    end
+
+    it 'names the errors of a saved plan by the place in the items attributes, not in the plan' do
+      record = create(:pillbox_plan, user:, items: [ item(name: 'A'), item(name: 'B') ])
+      second = record.items.second
+
+      record.assign_attributes(items_attributes: [ { id: second.id, times: [] } ])
+      record.validate
+
+      expect(record.errors.of_kind?(:'items[0].times', :blank)).to be(true)
+    end
+
+    it 'does not count items discarded by the same save' do
+      record = create(:pillbox_plan, user:)
+      record.items.each { it.discarded_at = Time.current }
+
+      expect(record.tap(&:validate).errors.of_kind?(:items, :blank)).to be(true)
+    end
+
+    it 'counts the items already in a plan towards the limit' do
+      record = create(:pillbox_plan, user:, items: Array.new(10) { item })
+      record.items.build(attributes_for(:pillbox_plan_item).except(:plan))
+
+      expect(record.tap(&:validate).errors.of_kind?(:items, :too_many)).to be(true)
     end
 
     it 'lists the items still in the plan by their position' do
