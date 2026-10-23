@@ -36,6 +36,8 @@ class Pillbox::Plan < ApplicationRecord
 
   normalizes :title, with: -> { it.strip }
 
+  accepts_nested_attributes_for :items
+
   def tz = ActiveSupport::TimeZone[timezone.to_s]
 
   def today

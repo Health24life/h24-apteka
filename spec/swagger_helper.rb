@@ -552,7 +552,7 @@ RSpec.configure do |config|
           },
           pillbox_plan_request: {
             type: :object,
-            required: %w[title timezone items],
+            required: %w[title timezone items_attributes],
             properties: {
               title: { type: :string, maxLength: 50, description: 'Not blank once the spaces around it are cut' },
               timezone: { type: :string, example: 'Europe/Kyiv', description: 'IANA time zone of the plan' },
@@ -565,10 +565,11 @@ RSpec.configure do |config|
                 type: :integer,
                 description: 'A booking of the user the client filled the plan from; the booking is not changed'
               },
-              items: {
+              items_attributes: {
                 type: :array,
                 minItems: 1,
                 maxItems: 10,
+                description: 'The medicines; their errors are keyed `items[<index>].<field>` and `items`',
                 items: { '$ref' => '#/components/schemas/pillbox_plan_item_request' }
               }
             }

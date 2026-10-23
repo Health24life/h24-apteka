@@ -23,7 +23,7 @@ class Api::V1::Pillbox::PlansController < ApiController
       :timezone,
       :start_date,
       :source_order_id,
-      items: [
+      items_attributes: [
         :source,
         :goods_id,
         :name,

@@ -1525,7 +1525,7 @@ components:
       required:
       - title
       - timezone
-      - items
+      - items_attributes
       properties:
         title:
           type: string
@@ -1544,10 +1544,12 @@ components:
           type: integer
           description: A booking of the user the client filled the plan from; the
             booking is not changed
-        items:
+        items_attributes:
           type: array
           minItems: 1
           maxItems: 10
+          description: The medicines; their errors are keyed `items[<index>].<field>`
+            and `items`
           items:
             "$ref": "#/components/schemas/pillbox_plan_item_request"
     pillbox_plan_item_request:

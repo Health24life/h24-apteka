@@ -6,7 +6,7 @@ RSpec.describe 'Pillbox plans' do
   let(:user_id) { create(:h24_core_user).id }
   let(:Authorization) { "Bearer #{generate_jwt_token(nameid: user_id)}" }
   let(:items) { [ medicine(name: 'Нурофен', goods_id: create(:catalog_goods).id, source: 'catalog'), medicine ] }
-  let(:body) { { title: 'Застуда', timezone: 'Europe/Kyiv', items: } }
+  let(:body) { { title: 'Застуда', timezone: 'Europe/Kyiv', items_attributes: items } }
 
   def medicine(**attrs)
     {
@@ -94,7 +94,9 @@ RSpec.describe 'Pillbox plans' do
       response '422', 'the errors of every field at once, an item named by its place; nothing is kept' do
         schema '$ref' => '#/components/schemas/validation_errors'
 
-        let(:body) { { title: '', timezone: 'Europe/Kyiv', items: [ medicine, medicine(times: %w[01:00] * 7) ] } }
+        let(:body) do
+ { title: '', timezone: 'Europe/Kyiv', items_attributes: [ medicine, medicine(times: %w[01:00] * 7) ] }
+        end
 
         run_test! { expect(errors.keys).to contain_exactly('title', 'items[1].times') }
       end
@@ -154,7 +156,7 @@ RSpec.describe 'Pillbox plans' do
     end
 
     it 'keeps nothing when one item is invalid', :aggregate_failures do
-      body[:items] << medicine(times: [])
+      body[:items_attributes] << medicine(times: [])
 
       post_plan
 

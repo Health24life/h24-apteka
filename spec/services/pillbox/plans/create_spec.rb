@@ -21,13 +21,13 @@ RSpec.describe Pillbox::Plans::Create do
       attributes: {
         title: 'Застуда',
         timezone: 'Europe/Kyiv',
-        items: [ item ]
+        items_attributes: [ item ]
       }.merge(attrs)
     )
   end
 
   it 'saves the plan of the user with its items in the order of the request', :aggregate_failures do
-    plan = create_plan(items: [ item(name: 'A'), item(name: 'B', times: %w[20:00 08:00]) ])
+    plan = create_plan(items_attributes: [ item(name: 'A'), item(name: 'B', times: %w[20:00 08:00]) ])
 
     expect(plan).to be_persisted
     expect(plan).to have_attributes(user_id:, status: 'active', title: 'Застуда')
@@ -36,7 +36,7 @@ RSpec.describe Pillbox::Plans::Create do
   end
 
   it 'gives the items the owner of the plan and normalizes their schedules', :aggregate_failures do
-    item = create_plan(items: [ item(every_unit: 'day', weekdays: [ 1 ]) ]).items.first
+    item = create_plan(items_attributes: [ item(every_unit: 'day', weekdays: [ 1 ]) ]).items.first
 
     expect(item.user_id).to eq(user_id)
     expect([ item.weekdays, item.course_end_date ]).to eq([ [], Date.new(2026, 11, 7) ])
@@ -57,9 +57,15 @@ RSpec.describe Pillbox::Plans::Create do
   end
 
   it 'takes the position the client sent' do
-    plan = create_plan(items: [ item(name: 'A', position: 5), item(name: 'B', position: 1) ])
+    plan = create_plan(items_attributes: [ item(name: 'A', position: 5), item(name: 'B', position: 1) ])
 
     expect(plan.reload.items.map(&:name)).to eq(%w[B A])
+  end
+
+  it 'keeps a position 0 the client sent for an item that is not first' do
+    plan = create_plan(items_attributes: [ item(name: 'A', position: 1), item(name: 'B', position: 0) ])
+
+    expect(plan.items.map { [ it.name, it.position ] }).to eq([ [ 'A', 1 ], [ 'B', 0 ] ])
   end
 
   it 'refuses a start date that is not a date' do
@@ -67,7 +73,7 @@ RSpec.describe Pillbox::Plans::Create do
   end
 
   it 'keeps nothing when one item is invalid', :aggregate_failures do
-    plan = create_plan(title: '', items: [ item, item(times: []) ])
+    plan = create_plan(title: '', items_attributes: [ item, item(times: []) ])
 
     expect(plan).not_to be_persisted
     expect(plan.errors.attribute_names).to contain_exactly(:title, :'items[1].times')

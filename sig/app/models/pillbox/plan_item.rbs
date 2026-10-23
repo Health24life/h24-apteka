@@ -9,4 +9,5 @@ class Pillbox::PlanItem
   MAX_COURSE_END: Integer
 
   def normalize!: () -> Pillbox::PlanItem
+  def position_came_from_user?: () -> bool
 end

@@ -1,6 +1,5 @@
 class Pillbox::Plans::Create
   PLAN_ATTRIBUTES: Array[Symbol]
-  ITEM_ATTRIBUTES: Array[Symbol]
 
   @user_id: Integer
   @now: ActiveSupport::TimeWithZone
@@ -12,5 +11,5 @@ class Pillbox::Plans::Create
 
   private
 
-  def build_item: (Pillbox::Plan plan, ActionController::Parameters | Hash[untyped, untyped] item, Integer index) -> Pillbox::PlanItem
+  def prepare_item: (Pillbox::PlanItem item, Date? start, Integer index) -> Pillbox::PlanItem
 end
